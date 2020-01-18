@@ -1,0 +1,47 @@
+include 'jodi_base'
+include 'jodi_core'
+if (doExtraProjects().equals('yes')) {
+    println "Including extra projects."
+}
+include 'jodi_qa'
+include 'jodi_odi12'
+// plugin projects
+include 'jodi_plugins'
+include 'jodi_tools'
+include 'jodi_model'
+
+String getDate(){
+   def df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+   return df.format(new Date())
+}
+
+println "Start Date "+ getDate();
+
+rootProject.name = 'jodi'
+
+String parseODIVersion(String versionStr, int place) {
+	def version = null
+	def versionArray = versionStr.tokenize('.' as char)
+	version = versionArray[place]
+	version
+}
+
+String doExtraProjects(){
+    def extras = defaultDoExtraProjects
+    if (hasProperty('doExtraProjects')) {
+        extras = doExtraProjects
+    }
+    print "Build Extra Projects: "
+    println extras
+    extras
+}
+
+String determineOdiVersion() {
+  def version = defaultOdiVersion
+  if (hasProperty('odiversion')) {
+      version = odiversion
+  }
+  print "setting: "
+  println version
+  version
+}

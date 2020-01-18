@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" jaxb:version="2.1">
+
+	<jaxb:globalBindings generateValueClass="false" >
+		<xjc:superInterface name="one.jodi.core.lpmodel.Common"/>
+		<xjc:superClass name="one.jodi.core.lpmodel.impl.CommonImpl"/>
+	</jaxb:globalBindings>
+	
+	<!-- Most of the customizations in here add base classes from which generated 
+		 classes extends from. This allows us to add more functionality into the
+		 interface model classes without the need to modify generated classes.
+		 This functionality requires the JAXB2 Basic Plugins to extend JAXB xjc. -->
+	<jaxb:bindings schemaLocation="jodi-loadplan.v1.0.xsd">
+
+		<jaxb:schemaBindings>
+			<jaxb:package name="one.jodi.core.lpmodel" />
+		</jaxb:schemaBindings>
+
+		<!-- rename name of generated class to avoid naming collisions with ODI class -->
+      <jaxb:bindings node="//xs:element[@name='Loadplan']">
+         <jaxb:bindings node=".//xs:element[@name='KeepLogHistory']">
+      	   <jaxb:property name="Keeploghistory"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='LogSessions']">
+      	   <jaxb:property name="Logsessions"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='LogSessionStep']">
+      	   <jaxb:property name="Logsessionstep"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='SessionTaskLogLevel']">
+      	   <jaxb:property name="Sessiontaskloglevel"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='LimitConcurrentExecutions']">
+      	   <jaxb:property name="Limitconcurrentexecutions"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='NumberOfConcurrentExecutions']">
+      	   <jaxb:property name="NumberOfConcurrentexecutions"/>
+         </jaxb:bindings>
+         <jaxb:bindings node=".//xs:element[@name='WaitPollingInterval']">
+      	   <jaxb:property name="Waitpollinginterval"/>
+         </jaxb:bindings>
+      </jaxb:bindings>
+      
+      <jaxb:bindings node="//xs:complexType[@name='LoadplanstepwithexceptionsType']">
+         <jaxb:bindings node=".//xs:element[@name='ExceptionBehavior']">
+      	   <jaxb:property name="Exceptionbehavior"/>
+         </jaxb:bindings>
+     </jaxb:bindings>
+      
+     <jaxb:bindings node="//xs:complexType[@name='Loadplanstepparalleltype']">
+         <jaxb:bindings node=".//xs:element[@name='MaxErrorChildCount']">
+      	   <jaxb:property name="Maxerrorchildcount"/>
+         </jaxb:bindings>
+     </jaxb:bindings>
+
+	</jaxb:bindings>
+
+</jaxb:bindings>

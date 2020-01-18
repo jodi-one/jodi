@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+	<Package>
+		<FolderCode>InitialORACLE_DWH_OIL</FolderCode>
+		<PackageName>INITIALDWH_OIL</PackageName>
+		<PackageListItem>PACKAGE_ALL</PackageListItem>
+	</Package>
+</Packages>

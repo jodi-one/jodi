@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments>
+	This mapping copies the billing address details,
+	back from the fact table, since when customers only change phone number,
+	and don't buy anything the billing address should be taken,
+	from the last known billing address.
+	</Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_CUSTOMER_I</Name>
+			</Source>
+			<Source>
+				<Name>W_CUSTOMER_D</Name>
+				<Join>S_CUSTOMER_I.CUST_CODE = W_CUSTOMER_D.CUST_CODE</Join>
+				<Filter>W_CUSTOMER_D.CURRENT_FLG = 1</Filter>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_CUSTOMER_O_S01</TargetDataStore>
+		<TargetColumn>
+			<Name>CUST_CODE</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_CODE</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>60</Length></Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>CUST_BILLING_ADDRESS</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_BILLING_ADDRESS</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>70</Length></Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>CUST_BILLING_CITY</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_BILLING_CITY</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>40</Length></Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>CUST_BILLING_COUNTRY</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_BILLING_COUNTRY</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>40</Length></Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>CUST_BILLING_POSTALCODE</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_BILLING_POSTALCODE</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>10</Length></Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>CUST_BILLING_STATE</Name>
+			<MappingExpressions>
+				<Expression>W_CUSTOMER_D.CUST_BILLING_STATE</Expression>
+			</MappingExpressions>
+			<Properties><DataType>VARCHAR2</DataType><Length>40</Length></Properties>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

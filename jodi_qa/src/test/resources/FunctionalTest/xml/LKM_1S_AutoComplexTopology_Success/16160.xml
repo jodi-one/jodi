@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>LKM_1S_AUTOCOMPLEXTOPOLOGY_SUCCESS</Name>
+	<Comments>
+	</Comments>
+	<PackageList>LKM_1S_AUTOCOMPLEXTOPOLOGY_SUCCESS</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>COUNTRIES</Name>
+				<Alias>C</Alias>
+				<Filter>C.C1 = '124'</Filter>
+				<Lookups>
+				<Lookup>
+					<LookupDataStore>S_DA_I</LookupDataStore>
+					<Alias>DA</Alias>
+					<Join>DA.KEY = C.C1</Join>
+				</Lookup>
+				</Lookups>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_DA_O</TargetDataStore>
+		<TargetColumn>
+			<Name>KEY</Name>
+			<MappingExpressions>
+				<Expression>C.C1</Expression>
+			</MappingExpressions>
+			<Key>true</Key>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>VALUE</Name>
+			<MappingExpressions>
+				<Expression>DA.VALUE</Expression>
+			</MappingExpressions>
+			<Mandatory>true</Mandatory>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>LAST_CHANGED_DT</Name>
+			<MappingExpressions>
+				<Expression>CAST( null as DATE)</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

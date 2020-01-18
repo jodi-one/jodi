@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>MAPPING_1S_UNDEFINEDCOLUMN_WARNING</Name>
+	<Comments>
+	</Comments>
+	<PackageList>MAPPING_1S_UNDEFINEDCOLUMN_WARNING</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_DA_I</Name>
+				<Alias>DA</Alias>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_FA_O</TargetDataStore>
+		<TargetColumn>
+		<Name>NOT_EXISTS</Name>
+		<MappingExpressions><Expression>1</Expression></MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

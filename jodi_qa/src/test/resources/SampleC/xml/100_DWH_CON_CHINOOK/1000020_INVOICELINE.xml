@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Model>model.source.code</Model>
+		<Dataset>
+			<Source>
+				<Name>INVOICELINE</Name>
+				<Alias>INVL</Alias>
+				<Journalized>true</Journalized>
+			</Source>
+			<Source>
+				<Name>INVOICE</Name>
+				<Alias>INVE</Alias>
+				<Journalized>false</Journalized>
+				<Join>INVE.INVOICEID = INVL.INVOICEID</Join>
+				<Filter>INVE.INVOICEDATE >  TO_DATE( #SAMPLEC.LOAD_UP_TO_DATE, 'YYYYMMDD' )</Filter>
+				<JoinExecutionLocation>SOURCE</JoinExecutionLocation>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>INVOICELINE</TargetDataStore>
+	</Mappings>
+</Transformation>

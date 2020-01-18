@@ -1,0 +1,20 @@
+import one.jodi.base.config.PasswordConfigImpl
+import one.jodi.bootstrap.JodiController
+
+JodiController controller = new JodiController(true)
+List<String> argList = new ArrayList<String>()
+argList.add("-a")
+argList.add("etls")
+argList.add("-c")
+argList.add("D:/git/jodi/jodi_qa/src/test/resources/SampleC/conf/SampleC.properties")
+argList.add("-pw")
+argList.add(new PasswordConfigImpl().getOdiUserPassword())
+argList.add("-mpw")
+argList.add(new PasswordConfigImpl().getOdiMasterRepoPassword())
+argList.add("-devmode")
+argList.add("-p")
+argList.add("Real Time ")
+argList.add("-m")
+argList.add("D:/git/jodi/jodi_qa/src/test/resources/SampleC/xml")
+controller.run(argList.toArray(new String[0]))
+print controller.getErrorReport()

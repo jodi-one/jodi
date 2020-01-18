@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+	<Package>
+		<PackageName>REALTIMERUN_ETL_ALL</PackageName>
+		<FolderCode>RealTimeORACLE_DWH_CON_CHINOOK</FolderCode>
+		<PackageListItem></PackageListItem>
+		<Before>
+			<ExecPackage>
+				<Name>REALTIMEDWH_CON_CHINOOK</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_CON</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_OIL</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_STI</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_STO</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_DMT</Name>
+			</ExecPackage>
+			<ExecPackage>
+				<Name>REALTIMEDWH_DMT_FACT</Name>
+			</ExecPackage>
+		</Before>
+	</Package>
+</Packages>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+    <!-- XMLSchema 1.1
+    Optional values are Attributes,
+    Mandatory values are elements.
+    Register the XMLSchema/v1.1 in your editor.
+    -->
+
+    <xs:element name="Sequence" type="SequenceType" abstract="true"/>
+    <xs:complexType name="SequenceType">
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="Global" type="xs:boolean"/>
+        <xs:attribute name="Increment" type="xs:integer"/>
+    </xs:complexType>
+
+    <xs:element name="Sequences">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Sequence" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Standard" type="SequenceStandardtype"
+                substitutionGroup="Sequence"/>
+    <xs:complexType name="SequenceStandardtype">
+        <xs:complexContent>
+            <xs:extension base="SequenceType">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="Specific" type="SequenceSpecifictype"
+                substitutionGroup="Sequence"/>
+    <xs:complexType name="SequenceSpecifictype">
+        <xs:complexContent>
+            <xs:extension base="SequenceType">
+                <xs:sequence>
+                    <xs:element name="Model" type="xs:string"/>
+                    <xs:element name="Table" type="xs:string"/>
+                    <xs:element name="Column" type="xs:string"/>
+                    <xs:element name="Filter" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="Native" type="SequenceNativetype" substitutionGroup="Sequence"/>
+    <xs:complexType name="SequenceNativetype">
+                <xs:complexContent>
+        <xs:extension base="SequenceType">
+            <xs:sequence>
+                <xs:element name="Model" type="xs:string"/>
+                <xs:element name="NativeName" type="xs:string"/>
+            </xs:sequence>
+        </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

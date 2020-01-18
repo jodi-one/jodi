@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://jodi.one/model/extensions"
+    xmlns="http://jodi.one/model/extensions"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <xs:simpleType name="ExecutionLocationEnum">
+       <xs:restriction base="xs:string">
+            <xs:enumeration value="SOURCE"/>
+            <xs:enumeration value="WORK"/>
+            <xs:enumeration value="TARGET"/>
+       </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="TransformationExtension">
+        <xs:sequence>
+        	<xs:element name="folder" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SourceExtension">
+        <xs:sequence />
+    </xs:complexType>
+
+    <xs:complexType name="MappingsExtension">
+        <xs:sequence />
+    </xs:complexType>
+
+    <xs:complexType name="TargetColumnExtension">
+        <xs:sequence>
+            <xs:element name="insert" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="update" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ExecutionLocation" type="ExecutionLocationEnum" minOccurs="0"/>
+            <xs:element name="ud1" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud2" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud3" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud4" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud5" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud6" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud7" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud8" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud9" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="ud10" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,60 @@
+package one.jodi.base.model.types;
+
+/**
+ * Column meta data information.
+ *
+ */
+public interface DataStoreColumn {
+
+    DataStore getParent();
+
+    /**
+     * Name of data store column
+     *
+     * @return name of column
+     */
+    String getName();
+
+    /**
+     * Gets the column data type.
+     *
+     * @return the column data type
+     */
+    String getColumnDataType();
+
+    /**
+     * @return Get the length or precision of this column.
+     */
+    int getLength();
+
+    /**
+     * @return Get the scale for numeric types.
+     */
+    int getScale();
+
+    /**
+     * Gets the column scd type.
+     *
+     * @return the column scd type
+     */
+    SCDType getColumnSCDType();
+
+    /**
+     * Determines if the column has an associated NOT NULL constraint
+     *
+     * @return true if NOT NULL constraint is set
+     */
+    boolean hasNotNullConstraint();
+
+    /**
+     * @return Column Description
+     */
+    String getDescription();
+
+    /**
+     * @return a number greater than 0 that indicates the sequence in which
+     * columns are ordered in a table definition
+     */
+    int getPosition();
+
+}

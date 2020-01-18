@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:noNamespaceSchemaLocation="../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+      <Model>model.source.code</Model>
+      <Dataset>
+        <Source>
+            <Name>TRACK</Name>
+            <Alias>TRACK</Alias>
+        </Source>
+      </Dataset>
+    </Datasets>
+    <Mappings>
+       <TargetDataStore>TRACK</TargetDataStore>
+    </Mappings>
+</Transformation>

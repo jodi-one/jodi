@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+<!-- 
+This XSD describes represent a model which reflects its ODI loadplan equivalent.
+ -->
+	<xs:element name="Loadplan">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Name" type="xs:string"/>  
+                <xs:element name="Folder" type="xs:string"/>
+                <xs:element name="KeepLogHistory" type="xs:integer" minOccurs="0"/>
+                <xs:element name="LogSessions" type="LogsessionsType" minOccurs="0"/>
+                <xs:element name="LogSessionStep" type="LogsessionstepType" minOccurs="0"/>
+                <xs:element name="SessionTaskLogLevel" type="xs:integer" minOccurs="0"/>
+                <xs:element name="Keywords" type="xs:string" minOccurs="0"/>
+                <!-- a default of 0 means no limit for concurrent executions a 1 means limit concurrent executions in -->
+                <xs:element name="LimitConcurrentExecutions" type="xs:boolean" minOccurs="0"/>
+          		<!-- In Odi Version 12.1.3.0.0 the number of ConcurrentExecutions is either 0 disabling it or 1 enabling it.
+          		Limit concurrent executions = true  => NumberOfConcurrentexecutions should be set to 1
+          		Limit concurrent executions = false => NumberOfConcurrentexecutions should be set to 0
+          		In future versions the number of concurrent executions may be set.
+          		 -->
+                <xs:element name="NumberOfConcurrentExecutions" type="xs:integer" minOccurs="0"/>
+                <xs:element name="ViolateBehavior" type="ViolatebehaviorType" minOccurs="0"/>
+               	<xs:element name="WaitPollingInterval" type="xs:integer" minOccurs="0"/>
+                <xs:element name="Description" type="xs:string" minOccurs="0"/>
+                <xs:element ref="Exceptions" minOccurs="0"/>
+                <xs:element ref="Serial"/> <!-- First node; the root node of the loadplan  -->
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:simpleType name="LogsessionsType">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="ALWAYS" />
+    		<xs:enumeration value="NEVER" />
+    		<xs:enumeration value="ERRORS" />
+  		</xs:restriction>
+	</xs:simpleType>
+	
+	 <xs:simpleType name="LogsessionstepType">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="BYSCENARIOSETTINGS" />
+    		<xs:enumeration value="NEVER" />
+    		<xs:enumeration value="ERRORS" />
+  		</xs:restriction>
+	</xs:simpleType>
+	
+	 <xs:simpleType name="ViolatebehaviorType">
+  		<xs:restriction base="xs:string">
+    		<xs:enumeration value="RAISE_EXECUTION_ERROR" />
+    		<xs:enumeration value="WAIT_TO_EXECUTE" />
+  		</xs:restriction>
+	</xs:simpleType>
+    
+   <xs:element name="Loadplanstep" type="Loadplansteptype" abstract="true" />
+	<xs:complexType name="Loadplansteptype">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+	</xs:complexType>
+	
+	
+	<xs:element name="Loadplancorestep" type="Loadplancoresteptype" abstract="true" />
+	<xs:complexType name="Loadplancoresteptype">
+	  <xs:complexContent>
+	  <xs:extension base="Loadplansteptype">
+	  </xs:extension>
+	  </xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="Loadplanbranchestep" type="Loadplanbranchesteptype" abstract="true"/>
+	<xs:complexType name="Loadplanbranchesteptype">
+	  <xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+	</xs:complexType>
+	
+	<xs:element name="Loadplanstepwithexceptions" type="LoadplanstepwithexceptionsType" abstract="true" />
+	<xs:complexType name="LoadplanstepwithexceptionsType">
+          <xs:complexContent>
+          <xs:extension base="Loadplancoresteptype">
+          		<xs:sequence>
+          			<xs:element name="Enabled" type="xs:boolean" minOccurs="0"/>
+          			<xs:element name="Keywords" type="xs:string" minOccurs="0"/>
+          			<xs:element name="Timeout" type="xs:int" minOccurs="0"/>
+          			<xs:element name="ExceptionName" type="xs:string" minOccurs="0"/>
+          			<xs:element name="ExceptionBehavior" type="Exceptionbehavior" minOccurs="0"/>
+          			<xs:element ref="Variables" minOccurs="0"/>
+          		</xs:sequence>
+             </xs:extension>
+          </xs:complexContent>
+       </xs:complexType>
+	
+	<xs:element name="Exception" type="Loadplanstepexceptiontype"  substitutionGroup="Loadplancorestep" />
+        <xs:complexType name="Loadplanstepexceptiontype" >
+        <xs:complexContent>
+			<xs:extension base="Loadplancoresteptype">
+				<xs:sequence>
+				<xs:element name="Enabled" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="Keywords" type="xs:string" minOccurs="0"/>
+                <xs:element ref="Children"/>
+                <!-- 
+                children of Loadplanstepexceptiontype can be of loadplansteptype
+                but not be of Loadplansteproottype
+                 -->
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+	
+	<xs:element name="Serial" type="Loadplanstepserialtype"  substitutionGroup="Loadplancorestep" />
+        <xs:complexType name="Loadplanstepserialtype" >
+        <xs:complexContent>
+			<xs:extension base="LoadplanstepwithexceptionsType">
+				<xs:sequence>
+				<xs:element name="RestartType" type="Restarttypeserial" minOccurs="0"/>
+                <xs:element ref="Children"/>
+                <!-- 
+                children of Loadplanstepserial can be of loadplansteptype
+                but not be of Loadplansteproottype
+                 -->
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+	
+	<xs:element name="Parallel" type="Loadplanstepparalleltype"  substitutionGroup="Loadplancorestep" />
+        <xs:complexType name="Loadplanstepparalleltype" >
+        <xs:complexContent>
+			<xs:extension base="LoadplanstepwithexceptionsType">
+				<xs:sequence>
+				<xs:element name="RestartType" type="Restarttypeparallel" minOccurs="0"/>
+                <xs:element name="MaxErrorChildCount" type="xs:int" minOccurs="0"/>
+				<xs:element ref="Children"/>
+                <!-- 
+                children of Loadplanstepparallel can be of loadplansteptype
+                but not be of Loadplansteproottype
+                 -->
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+      
+      <xs:element name="RunScenario" type="Loadplanstepscenariotype"  substitutionGroup="Loadplancorestep" />
+        <xs:complexType name="Loadplanstepscenariotype" >
+        <xs:complexContent>
+			<xs:extension base="LoadplanstepwithexceptionsType">
+				<xs:sequence>
+				<xs:element name="Scenario" type="xs:string"/>
+				<xs:element name="Version" type="xs:integer" minOccurs="0"/>
+				<xs:element name="RestartType" type="Restarttypescenario" minOccurs="0"/>
+                <xs:element name="Priority" type="xs:int" minOccurs="0"/>
+    	        </xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+        
+        <xs:element name="Case" type="Loadplanstepcasetype"  substitutionGroup="Loadplancorestep" />
+        <xs:complexType name="Loadplanstepcasetype" >
+        <xs:complexContent>
+			<xs:extension base="LoadplanstepwithexceptionsType">
+				<xs:sequence>
+                <xs:element name="TestVariable" type="xs:string"/>
+               	<xs:element ref="When" minOccurs="1" maxOccurs="unbounded"/>
+               	<xs:element ref="Else" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+        
+        <xs:element name="When" type="Loadplanstepwhentype"  substitutionGroup="Loadplanbranchestep" />
+        <xs:complexType name="Loadplanstepwhentype" >
+        <xs:complexContent>
+			<xs:extension base="Loadplanbranchesteptype">
+				<xs:sequence>
+                <xs:element name="Operator" type="xs:string"/>
+           		<xs:element name="Value" type="xs:anySimpleType" minOccurs="0"/>
+                <xs:element ref="Children"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+        
+        <xs:element name="Else" type="Loadplanstepelsetype"  substitutionGroup="Loadplanbranchestep" />
+        <xs:complexType name="Loadplanstepelsetype" >
+        <xs:complexContent>
+			<xs:extension base="Loadplanbranchesteptype">
+				<xs:sequence>
+                <xs:element ref="Children"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+        </xs:complexType>
+
+	<xs:simpleType name="Restarttypeserial">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="ALL_CHILDREN" />
+    		<xs:enumeration value="FROM_FAILURE" />
+  		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Restarttypeparallel">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="ALL_CHILDREN" />
+   			<xs:enumeration value="FAILED_CHILDREN" />
+  		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Restarttypescenario">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="NEW_SESSION" />
+   			<xs:enumeration value="FROM_STEP" />
+   			<xs:enumeration value="FROM_TASK" />
+  		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Exceptionbehavior">
+  		<xs:restriction base="xs:string">
+   			<xs:enumeration value="RUN_EXCEPTION_AND_IGNORE_ERROR" />
+   			<xs:enumeration value="RUN_EXCEPTION_AND_RAISE_ERROR" />
+   			<xs:enumeration value="NONE" />
+  		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="Variable">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Name" type="xs:string"/>  
+                <xs:element name="Refresh" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="Value" type="xs:anySimpleType" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+	<xs:element name="Variables">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="Variable" minOccurs="1"  maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+     </xs:element>
+     
+     <xs:element name="Children">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="Loadplancorestep" minOccurs="1" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+     </xs:element>
+          
+     <xs:element name="Exceptions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="Exception"  minOccurs="1" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+     </xs:element>
+   
+</xs:schema>

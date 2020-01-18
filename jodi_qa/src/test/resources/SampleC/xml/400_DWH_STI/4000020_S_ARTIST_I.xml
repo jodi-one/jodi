@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>O_ARTIST</Name>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_ARTIST_I</TargetDataStore>
+		<TargetColumn>
+			<Name>ARTS_CODE</Name>
+			<MappingExpressions>
+				<Expression>O_ARTIST.ARTIST</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>ARTS_NAME</Name>
+			<MappingExpressions>
+				<Expression>O_ARTIST.ARTIST</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>S_INSERT_DT_I</Name>
+			<MappingExpressions>
+				<Expression>SYSDATE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

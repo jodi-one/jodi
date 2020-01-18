@@ -1,0 +1,45 @@
+<FindBugsFilter>
+	<!-- REMEMBER
+		goal is to reduce this file in size, not expand it -->
+	<Match>
+		<Class
+				name="one.jodi.base.service.annotation.JsAnnotationImpl" />
+		<Bug code="BC" />
+	</Match>
+	<Match>
+		<Class
+				name="one.jodi.base.context.ContextImpl$GlobalContextState" />
+		<Bug code="SIC" />
+	</Match>
+	<Match>
+		<Class
+				name="one.jodi.base.error.ErrorWarningMessageJodiImpl" />
+		<Bug code="WMI" />
+	</Match>
+	<Match>
+		<Class name="one.jodi.base.ListAppender" />
+		<Bug code="Dm" />
+	</Match>
+	<Match>
+		<Class name="one.jodi.base.model.KeyBase" />
+		<Bug code="IS" />
+	</Match>
+	<Match>
+		<Class name="one.jodi.base.model.SchemaBase" />
+		<Bug code="UC" />
+	</Match>
+	<Match>
+		<Class name="one.jodi.base.service.odb.OdbMetaDataHelper" />
+		<Bug code="NP" />
+	</Match>
+	<Match>
+		<Class name="one.jodi.base.service.odb.OdbMetaDataHelper" />
+		<Bug code="RCN" />
+	</Match>
+	<Match>
+		<Class name="~.*Test$" />
+	</Match>
+	<Match>
+		<Package name="~test\..*" />
+	</Match>
+</FindBugsFilter>

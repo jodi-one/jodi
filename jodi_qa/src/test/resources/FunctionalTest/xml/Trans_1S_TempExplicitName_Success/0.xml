@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+
+	<Package>
+		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+		<PackageName>Trans_1S_TempExplicitName_Success</PackageName>
+		<PackageListItem>Trans_1S_TempExplicitName_Success</PackageListItem>
+	</Package>
+
+	<Package>
+		<PackageName>Trans_1S_TempExplicitName_Success</PackageName>
+		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+		<PackageListItem>""</PackageListItem>
+		<Before>
+			<ExecPackage>
+				<Name>Trans_1S_TempExplicitName_Success</Name>
+			</ExecPackage>
+		</Before>
+	</Package>
+</Packages>

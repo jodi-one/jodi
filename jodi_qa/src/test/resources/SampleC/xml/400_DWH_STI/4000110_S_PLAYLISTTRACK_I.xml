@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>O_PLAYLISTTRACK</Name>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_PLAYLISTTRACK_I</TargetDataStore>
+		<TargetColumn>
+			<Name>PLLK_PLAYLIST_CODE</Name>
+			<MappingExpressions>
+				<Expression>O_PLAYLISTTRACK.PLAYLIST_CODE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>PLLK_TRACK_CODE</Name>
+			<MappingExpressions>
+				<Expression>O_PLAYLISTTRACK.TRACK_CODE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>S_INSERT_DT_I</Name>
+			<MappingExpressions>
+				<Expression>SYSDATE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

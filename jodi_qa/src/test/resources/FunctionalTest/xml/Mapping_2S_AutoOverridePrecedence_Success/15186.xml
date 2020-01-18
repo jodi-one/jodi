@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>MAPPING_2S_AUTOOVERRIDEPRECEDENCE_SUCCESS</Name>
+	<Comments>
+	</Comments>
+	<PackageList>MAPPING_2S_AUTOOVERRIDEPRECEDENCE_SUCCESS</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_DA_I</Name>
+				<Alias>DA</Alias>
+			</Source>
+			<Source>
+				<Name>S_DB_I</Name>
+				<Alias>DB</Alias>
+				<Join>DA.KEY = DB.KEY</Join>
+				<JoinType>INNER</JoinType>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<Model>model.star_sds.code</Model>
+		<TargetDataStore>S_DA_O</TargetDataStore>
+		<TargetColumn>
+			<Name>KEY</Name>
+			<MappingExpressions>
+				<Expression>DA.KEY</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>VALUE</Name>
+			<MappingExpressions>
+				<Expression>DB.VALUE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>LAST_CHANGED_DT</Name>
+			<MappingExpressions>
+				<Expression>DB.LAST_CHANGED_DT</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

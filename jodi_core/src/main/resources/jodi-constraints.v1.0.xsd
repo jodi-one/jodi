@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- XMLSchema 1.1
+    Optional values are Attributes,
+    Mandatory values are elements.
+    Register the XMLSchema/v1.1 in your editor.
+    -->
+
+    <xs:element name="Constraints">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Constraint" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Constraint" type="ConstraintType" abstract="true"/>
+    <xs:complexType name="ConstraintType">
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Model" type="xs:string" />
+            <xs:element name="Table" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="DefinedInDatabase" type="xs:boolean" default="false"/>
+        <xs:attribute name="Active" type="xs:boolean" default="true"/>
+        <xs:attribute name="Flow" type="xs:boolean" default="true" />
+        <xs:attribute name="Static" type="xs:boolean" default="true" />
+    </xs:complexType>
+
+    <xs:complexType name="KeyAttributesType">
+        <xs:sequence>
+            <xs:element ref="KeyAttribute" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="KeyConstraint" type="KeyConstraintType" substitutionGroup="Constraint"/>
+    <xs:complexType name="KeyConstraintType">
+        <xs:complexContent>
+            <xs:extension base="ConstraintType">
+                <xs:sequence>
+                    <xs:element name="Type" type="KeyType"/>
+                    <xs:element name="Attributes" type="KeyAttributesType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="KeyType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NOT_UNIQUE_INDEX"/>
+            <xs:enumeration value="PRIMARY_KEY"/>
+            <xs:enumeration value="ALTERNATE_KEY"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:element name="KeyAttribute" type="xs:string"/>
+
+
+    <xs:element name="ReferenceConstraint" type="ReferenceConstraintType"
+                substitutionGroup="Constraint"/>
+    <xs:complexType name="ReferenceConstraintType">
+        <xs:complexContent>
+            <xs:extension base="ConstraintType">
+                <xs:sequence>
+                    <xs:element name="Type" type="ReferenceType"/>
+                    <xs:element name="PrimaryModel" type="xs:string"/>
+                    <xs:element name="PrimaryTable" type="xs:string" />
+                    <xs:element name="Attributes" type="ReferenceAttributesType" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="Expression" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+                <xs:attribute name="DeleteBehavior" type="ReferenceBehaviorOnActionType" default="NO_ACTION"/>
+                <xs:attribute name="UpdateBehavior" type="ReferenceBehaviorOnActionType" default="NO_ACTION"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="ReferenceType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DATABASE_REFERENCE"/>
+            <xs:enumeration value="USER_REFERENCE"/>
+            <xs:enumeration value="COMPLEX_USER_REFERENCE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+ 
+
+    <xs:element name="ReferenceAttribute" type="ReferenceAttributeType"/>
+    <xs:complexType name="ReferenceAttributeType">
+        <xs:all>
+            <xs:element name="FKColumn" type="xs:string"/>
+            <xs:element name="PKColumn" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ReferenceAttributesType">
+        <xs:sequence>
+            <xs:element ref="ReferenceAttribute" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:simpleType name="ReferenceBehaviorOnActionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RESTRICT"/>
+            <xs:enumeration value="CASCADE"/>
+            <xs:enumeration value="SET_NULL"/>
+            <xs:enumeration value="NO_ACTION"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="ConditionConstraint" type="ConditionConstraintType" substitutionGroup="Constraint"/>
+    <xs:complexType name="ConditionConstraintType">
+        <xs:complexContent>
+            <xs:extension base="ConstraintType">
+                <xs:sequence>
+                    <xs:element name="Type" type="ConditionConstraintEnum"/>
+                    <xs:element name="Where" type="xs:string"/>
+                    <xs:element name="Message" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="ConditionConstraintEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ORACLE_DATA_INTEGRATION_CONDITION"/>
+            <xs:enumeration value="DATABASE_CONDITION"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+</xs:schema>

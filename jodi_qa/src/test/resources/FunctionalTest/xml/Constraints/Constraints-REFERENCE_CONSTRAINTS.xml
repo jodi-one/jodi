@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Constraints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jodi-constraints.v1.0.xsd">
+<!-- DeleteBehavior="RESTRICT" -->
+    <ReferenceConstraint DeleteBehavior="RESTRICT" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REFERENCE_DB_RESTRICT</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- DeleteBehavior="NO_ACTION" -->
+	 <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REF_DELETEBEHAVIOUR_NO_ACTION</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- DeleteBehavior="CASCADE" -->
+	<ReferenceConstraint DeleteBehavior="CASCADE" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REF_DELETEBEHAVIOUR_CASCADE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- DeleteBehavior="NO_ACTION" -->
+	<ReferenceConstraint DeleteBehavior="SET_NULL" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REF_DELETEBEHAVIOUR_SET_NULL</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+<!-- UpdateBehavior="NO_ACTION" -->	
+    <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="NO_ACTION" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_USER_REFERENCE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>USER_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- UpdateBehavior="RESTRICT" -->	
+    <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="RESTRICT" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_USER_REFERENCE_UB_RESTRICT</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>USER_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- UpdateBehavior="CASCADE" -->	
+    <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_USER_REFERENCE_UB_CASCADE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>USER_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- UpdateBehavior="SET_NULL" -->	
+    <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="SET_NULL" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_USER_REFERENCE_UB_SET_NULL</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>USER_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_0</FKColumn>
+                <PKColumn>LAST_CHANGED_DT</PKColumn>
+            </ReferenceAttribute>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_DT_VALUE_1</FKColumn>
+                <PKColumn>KEY</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- DefinedInDatabase="true" -->
+	<ReferenceConstraint DeleteBehavior="RESTRICT" UpdateBehavior="CASCADE" DefinedInDatabase="true" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REFERENCE_DEFINEDINDB_TRUE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- Active="true" -->
+	<ReferenceConstraint DeleteBehavior="RESTRICT" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="true" Flow="true" Static="true">
+        <Name>W_Jodi_RC_DB_REFERENCE_ACTIVE_TRUE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_1</FKColumn>
+                <PKColumn>EXPIRATION_DT</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- Flow="false" -->
+	<ReferenceConstraint DeleteBehavior="RESTRICT" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="false" Static="true">
+        <Name>W_Jodi_RC_DB_REFERENCE_FLOW_FALSE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+	<!-- Static="false" -->
+	<ReferenceConstraint DeleteBehavior="RESTRICT" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="true" Flow="true" Static="false">
+        <Name>W_Jodi_RC_DB_REFERENCE_STATIC_FALSE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>DATABASE_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Attributes>
+            <ReferenceAttribute>
+                <FKColumn>AGRP_DYN_CHAR_VALUE_0</FKColumn>
+                <PKColumn>EFFECTIVE_DT</PKColumn>
+            </ReferenceAttribute>
+        </Attributes>
+        <Expression></Expression>
+    </ReferenceConstraint>
+    <ReferenceConstraint DeleteBehavior="NO_ACTION" UpdateBehavior="CASCADE" DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+        <Name>W_Jodi_RC_COMPLEX_REFERENCE</Name>
+        <Model>model.star.code</Model>
+        <Table>W_DC_D</Table>
+        <Type>COMPLEX_USER_REFERENCE</Type>
+        <PrimaryModel>model.star.code</PrimaryModel>
+        <PrimaryTable>W_DA_D</PrimaryTable>
+        <Expression>W_DA_D.LAST_CHANGED_DT &gt;= W_DC_D.AGRP_DYN_CHAR_VALUE_0</Expression>
+    </ReferenceConstraint>
+</Constraints>

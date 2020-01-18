@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments>
+	</Comments>
+	<PackageList>Trans_1S_ExplicitName_Success</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_DA_I</Name>
+				<Alias>DA</Alias>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+	    <TargetDataStore>S_DA_O</TargetDataStore>
+	</Mappings>
+</Transformation>

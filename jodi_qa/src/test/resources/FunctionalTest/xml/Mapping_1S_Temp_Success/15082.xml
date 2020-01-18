@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>S_MAPPING_1S_TEMP_O</Name>
+	<Comments>
+	</Comments>
+	<PackageList>MAPPING_1S_TEMP_SUCCESS</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_MAPPING_1S_TEMP_O_S01</Name>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<Model>model.star_sds.code</Model>
+		<TargetDataStore>S_MAPPING_1S_TEMP_O</TargetDataStore>
+	</Mappings>
+</Transformation>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://one.jodi/jodi/etlmodel/extensions"
+    xmlns="http://one.jodi/jodi/etlmodel/extensions"
+	  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <xs:complexType name="PackagesExtension">
+        <xs:sequence/>
+    </xs:complexType>
+    
+    <xs:complexType name="PackageExtension">
+        <xs:sequence/>
+    </xs:complexType>
+    
+    <xs:complexType name="StepsExtension">
+        <xs:sequence/>
+    </xs:complexType>
+</xs:schema>

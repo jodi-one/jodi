@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>Pivot_1S_Filter_Success</Name>
+	<Comments>
+	</Comments>
+	<PackageList>Pivot_1S_Filter_Success</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_PV_I</Name>
+				<Alias>P_IN</Alias>
+				<Flows>	
+					<Pivot>
+						<Name>Pivot_</Name>
+						<RowLocator>P_IN.QUARTER</RowLocator>
+						<AggregateFunction>SUM</AggregateFunction>
+						<Column name="YEAR">
+							<Expression>P_IN.YEAR</Expression>
+						</Column>
+						<Column name="Q1_SALES">
+							<Expression value="'Q1'">P_IN.SALES</Expression>
+						</Column>
+						<Column name="Q2_SALES">
+							<Expression value="'Q2'">P_IN.SALES</Expression>
+						</Column>
+						<Column name="Q3_SALES">
+							<Expression value="'Q3'">P_IN.SALES</Expression>
+						</Column>
+						<Column name="Q4_SALES">
+							<Expression value="'Q4'">P_IN.SALES</Expression>
+						</Column>
+					</Pivot>
+				</Flows>
+				<Filter>P_IN.YEAR != 2013</Filter>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+	    <TargetDataStore>S_VP_O</TargetDataStore>
+	    <TargetColumn>
+	    	<Name>YEAR</Name>
+	    	<MappingExpressions><Expression>Pivot_.YEAR</Expression></MappingExpressions>
+	    </TargetColumn>
+	    <TargetColumn>
+	    <Name>Q1_SALES</Name>
+	    <MappingExpressions><Expression>Pivot_.Q1_SALES</Expression></MappingExpressions>
+	    </TargetColumn>
+	    <TargetColumn>
+	    <Name>Q2_SALES</Name>
+	    <MappingExpressions><Expression>Pivot_.Q2_SALES</Expression></MappingExpressions>
+	    </TargetColumn>
+	    <TargetColumn>
+	    <Name>Q3_SALES</Name>
+	    <MappingExpressions><Expression>Pivot_.Q3_SALES</Expression></MappingExpressions>
+	    </TargetColumn>
+	    <TargetColumn>
+	    <Name>Q4_SALES</Name>
+	    <MappingExpressions><Expression>Pivot_.Q4_SALES</Expression></MappingExpressions>
+	    </TargetColumn>
+	</Mappings>
+</Transformation>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" jaxb:extensionBindingPrefixes="ci" jaxb:version="2.1">
+
+	<jaxb:globalBindings generateValueClass="false" >
+		<xjc:superInterface name="one.jodi.core.model.Common"/>
+		<xjc:superClass name="one.jodi.core.model.impl.CommonImpl"/>
+	</jaxb:globalBindings>
+	
+	<!-- Most of the customizations in here add base classes from which generated 
+		 classes extends from. This allows us to add more functionality into the
+		 interface model classes without the need to modify generated classes.
+		 This functionality requires the JAXB2 Basic Plugins to extend JAXB xjc. -->
+	<jaxb:bindings schemaLocation="jodi-model.v1.1.xsd">
+
+		<jaxb:schemaBindings>
+			<jaxb:package name="one.jodi.core.model" />
+		</jaxb:schemaBindings>
+
+		<!-- rename name of generated class to avoid naming collisions with ODI class 
+		<jaxb:bindings node="//xs:element[@name='TargetColumn']">
+			<jaxb:class name="Targetcolumn" />
+		</jaxb:bindings>
+		-->
+		
+		<jaxb:bindings node="//xs:element[@name='Dataset']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Datasets']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='FlowsType']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='FlowType']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='KmOption']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='KmOptions']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='KmType']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Lookup']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Lookups']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='MappingExpressions']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Mappings']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='ColumnType']">
+		   <ci:code>public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		
+		<jaxb:bindings node="//xs:complexType[@name='PivotType']">
+		   <ci:code>public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Properties']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Source']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='TargetColumn']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+			<jaxb:class name="Targetcolumn" />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Transformation']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='UnPivotType']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='ColumnType']">
+            <jaxb:bindings node=".//xs:attribute[@name='value']">
+                <jaxb:property name="valueSelector"/>
+            </jaxb:bindings>
+        </jaxb:bindings>
+
+		
+		<jaxb:bindings node="//xs:complexType[@name='MappingCommandType']">
+		   <ci:code>
+               public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='SubQueryType']">
+		   <ci:code>public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='SyntheticRowType']">
+		   <ci:code>public void accept(one.jodi.core.model.visitors.Visitor aVisitor) { aVisitor.visit(this); }
+           </ci:code>
+        	<jaxb:class />
+		</jaxb:bindings>
+		
+
+	</jaxb:bindings>
+
+</jaxb:bindings>

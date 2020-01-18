@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>MAPPING_2D_PARTIALAUTO_SUCCESS_2</Name>
+	<Comments>
+	</Comments>
+	<PackageList>MAPPING_2D_PARTIALAUTO_SUCCESS</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_PARTIALAUTO_O_S01</Name>
+				<Alias>DA_1</Alias>
+			</Source>
+		</Dataset>
+		<Dataset>
+		<Source>
+				<Name>S_PARTIALAUTO_O_S01</Name>
+				<Alias>DA_2</Alias>
+		</Source>
+		<SetOperator>UNION</SetOperator>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_DA_O</TargetDataStore>
+		<TargetColumn>
+			<Name>LAST_CHANGED_DT</Name>
+			<MappingExpressions>
+				<Expression>DA_1.COL_C</Expression>
+				<Expression>DA_2.COL_C</Expression>
+			</MappingExpressions>
+			<Properties>
+			<DataType>DATE</DataType>
+			</Properties>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Variables>
+    <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_NUMERIC</Name>
+        <DataType>NUMERIC</DataType>
+        <Model>model.star_sds.code</Model>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	    <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_TEXT</Name>
+        <DataType>TEXT</DataType>
+        <Model>model.star_sds.code</Model>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	 <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_ALPHANUMERIC</Name>
+        <DataType>ALPHANUMERIC</DataType>
+        <Model>model.star_sds.code</Model>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	 <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_DATE</Name>
+        <DataType>DATE</DataType>
+        <Model>model.star_sds.code</Model>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	<!-- no default values -->
+	 <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_DEFAULT_NUMERIC</Name>
+        <DataType>NUMERIC</DataType>
+        <Model>model.star_sds.code</Model>
+		<DefaultValue>10001</DefaultValue>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	<Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_DEFAULT_TEXT</Name>
+        <DataType>TEXT</DataType>
+        <Model>model.star_sds.code</Model>
+		<DefaultValue>JodiCOREVAR</DefaultValue>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	 <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_DEFAULT_ALPHANUMERIC</Name>
+        <DataType>ALPHANUMERIC</DataType>
+        <Model>model.star_sds.code</Model>
+		<DefaultValue>Jodi_15</DefaultValue>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+	 <Variable Global="false" KeepHistory="ALL_VALUES">
+        <Name>VAR_Jodi_DEFAULT_DATE</Name>
+        <DataType>DATE</DataType>
+        <Model>model.star_sds.code</Model>
+		<DefaultValue>Tue Apr 26 16:15:39 CEST 2016</DefaultValue>
+        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+    </Variable>
+</Variables>

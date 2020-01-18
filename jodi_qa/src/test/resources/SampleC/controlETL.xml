@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Loadplan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jodi-loadplan.v1.0.xsd">
+    <Name>ETL</Name>
+    <Folder>ETL</Folder>
+    <KeepLogHistory>7</KeepLogHistory>
+    <LogSessions>ERRORS</LogSessions>
+    <LogSessionStep>ERRORS</LogSessionStep>
+    <SessionTaskLogLevel>5</SessionTaskLogLevel>
+    <Keywords>aKeywords</Keywords>
+    <LimitConcurrentExecutions>true</LimitConcurrentExecutions>
+    <NumberOfConcurrentExecutions>1</NumberOfConcurrentExecutions>
+    <ViolateBehavior>WAIT_TO_EXECUTE</ViolateBehavior>
+    <WaitPollingInterval>1000</WaitPollingInterval>
+    <Description>A description</Description>
+    <Exceptions>
+        <Exception>
+            <Name>Exception</Name>
+            <Enabled>true</Enabled>
+            <Children>
+                <RunScenario>
+                    <Name>Exception INITIALDWH_CON_CHINOOK</Name>
+                    <Enabled>true</Enabled>
+                    <Timeout>0</Timeout>
+                    <ExceptionName></ExceptionName>
+                    <ExceptionBehavior>NONE</ExceptionBehavior>
+                    <Scenario>INITIALDWH_CON_CHINOOK</Scenario>
+                    <Version>1</Version>
+                    <RestartType>NEW_SESSION</RestartType>
+                    <Priority>0</Priority>
+                </RunScenario>
+            </Children>
+        </Exception>
+        <Exception>
+            <Name>Test</Name>
+            <Enabled>true</Enabled>
+            <Children>
+                <Serial>
+                    <Name>Serial</Name>
+                    <Enabled>true</Enabled>
+                    <Timeout>0</Timeout>
+                    <ExceptionName></ExceptionName>
+                    <ExceptionBehavior>NONE</ExceptionBehavior>
+                    <RestartType>FROM_FAILURE</RestartType>
+                    <Children>
+                        <RunScenario>
+                            <Name>Exception TEST_MKDIR</Name>
+                            <Enabled>true</Enabled>
+                            <Timeout>0</Timeout>
+                            <ExceptionName></ExceptionName>
+                            <ExceptionBehavior>NONE</ExceptionBehavior>
+                            <Scenario>TEST_MKDIR</Scenario>
+                            <Version>1</Version>
+                            <RestartType>NEW_SESSION</RestartType>
+                            <Priority>0</Priority>
+                        </RunScenario>
+                    </Children>
+                </Serial>
+                <Case>
+                    <Name>Exeception Case Variable: SAMPLE14C.LOAD_UP_TO_DATE</Name>
+                    <Enabled>true</Enabled>
+                    <Timeout>0</Timeout>
+                    <ExceptionName></ExceptionName>
+                    <ExceptionBehavior>NONE</ExceptionBehavior>
+                    <TestVariable>SAMPLEC.LOAD_UP_TO_DATE</TestVariable>
+                    <When>
+                        <Name>When Value &lt; 1</Name>
+                        <Operator>LESS_THAN</Operator>
+                        <Value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">1</Value>
+                        <Children>
+                            <RunScenario>
+<Name>DDL_ORACLE_DWH_CON_CHINOOK_001</Name>
+<Enabled>true</Enabled>
+<Timeout>0</Timeout>
+<ExceptionName></ExceptionName>
+<ExceptionBehavior>NONE</ExceptionBehavior>
+<Scenario>DDL_ORACLE_DWH_CON_CHINOOK_001</Scenario>
+<Version>1</Version>
+<RestartType>NEW_SESSION</RestartType>
+<Priority>0</Priority>
+                            </RunScenario>
+                        </Children>
+                    </When>
+                    <When>
+                        <Name>When Value &lt; 2</Name>
+                        <Operator>LESS_THAN</Operator>
+                        <Value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">2</Value>
+                        <Children>
+                            <Parallel>
+<Name>Exeption Parallel</Name>
+<Enabled>true</Enabled>
+<Timeout>0</Timeout>
+<ExceptionName></ExceptionName>
+<ExceptionBehavior>NONE</ExceptionBehavior>
+<RestartType>ALL_CHILDREN</RestartType>
+<Children>
+    <RunScenario>
+        <Name>REALTIMEDWH_DMT_FACT</Name>
+        <Enabled>true</Enabled>
+        <Timeout>0</Timeout>
+        <ExceptionName></ExceptionName>
+        <ExceptionBehavior>NONE</ExceptionBehavior>
+        <Scenario>REALTIMEDWH_DMT_FACT</Scenario>
+        <Version>1</Version>
+        <RestartType>NEW_SESSION</RestartType>
+        <Priority>0</Priority>
+    </RunScenario>
+</Children>
+                            </Parallel>
+                        </Children>
+                    </When>
+                </Case>
+            </Children>
+        </Exception>
+    </Exceptions>
+    <Serial>
+        <Name>Start</Name>
+        <Enabled>true</Enabled>
+        <Timeout>0</Timeout>
+        <ExceptionName>Exception</ExceptionName>
+        <ExceptionBehavior>NONE</ExceptionBehavior>
+        <RestartType>FROM_FAILURE</RestartType>
+        <Children>
+            <RunScenario>
+                <Name>DROP_TEMP_INTERFACE_DATASTORES</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>DROP_TEMP_INTERFACE_DATASTORES</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <Case>
+                <Name>Case Variable: SAMPLEC.LOAD_UP_TO_DATE</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <TestVariable>SAMPLEC.LOAD_UP_TO_DATE</TestVariable>
+                <When>
+                    <Name>Value Is Null</Name>
+                    <Operator>IS_NULL</Operator>
+                    <Children>
+                        <RunScenario>
+                            <Name>TEST_MKDIR</Name>
+                            <Enabled>true</Enabled>
+                            <Timeout>0</Timeout>
+                            <ExceptionName></ExceptionName>
+                            <ExceptionBehavior>NONE</ExceptionBehavior>
+                            <Scenario>TEST_MKDIR</Scenario>
+                            <Version>1</Version>
+                            <RestartType>NEW_SESSION</RestartType>
+                            <Priority>0</Priority>
+                        </RunScenario>
+                        <RunScenario>
+                            <Name>DISABLE_CONSTRAINTS1s</Name>
+                            <Enabled>true</Enabled>
+                            <Timeout>0</Timeout>
+                            <ExceptionName></ExceptionName>
+                            <ExceptionBehavior>NONE</ExceptionBehavior>
+                            <Scenario>DISABLE_CONSTRAINTS</Scenario>
+                            <Version>1</Version>
+                            <RestartType>NEW_SESSION</RestartType>
+                            <Priority>0</Priority>
+                        </RunScenario>
+                    </Children>
+                </When>
+                <When>
+                    <Name>When Value &gt; 0</Name>
+                    <Operator>GREATER_THAN</Operator>
+                    <Value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">0</Value>
+                    <Children>
+                        <RunScenario>
+                            <Name>DISABLE_CONSTRAINTS2</Name>
+                            <Enabled>true</Enabled>
+                            <Timeout>0</Timeout>
+                            <ExceptionName></ExceptionName>
+                            <ExceptionBehavior>NONE</ExceptionBehavior>
+                            <Scenario>DISABLE_CONSTRAINTS</Scenario>
+                            <Version>1</Version>
+                            <RestartType>NEW_SESSION</RestartType>
+                            <Priority>0</Priority>
+                        </RunScenario>
+                    </Children>
+                </When>
+            </Case>
+            <RunScenario>
+                <Name>INITIALDWH_CON_CHINOOK</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName>Test</ExceptionName>
+                <ExceptionBehavior>RUN_EXCEPTION_AND_IGNORE_ERROR</ExceptionBehavior>
+                <Scenario>INITIALDWH_CON_CHINOOK</Scenario>
+                <Version>1</Version>
+                <RestartType>FROM_STEP</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <RunScenario>
+                <Name>INITIALDWH_CON</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>RUN_EXCEPTION_AND_IGNORE_ERROR</ExceptionBehavior>
+                <Scenario>INITIALDWH_CON</Scenario>
+                <Version>1</Version>
+                <RestartType>FROM_TASK</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <RunScenario>
+                <Name>INITIALDWH_OIL</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>INITIALDWH_OIL</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <RunScenario>
+                <Name>INITIALDWH_STI</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>INITIALDWH_STI</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <RunScenario>
+                <Name>INITIALDWH_STO</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>INITIALDWH_STO</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <Parallel>
+                <Name>Parallel</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName>Exception</ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <RestartType>ALL_CHILDREN</RestartType>
+                <Children>
+                    <RunScenario>
+                        <Name>DISABLE_BITMAP_INDEX</Name>
+                        <Enabled>true</Enabled>
+                        <Timeout>0</Timeout>
+                        <ExceptionName>Test</ExceptionName>
+                        <ExceptionBehavior>NONE</ExceptionBehavior>
+                        <Scenario>DISABLE_BITMAP_INDEX</Scenario>
+                        <Version>1</Version>
+                        <RestartType>NEW_SESSION</RestartType>
+                        <Priority>0</Priority>
+                    </RunScenario>
+                </Children>
+            </Parallel>
+            <RunScenario>
+                <Name>INITIALDWH_DMT</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>INITIALDWH_DMT</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+            <RunScenario>
+                <Name>INITIALDWH_DMT_FACT</Name>
+                <Enabled>true</Enabled>
+                <Timeout>0</Timeout>
+                <ExceptionName></ExceptionName>
+                <ExceptionBehavior>NONE</ExceptionBehavior>
+                <Scenario>INITIALDWH_DMT_FACT</Scenario>
+                <Version>1</Version>
+                <RestartType>NEW_SESSION</RestartType>
+                <Priority>0</Priority>
+            </RunScenario>
+        </Children>
+    </Serial>
+</Loadplan>

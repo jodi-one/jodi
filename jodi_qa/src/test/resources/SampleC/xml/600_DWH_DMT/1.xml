@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+	<Package>
+		<FolderCode>RealTimeORACLE_DWH_DMT</FolderCode>
+		<PackageName>REALTIMEDWH_DMT</PackageName>
+		<PackageListItem>PACKAGE_ALL</PackageListItem>
+	</Package>
+	<Package>
+		<FolderCode>RealTimeORACLE_DWH_DMT</FolderCode>
+		<PackageName>REALTIMEDWH_DMT_FACT</PackageName>
+		<PackageListItem>PACKAGE_FACT</PackageListItem>
+		<Before>
+			<Variable>
+				<Name>VAR_PARTITION_NAME</Name>
+        <Label>JUMP_TO_PARTITION_START</Label>
+        <Type>REFRESH</Type>
+			</Variable>
+			<Variable>
+				<Name>VAR_PARTITION_NAME</Name>
+            <Type>EVALUATE</Type>
+            <Operator><![CDATA[<]]></Operator>
+            <Value>P9999</Value>
+			</Variable>
+		</Before>
+		<GotoOnFinalSuccess>JUMP_TO_PARTITION_START</GotoOnFinalSuccess>
+	</Package>	
+</Packages>

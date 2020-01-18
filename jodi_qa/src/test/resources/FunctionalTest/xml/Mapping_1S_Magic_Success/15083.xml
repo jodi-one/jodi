@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>MAPPING_1S_MAGIC_SUCCESS</Name>
+	<Comments>
+	</Comments>
+	<PackageList>MAPPING_1S_MAGIC_SUCCESS</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_DC_O</Name>
+				<Alias>DC</Alias>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>W_DC_D</TargetDataStore>
+		<Ikm>
+		<Code>km.ikm_default</Code>
+			<KmOptions>
+				<KmOption>
+					<Name>TRUNCATE</Name>
+					<Value>true</Value>
+				</KmOption>
+			</KmOptions>
+		</Ikm>
+	</Mappings>
+</Transformation>

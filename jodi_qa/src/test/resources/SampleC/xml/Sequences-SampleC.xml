@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Sequences
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-sequences.v1.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Native>
+		<Name>W_ALBUM_D_SEQ</Name>
+		<Model>model.star.code</Model>
+		<NativeName>SEQ_W_ALBUM_WID</NativeName>
+	</Native>
+	<Native Global="true" Increment="1">
+		<Name>W_CUSTOMER_D_SEQ</Name>
+		<Model>model.star.code</Model>
+		<NativeName>SEQ_W_ALBUM_WID</NativeName>
+	</Native>
+	<Native Global="true" Increment="3">
+		<Name>W_EMPLOYEEE_D_SEQ</Name>
+		<Model>model.star.code</Model>
+		<NativeName>SEQ_W_EMPLOYEE_WID</NativeName>
+	</Native>
+	<Native Global="true" Increment="1">
+		<Name>W_INVOICELINE_F_SEQ</Name>
+		<Model>model.star.code</Model>
+		<NativeName>SEQ_W_INVOICELINE_WID</NativeName>
+	</Native>
+	<Native Global="true" Increment="1">
+		<Name>W_TRACK_D_SEQ</Name>
+		<Model>model.star.code</Model>
+		<NativeName>SEQ_W_TRACK_WID</NativeName>
+	</Native>
+</Sequences>

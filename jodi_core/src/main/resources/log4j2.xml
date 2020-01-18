@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="Jodi" packages="">
+	<Appenders>
+    	<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+			</PatternLayout>
+		</Console>
+		<RollingFile name="RollingFile" fileName="jodi_core.log"
+			filePattern="jodi_core-%i.log">
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size = "10 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.apache.log4j.xml" level="debug"/>
+		<Root level="debug">
+			<AppenderRef ref="RollingFile" />
+		   <AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>

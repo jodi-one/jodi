@@ -1,0 +1,49 @@
+apply plugin: 'groovy'
+
+test {
+    systemProperty 'ODI_REPO_PWD', System.getProperty("ODI_REPO_PWD")
+    systemProperty 'ODI_USER_PWD', System.getProperty("ODI_USER_PWD")
+    systemProperty 'ORCL_SYS_USER_PWD' , System.getProperty("ORCL_SYS_USER_PWD")
+    systemProperty 'ODI_DAPWD' , System.getProperty("ODI_DAPWD")
+    // memory settings moved to ../gradle.properties
+    maxHeapSize = "2048m"
+    // each test is run by parallel agent; rational is that we have large 
+    // test cases that require a long execution time with lot's of I/O
+    forkEvery = 1
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Jodi QA', 'Implementation-Version': version
+    }
+    include("$buildDir/reports/**") 
+}
+
+sourceSets {
+	test {
+		compileClasspath += files(new File('../jodi_odi12/src/test/java/'))
+        runtimeClasspath += files(new File('../jodi_odi12/src/test/java/'))
+	}
+}
+
+dependencies {
+    // include ODI 12.2 (in compile context for Eclipse or provided for build)
+	compile project(':jodi_odi12')
+//    compile fileTree(dir: 'lib', include: '*.jar')
+    compile project(':jodi_odi12')
+    compile 'org.codehaus.groovy:groovy-all:2.4.14'
+    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+
+    compile group: 'org.dbunit' , name: 'dbunit' , version: '2.5.1'
+	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
+	  	
+   // for test
+    testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
+    testCompile  group: 'org.dbunit' , name: 'dbunit' , version: '2.5.1'
+	testCompile "xmlunit:xmlunit:1.6"
+	testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
+}
+
+// not needed and remains empty
+def fixWindowsStartScript(writer, lines) {}
+def fixUnixStartScript(writer, lines) {}

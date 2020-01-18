@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb">
+  
+  <bindings scd="x-schema::tns" xmlns:tns="http://jodi.one/etlmodel/extensions">
+    <schemaBindings map="false">
+      <package name="one.jodi.etlmodel.extensions"/>
+    </schemaBindings>
+    <bindings scd="~tns:PackagesExtension">
+      <class ref="one.jodi.etlmodel.extensions.PackagesExtension"/>
+    </bindings>
+    <bindings scd="~tns:PackageExtension">
+      <class ref="one.jodi.etlmodel.extensions.PackageExtension"/>
+    </bindings>
+    <bindings scd="~tns:StepsExtension">
+      <class ref="one.jodi.etlmodel.extensions.StepsExtension"/>
+    </bindings>
+  </bindings>
+</bindings>

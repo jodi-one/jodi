@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_INVOICELINE_I_S01</Name>
+				<Lookups>
+					<Lookup>
+						<LookupDataStore>O_EMPLOYEE</LookupDataStore>
+						<Join>O_EMPLOYEE.EMPLOYEE_CODE = S_INVOICELINE_I_S01.INVL_SUPPORTREP_CODE</Join>
+					</Lookup>
+				</Lookups>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<Distinct>true</Distinct>
+		<TargetDataStore>S_INVOICELINE_I_S02</TargetDataStore>
+		<TargetColumn>
+			<Name>INVL_LINE_CODE</Name>
+			<MappingExpressions>
+				<Expression>S_INVOICELINE_I_S01.INVL_LINE_CODE</Expression>
+			</MappingExpressions>
+			<Properties>
+				<DataType>VARCHAR2</DataType>
+				<Length>120</Length>
+			</Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>INVL_SUPERVISOR_CODE</Name>
+			<MappingExpressions>
+				<Expression>O_EMPLOYEE.SUPERVISOR_CODE</Expression>
+			</MappingExpressions>
+			<Properties>
+				<DataType>VARCHAR2</DataType>
+				<Length>60</Length>
+			</Properties>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

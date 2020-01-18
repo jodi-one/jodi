@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Procedure xsi:noNamespaceSchemaLocation="jodi-procedures.v1.0.xsd"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           MultiConnectionSupported="true" >
+	<FolderName>BulkLoadExplicit/TargetFolder</FolderName>
+	<Name>PROC_DUAL_TEST</Name>
+	<Description></Description>
+	<Tasks>
+		<Task>
+		   <Name>Dual 1</Name>
+		   <TargetCommand>
+		      <LogicalSchema>model.star_sds.code</LogicalSchema>
+		      <Command><![CDATA[SELECT 1 FROM DUAL]]> 
+			  </Command>
+		   </TargetCommand>
+		</Task>
+	    <Task>
+		   <Name>Dual 2</Name>
+		   <SourceCommand>
+		      <LogicalSchema>model.source.code</LogicalSchema>
+		      <Command><![CDATA[SELECT 1 FROM DUAL]]></Command>
+		   </SourceCommand>
+		   <TargetCommand>
+		      <LogicalSchema>model.star_sds.code</LogicalSchema>
+		      <Command><![CDATA[SELECT 1 FROM DUAL]]></Command>
+		   </TargetCommand>
+		</Task>	    
+	</Tasks> 
+</Procedure>

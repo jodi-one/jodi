@@ -1,0 +1,21 @@
+<FindBugsFilter>
+<!--
+// @version  $Revision: 13987 $, $Date: 2016-02-13 06:33:33 +0100 (Sat, 13 Feb 2016) $
+
+REMEMBER goal is to reduce this file in size, not expand it
+-->
+
+    <Match>
+        <Class name="one.jodi.core.extensions.strategies.GenericFolderNameStrategy" />
+        <Bug code="ST" />
+    </Match>
+    <Match>
+        <Class name="~.*SomeClass$"/>
+    </Match>
+    <Match>
+        <Package name="~test\..*"/>
+    </Match>
+    <Match>
+        <Package name="one.jodi.qa.test"/>
+    </Match>
+</FindBugsFilter>

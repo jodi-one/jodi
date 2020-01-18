@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+  
+    <Package>
+      <FolderCode>BulkLoadORACLE_DWH_DMT</FolderCode>
+      <PackageName>MODEL_1S_UNDEFINEDMODEL_FAILURE</PackageName>
+      <PackageListItem>MODEL_1S_UNDEFINEDMODEL_FAILURE</PackageListItem>
+     </Package>
+  
+ </Packages>

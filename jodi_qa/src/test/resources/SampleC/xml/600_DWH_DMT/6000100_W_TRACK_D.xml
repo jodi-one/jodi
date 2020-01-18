@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_TRACK_O</Name>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>W_TRACK_D</TargetDataStore>
+		<TargetColumn>
+			<Name>ROW_WID</Name>
+			<MappingExpressions>
+				<Expression>:GLOBAL.W_TRACK_D_SEQ_NEXTVAL</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>W_INSERT_DT</Name>
+			<MappingExpressions>
+				<Expression>SYSDATE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

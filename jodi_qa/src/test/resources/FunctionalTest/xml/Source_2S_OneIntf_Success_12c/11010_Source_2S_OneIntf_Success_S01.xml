@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>S_SOURCE_2S_ONEINTF_I_S01</Name>
+	<Comments>
+	</Comments>
+	<PackageList>Source_2S_OneIntf_Success</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>S_DA_I</Name>
+				<Alias>DA_1</Alias>
+			</Source>
+			<Source>
+				<Name>S_DB_I</Name>
+				<Alias>DA_2</Alias>
+				<Join>DA_1.KEY = DA_2.KEY</Join>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>S_SOURCE_2S_ONEINTF_I_S01</TargetDataStore>
+		<TargetColumn>
+			<Name>KEY</Name>
+			<MappingExpressions>
+				<Expression>DA_1.KEY</Expression>
+			</MappingExpressions>
+			<Properties>
+			<DataType>VARCHAR2</DataType>
+			<Length>30</Length>
+			</Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>VALUE</Name>
+			<MappingExpressions>
+				<Expression>DA_2.VALUE</Expression>
+			</MappingExpressions>
+			<Properties>
+			<DataType>NUMBER</DataType>
+			</Properties>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>LAST_CHANGED_DT</Name>
+			<MappingExpressions>
+				<Expression>DA_1.LAST_CHANGED_DT</Expression>
+			</MappingExpressions>
+			<Properties>
+			<DataType>DATE</DataType>
+			</Properties>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

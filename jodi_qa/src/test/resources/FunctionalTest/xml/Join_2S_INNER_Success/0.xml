@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+  
+    <Package>
+      <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+      <PackageName>JOIN_2S_INNER_SUCCESS</PackageName>
+      <PackageListItem>JOIN_2S_INNER_SUCCESS</PackageListItem>
+     </Package>
+  
+  <!-- 
+  <ETLPackages>
+    <ETLPackageName>RUN_ETL_ALL</ETLPackageName>
+    <ETLFolderCode>BulkLoadORACLE_Jodi_STG</ETLFolderCode>
+    <ETLPackage>
+      <PackageName>Set_2D_Default_Union_All_Success</PackageName>
+    </ETLPackage>
+  </ETLPackages>
+   -->
+ </Packages>

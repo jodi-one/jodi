@@ -1,0 +1,30 @@
+<FindBugsFilter>
+<!--
+REMEMBER goal is to reduce this file in size, not expand it
+-->
+    <Match>
+        <Class name="DataStoreForeignReferenceImpl$DataStoreReferenceColumnImpl" />
+        <Bug code="Se" />
+    </Match>
+    <Match>
+        <Class name="DataStoreImpl" />
+        <Bug code="Se" />
+    </Match>
+    <Match>
+        <Class name="ContextImpl$GlobalContextState" />
+        <Bug code="SIC" />
+    </Match>
+    <Match>
+        <Class name="DataStoreForeignReferenceImpl$DataStoreReferenceColumnImpl" />
+        <Bug code="SIC" />
+    </Match>
+    <Match>
+        <Bug code="WMI" />
+    </Match>
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    <Match>
+        <Package name="~test\..*"/>
+    </Match>
+</FindBugsFilter>

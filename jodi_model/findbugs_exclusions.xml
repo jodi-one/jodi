@@ -1,0 +1,32 @@
+<FindBugsFilter>
+<!--
+REMEMBER goal is to reduce this file in size, not expand it
+-->
+    <Match>
+        <!--
+        Bug type WMI_WRONG_MAP_ITERATOR ignored
+        -->
+        <Bug code="WMI" />
+    </Match>
+
+    <Match>
+        <Class name="ETLValidatorImpl$KMValidation"/>
+        <Bug code="SIC"/>
+    </Match>
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    <Match>
+        <Package name="~test\..*"/>
+    </Match>
+	<Match>
+	   <OR>
+	      <Class name="~.*\.*Test" />
+	      <Class name="~.*\.*Test\$.*" />
+	   </OR>
+	</Match>
+    <Match>
+	   <Package name="~test\..*"/>
+    </Match>
+
+</FindBugsFilter>

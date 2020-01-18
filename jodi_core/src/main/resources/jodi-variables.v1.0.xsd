@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+    <!-- XMLSchema 1.1
+    Optional values are Attributes,
+    Mandatory values are elements.
+    Register the XMLSchema/v1.1 in your editor.
+    -->
+    <xs:element name="Variables">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Variable" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Variable" type="Variable"/>
+    <xs:complexType name="Variable">
+        <xs:all>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Description" type="xs:string" minOccurs="0"/>
+            <!-- Global variable or project specific -->
+            <xs:element name="DataType" type="DataTypeType"/>
+            <xs:element name="DefaultValue" type="xs:string" minOccurs="0"/>
+            <xs:element name="Model" type="xs:string"/>
+            <xs:element name="Query" type="xs:string"/>
+        </xs:all>
+        <!-- Numeric, String and Date types will be translated into String type -->
+        <xs:attribute name="Global" type="xs:boolean"/>
+        <xs:attribute name="KeepHistory" type="KeepHistoryType"/>
+        <!-- Privileges omitted. -->
+    </xs:complexType>
+
+    <xs:simpleType name="DataTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ALPHANUMERIC"/>
+            <xs:enumeration value="TEXT"/>
+            <xs:enumeration value="NUMERIC"/>
+            <xs:enumeration value="DATE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="KeepHistoryType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ALL_VALUES"/>
+            <xs:enumeration value="LATEST_VALUE"/>
+            <xs:enumeration value="NO_HISTORY"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

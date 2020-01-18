@@ -1,0 +1,49 @@
+<Packages>
+  <!--1 or more repetitions:-->
+  <Package>
+    <!--Optional:-->
+    <Comments>string</Comments>
+    <FolderCode>string</FolderCode>
+    <PackageName>string</PackageName>
+    <PackageListItem>string</PackageListItem>
+    <!--Optional:-->
+    <Before>
+      <!--1 or more repetitions:-->
+      <Step>
+        <Name>string</Name>
+        <!--Optional:-->
+        <Label>string</Label>
+      </Step>
+      <!--Optional:-->
+      <extension/>
+    </Before>
+    <!--Optional:-->
+    <After>
+      <!--1 or more repetitions:-->
+      <Step>
+        <Name>string</Name>
+        <!--Optional:-->
+        <Label>string</Label>
+      </Step>
+      <!--Optional:-->
+      <extension/>
+    </After>
+    <!--Optional:-->
+    <GotoOnFinalSuccess>string</GotoOnFinalSuccess>
+    <!--Optional:-->
+    <Failure>
+      <!--1 or more repetitions:-->
+      <Step>
+        <Name>string</Name>
+        <!--Optional:-->
+        <Label>string</Label>
+      </Step>
+      <!--Optional:-->
+      <extension/>
+    </Failure>
+    <!--Optional:-->
+    <extension/>
+  </Package>
+  <!--Optional:-->
+  <extension/>
+</Packages>

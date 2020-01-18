@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <REF.SRC_DA/>
+  <REF.SRC_DB/>
+  <REF.SRC_FA/>
+  <REF.S_DB_I/>
+  <REF.S_DA_I KEY="1234567890" VALUE="1234567890"/>
+  <REF.S_FA_I/>
+  <REF.S_DA_O/>
+  <REF.S_DA_O/>
+  <REF.S_DA_O/>
+  <REF.S_DA_O/>
+  <REF.S_DB_O/>
+  <REF.S_FA_O/>
+  <REF.W_DA_D/>
+  <REF.W_DB_D/>
+  <REF.W_FA_F/>
+  <DWH_STG.S_DA_I/>
+  <DWH_STG.S_DA_I/>
+  <DWH_STG.S_DB_I/>
+  <DWH_STG.S_DB_I/>
+  <DWH_STG.S_DC_I COL_1="1234567890" COL_2="1234567890"/>
+  <DWH_STG.S_FA_I/>
+  <DWH_STG.S_DA_O/>
+  <DWH_STG.S_DB_O/>
+  <DWH_STG.S_FA_O/>
+  <DWH_DMT.W_DA_D/>
+  <DWH_DMT.W_DB_D/>
+  <DWH_DMT.W_FA_F/>
+</dataset>

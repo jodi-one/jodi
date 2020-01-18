@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Packages>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>BulkLoadORACLE_DWH_STG</PackageName>
+        <PackageListItem>BulkLoadORACLE_DWH_STG</PackageListItem>
+    </Package>
+</Packages>

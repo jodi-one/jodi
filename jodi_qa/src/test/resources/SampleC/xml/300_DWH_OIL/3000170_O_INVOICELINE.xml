@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transformation
+	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Comments></Comments>
+	<PackageList>PACKAGE_ALL</PackageList>
+	<Datasets>
+		<Dataset>
+			<Source>
+				<Name>CHIN_INVOICELINE</Name>
+			</Source>
+		</Dataset>
+	</Datasets>
+	<Mappings>
+		<TargetDataStore>O_INVOICELINE</TargetDataStore>
+		<TargetColumn>
+			<Name>INVOICE_LINE_CODE</Name>
+			<MappingExpressions>
+				<Expression>CHIN_INVOICELINE.INVOICE_LINE_CODE
+				</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>INVOICE_CODE</Name>
+			<MappingExpressions>
+				<Expression>CHIN_INVOICELINE.INVOICE_CODE
+				</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>TRACK_CODE</Name>
+			<MappingExpressions>
+				<Expression>CHIN_INVOICELINE.TRACK_CODE
+				</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>UNITPRICE</Name>
+			<MappingExpressions>
+				<Expression>CHIN_INVOICELINE.UNITPRICE
+				</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>QUANTITY</Name>
+			<MappingExpressions>
+				<Expression>CHIN_INVOICELINE.QUANTITY
+				</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>INVOICELINE_AMOUNT</Name>
+			<MappingExpressions>
+				<Expression>CAST( CHIN_INVOICELINE.QUANTITY *
+					CHIN_INVOICELINE.UNITPRICE as NUMBER(10,2))</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+		<TargetColumn>
+			<Name>O_INSERT_DATE</Name>
+			<MappingExpressions>
+				<Expression>SYSDATE</Expression>
+			</MappingExpressions>
+		</TargetColumn>
+	</Mappings>
+</Transformation>

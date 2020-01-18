@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Sequences xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-sequences.v1.0.xsd"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Standard>
+    	<Name>TEST_STANDARD_SEQ</Name>
+	</Standard>
+	<Standard Global="true" Increment="3">
+    	<Name>TEST_STANDARD_SEQUENCE_GLOBAL</Name>
+	</Standard>
+	<Specific>
+		<Name>TEST_SPECIFIC_SEQ</Name>
+		<Model>model.star.code</Model>
+		<Table>W_FA_F</Table>
+		<Column>ROW_WID</Column>
+		<!-- <Filter></Filter> -->
+	</Specific>
+    <Native>
+        <Name>TEST_NATIVE1_SEQ</Name>
+        <Model>model.star.code</Model>
+        <NativeName>W_FA_F_SEQ</NativeName>
+    </Native>
+    <Native>
+        <Name>TEST_NATIVE2_SEQ</Name>
+        <Model>model.star.code</Model>
+        <NativeName>W_FA_F_SEQ</NativeName>
+    </Native>
+</Sequences>

@@ -1,0 +1,171 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'findbugs'
+
+mainClassName = "one.jodi.bootstrap.JodiController"
+
+// do not fail build in case findbugs issue is found for tool only
+tasks.withType(FindBugs) {
+  ignoreFailures = true
+  reports {
+      xml.enabled = false
+      html.enabled = true
+   }
+}
+
+// Jar task configuration
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'Jodi Tools', 'Implementation-Version': version
+	}
+}
+       
+sourceSets {
+	main { 
+		resources { 
+			srcDirs += 'src/main/resources'
+			
+		}
+	}
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+	compile project(':jodi_odi12')
+	testCompile project(':jodi_odi12')	
+	testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
+	compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+	testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
+	//testCompile project(':jodi_core').sourceSets.test.output
+	
+	//JAXB xjc plugin
+	jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
+
+	testCompile "xmlunit:xmlunit:1.6"
+
+ 	//testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
+}
+
+task jaxb_task () {
+	//inputs.dir 'src/main/resources'
+	outputs.dir jaxbGenOutputDir
+
+	doLast {
+		file(jaxbGenOutputDir).mkdirs()
+		ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
+		classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
+
+		ant.xjc(
+				removeOldOutput : true,
+				extension: true,
+				destdir: "${jaxbGenOutputDir}",
+				package: 'one.jodi.model.extensions',
+				schema:  '../jodi_plugins/src/main/resources/jodi-extensions.v1.0.xsd')
+	}
+}
+
+task jaxbp_task () {
+	inputs.dir 'src/main/resources'
+	outputs.dir jaxbGenOutputDir
+
+	doLast {
+		file(jaxbGenOutputDir).mkdirs()
+		ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
+		classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
+
+		ant.xjc(
+				removeOldOutput : true,
+				extension: true,
+				destdir: "${jaxbGenOutputDir}",
+				package: 'one.jodi.etlmodel.extensions',
+				schema:  '../jodi_plugins/src/main/resources/jodi-packages-extensions.v1.1.xsd')
+	}
+}
+
+// Note: must be added back into script if XML customizations are required
+//compileJava.dependsOn jaxb_task, jaxbp_task
+
+
+
+task sourceSetJavaProperties  {
+	doLast{
+		sourceSets {
+
+			xmlExtensions {
+				println "java.srcDirs = ${java.srcDirs}"
+				println "resources.srcDirs = ${resources.srcDirs}"
+				println "java.files = ${java.files.name}"
+				println "allJava.files = ${allJava.files.name}"
+				println "resources.files = ${resources.files.name}"
+				println "allSource.files = ${allSource.files.name}"
+				println "output.classesDir = ${output.classesDir}"
+				println "output.resourcesDir = ${output.resourcesDir}"
+				println "output.files = ${output.files}"
+				println "compileClasspath = ${compileClasspath}"
+				compileClasspath.each {
+					println it
+				}
+			}
+		}
+	}
+}
+
+
+def fixWindowsStartScript(writer, lines) {
+	lines.eachWithIndex { line, i ->
+		if ( i < 6 ) {
+			writer.println line
+		} else if (i == 6) {
+			writer.println ''
+			writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
+			writer.println line
+		} else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
+			writer.println line
+			writer.println ''
+			writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
+			writer.println "goto hasodi"
+			writer.println ":noodi"
+			writer.println "echo."
+			writer.println "echo ERROR: $odiLibPathVariable is not set."
+			writer.println "echo."
+			writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
+			writer.println "echo to the location of the jar files in you ODI installation."
+			writer.println "goto fail"
+			writer.println ":hasodi"
+			writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
+			writer.println ''
+			writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
+			writer.println ''
+		} else {
+			writer.println line
+		}
+	}
+}
+
+def fixUnixStartScript(writer, lines) {
+	lines.eachWithIndex { line, i ->
+		if ( i < 8 ) {
+			writer.println line
+		} else if (i==8) {
+			writer.println ''
+			writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
+			writer.println line
+		} else if (line =~ /^CLASSPATH=\$/) {
+			writer.println line
+			writer.println ''
+			writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
+			writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
+			writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
+			writer.println ''
+			writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
+			writer.println "to the location of the jar files in you ODI installation.\""
+			writer.println "fi"
+			writer.println ''
+			writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml\""
+			writer.println ''
+		} else {
+			writer.println line
+		}
+	}
+}
