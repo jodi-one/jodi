@@ -18,7 +18,7 @@ public class OdiExecuteScenario {
     public static void main(String[] args) {
         if (args.length == 7) {
             OdiExecuteScenario odiExecuteScenario = new OdiExecuteScenario();
-            odiExecuteScenario.startScenario(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+            odiExecuteScenario.startScenario(args[0], args[1], args[2], args[3], Integer.parseInt(args[4]), args[5], args[6]);
         } else {
             logger.info(OdiExecuteScenario.getUsage());
         }
@@ -33,7 +33,7 @@ public class OdiExecuteScenario {
         return Usage;
     }
 
-    public void startScenario(String agentUrl, String user, String password, String contextCode, String logLevel,
+    public void startScenario(String agentUrl, String user, String password, String contextCode, int logLevel,
                               String workRepName, String scenarioName) {
         if (agentUrl.startsWith("null"))
             throw new RuntimeException("Please set defaultAgent system properties.");
@@ -43,11 +43,10 @@ public class OdiExecuteScenario {
         String pKeywords = scenarioName;
         String pSessionName = scenarioName;
         boolean pSynchronous = true;
-        int aLogLevel = Integer.parseInt(logLevel);
         ExecutionInfo status = null;
         try {
             status = rraInvoker.invokeStartScenario(scenarioName.toUpperCase(), pScenVersion, pVariables, pKeywords,
-                    contextCode, aLogLevel, pSessionName, pSynchronous, workRepName);
+                    contextCode, logLevel, pSessionName, pSynchronous, workRepName);
             logger.info("return code for " + scenarioName.toUpperCase() + " is: " + status.getReturnCode());
             if (SessionStatus.ERROR == status.getSessionStatus()) {
                 throw new RuntimeException(String.format("Scenario '%1$s'  not executed, status message '%2$s'",
@@ -58,5 +57,13 @@ public class OdiExecuteScenario {
             logger.fatal(e);
             throw new RuntimeException(String.format("Scenario '%1$s'  not executed.", scenarioName), e);
         }
+    }
+
+
+    public void startScenario(String agentUrl, String user, String password, String contextCode, String logLevel,
+                              String workRepName, String scenarioName) {
+        // backwards compatibility
+        this.startScenario( agentUrl, user, password, contextCode, "" +logLevel,
+         workRepName, scenarioName);
     }
 }
