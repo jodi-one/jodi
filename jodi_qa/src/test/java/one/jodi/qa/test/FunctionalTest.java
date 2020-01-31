@@ -235,6 +235,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             }
 
             @Override
+            public String getDeploymentArchiveType() {
+                return null;
+            }
+
+            @Override
             public boolean isUsingDefaultscenarioNames() {
                 return false;
             }
@@ -3544,6 +3549,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getMasterPassword() {
+                return null;
+            }
+
+            @Override
+            public String getDeploymentArchiveType() {
                 return null;
             }
         });

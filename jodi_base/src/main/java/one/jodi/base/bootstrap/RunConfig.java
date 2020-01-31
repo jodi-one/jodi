@@ -72,4 +72,6 @@ public interface RunConfig {
      * @return password for work repository or DB schema
      */
     String getMasterPassword();
+
+    String getDeploymentArchiveType();
 }

@@ -7,6 +7,7 @@ import one.jodi.base.bootstrap.UsageException;
 import one.jodi.base.util.StringUtils;
 import one.jodi.etl.service.repository.OdiRepositoryExportImportException;
 import one.jodi.etl.service.repository.OdiRepositoryExportService;
+import one.jodi.etl.service.repository.OdiRepositoryImportService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +45,7 @@ public class ExportServiceActionRunner implements ActionRunner {
                     throw new OdiRepositoryExportImportException(message);
                 }
             }
-            exportService.doExport(exportImport.getAbsolutePath());
+            exportService.doExport(exportImport.getAbsolutePath(), OdiRepositoryImportService.DA_TYPE.valueOf(config.getDeploymentArchiveType()));
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

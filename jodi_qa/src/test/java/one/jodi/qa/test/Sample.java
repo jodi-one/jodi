@@ -246,6 +246,11 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             }
 
             @Override
+            public String getDeploymentArchiveType() {
+                return null;
+            }
+
+            @Override
             public boolean isUsingDefaultscenarioNames() {
                 return false;
             }
@@ -1484,7 +1489,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         assert new PasswordConfigImpl().getDeploymentArchivePassword() != null;
         runController("oex", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/SampleC.properties",
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml", "-dapwd",
-                new PasswordConfigImpl().getDeploymentArchivePassword());
+                new PasswordConfigImpl().getDeploymentArchivePassword(), "-da_type", "DA_PATCH_EXEC_REPOS");
     }
 
     //@Test

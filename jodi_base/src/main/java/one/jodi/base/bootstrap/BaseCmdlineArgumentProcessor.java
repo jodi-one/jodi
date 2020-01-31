@@ -35,6 +35,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     private static final String OPTION_PASSWORD = "password";
     private static final String OPTION_WORKREP_PASSWORD = "masterpassword";
     private static final String OPTION_IDS = "ids";
+    private static final String OPTION_DEPLOYMENT_ARCHIVE_TYPE = "da_type";
     protected String prefix;
     protected String action;
     protected String[] modules;
@@ -53,6 +54,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     private String password;
     private String masterPassword;
     private boolean generateIds;
+    private String da_type;
 
     /**
      * Creates a new CmdlineArgumentProcessor instance.
@@ -101,6 +103,11 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
         opts.addOption(OPTION_IDS, false,
                 "Generate id and uid for rpd generation default value is true.");
+
+        opts.addOption("da_type", OPTION_DEPLOYMENT_ARCHIVE_TYPE, true,
+                "Deployment Archive type ( DA_INITIAL,\n" +
+                        "        DA_PATCH_DEV_REPOS,\n" +
+                        "        DA_PATCH_EXEC_REPOS)");
 
         opts = addOptions(opts);
 
@@ -161,6 +168,8 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return generateIds;
     }
 
+    public String getDeploymentArchiveType() {return da_type;};
+
     /**
      * Returns <code>true</code> if the {@link #moduleProviderClass} property
      * has a value. Returns <code>false</code> otherwise
@@ -213,6 +222,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         modelCode = cmdLine.getOptionValue(OPTION_MODEL);
         generateIds = cmdLine.hasOption(OPTION_IDS) ? Boolean
                 .parseBoolean(cmdLine.getOptionValue(OPTION_IDS)) : true;
+        da_type = cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_TYPE);
     }
 
     //protected abstract String getPrefix(String[] args);

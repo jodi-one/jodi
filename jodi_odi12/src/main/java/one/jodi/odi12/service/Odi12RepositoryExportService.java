@@ -6,6 +6,7 @@ import one.jodi.core.annotations.TransactionAttribute;
 import one.jodi.core.annotations.TransactionAttributeType;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.etl.service.repository.OdiRepositoryExportService;
+import one.jodi.etl.service.repository.OdiRepositoryImportService;
 import oracle.odi.core.OdiInstance;
 import oracle.odi.core.service.deployment.*;
 import oracle.odi.domain.IOdiEntity;
@@ -56,12 +57,12 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void doExport(final String metaDataDirectory) throws IOException {
+    public void doExport(final String metaDataDirectory, final OdiRepositoryImportService.DA_TYPE da_type) throws IOException {
         boolean pIncludePhysicalTopologyData = true;
         char[] pExportKey = getCipherData().toCharArray();
         boolean pCreateWithoutCipherData = false;
         try {
-            {
+           if( da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
 
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
@@ -99,7 +100,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                         pIncludeSecurityObjects,
                         regenerateScenarios);
             }
-            {
+            if(da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)){
                 final List<OdiObjectId> patchList = new ArrayList<>();
 
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
@@ -142,7 +143,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                         regenerateScenarios);
             }
             //
-            {
+            if(da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_INITIAL)){
                 String pFilename = metaDataDirectory + File.separator +
                         "INITIAL_" + jodiProperties
                         .getProjectCode() + ".zip";
@@ -157,7 +158,6 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                         pExportKey,
                         pCreateWithoutCipherData);
             }
-
         } catch (DeploymentServiceException e) {
             logger.error(e);
             throw new Odi12RepositoryException(e);
