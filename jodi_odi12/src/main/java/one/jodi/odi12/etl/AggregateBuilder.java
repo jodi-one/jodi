@@ -15,6 +15,7 @@ public interface AggregateBuilder {
      *
      * @param transformation
      * @param aggregateComponents
+     * @param dataSetNumber
      * @throws AdapterException
      * @throws MappingException
      */
@@ -28,7 +29,8 @@ public interface AggregateBuilder {
      * @param mapping
      * @param transformation
      * @param etlOperators
-     * @throws AdapterException @throws MappingException
+     * @throws AdapterException
+     * @throws MappingException
      */
     public void addAggregate(MapRootContainer mapping,
                              Transformation transformation, EtlOperators etlOperators,

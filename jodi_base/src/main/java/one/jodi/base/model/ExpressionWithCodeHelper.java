@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * Reusable logic to process an annotation with the format
- * <schema name>.<table name>.<column name>:<code name>
+ * schema_name.table_name.column_name:code_name
  *
  */
 public abstract class ExpressionWithCodeHelper {

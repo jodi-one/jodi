@@ -41,7 +41,8 @@ public class PackageCacheImpl implements PackageCache, Resource {
     /**
      * Instantiates a new PackageCacheImpl instance.
      *
-     * @param transformationNameContext the transformation name context
+     * @param registerInstance the register to register this cache with
+     * @param errorWarningMessages the link to the error warning messages subsystem
      */
     @Inject
     public PackageCacheImpl(@Registered final Register registerInstance,

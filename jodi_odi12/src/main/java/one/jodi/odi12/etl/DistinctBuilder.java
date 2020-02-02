@@ -16,7 +16,8 @@ public interface DistinctBuilder {
      * @param mapping
      * @param transformation
      * @param etlOperators
-     * @throws AdapterException @throws MappingException
+     * @throws AdapterException
+     * @throws MappingException
      */
     public void addDistinct(MapRootContainer mapping,
                             Transformation transformation, EtlOperators etlOperators)
@@ -28,7 +29,8 @@ public interface DistinctBuilder {
      * @param transformation
      * @param distinctComponents
      * @param useExpressions
-     * @throws AdapterException @throws MappingException
+     * @throws AdapterException
+     * @throws MappingException
      */
     public void setDistinct(Transformation transformation,
                             List<DistinctComponent> distinctComponents, boolean useExpressions)

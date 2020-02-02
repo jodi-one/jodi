@@ -76,6 +76,8 @@ public class ModelCodeContextImpl implements ModelCodeContext {
      * @param databaseMetadataService - refers to a service for building an execution context
      * @param defaultStrategy         - defines the default strategy with the core business rules
      * @param customStrategy          - defines non-null custom strategy
+     * @param validator               - the validator to be used
+     * @param errorWarningMessages    - the error warning messages framework
      */
     @Inject
     public ModelCodeContextImpl(

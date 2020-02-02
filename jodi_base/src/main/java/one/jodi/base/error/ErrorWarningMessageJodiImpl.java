@@ -63,6 +63,8 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
      * This instance will be handed over to the Guice framework as part of the
      * bootstrapping mechanism and is subsequently injected in all other services
      * when requested.
+     *
+     * @return errorWarningMessageJodi instance of the error / warning system
      */
     public synchronized static ErrorWarningMessageJodi getInstance() {
         if (error == null) {

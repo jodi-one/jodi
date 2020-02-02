@@ -30,10 +30,10 @@ import java.util.List;
 
 /**
  * LoadPlanImportService service that builds internal model LoadPlanTree
- * <LoadPlanStep> from an OdiLoadPlan.
+ * LoadPlanStep from an OdiLoadPlan.
  * T = LoadPlanStep
  *
- * @param <T>
+ * @param <T> loadplanstep
  */
 public abstract class OdiLoadPlanExportServiceImpl<B extends IOdiEntity, T> implements LoadPlanExportService {
     private final static Logger logger = LogManager.getLogger(OdiLoadPlanExportServiceImpl.class);

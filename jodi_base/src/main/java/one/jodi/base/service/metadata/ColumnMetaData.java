@@ -10,6 +10,7 @@ public interface ColumnMetaData {
 
     /**
      *
+     * @return  dataStoreName name of the datastore
      */
     String getDataStoreName();
 

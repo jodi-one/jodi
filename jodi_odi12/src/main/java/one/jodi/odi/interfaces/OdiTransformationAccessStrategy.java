@@ -157,7 +157,9 @@ public interface OdiTransformationAccessStrategy<T extends IOdiEntity, U extends
      * UPDATE - update flag
      * MANDATORY - mandatory flag
      * KEY - update key flag
-     * @throws Exception
+     * @throws ResourceNotFoundException
+     * @throws ResourceFoundAmbiguouslyException
+     * @throws TransformationAccessStrategyException
      */
     Map<String, Boolean> getFlags(String projectCode, String mappingName,
                                   String columnName) throws ResourceNotFoundException, ResourceFoundAmbiguouslyException, TransformationAccessStrategyException;

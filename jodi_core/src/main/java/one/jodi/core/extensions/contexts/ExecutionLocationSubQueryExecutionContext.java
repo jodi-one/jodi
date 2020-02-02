@@ -38,7 +38,7 @@ public interface ExecutionLocationSubQueryExecutionContext extends ExecutionLoca
     /**
      * Gets the role type of the subquery
      *
-     * @return
+     * @return role
      */
     RoleEnum getRole();
 

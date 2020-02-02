@@ -10,7 +10,7 @@ public interface RenderingWriter {
     /**
      * Determine the name of the rendering file for a particular
      *
-     * @param transformation
+     * @param transformation transformation
      * @return Writer
      */
     Writer create(Transformation transformation);
@@ -18,7 +18,7 @@ public interface RenderingWriter {
     /**
      * Determine the file name for the package spec.
      *
-     * @param pack
+     * @param packages packages
      * @return Writer
      */
     Writer create(Packages packages);

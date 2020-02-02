@@ -19,8 +19,8 @@ public class ConfigurationException extends RuntimeException {
     /**
      * Creates a new ConfigurationException instance.
      *
-     * @param message
-     * @param cause
+     * @param message meaningful message of the exception
+     * @param cause the cause of the exception
      */
     public ConfigurationException(final String message,
                                   final Throwable cause) {
@@ -30,7 +30,7 @@ public class ConfigurationException extends RuntimeException {
     /**
      * Creates a new ConfigurationException instance.
      *
-     * @param message
+     * @param message meaningful message
      */
     public ConfigurationException(final String message) {
         super(message);
@@ -39,7 +39,7 @@ public class ConfigurationException extends RuntimeException {
     /**
      * Creates a new ConfigurationException instance.
      *
-     * @param cause
+     * @param cause cause of exception
      */
     public ConfigurationException(final Throwable cause) {
         super(cause);

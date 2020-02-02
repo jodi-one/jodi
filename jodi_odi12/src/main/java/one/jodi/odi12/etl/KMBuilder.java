@@ -24,11 +24,13 @@ public interface KMBuilder {
             AdapterException, GenerationException, TransformationException;
 
     /**
-     * @param mapping
-     * @param transformation
-     * @param targetComponents
-     * @throws AdapterException @throws MappingException @throws
-     *                          GenerationException @throws TransformationException
+     * @param mapping the odi mapping
+     * @param transformation the transformation from textual specifications
+     * @param targetComponents list of targetcomponents
+     * @throws AdapterException exception from the adapter
+     * @throws MappingException exception from the mapping
+     * @throws GenerationException exception while generating
+     * @throws TransformationException exception while reading the transformation from textual specifications
      */
     public void setIKM(MapRootContainer mapping,
                        Transformation transformation, List<IMapComponent> targetComponents)
@@ -36,11 +38,12 @@ public interface KMBuilder {
             TransformationException;
 
     /**
-     * @param mapping
-     * @param transformation
-     * @throws AdapterException
-     * @throws MappingException @throws GenerationException @throws
-     *                          TransformationException
+     * @param mapping odi mapping
+     * @param transformation textual specification
+     * @throws AdapterException exception from adapter
+     * @throws MappingException exception from mapping
+     * @throws GenerationException exception while generating
+     * @throws TransformationException exception while creating transformation
      */
     public void setCKM(MapRootContainer mapping,
                        Transformation transformation) throws AdapterException,

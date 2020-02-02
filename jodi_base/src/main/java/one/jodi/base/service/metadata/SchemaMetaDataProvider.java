@@ -39,7 +39,9 @@ public interface SchemaMetaDataProvider {
     /**
      * Initializes a database connection.
      *
-     * @param password
+     * @param jdbcUrl jdbc url of the db connection
+     * @param userName username / schemaname of the db connection
+     * @param password password of the user of the db connection
      */
     void initDBConnection(String jdbcUrl, String userName, String password);
 

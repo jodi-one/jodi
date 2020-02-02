@@ -65,6 +65,8 @@ public class FlagsContextImpl implements FlagsContext {
      *                                creation
      * @param defaultStrategy         the default user defined flag strategy
      * @param customStrategy          the custom user defined flag strategy
+     * @param errorWarningMessages    reference to the error and warning subsystem
+     * @param properties              reference to the property file
      */
     @Inject
     public FlagsContextImpl(

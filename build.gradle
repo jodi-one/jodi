@@ -150,6 +150,12 @@ allprojects {
 	task release(group: 'versioning', description: 'A marker task that triggers updating of the build.isRelease property in the version.properties file to true', dependsOn: 'distZip') {
 	}
 
+	javadoc {
+		source = sourceSets.main.allJava
+		//classpath = configurations.compile
+		classpath = project.sourceSets.main.compileClasspath
+	}
+
     // this is added for gradle
     // see; https://github.com/spring-projects/spring-boot/issues/2679
     mainClassName = "one.jodi.bootstrap.JodiController"

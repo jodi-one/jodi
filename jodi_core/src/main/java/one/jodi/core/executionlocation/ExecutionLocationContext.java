@@ -29,7 +29,7 @@ public interface ExecutionLocationContext {
     /**
      * Determines ExecutionLocation(s) for the target column.
      *
-     * @param targetColumn
+     * @param targetColumn target column of the execution location
      * @return list of ExecutionLocationtypeEnums ordered by expression and associated dataset index.
      */
     List<ExecutionLocationType> getTargetColumnExecutionLocation(

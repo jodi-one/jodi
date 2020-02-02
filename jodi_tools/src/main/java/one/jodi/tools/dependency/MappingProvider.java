@@ -14,7 +14,7 @@ public interface MappingProvider {
     /**
      * Get list of mappings for given folder ordered by dependencies.
      *
-     * @param folderName
+     * @param folderName foldername
      * @return mappings names
      */
     public List<MappingHolder> getMappingSequence(String folderName);

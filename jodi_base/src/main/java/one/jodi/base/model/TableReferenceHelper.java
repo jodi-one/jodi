@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 /**
  * Reusable logic to process an annotation with the format
- * (<schema name>.)?<table name>
+ * (schema_name.)?table_name
  *
  */
 public class TableReferenceHelper {

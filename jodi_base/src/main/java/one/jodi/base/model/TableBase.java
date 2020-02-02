@@ -22,12 +22,16 @@ public interface TableBase extends ModelNode {
     /**
      * contains the additional meta data in the table comment that exist before
      * the meta data separator, e.g. '---'.
+     *
+     * @return businessName name used by end user
      */
     String getBusinessName();
 
     /**
      * contains the additional abbreviation in the table comment that exist before
      * the meta data separator and matches the abbreviation pattern, e.g. '((*))$'.
+     *
+     * @return  abbreviatedBusinessName abbreviation of the name used by end user
      */
     String getAbbreviatedBuisnessName();
 

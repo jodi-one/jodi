@@ -25,8 +25,7 @@ public interface DataStoreWithAlias {
     public Type getType();
 
     /**
-     * Fetches the SourceExtension.  For a {@link Type#Link} this will be extension defined for the
-     * <code>Source</code> parent of the Lookup.
+     * Fetches the SourceExtension.
      *
      * @return Source extension
      */

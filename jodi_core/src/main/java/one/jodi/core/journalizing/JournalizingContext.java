@@ -15,13 +15,13 @@ import java.util.List;
  */
 public interface JournalizingContext {
     /**
-     * @param source
+     * @param source source within transformation
      * @return indication of journalized source
      */
     boolean isJournalizedSource(Source source);
 
     /**
-     * @param lookup
+     * @param lookup the lookup
      * @return indication of journalized {@link Lookup}
      */
     boolean isJournalizedLookup(Lookup lookup);

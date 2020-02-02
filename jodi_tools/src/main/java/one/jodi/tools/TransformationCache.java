@@ -9,7 +9,7 @@ public interface TransformationCache {
     /**
      * Register transformation and assign package sequence based on registration order.
      *
-     * @param transformation
+     * @param transformation transformation to register in the cache
      */
     public void registerTransformation(Transformation transformation);
 
@@ -28,7 +28,7 @@ public interface TransformationCache {
     /**
      * Maintain the association between a Transformation and the assigned package sequence.
      *
-     * @param transformation
+     * @param transformation transformation
      * @return package sequence
      */
     public int getPackageSequence(Transformation transformation);

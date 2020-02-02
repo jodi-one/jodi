@@ -17,7 +17,7 @@ public interface ColumnFinder {
      * columns).
      *
      * @param tableName name of the physical or logical table
-     * @param column    name of the column. This name may be the physical column name or
+     * @param columnName    name of the column. This name may be the physical column name or
      *                  may be a logical name.
      * @return column descriptor that meets the table and column name criteria.
      * An empty Optional indicates that no such column was found in the

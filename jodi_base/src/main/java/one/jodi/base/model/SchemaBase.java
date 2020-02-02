@@ -140,9 +140,9 @@ public class SchemaBase implements ModelNode {
     /**
      * Factory method. Used for internal purposes only and will be overwritten by subclass
      *
-     * @param tableData
-     * @param tableAnnotations
-     * @return
+     * @param tableData the description of the datastore
+     * @param tableAnnotations the annotations of the table
+     * @return the instance of the table
      */
     protected TableBase createTableInstance(
             final DataStoreDescriptor tableData,

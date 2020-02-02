@@ -43,7 +43,7 @@ public interface ModelCodeContext {
     /**
      * Determines the model for a Begin or EndCommand Location.
      *
-     * @param model
+     * @param model in odi
      * @return select model code as referenced in within the ETL tool
      */
     String getModelCode(String model);
@@ -52,7 +52,7 @@ public interface ModelCodeContext {
      * Determines model code for data source in subQuery.
      *
      * @param subQuery
-     * @return
+     * @return modelCode
      */
     String getModelCode(final SubQuery subQuery);
 

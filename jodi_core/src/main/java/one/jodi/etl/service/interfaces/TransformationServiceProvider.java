@@ -13,9 +13,9 @@ public interface TransformationServiceProvider {
     /**
      * Truncates interfaces to be reused in merge.
      *
-     * @param transformationName
-     * @param folderName
-     * @throws Exception
+     * @param transformationName the transformation name
+     * @param folderName the folder name
+     * @throws TransformationException exception during truncating of interfaces
      */
     void truncateInterfaces(String transformationName, String folderName) throws TransformationException;
 

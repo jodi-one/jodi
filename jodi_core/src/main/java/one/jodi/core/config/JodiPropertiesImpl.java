@@ -63,7 +63,7 @@ public class JodiPropertiesImpl implements JodiProperties {
     /**
      * Creates a new JodiPropertiesImpl instance.
      *
-     * @param propFile
+     * @param propFile properties file to initialize
      */
     @Inject
     protected JodiPropertiesImpl(final @PropertyFileName String propFile) {

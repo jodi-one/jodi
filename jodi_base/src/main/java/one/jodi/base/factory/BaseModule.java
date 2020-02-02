@@ -29,7 +29,8 @@ public class BaseModule extends AbstractModule {
     /**
      * Creates a new CoreModule instance.
      *
-     * @param config
+     * @param config runconfiguration of the module
+     * @param register a link to register the module
      */
     public BaseModule(final RunConfig config, final Register register) {
         this.config = config;

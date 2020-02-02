@@ -18,7 +18,7 @@ public interface ModuleProvider {
      * application specific dependency injection configuration. Provided
      * instances may also override core DI configuration.
      *
-     * @param config
+     * @param config run configuration of the module
      * @return a collection of {@link Module} instances.
      */
     List<? extends Module> getModules(RunConfig config);

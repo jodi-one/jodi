@@ -133,10 +133,10 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
     }
 
     /**
-     * @param dataType
-     * @param pModel
-     * @return
-     * @TODO This is very basic mapping, should be extended.
+     * @param dataType datatype
+     * @param pModel odiModel
+     * @return OdiDataType
+     * //TODO This is very basic mapping, should be extended.
      */
     protected OdiDataType mapFrom(String dataType, OdiModel pModel) {
         switch (dataType) {

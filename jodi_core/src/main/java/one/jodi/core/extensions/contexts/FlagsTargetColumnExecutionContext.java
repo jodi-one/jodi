@@ -38,6 +38,8 @@ public interface FlagsTargetColumnExecutionContext extends TargetColumnExecution
 
     /**
      * Determines whether or not to use an Expression in ODI.
+     *
+     * @return use expressions or not
      */
     boolean useExpression();
 

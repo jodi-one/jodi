@@ -13,15 +13,15 @@ public interface FlowStrategy {
      * next component.
      *
      * @param EtlOperator     all operators
-     * @param source
-     * @param lookup
+     * @param source          the source of the current component
+     * @param lookup          the lookup of the current component
      * @param sourceComponent the source component can be datastorecomponent,
      *                        filtercomponent, joincomponent or lookupcomponent etc.
      *                        depending on which type it is, it is handled accordingly.
      *                        <p>
      *                        either source or lookup is null; they can't both be null and
      *                        they can't both be not null.
-     * @throws MappingException
+     * @throws MappingException exception during creating of mapping
      */
     void handleNextComponent(final EtlOperators EtlOperator, Source source, Lookup lookup,
                              IMapComponent sourceComponent) throws MappingException;

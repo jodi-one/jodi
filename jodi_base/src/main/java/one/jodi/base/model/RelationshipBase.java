@@ -10,9 +10,9 @@ public class RelationshipBase implements ModelNode {
      * inferred indirectly using naming conventions or relationships that are
      * expressed based on sub-sets of columns.
      *
-     * @author $Author$
-     * @version $Revision$
-     * @date $Date$
+     * @param parent the parent of the table
+     * @param target the target of the table
+     * @param type the relationship type
      */
     protected RelationshipBase(final TableBase parent, final TableBase target,
                                final RelType type) {

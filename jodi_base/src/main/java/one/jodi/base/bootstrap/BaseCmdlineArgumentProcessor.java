@@ -184,7 +184,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     /**
      * Parses the command line arguments to extract application options.
      *
-     * @param args
+     * @param args arguments
      */
     public void parseCommandLine(final String[] args) {
 
@@ -234,8 +234,9 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     /**
      * Prints the usage message and exits the application.
      *
-     * @param opts
-     * @param exitCode
+     * @param header the header of the usage message
+     * @param opts options
+     * @param exitCode the return / exit code
      */
     protected void usage(final String header, final Options opts,
                          final int exitCode) {

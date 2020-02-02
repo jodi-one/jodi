@@ -23,7 +23,7 @@ public interface JodiProperties {
     /**
      * Returns the property value for the given property name.
      *
-     * @param name
+     * @param name key of the property
      * @return the property value for the given property name
      */
     String getProperty(String name);
@@ -32,7 +32,7 @@ public interface JodiProperties {
      * Returns a list of String values associated with a property key.
      * values are separated with a comma in the properties file.
      *
-     * @param prop
+     * @param prop key of the property
      * @return list of String values associated with a property key.
      */
     List<String> getPropertyList(final String prop);
@@ -41,6 +41,7 @@ public interface JodiProperties {
      * Returns a map of string to string associated with property key.
      * Key value pairs are separated with a comma with the key and value separated by a colon.
      *
+     * @param prop key of the property
      * @return a map of string to string associated with property key
      */
     Map<String, String> getPropertyMap(final String prop);

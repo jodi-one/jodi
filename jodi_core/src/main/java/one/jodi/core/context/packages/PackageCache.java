@@ -16,7 +16,9 @@ public interface PackageCache {
     /**
      * Registre package cache with package list association names from package XML.
      *
-     * @param packages the packages metadata object
+     * @param packageName the packages metadata object
+     * @param association association
+     * @param order integer representing the order
      */
     void addPackageAssociation(String packageName, String association, int order);
 

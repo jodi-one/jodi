@@ -5,6 +5,8 @@ import one.jodi.etl.service.loadplan.internalmodel.LoadPlanDetails;
 public interface OdiLoadPlanValidationService {
     /**
      * Validate the loadplan details, like name and folder.
+     *
+     * @param pLoadPlanDetails
      */
     public boolean validate(final LoadPlanDetails pLoadPlanDetails);
 
@@ -12,7 +14,6 @@ public interface OdiLoadPlanValidationService {
      * Validate the LoadPlanTree.
      *
      * @param pLoadPlanTree
-     * @param string
      * @return indicating valid or not
      */
     public boolean validate(final OdiLoadPlanTree<Odiloadplanstep> pLoadPlanTree);

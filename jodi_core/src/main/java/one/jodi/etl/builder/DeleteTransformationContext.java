@@ -4,9 +4,9 @@ import one.jodi.etl.internalmodel.Transformation;
 
 /**
  * This interfaces serves to communicate Jodi enriched information necessary for deleting a given Transformation.
- * <p>
- * See {@link EnrichingBuilder#createDeleteContext(Transformation)} for more information.
- * <p>
+ * 
+ * See EnrichingBuilder.createDeleteContext(Transformation) for more information.
+ * 
  * By calling {@link EnrichingBuilder#enrich(Transformation, boolean)}
  *
  */
@@ -42,11 +42,13 @@ public interface DeleteTransformationContext {
 
     /**
      * Determines if the interface built by Transformation is temporary
+     *
+     * @return flag indidicating temporary mappings
      */
     boolean isTemporary();
 
     /**
-     *
+     * @return folderName
      */
     String getFolderName();
 }

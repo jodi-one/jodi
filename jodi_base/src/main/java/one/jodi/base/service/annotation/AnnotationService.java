@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 /**
  * Annotation Service defines a low-level service to retrieve annotation meta data
  * associated with a table and column instance. Other types of annotations
- * and annotated objects may be added in the future.<p>
- * <p>
+ * and annotated objects may be added in the future.
+ *
  * The annotations typically describe properties of an object that is not natively
  * defined in the database schema. It can be used to add semantics to tables,
  * columns, fk constraints etc.

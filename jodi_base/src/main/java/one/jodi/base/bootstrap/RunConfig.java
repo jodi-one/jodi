@@ -43,11 +43,15 @@ public interface RunConfig {
 
     /**
      * Gets the source model
+     *
+     * @return  the source model in the etl subsystem
      */
     String getSourceModel();
 
     /**
      * Gets the target model
+     *
+     * @return  the target model in the etl subsystem
      */
     String getTargetModel();
 

@@ -43,14 +43,14 @@ public class EtlOperators {
      * Constructor of EtlOperators, normally this is just to construct the
      * object; the final objects are created with empty lists.
      *
-     * @param targetComponents
-     * @param targetExpressions
-     * @param joiners
-     * @param lookups
-     * @param setComponents
-     * @param filterComponents
-     * @param distinctComponents
-     * @param aggregateComponents
+     * @param targetComponents targetComponent
+     * @param targetExpressions targetExpressions
+     * @param joiners joiners
+     * @param lookups lookups
+     * @param setComponents setc omponents
+     * @param filterComponents filter components
+     * @param distinctComponents distinct components
+     * @param aggregateComponents aggregate components
      */
     public EtlOperators(final IMapComponent targetComponents, final ExpressionComponent targetExpressions,
                         final List<JoinComponent> joiners, final List<LookupComponent> lookups, final SetComponent setComponents,
@@ -73,7 +73,7 @@ public class EtlOperators {
      * Add a targetcomponent of type DataStoreComponent of
      * ReusableMappingComponent
      *
-     * @param mapComponent
+     * @param mapComponent map component
      */
     public void addTargetComponents(final IMapComponent mapComponent) {
         targetComponents = mapComponent;
@@ -82,7 +82,7 @@ public class EtlOperators {
     /**
      * Add an expression component.
      *
-     * @param expressionComponent
+     * @param expressionComponent expression component
      */
     public void addTargetExpressions(final ExpressionComponent expressionComponent) {
         targetExpressions = expressionComponent;
@@ -92,8 +92,8 @@ public class EtlOperators {
      * Add a join component; a join component is used to join two source
      * component.
      *
-     * @param sequence
-     * @param joinComponent
+     * @param sequence sequence number
+     * @param joinComponent join component
      */
     public void addJoiner(final int sequence, final JoinComponent joinComponent) {
         joiners.add(joinComponent);
@@ -113,7 +113,7 @@ public class EtlOperators {
      * Add a setcomponent used for instance in UNION, UNION ALL, MINUS or
      * INTERSECT operations.
      *
-     * @param setComponent
+     * @param setComponent set component
      */
     public void addSetComponent(final SetComponent setComponent) {
         setComponents = setComponent;
@@ -124,16 +124,18 @@ public class EtlOperators {
      * key that is of type string, and refers to a source component by naming
      * conventions.
      *
-     * @param sequence
-     * @param filterComponent
+     * @param sequence sequence number
+     * @param filterComponent filter component
      */
     public void addFilterComponent(final String sequence, final FilterComponent filterComponent) {
         filterComponents.put(sequence, filterComponent);
     }
 
-    /*
+    /**
      * Add a distinct component; at a maximum one distinct component is used per
      * mapping.
+     *
+     * @param distinctComponent distinct component
      */
     public void addDistinctComponents(final DistinctComponent distinctComponent) {
         distinctComponents = distinctComponent;
@@ -143,7 +145,7 @@ public class EtlOperators {
      * Add a aggregate component; at a maximum one aggregate component is used
      * per mapping.
      *
-     * @param aggregateComponent
+     * @param aggregateComponent aggregate component
      */
     public void addAggregate(final AggregateComponent aggregateComponent) {
         aggregateComponents.add(aggregateComponent);
@@ -152,8 +154,8 @@ public class EtlOperators {
     /**
      * Get a filtercomponent by name convention.
      *
-     * @param filterKeyForSource
-     * @return MapComponent
+     * @param filterKeyForSource filter for source
+     * @return MapComponent odi map component
      */
     public IMapComponent getFilterComponentsByKey(String filterKeyForSource) {
         return filterComponents.get(filterKeyForSource);

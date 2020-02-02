@@ -548,6 +548,7 @@ public class TableBaseImpl implements TableBase {
     /**
      * Get outgoing relationships for a given type that are attached to this table.
      *
+     * @param type the type of relationship
      * @return list of relationships of specified type
      */
     public List<? extends RelationshipBase> getRelationships(final RelType type) {
@@ -633,6 +634,8 @@ public class TableBaseImpl implements TableBase {
      * Get incoming relationships that are attached to this table.
      * This method is intentionally set to private as the registration
      * must occur when new relationship is created.
+     *
+     * @param incomingRelationship the incoming relationship
      */
     protected void addIncomingRelationship(RelationshipBase incomingRelationship) {
         this.incomingRelationships.add(incomingRelationship);
@@ -645,6 +648,7 @@ public class TableBaseImpl implements TableBase {
     /**
      * Get incoming relationships for a given type that are attached to this table.
      *
+     * @param type the type of the relationships
      * @return list of relationships of specified type
      */
     public List<? extends RelationshipBase> getIncomingRelationships(final RelType type) {
@@ -749,6 +753,8 @@ public class TableBaseImpl implements TableBase {
     /**
      * Mostly relevant for shrunken dimensions; this method will return
      * the Detail level for all base tables
+     *
+     * @return the level of the table
      */
     public LevelBase getAssociatedLevel() {
         TableBase baseTable = this.getBaseTable(RelType.SHRUNKEN_FROM);

@@ -63,6 +63,7 @@ public abstract class JodiControllerBase implements Register {
     /**
      * Main entry point
      *
+     * @param controller the super class of the controller
      * @param args Command line arguments
      */
     protected static void createAndRun(final JodiControllerBase controller,
@@ -153,7 +154,7 @@ public abstract class JodiControllerBase implements Register {
      *
      * @param args     command line arguments array
      * @param fileName optional parameter
-     * @throws Exception
+     * @return exitCode the return code
      */
     public synchronized int run(String[] args, String... fileName) {
         // remove cached error reports from previous run

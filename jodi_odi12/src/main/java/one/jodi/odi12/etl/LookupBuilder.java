@@ -19,14 +19,16 @@ public interface LookupBuilder {
      * or more sources), the second and all lookups after the first are joined
      * to the previous lookup.
      *
-     * @param mapping
-     * @param sources
-     * @param journalized
-     * @param joiners     @param etlOperators @throws
-     *                    AdapterException @throws MappingException @throws
-     *                    TransformationAccessStrategyException
-     * @throws ResourceNotFoundException
-     * @throws ResourceFoundAmbiguouslyException
+     * @param mapping mapping
+     * @param sources sources
+     * @param journalized flag indicating journalization
+     * @param joiners list of join components
+     * @param etlOperators etl operator collections
+     * @throws AdapterException exception from the adapter
+     * @throws MappingException exception from the mapping
+     * @throws TransformationAccessStrategyException excepction while accessing the transformation
+     * @throws AdapterException exception from the adapter
+     * @throws MappingException exception from the mapping
      */
     public abstract void addLookups(MapRootContainer mapping,
                                     List<Source> sources, boolean journalized,

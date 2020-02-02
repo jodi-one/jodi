@@ -7,7 +7,7 @@ import java.util.List;
  * alternative key (unique key that is not the primary key) or an index, which
  * may or may not be unique.
  * <p>
- * A class instance must be referenced by a {@link DataStore}.
+ * A class instance must be referenced by a DataStore.
  */
 public interface Key {
 
@@ -47,6 +47,8 @@ public interface Key {
 
     /**
      * Sets the datastorename; required for view capability in OdbMetaDataHelper.
+     *
+     * @param datastoreName name of the datastore to be set
      */
     void setDataStoreName(String datastoreName);
 

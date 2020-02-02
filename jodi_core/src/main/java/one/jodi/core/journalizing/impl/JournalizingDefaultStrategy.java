@@ -26,8 +26,8 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
     /**
      * This method determines on which datastores to apply the Change Data Capture flag to.
      *
-     * @param defaultCDC
-     * @param executionContext
+     * @param defaultCDC default change data capture datastores
+     * @param executionContext execution context
      * @return Map of datastores where the key is <Model_Code>.<DataStoreName>
      */
     @Override
@@ -65,9 +65,9 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
     /**
      * This method determines the JKMOptions to be applied to a Model.
      *
-     * @param defaultJKMOptions
-     * @param executionContext
-     * @param modelCode
+     * @param defaultJKMOptions default JKM options
+     * @param executionContext the execution context
+     * @param modelCode the model code 
      * @return Map of JKMOptions
      */
     @Override
@@ -78,8 +78,8 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
     }
 
     /**
-     * @param defaultModelCodes
-     * @param executionContext
+     * @param defaultModelCodes default model codes
+     * @param executionContext the journalizing execution context
      * @return List of model codes
      */
     @Override
@@ -89,9 +89,9 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
     }
 
     /**
-     * @param defaultSubscribers
-     * @param executionContext
-     * @param modelCode
+     * @param defaultSubscribers default list of subscribers
+     * @param executionContext execution context
+     * @param modelCode the model code in odi
      * @return List of subscribers
      */
     @Override

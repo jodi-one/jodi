@@ -13,7 +13,7 @@ public interface EnrichmentBuilder {
     /**
      * Enrich the internal model with default values.
      *
-     * @param internalloadPlan
+     * @param internalloadPlan the internal loadplan to enrich
      */
     void enrich(List<LoadPlanTree<LoadPlanStep>> internalloadPlan);
 

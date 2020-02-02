@@ -25,7 +25,9 @@ public interface DatastoreBuilder {
      * @param mapping
      * @param boundObject
      * @param autoJoinEnabled
-     * @return @throws AdapterException @throws MappingException
+     * @return
+     * @throws AdapterException
+     * @throws MappingException
      */
     public IMapComponent createComponent(MapRootContainer mapping,
                                          IModelObject boundObject, boolean autoJoinEnabled)

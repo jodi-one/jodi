@@ -100,6 +100,8 @@ public class ColumnBase implements ModelNode {
     /**
      * contains the additional meta data in the column comment that exist before
      * the meta data separator, e.g. '---'.
+     *
+     * @return businessName name used by the end user
      */
     public String getBusinessName() {
         return this.columnAnnotations.isPresent() &&
@@ -111,6 +113,8 @@ public class ColumnBase implements ModelNode {
     /**
      * contains the additional abbreviation in the table comment that exist before
      * the meta data separator and matches the abbreviation pattern, e.g. '((*))$'.
+     *
+     * @return abbreviatedBusinessname abbreviation of the name used by the end user.
      */
     public String getAbbreviatedBuisnessName() {
         return this.columnAnnotations.isPresent() &&

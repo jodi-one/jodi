@@ -18,8 +18,8 @@ public interface ColumnMappingContext {
      * Determine the mapping expressions given the transformations sources and target.  When
      * explicitly defined using TargetColumn, the column mapping will be omitted.
      *
-     * @param transformation
-     * @return map of source to target column, e.g. <code>column -> datastore.column</code>
+     * @param transformation the transformations to retrieve the mappings for
+     * @return map of source to target column, e.g. column -> datastore.column
      */
     Map<String, List<String>> getMappings(Transformation transformation);
 

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Implementation of the strategy object which attempts to form target mapping expressions based on source
- * {@link one.jodi.core.metadata.types.DataStore}s  This can be performed in several different methods,
+ * This can be performed in several different methods,
  * based on the setting of COLUMN_MATCH_TYPE
  *
  * <ul>
@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
  * </li>
  * <li>{@link MatchTypes#MAGIC} source column ends with first four characters of target column
  * and target column name does not contain string "WID" or configurable properties value
- *  {@link one.jodi.base.JodiConstants#W_INSERT_DT} (configure in Jodi properties file)
+ *  jodiconstants (configure in Jodi properties file)
  * </li>
  * </ul>
  * <p>
