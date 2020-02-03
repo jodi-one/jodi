@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * The implementation class for the  PackageCache interface.
- *
  */
 @Singleton
 public class PackageCacheImpl implements PackageCache, Resource {
@@ -41,7 +40,7 @@ public class PackageCacheImpl implements PackageCache, Resource {
     /**
      * Instantiates a new PackageCacheImpl instance.
      *
-     * @param registerInstance the register to register this cache with
+     * @param registerInstance     the register to register this cache with
      * @param errorWarningMessages the link to the error warning messages subsystem
      */
     @Inject

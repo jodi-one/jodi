@@ -1,32 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<!--xsi:noNamespaceSchemaLocation="../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd" -->
-	<Package>
-		<PackageName>INITIALRUN_ETL_ALL</PackageName>
-		<FolderCode>InitialORACLE_DWH_CON_CHINOOK</FolderCode>
-		<PackageListItem></PackageListItem>
-		<Before>
-			<ExecPackage>
-				<Name>INITIALDWH_CON_CHINOOK</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_CON</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_OIL</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_STI</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_STO</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_DMT</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-			<ExecPackage>
-				<Name>INITIALDWH_DMT_FACT</Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
-			</ExecPackage>
-		</Before>
-	</Package>
+<Packages>
+    <!--xsi:noNamespaceSchemaLocation="../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd" -->
+    <Package>
+        <PackageName>INITIALRUN_ETL_ALL</PackageName>
+        <FolderCode>InitialORACLE_DWH_CON_CHINOOK</FolderCode>
+        <PackageListItem></PackageListItem>
+        <Before>
+            <ExecPackage>
+                <Name>INITIALDWH_CON_CHINOOK
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_CON
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_OIL
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_STI
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_STO
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_DMT
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+            <ExecPackage>
+                <Name>INITIALDWH_DMT_FACT
+                </Name><!-- This package is not located in  folder InitialORACLE_DWH_CON_CHINOOK but was previously found by unique name-->
+            </ExecPackage>
+        </Before>
+    </Package>
 </Packages>

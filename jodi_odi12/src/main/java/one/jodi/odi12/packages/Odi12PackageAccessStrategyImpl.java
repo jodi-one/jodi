@@ -78,9 +78,11 @@ public class Odi12PackageAccessStrategyImpl implements
     @Deprecated
     public Collection<OdiPackage> findPackage(final String packageName,
                                               final String projectCode) {
-        return ((IOdiPackageFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiPackage.class))
-                .findByName(packageName, projectCode);
+
+        IOdiPackageFinder finder = ((IOdiPackageFinder) odiInstance.getTransactionalEntityManager()
+                .getFinder(OdiPackage.class));
+        Collection<OdiPackage> packages = finder.findByName(packageName, projectCode);
+        return packages;
     }
 
     @Override

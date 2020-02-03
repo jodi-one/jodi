@@ -19,7 +19,6 @@ import java.util.*;
 /**
  * This class retrieves the table meta-data from the Oracle Db data dictionary
  * tables.
- *
  */
 class OdbMetaDataHelper {
     protected final static String sqlTableQuery = " SELECT * FROM  ( SELECT uo.object_name AS TabName, NVL(umv.comments, utc.comments ) AS TabComments FROM  user_objects uo LEFT JOIN user_tab_comments utc ON uo.object_name = utc.table_name LEFT JOIN user_mview_comments umv ON uo.object_name = umv.mview_name WHERE uo.object_type IN ('TABLE','VIEW') UNION ALL SELECT uo.object_name AS TabName, utc.comments AS TabComments FROM  user_objects uo INNER JOIN user_synonyms us ON us.synonym_name = uo.object_name AND us.table_owner = USER LEFT JOIN user_tab_comments utc ON us.table_name = utc.table_name WHERE uo.object_type LIKE 'SYNONYM' ) ORDER BY TabName";

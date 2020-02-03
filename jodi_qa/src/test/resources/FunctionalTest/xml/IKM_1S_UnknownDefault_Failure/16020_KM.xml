@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>IKM_1S_UNKNOWNDEFAULT_FAILURE</Name>
-	<Comments>
-	</Comments>
-	<PackageList>IKM_1S_UNKNOWNDEFAULT_FAILURE</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_FA_I</Name>
-				<Alias>FACT</Alias>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<Model>model.star.code</Model>
-		<TargetDataStore>W_FA_F</TargetDataStore>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>IKM_1S_UNKNOWNDEFAULT_FAILURE</Name>
+    <Comments>
+    </Comments>
+    <PackageList>IKM_1S_UNKNOWNDEFAULT_FAILURE</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_FA_I</Name>
+                <Alias>FACT</Alias>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <Model>model.star.code</Model>
+        <TargetDataStore>W_FA_F</TargetDataStore>
+    </Mappings>
 </Transformation>

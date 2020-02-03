@@ -418,13 +418,13 @@ public class Odi12TransformationServiceProvider<T extends MapRootContainer> impl
     /**
      * Set other IKM and LKM and CKM options; do this only once.
      *
-     * @param mapping odi mapping
-     * @param transformation transfomation from textual expressions
-     * @param journalized indicating journalization
+     * @param mapping          odi mapping
+     * @param transformation   transfomation from textual expressions
+     * @param journalized      indicating journalization
      * @param targetComponents targetcomponents
-     * @throws MappingException exception during creating of mapping
-     * @throws GenerationException exception during generation
-     * @throws AdapterException exception from adapter
+     * @throws MappingException        exception during creating of mapping
+     * @throws GenerationException     exception during generation
+     * @throws AdapterException        exception from adapter
      * @throws TransformationException exception while creating transformation in etl subsystem
      */
     protected void setKnowledgeModules(final MapRootContainer mapping, final Transformation transformation,
@@ -437,7 +437,7 @@ public class Odi12TransformationServiceProvider<T extends MapRootContainer> impl
 
 
     /**
-     * @param mapping mapping
+     * @param mapping        mapping
      * @param transformation transformation from textual specifications
      * @throws AdapterException exception from adapter
      * @throws MappingException exception from mapping
@@ -795,15 +795,15 @@ public class Odi12TransformationServiceProvider<T extends MapRootContainer> impl
      * CRUD to create a new resuable mapping object, and create the folder if
      * not present.
      *
-     * @param transformation transformation
+     * @param transformation    transformation
      * @param isJournalizedData indicating journalization
      * @return odi reusable mapping
-     * @throws MappingException exception while creating mapping
+     * @throws MappingException                      exception while creating mapping
      * @throws TransformationAccessStrategyException exception while searching for textual specifications of a mapping
-     * @throws TransformationException exeption while generating from textual specifications
-     * @throws ResourceNotFoundException exception while searching for a resource
-     * @throws ResourceFoundAmbiguouslyException exception while searching for a resource; mutliple items found
-     * @throws ResourceCreationException exception while creating resource
+     * @throws TransformationException               exeption while generating from textual specifications
+     * @throws ResourceNotFoundException             exception while searching for a resource
+     * @throws ResourceFoundAmbiguouslyException     exception while searching for a resource; mutliple items found
+     * @throws ResourceCreationException             exception while creating resource
      */
 
     protected ReusableMapping createNewReusableMapping(final Transformation transformation,
@@ -845,15 +845,15 @@ public class Odi12TransformationServiceProvider<T extends MapRootContainer> impl
     /**
      * CRUD to create now Mapping and folder if not exists.
      *
-     * @param transformation transformation
+     * @param transformation    transformation
      * @param isJournalizedData indicating journalization
      * @return odi mapping
      * @throws TransformationAccessStrategyException exception accessing transformations
-     * @throws AdapterException exception from etl subsytem adapster
-     * @throws MappingException exception from etl subsystem
-     * @throws TransformationException exception from textual specifications
-     * @throws ResourceFoundAmbiguouslyException exception while searching for a resource
-     * @throws ResourceCreationException exception while creating a resource
+     * @throws AdapterException                      exception from etl subsytem adapster
+     * @throws MappingException                      exception from etl subsystem
+     * @throws TransformationException               exception from textual specifications
+     * @throws ResourceFoundAmbiguouslyException     exception while searching for a resource
+     * @throws ResourceCreationException             exception while creating a resource
      */
     protected Mapping createNewMapping(final Transformation transformation, final boolean isJournalizedData)
             throws TransformationAccessStrategyException, AdapterException, MappingException, TransformationException,
@@ -932,8 +932,9 @@ public class Odi12TransformationServiceProvider<T extends MapRootContainer> impl
 
     /**
      * Remove all mapcomponents from an interface.
+     *
      * @param transformationName name of the transformation
-     * @param foldername name of the folder of the transformation
+     * @param foldername         name of the folder of the transformation
      * @throws TransformationException exception during transformation
      */
     @Override

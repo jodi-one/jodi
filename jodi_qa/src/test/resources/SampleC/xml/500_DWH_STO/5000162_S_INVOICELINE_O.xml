@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>W_INVOICELINE_F</Name>
-				<Lookups>
-					<Lookup>
-						<LookupDataStore>W_CUSTOMER_D</LookupDataStore>
-						<Join>W_INVOICELINE_F.INVL_CUST_WID = W_CUSTOMER_D.ROW_WID</Join>
-					</Lookup>
-				</Lookups>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_INVOICELINE_O_S02</TargetDataStore>
-		<TargetColumn>
-			<Name>INVL_CUST_CODE</Name>
-			<MappingExpressions>
-				<Expression>W_CUSTOMER_D.CUST_CODE</Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>VARCHAR2</DataType>
-				<Length>60</Length>
-			</Properties>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_YEAR_DATE_CODE</Name>
-			<MappingExpressions>
-				<Expression> SUBSTR( W_INVOICELINE_F.INVL_INVE_DATE_WID, 0,4)</Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>NUMBER</DataType>
-				<Length>8</Length>
-				<Scale>0</Scale>
-			</Properties>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVE_AMOUNT</Name>
-			<MappingExpressions>
-				<Expression><![CDATA[NVL(SUM( W_INVOICELINE_F.INVL_AMOUNT ),0)]]></Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>NUMBER</DataType>
-				<Length>10</Length>
-				<Scale>0</Scale>
-			</Properties>
-		</TargetColumn> 
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>W_INVOICELINE_F</Name>
+                <Lookups>
+                    <Lookup>
+                        <LookupDataStore>W_CUSTOMER_D</LookupDataStore>
+                        <Join>W_INVOICELINE_F.INVL_CUST_WID = W_CUSTOMER_D.ROW_WID</Join>
+                    </Lookup>
+                </Lookups>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_INVOICELINE_O_S02</TargetDataStore>
+        <TargetColumn>
+            <Name>INVL_CUST_CODE</Name>
+            <MappingExpressions>
+                <Expression>W_CUSTOMER_D.CUST_CODE</Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>VARCHAR2</DataType>
+                <Length>60</Length>
+            </Properties>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_YEAR_DATE_CODE</Name>
+            <MappingExpressions>
+                <Expression>SUBSTR( W_INVOICELINE_F.INVL_INVE_DATE_WID, 0,4)</Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>NUMBER</DataType>
+                <Length>8</Length>
+                <Scale>0</Scale>
+            </Properties>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVE_AMOUNT</Name>
+            <MappingExpressions>
+                <Expression><![CDATA[NVL(SUM( W_INVOICELINE_F.INVL_AMOUNT ),0)]]></Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>NUMBER</DataType>
+                <Length>10</Length>
+                <Scale>0</Scale>
+            </Properties>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

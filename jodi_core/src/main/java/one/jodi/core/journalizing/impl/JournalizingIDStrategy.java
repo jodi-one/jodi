@@ -9,7 +9,6 @@ import java.util.Map;
 
 /**
  * Identity strategy that is used as a placeholder for a custom strategy.
- *
  */
 public class JournalizingIDStrategy implements JournalizingStrategy {
 

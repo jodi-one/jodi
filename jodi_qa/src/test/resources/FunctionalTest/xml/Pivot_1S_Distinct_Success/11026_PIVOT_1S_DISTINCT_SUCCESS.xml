@@ -1,62 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>Pivot_1S_Distinct_Success</Name>
-	<Comments>
-	</Comments>
-	<PackageList>Pivot_1S_Distinct_Success</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_PV_I</Name>
-				<Alias>P_IN</Alias>
-				<Flows>	
-					<Pivot>
-						<Name>PivotA</Name>
-						<RowLocator>P_IN.QUARTER</RowLocator>
-						<AggregateFunction>SUM</AggregateFunction>
-						<Column name="YEAR">
-							<Expression>P_IN.YEAR</Expression>
-						</Column>
-						<Column name="Q1_SALES">
-							<Expression value="'Q1'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q2_SALES">
-							<Expression value="'Q2'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q3_SALES">
-							<Expression value="'Q3'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q4_SALES">
-							<Expression value="'Q4'">P_IN.SALES</Expression>
-						</Column>
-					</Pivot>
-				</Flows>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<Distinct>true</Distinct>
-	    <TargetDataStore>S_VP_O</TargetDataStore>
-	    <TargetColumn>
-	    	<Name>YEAR</Name>
-	    	<MappingExpressions><Expression>PivotA.YEAR</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q1_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q1_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q2_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q2_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q3_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q3_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q4_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q4_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>Pivot_1S_Distinct_Success</Name>
+    <Comments>
+    </Comments>
+    <PackageList>Pivot_1S_Distinct_Success</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_PV_I</Name>
+                <Alias>P_IN</Alias>
+                <Flows>
+                    <Pivot>
+                        <Name>PivotA</Name>
+                        <RowLocator>P_IN.QUARTER</RowLocator>
+                        <AggregateFunction>SUM</AggregateFunction>
+                        <Column name="YEAR">
+                            <Expression>P_IN.YEAR</Expression>
+                        </Column>
+                        <Column name="Q1_SALES">
+                            <Expression value="'Q1'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q2_SALES">
+                            <Expression value="'Q2'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q3_SALES">
+                            <Expression value="'Q3'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q4_SALES">
+                            <Expression value="'Q4'">P_IN.SALES</Expression>
+                        </Column>
+                    </Pivot>
+                </Flows>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <Distinct>true</Distinct>
+        <TargetDataStore>S_VP_O</TargetDataStore>
+        <TargetColumn>
+            <Name>YEAR</Name>
+            <MappingExpressions>
+                <Expression>PivotA.YEAR</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q1_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q1_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q2_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q2_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q3_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q3_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q4_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q4_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

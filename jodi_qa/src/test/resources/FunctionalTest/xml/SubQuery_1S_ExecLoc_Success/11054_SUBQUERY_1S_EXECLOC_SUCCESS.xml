@@ -1,49 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>SubQuery_1S_ExecLoc_Success</Name>
-	<Comments>
-	</Comments>
-	<PackageList>SubQuery_1S_ExecLoc_Success</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_PV_I</Name>
-				<Flows>	
-					<SubQuery>
-						<Name>SQRY</Name>
-						<FilterSource>S_VP_I</FilterSource>
-						<Role>GREATER OR EQUAL</Role>
-						<ExecutionLocation>WORK</ExecutionLocation>
-						<Condition>S_PV_I.YEAR = S_VP_I.YEAR</Condition>
-						<Column name="YEAR">
-							<Expression>S_PV_I.YEAR</Expression>
-						</Column>
-						<Column name="QUARTER">
-							<Expression>S_PV_I.QUARTER</Expression>
-						</Column>
-						<Column name="SALES">
-							<Expression>S_PV_I.SALES</Expression>
-							<Expression isFilter="true">((S_VP_I.Q1_SALES + S_VP_I.Q2_SALES + S_VP_I.Q3_SALES + S_VP_I.Q4_SALES)/4)</Expression>
-						</Column>
-					</SubQuery>
-				</Flows>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-	    <TargetDataStore>S_PV_O</TargetDataStore>
-	    <TargetColumn>
-	    	<Name>YEAR</Name>
-	    	<MappingExpressions><Expression>SQRY.YEAR</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    	<Name>QUARTER</Name>
-	    	<MappingExpressions><Expression>SQRY.QUARTER</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    	<Name>SALES</Name>
-	    	<MappingExpressions><Expression>SQRY.SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>SubQuery_1S_ExecLoc_Success</Name>
+    <Comments>
+    </Comments>
+    <PackageList>SubQuery_1S_ExecLoc_Success</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_PV_I</Name>
+                <Flows>
+                    <SubQuery>
+                        <Name>SQRY</Name>
+                        <FilterSource>S_VP_I</FilterSource>
+                        <Role>GREATER OR EQUAL</Role>
+                        <ExecutionLocation>WORK</ExecutionLocation>
+                        <Condition>S_PV_I.YEAR = S_VP_I.YEAR</Condition>
+                        <Column name="YEAR">
+                            <Expression>S_PV_I.YEAR</Expression>
+                        </Column>
+                        <Column name="QUARTER">
+                            <Expression>S_PV_I.QUARTER</Expression>
+                        </Column>
+                        <Column name="SALES">
+                            <Expression>S_PV_I.SALES</Expression>
+                            <Expression isFilter="true">((S_VP_I.Q1_SALES + S_VP_I.Q2_SALES + S_VP_I.Q3_SALES +
+                                S_VP_I.Q4_SALES)/4)
+                            </Expression>
+                        </Column>
+                    </SubQuery>
+                </Flows>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_PV_O</TargetDataStore>
+        <TargetColumn>
+            <Name>YEAR</Name>
+            <MappingExpressions>
+                <Expression>SQRY.YEAR</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>QUARTER</Name>
+            <MappingExpressions>
+                <Expression>SQRY.QUARTER</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>SALES</Name>
+            <MappingExpressions>
+                <Expression>SQRY.SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

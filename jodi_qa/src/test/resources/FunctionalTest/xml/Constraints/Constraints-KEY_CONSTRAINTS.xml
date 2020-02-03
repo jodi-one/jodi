@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Constraints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jodi-constraints.v1.0.xsd">
+<Constraints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:noNamespaceSchemaLocation="jodi-constraints.v1.0.xsd">
     <KeyConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="true">
         <Name>AK_Jodi_KEYCONSTAINT_NOTUNIQUE_INDEX</Name>
         <Model>model.star.code</Model>
@@ -12,19 +13,19 @@
             <KeyAttribute>VALUE</KeyAttribute>
         </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+    <KeyConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="true">
         <Name>AK_Jodi_TYPE_ALTERNATE_KEY</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
         <Type>ALTERNATE_KEY</Type>
         <Attributes>
-          <KeyAttribute>KEY</KeyAttribute>
+            <KeyAttribute>KEY</KeyAttribute>
             <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
             <KeyAttribute>ROW_WID</KeyAttribute>
             <KeyAttribute>VALUE</KeyAttribute>
         </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="true">
+    <KeyConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="true">
         <Name>AK_Jodi_TYPE_PRIMARY_KEY</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
@@ -36,28 +37,28 @@
             <KeyAttribute>VALUE</KeyAttribute>
         </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="true">
+    <KeyConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="true">
         <Name>AK_Jodi_KEYCONSTAINT_DEFINEDINDATABASE_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
         <Type>NOT_UNIQUE_INDEX</Type>
         <Attributes>
-           <KeyAttribute>KEY</KeyAttribute>
+            <KeyAttribute>KEY</KeyAttribute>
             <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
             <KeyAttribute>ROW_WID</KeyAttribute>
             <KeyAttribute>VALUE</KeyAttribute>
         </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="true" Active="true" Flow="true" Static="true">
+    <KeyConstraint DefinedInDatabase="true" Active="true" Flow="true" Static="true">
         <Name>AK_Jodi_KEYCONSTAINT_ACTIVE_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
         <Type>NOT_UNIQUE_INDEX</Type>
         <Attributes>
             <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
-         </Attributes>
+        </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="true" Active="true" Flow="false" Static="true">
+    <KeyConstraint DefinedInDatabase="true" Active="true" Flow="false" Static="true">
         <Name>AK_Jodi_KEYCONSTAINT_FLOW_FALSE</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
@@ -65,17 +66,17 @@
         <Attributes>
             <KeyAttribute>KEY</KeyAttribute>
             <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
-            </Attributes>
+        </Attributes>
     </KeyConstraint>
-	<KeyConstraint DefinedInDatabase="true" Active="true" Flow="false" Static="false">
+    <KeyConstraint DefinedInDatabase="true" Active="true" Flow="false" Static="false">
         <Name>AK_Jodi_KEYCONSTAINT_STATIC_FALSE</Name>
         <Model>model.star.code</Model>
         <Table>W_DB_D</Table>
         <Type>ALTERNATE_KEY</Type>
         <Attributes>
-           <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
+            <KeyAttribute>LAST_CHANGED_DT</KeyAttribute>
             <KeyAttribute>ROW_WID</KeyAttribute>
             <KeyAttribute>VALUE</KeyAttribute>
         </Attributes>
     </KeyConstraint>
- </Constraints>
+</Constraints>

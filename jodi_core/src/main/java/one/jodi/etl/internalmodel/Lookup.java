@@ -10,7 +10,6 @@ import java.util.Map;
  * The Lookup element defines the lookup of one value based on a join condition between the enclosing {@link Source}
  * and a lookup data store. It has optional elements to overwrite the project-wide definition of model for
  * the lookup data store.
- *
  */
 public interface Lookup {
     /**

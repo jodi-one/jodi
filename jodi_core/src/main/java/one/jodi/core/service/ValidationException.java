@@ -2,7 +2,6 @@ package one.jodi.core.service;
 
 /**
  * Thrown when a fatal validation exception occurs
- *
  */
 public class ValidationException extends RuntimeException {
 

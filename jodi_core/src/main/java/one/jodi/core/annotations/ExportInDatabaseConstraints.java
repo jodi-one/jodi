@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates to delete variables and recreate them.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

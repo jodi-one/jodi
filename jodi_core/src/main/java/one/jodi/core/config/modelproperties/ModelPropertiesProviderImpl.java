@@ -14,7 +14,6 @@ import java.util.*;
 /**
  * Parses properties related to model definitions and performs some additional
  * validations.
- *
  */
 @Singleton //should be defined as eager Singleton in model
 public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {

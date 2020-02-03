@@ -14,8 +14,8 @@ public interface ModelBuildingStep {
      * Partipants can chose to modify externalTransformation, report on issues.
      *
      * @param transformation transformation to pre enrich
-     * @param mapping mapping to pre enrich
-     * @param mappingHolder mapping holder object
+     * @param mapping        mapping to pre enrich
+     * @param mappingHolder  mapping holder object
      */
     public void processPreEnrichment(one.jodi.core.model.Transformation transformation, Mapping mapping, MappingHolder mappingHolder);
 
@@ -26,9 +26,9 @@ public interface ModelBuildingStep {
      * Partipants can chose to modify externalTransformation, report on issues.
      *
      * @param externalTransformation external transformation
-     * @param transformation internal transformation
-     * @param mapping odi maopping
-     * @param mappingHolder mapping holder object
+     * @param transformation         internal transformation
+     * @param mapping                odi maopping
+     * @param mappingHolder          mapping holder object
      */
     public void processPostEnrichment(one.jodi.core.model.Transformation externalTransformation, Transformation transformation, Mapping mapping, MappingHolder mappingHolder);
 

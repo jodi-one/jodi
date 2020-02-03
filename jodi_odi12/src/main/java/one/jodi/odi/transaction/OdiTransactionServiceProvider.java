@@ -16,6 +16,7 @@ import javax.inject.Singleton;
 public class OdiTransactionServiceProvider implements TransactionServiceProvider {
     private final OdiInstance odiInstance;
     private final Logger logger = LogManager.getLogger(TransactionServiceProvider.class);
+
     @Inject
     protected OdiTransactionServiceProvider(OdiInstance odiInstance) {
         this.odiInstance = odiInstance;

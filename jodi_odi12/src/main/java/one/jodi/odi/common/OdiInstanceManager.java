@@ -25,7 +25,6 @@ import java.util.Map;
  * caching of a fixed number of OdiInsatnces to facilitate reuse. In case more
  * instances were created than being able to cache, the least recently used
  * OdiInstance is evicted from cache and closed.
- *
  */
 @Singleton // reminder only - needs to be defined in Guice module since annotation does not work
 public class OdiInstanceManager implements Provider<OdiInstance> {

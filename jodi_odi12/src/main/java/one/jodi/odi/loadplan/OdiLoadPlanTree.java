@@ -14,7 +14,6 @@ interface Visitable<T> {
 
 /**
  * Internal model representation of a LoadPlanTree.
- *
  */
 public class OdiLoadPlanTree<T> implements Visitable<T> {
 

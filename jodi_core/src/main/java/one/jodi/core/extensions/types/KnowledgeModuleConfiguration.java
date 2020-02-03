@@ -8,7 +8,6 @@ import java.util.Set;
 /**
  * Data Transfer interface used to describe a Knowledge Module of a particular name and type along with options
  * used therein.
- *
  */
 public interface KnowledgeModuleConfiguration {
 

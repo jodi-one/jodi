@@ -1,10 +1,12 @@
 package one.jodi.odi.runtime;
 
-import oracle.odi.runtime.agent.invocation.*;
+import oracle.odi.runtime.agent.invocation.InvocationException;
+import oracle.odi.runtime.agent.invocation.LoadPlanExecutionInfo;
+import oracle.odi.runtime.agent.invocation.RemoteRuntimeAgentInvoker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OdiExecuteLoadplan  {
+public class OdiExecuteLoadplan {
     private final static Logger logger = LogManager.getLogger(OdiExecuteLoadplan.class);
 
     public OdiExecuteLoadplan() {
@@ -38,7 +40,7 @@ public class OdiExecuteLoadplan  {
         try {
             RemoteRuntimeAgentInvoker rraInvoker = new RemoteRuntimeAgentInvoker(agentUrl, user, password.toCharArray());
             LoadPlanExecutionInfo statusLP = rraInvoker.invokeStartLoadPlan(loadplanName, contextCode, null, pKeywords, workRepName);
-            logger.info("Started: "+ loadplanName + " with: "+ statusLP.getLoadPlanInstanceId() +" with runcount: "+ statusLP.getRunCount());
+            logger.info("Started: " + loadplanName + " with: " + statusLP.getLoadPlanInstanceId() + " with runcount: " + statusLP.getRunCount());
         } catch (InvocationException e) {
             logger.fatal(e);
             throw new RuntimeException(String.format("Loadplan '%1$s'  not executed.", loadplanName), e);

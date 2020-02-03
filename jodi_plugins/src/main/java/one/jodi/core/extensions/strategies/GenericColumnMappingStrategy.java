@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Logger;
  * </ul>
  * <p>
  * This strategy attempts to duplicate the Jodi 1.0 MagicAutoMappingComputer class' functionality.
- *
  */
 public class GenericColumnMappingStrategy implements ColumnMappingStrategy {
 

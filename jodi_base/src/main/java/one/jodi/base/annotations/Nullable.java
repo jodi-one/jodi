@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Marker interface used to identify DI injection targets that can be null.
- *
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

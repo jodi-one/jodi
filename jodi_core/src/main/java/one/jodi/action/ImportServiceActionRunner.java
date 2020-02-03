@@ -29,7 +29,7 @@ public class ImportServiceActionRunner implements ActionRunner {
                                         final ScenarioService scenarioService,
                                         final JodiProperties jodiProperties,
                                         final LoadPlanService loadPlanService
-                                        ) {
+    ) {
         this.importService = importService;
         this.scenarioService = scenarioService;
         this.jodiProperties = jodiProperties;
@@ -76,7 +76,7 @@ public class ImportServiceActionRunner implements ActionRunner {
             if (pDAType.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
                 scenarioService.deleteScenarios();
                 loadPlanService.deleteLoadPlans();
-            }else if (pDAType.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)) {
+            } else if (pDAType.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)) {
                 scenarioService.deleteScenarios();
                 loadPlanService.deleteLoadPlans();
                 // TOODO move into own access strategy

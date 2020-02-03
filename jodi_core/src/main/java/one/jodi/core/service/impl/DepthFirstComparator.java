@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 /**
  * Implements a depth first sorter of Entities with a String key that represents a
  * path from root to file. Folders are separated using the '/' character.
- *
  */
 public class DepthFirstComparator<T> implements Comparator<Entry<Path, T>> {
 

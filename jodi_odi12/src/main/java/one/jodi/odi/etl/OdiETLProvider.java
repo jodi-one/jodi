@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 /**
  * Entry point to the ETL subsystem.
- *
  */
 @Singleton
 public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {

@@ -1,21 +1,21 @@
 <FindBugsFilter>
-<!--
-REMEMBER goal is to reduce this file in size, not expand it
--->
-	<!--
+    <!--
+    REMEMBER goal is to reduce this file in size, not expand it
+    -->
+    <!--
     <Match>
         <Class name="ReverseEngingeerVisitor" />
         <Bug code="Dm" />
     </Match>
     -->
-    
-	<Match>
-	   <OR>
-	      <Class name="~.*\.*Test" />
-	      <Class name="~.*\.*Test\$.*" />
-	   </OR>
-	</Match>
+
     <Match>
-	   <Package name="~test\..*"/>
+        <OR>
+            <Class name="~.*\.*Test"/>
+            <Class name="~.*\.*Test\$.*"/>
+        </OR>
+    </Match>
+    <Match>
+        <Package name="~test\..*"/>
     </Match>
 </FindBugsFilter>

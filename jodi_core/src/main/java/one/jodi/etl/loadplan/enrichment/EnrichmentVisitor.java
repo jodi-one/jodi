@@ -5,7 +5,6 @@ import one.jodi.etl.service.loadplan.internalmodel.LoadPlanStep;
 
 /**
  * Actionrunner to create loadplans from textual specifications.
- *
  */
 public interface EnrichmentVisitor extends Visitor<LoadPlanStep> {
 

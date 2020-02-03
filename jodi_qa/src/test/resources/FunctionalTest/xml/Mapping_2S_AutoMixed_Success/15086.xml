@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>S_2S_AUTOMIXED_O</Name>
-	<Comments>
-	</Comments>
-	<PackageList>MAPPING_2S_AUTOMIXED_SUCCESS</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_2S_AUTOMIXED_O_S01</Name>
-				<Alias>S01</Alias>
-			</Source>
-			<Source>
-				<Name>S_2S_AUTOMIXED_O_S02</Name>
-				<Alias>S02</Alias>
-				<Join>S01.KEY = S02.KEY</Join>
-				<JoinType>INNER</JoinType>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<Model>model.star_sds.code</Model>
-		<TargetDataStore>S_DA_O</TargetDataStore>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>S_2S_AUTOMIXED_O</Name>
+    <Comments>
+    </Comments>
+    <PackageList>MAPPING_2S_AUTOMIXED_SUCCESS</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_2S_AUTOMIXED_O_S01</Name>
+                <Alias>S01</Alias>
+            </Source>
+            <Source>
+                <Name>S_2S_AUTOMIXED_O_S02</Name>
+                <Alias>S02</Alias>
+                <Join>S01.KEY = S02.KEY</Join>
+                <JoinType>INNER</JoinType>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <Model>model.star_sds.code</Model>
+        <TargetDataStore>S_DA_O</TargetDataStore>
+    </Mappings>
 </Transformation>

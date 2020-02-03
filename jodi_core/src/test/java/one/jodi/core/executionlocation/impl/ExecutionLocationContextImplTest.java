@@ -52,7 +52,6 @@ import static org.mockito.Mockito.*;
 /**
  * The class <code>ExecutionLocationContextImplTest</code> contains tests for
  * the class <code>{@link ExecutionLocationContextImpl}</code>.
- *
  */
 @RunWith(JUnit4.class)
 public class ExecutionLocationContextImplTest {

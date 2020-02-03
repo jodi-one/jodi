@@ -7,7 +7,6 @@ import one.jodi.core.extensions.contexts.TransformationNameExecutionContext;
  * (a.k.a. ODI interface). It is used to implement the default naming policy and
  * a custom policy. The default policy plug-in is always executed before the
  * custom plug-in is executed.
- *
  */
 public interface TransformationNameStrategy {
 

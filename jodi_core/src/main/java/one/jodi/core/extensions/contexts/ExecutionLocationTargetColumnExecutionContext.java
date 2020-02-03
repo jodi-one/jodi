@@ -9,7 +9,6 @@ import java.util.List;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used to determine the execution locations
  * for mappings for each target column to be processed.
- *
  */
 public interface ExecutionLocationTargetColumnExecutionContext extends TargetColumnExecutionContext {
 

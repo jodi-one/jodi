@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
  * Method level annotation that defines transaction semantics. Range of values
  * defined by {@link TransactionAttributeType}. Defaults to <code>
  * TransactionAttributeType.REQUIRED</code>
- *
  */
 @Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)

@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * Interface that defines the bootstrap config values for the application.
- *
  */
 public interface RunConfig {
 
@@ -44,14 +43,14 @@ public interface RunConfig {
     /**
      * Gets the source model
      *
-     * @return  the source model in the etl subsystem
+     * @return the source model in the etl subsystem
      */
     String getSourceModel();
 
     /**
      * Gets the target model
      *
-     * @return  the target model in the etl subsystem
+     * @return the target model in the etl subsystem
      */
     String getTargetModel();
 

@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 /**
  * Reusable logic to process an annotation with the format
  * (schema_name.)?table_name
- *
  */
 public class TableReferenceHelper {
 

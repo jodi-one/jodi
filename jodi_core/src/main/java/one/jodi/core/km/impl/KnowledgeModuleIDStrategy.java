@@ -11,7 +11,6 @@ import one.jodi.core.extensions.types.KnowledgeModuleConfiguration;
 /**
  * This is the Identity Strategy that returns the very same
  * KnowledgeModuleConfiguration as consumed.
- *
  */
 public class KnowledgeModuleIDStrategy implements KnowledgeModuleStrategy {
 

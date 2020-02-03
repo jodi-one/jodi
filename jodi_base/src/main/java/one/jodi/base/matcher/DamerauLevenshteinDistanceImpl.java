@@ -4,7 +4,6 @@ package one.jodi.base.matcher;
  * Implements the
  * <a href="http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">
  * Damerau-Levenshtein distance</a>, a.k.a. edit distance.
- *
  */
 public class DamerauLevenshteinDistanceImpl implements StringDistanceMeasure {
 

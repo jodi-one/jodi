@@ -8,14 +8,13 @@ import java.util.List;
 
 /**
  * Service that provides Package management functionality.
- *
  */
 public interface PackageService {
 
     /**
      * Creates all packages associated with the Packages instance.
      *
-     * @param jodiPackages         the Packages instance
+     * @param jodiPackages        the Packages instance
      * @param raiseErrorOnFailure the raise error on failure
      */
     void createPackages(List<ETLPackage> jodiPackages, boolean raiseErrorOnFailure);
@@ -23,7 +22,7 @@ public interface PackageService {
     /**
      * Creates a package.
      *
-     * @param jodiPackage          the Package instance
+     * @param jodiPackage         the Package instance
      * @param raiseErrorOnFailure the raise error on failure
      */
     void createPackage(ETLPackage jodiPackage, boolean raiseErrorOnFailure);

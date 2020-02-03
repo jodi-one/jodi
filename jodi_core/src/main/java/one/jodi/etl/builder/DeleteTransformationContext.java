@@ -4,11 +4,10 @@ import one.jodi.etl.internalmodel.Transformation;
 
 /**
  * This interfaces serves to communicate Jodi enriched information necessary for deleting a given Transformation.
- * 
+ * <p>
  * See EnrichingBuilder.createDeleteContext(Transformation) for more information.
- * 
+ * <p>
  * By calling {@link EnrichingBuilder#enrich(Transformation, boolean)}
- *
  */
 public interface DeleteTransformationContext {
     /**

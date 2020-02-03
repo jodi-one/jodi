@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Constraints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jodi-constraints.v1.0.xsd">
+<Constraints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:noNamespaceSchemaLocation="jodi-constraints.v1.0.xsd">
     <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_DATABASE_CONDITION</Name>
         <Model>model.star.code</Model>
@@ -7,63 +8,63 @@
         <Type>DATABASE_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="false">
+    <ConditionConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_DC_DEFINEDINDATABASE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>DATABASE_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_ORACLE_DATA_INTEGRATION_CONDITION</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>ORACLE_DATA_INTEGRATION_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-		<ConditionConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="false">
+    <ConditionConstraint DefinedInDatabase="true" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_ODIC_DEFINEDINDATABASE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>ORACLE_DATA_INTEGRATION_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_DBC_ACTIVE_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>DATABASE_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="false">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS__DBC_FLOW_FALSE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>DATABASE_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="true">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="true">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_DBC_STATIC_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>DATABASE_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="true" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_ODIC_ACTIVE_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>ORACLE_DATA_INTEGRATION_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="false">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="false">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_ODIC_FLOW_FALSE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>
         <Type>ORACLE_DATA_INTEGRATION_CONDITION</Type>
         <Where>W_DA_D.LAST_CHANGED_DT &lt;= W_DA_D.EFFECTIVE_DT</Where>
     </ConditionConstraint>
-	<ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="true">
+    <ConditionConstraint DefinedInDatabase="false" Active="false" Flow="false" Static="true">
         <Name>W_Jodi_CONDITION_CONSTRAINTS_ODIC_STATIC_TRUE</Name>
         <Model>model.star.code</Model>
         <Table>W_DA_D</Table>

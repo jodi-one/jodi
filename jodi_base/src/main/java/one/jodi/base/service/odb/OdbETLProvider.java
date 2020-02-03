@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 /**
  * This class retrieves the table meta-data from the Oracle Db data dictionary tables.
- *
  */
 @Singleton
 public class OdbETLProvider implements SchemaMetaDataProvider {

@@ -6,7 +6,6 @@ import java.util.Optional;
  * Is supplied to BiExpressionParser to allow validation of column and to
  * retrieve type information. This interface must not be implemented by Spoofax
  * parser.
- *
  */
 public interface ColumnFinder {
     /**
@@ -16,9 +15,9 @@ public interface ColumnFinder {
      * vary depending on type of column that is defined (pre- or post-aggregation
      * columns).
      *
-     * @param tableName name of the physical or logical table
-     * @param columnName    name of the column. This name may be the physical column name or
-     *                  may be a logical name.
+     * @param tableName  name of the physical or logical table
+     * @param columnName name of the column. This name may be the physical column name or
+     *                   may be a logical name.
      * @return column descriptor that meets the table and column name criteria.
      * An empty Optional indicates that no such column was found in the
      * context.

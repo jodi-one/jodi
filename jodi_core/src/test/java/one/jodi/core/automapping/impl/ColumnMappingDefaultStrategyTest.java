@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 /**
  * The class <code>ColumnMappingDefaultStrategyTest</code> validates that based on a valid ColumnMappingExecutionContext
  * object, a correct derivation of source expression is returned, if possible.
- *
  */
 public class ColumnMappingDefaultStrategyTest {
 

@@ -7,7 +7,6 @@ import java.util.Map;
 
 /**
  * Defines the interface for accessing application properties.
- *
  */
 public interface JodiProperties {
 

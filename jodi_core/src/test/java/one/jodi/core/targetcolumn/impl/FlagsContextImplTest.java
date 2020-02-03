@@ -44,7 +44,6 @@ import static org.mockito.Mockito.*;
 /**
  * The class <code>FlagsContextImplTest</code> contains tests for the
  * class {@link FlagsContextImpl}
- *
  */
 public class FlagsContextImplTest {
     @Rule

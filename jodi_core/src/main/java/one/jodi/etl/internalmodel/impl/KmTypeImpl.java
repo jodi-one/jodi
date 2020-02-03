@@ -7,7 +7,6 @@ import java.util.Map;
 
 /**
  * Implementation of KmType interface.
- *
  */
 public class KmTypeImpl implements KmType {
 

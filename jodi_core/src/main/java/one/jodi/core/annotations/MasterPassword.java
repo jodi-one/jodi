@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Method level annotation that defines master repository password.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

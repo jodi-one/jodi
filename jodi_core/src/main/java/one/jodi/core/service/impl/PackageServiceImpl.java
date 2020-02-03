@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * Implementation of the {@link PackageService} interface.
- *
  */
 public class PackageServiceImpl implements PackageService {
 

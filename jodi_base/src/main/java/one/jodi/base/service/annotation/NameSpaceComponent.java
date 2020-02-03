@@ -4,6 +4,7 @@ class NameSpaceComponent {
 
     private final NameSpaceType type;
     private final String name;
+
     public NameSpaceComponent(final NameSpaceType type, final String name) {
         super();
         this.type = type;

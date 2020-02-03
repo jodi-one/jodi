@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 /**
  * The AutoMappingIDStrategy is a simple strategy that merely returns the mappings it consumes.
  * Its intended use is for the customStrategy for the {@link ColumnMappingContextImpl}
- *
  */
 public class ColumnMappingIDStrategy implements ColumnMappingStrategy {
 

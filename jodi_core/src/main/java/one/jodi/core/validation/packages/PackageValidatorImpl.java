@@ -25,7 +25,6 @@ import java.util.*;
 /**
  * The Class PackageValidatorImpl provides an implementation of the
  * PackageValidator interface.
- *
  */
 public class PackageValidatorImpl implements PackageValidator {
     private final static String ERROR_MESSAGE_80000 =

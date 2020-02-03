@@ -4,7 +4,6 @@ import java.util.Map;
 
 /**
  * KMType is used to represent a decision regarding a KM and its options.
- *
  */
 public interface KmType {
     /**

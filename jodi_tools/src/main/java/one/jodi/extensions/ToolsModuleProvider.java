@@ -17,7 +17,6 @@ import java.util.List;
  * The Class CustomModuleProvider provide a ModuleProvider implementation that
  * adds an  Guice Module implementation that allows for overriding
  * of core bindings for the use with this experimental functionality
- *
  */
 public class ToolsModuleProvider implements ModuleProvider {
 

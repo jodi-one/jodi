@@ -2,7 +2,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * The SetOperator defines the list of set operations.
- *
  */
 public enum SetOperatorTypeEnum {
 

@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Unit test for OdbMetaDataHelper.
- *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(JUnit4.class)

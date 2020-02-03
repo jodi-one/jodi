@@ -14,7 +14,6 @@ import java.util.List;
  * The context object must be cleared after the execution of the last activities
  * from the Jodi command line or service to avoid side effects if the Jodi tool
  * instance is used for executing another operation.
- *
  */
 public interface Context extends Resource {
 

@@ -24,8 +24,8 @@ public class GradleTests {
 
     private void testAllForPath(String buildfile2) throws FileNotFoundException {
         testAbsenceOfPattern(buildfile2, "\\${1,1}:{0,}\\s{1,}\\$od{1,1}");
-         testPresenceOfString(buildfile2, "writer.println \"$odiLibPathVariable=\\$$odiLibPathVariable\"");
-          testPresenceOfString(buildfile2, "writer.println \"set $odiLibPathVariable=%$odiLibPathVariable%\"");
+        testPresenceOfString(buildfile2, "writer.println \"$odiLibPathVariable=\\$$odiLibPathVariable\"");
+        testPresenceOfString(buildfile2, "writer.println \"set $odiLibPathVariable=%$odiLibPathVariable%\"");
         testLog4j(buildfile2);
     }
 

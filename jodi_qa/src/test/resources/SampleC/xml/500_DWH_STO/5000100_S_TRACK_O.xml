@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_TRACK_I</Name>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_TRACK_O</TargetDataStore>
-		<TargetColumn>
-			<Name>S_INSERT_DT_O</Name>
-			<MappingExpressions>
-				<Expression>SYSDATE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_TRACK_I</Name>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_TRACK_O</TargetDataStore>
+        <TargetColumn>
+            <Name>S_INSERT_DT_O</Name>
+            <MappingExpressions>
+                <Expression>SYSDATE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

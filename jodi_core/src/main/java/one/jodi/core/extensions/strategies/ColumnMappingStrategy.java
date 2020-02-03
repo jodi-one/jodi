@@ -6,7 +6,6 @@ import one.jodi.core.extensions.contexts.TargetColumnExecutionContext;
 /**
  * This interface defines the plug-in for determining how target columns
  * are mapped from source datasets.
- *
  */
 public interface ColumnMappingStrategy {
 

@@ -2,7 +2,6 @@ package one.jodi.etl.service.loadplan.internalmodel;
 
 /**
  * Internal model representation of a Variable used in a loadplan
- *
  */
 public class Variable {
     private final String name;
@@ -10,7 +9,7 @@ public class Variable {
     private final Object value;
 
     public Variable(final String name, final boolean refresh, final Object value) {
-        this.name = name;
+        this.name = name.trim();
         this.refresh = refresh;
         this.value = value;
     }
@@ -20,6 +19,9 @@ public class Variable {
     }
 
     public Object getValue() {
+        if(value instanceof String){
+            return ((String) value).trim();
+        }
         return value;
     }
 

@@ -13,7 +13,6 @@ import java.util.Map;
 /**
  * This interface is used to provide contextual information used to determine
  * source-to-target column mappings.
- *
  */
 public interface ColumnMappingExecutionContext {
 

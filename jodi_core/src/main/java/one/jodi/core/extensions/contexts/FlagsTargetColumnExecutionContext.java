@@ -7,7 +7,6 @@ import one.jodi.core.extensions.strategies.FlagsStrategy;
  * This interface is used to provide contextual information for
  * {@link FlagsStrategy FlagsStrategy}
  * for a selected target column.
- *
  */
 public interface FlagsTargetColumnExecutionContext extends TargetColumnExecutionContext {
 

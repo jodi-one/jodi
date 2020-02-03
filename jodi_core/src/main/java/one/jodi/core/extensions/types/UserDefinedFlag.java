@@ -3,7 +3,6 @@ package one.jodi.core.extensions.types;
 
 /**
  * Represents a named user-defined flag value.
- *
  */
 public interface UserDefinedFlag {
 

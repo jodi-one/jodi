@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * The class <code>OdiETLProviderTest</code> contains tests for the class <code>{@link Odi11ETLProvider}</code>.
- *
  */
 public class OdiETLProviderTest {
     @Mock

@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates a class to be injected for registration purpose.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

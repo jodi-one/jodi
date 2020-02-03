@@ -9,7 +9,6 @@ import java.util.Map;
 
 /**
  * Implementation of Lookup interface.
- *
  */
 public class LookupImpl implements Lookup {
 

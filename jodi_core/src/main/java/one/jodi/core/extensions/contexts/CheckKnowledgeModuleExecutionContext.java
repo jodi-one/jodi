@@ -4,7 +4,6 @@ import one.jodi.base.model.types.DataModel;
 
 /**
  * Execution context for use with Check KM strategies.
- *
  */
 public interface CheckKnowledgeModuleExecutionContext extends KnowledgeModuleExecutionContext {
 

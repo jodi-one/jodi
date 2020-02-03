@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_INVOICE_I</Name>  
-			</Source>
-			<Source>
-				<Name>S_INVOICELINE_I</Name>
-				<Join>S_INVOICE_I.INVE_CODE = S_INVOICELINE_I.INVL_CODE</Join>
-				<JoinType>INNER</JoinType>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_INVOICELINE_O_S01</TargetDataStore>
-		<TargetColumn>
-			<Name>INVL_CUST_CODE</Name>
-			<MappingExpressions>
-				<Expression>S_INVOICE_I.INVE_CUSTOMER_CODE</Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>VARCHAR2</DataType>
-				<Length>60</Length>
-			</Properties>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_YEAR_DATE_CODE</Name>
-			<MappingExpressions>
-				<Expression>SUBSTR( S_INVOICE_I.INVE_DATE_CODE,0,4)</Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>NUMBER</DataType>
-				<Length>8</Length>
-				<Scale>0</Scale>
-			</Properties>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_LINE_CODE</Name>
-			<MappingExpressions>
-				<Expression><![CDATA[ S_INVOICELINE_I.INVL_LINE_CODE ]]></Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>VARCHAR2</DataType>
-				<Length>120</Length>
-			</Properties>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVE_YEAR_AMOUNT</Name>
-			<MappingExpressions>
-				<Expression><![CDATA[NVL(SUM( S_INVOICELINE_I.INVL_AMOUNT ) OVER( PARTITION BY S_INVOICELINE_I.INVL_CUST_CODE , SUBSTR( S_INVOICELINE_I.INVL_INVE_DATE_CODE , 0, 4) ORDER BY S_INVOICELINE_I.INVL_INVE_DATE_CODE, S_INVOICELINE_I.INVL_LINE_CODE ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING ) ,0)]]></Expression>
-			</MappingExpressions>
-			<Properties>
-				<DataType>NUMBER</DataType>
-				<Length>38</Length>
-				<Scale>2</Scale>
-			</Properties>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_INVOICE_I</Name>
+            </Source>
+            <Source>
+                <Name>S_INVOICELINE_I</Name>
+                <Join>S_INVOICE_I.INVE_CODE = S_INVOICELINE_I.INVL_CODE</Join>
+                <JoinType>INNER</JoinType>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_INVOICELINE_O_S01</TargetDataStore>
+        <TargetColumn>
+            <Name>INVL_CUST_CODE</Name>
+            <MappingExpressions>
+                <Expression>S_INVOICE_I.INVE_CUSTOMER_CODE</Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>VARCHAR2</DataType>
+                <Length>60</Length>
+            </Properties>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_YEAR_DATE_CODE</Name>
+            <MappingExpressions>
+                <Expression>SUBSTR( S_INVOICE_I.INVE_DATE_CODE,0,4)</Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>NUMBER</DataType>
+                <Length>8</Length>
+                <Scale>0</Scale>
+            </Properties>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_LINE_CODE</Name>
+            <MappingExpressions>
+                <Expression><![CDATA[ S_INVOICELINE_I.INVL_LINE_CODE ]]></Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>VARCHAR2</DataType>
+                <Length>120</Length>
+            </Properties>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVE_YEAR_AMOUNT</Name>
+            <MappingExpressions>
+                <Expression>
+                    <![CDATA[NVL(SUM( S_INVOICELINE_I.INVL_AMOUNT ) OVER( PARTITION BY S_INVOICELINE_I.INVL_CUST_CODE , SUBSTR( S_INVOICELINE_I.INVL_INVE_DATE_CODE , 0, 4) ORDER BY S_INVOICELINE_I.INVL_INVE_DATE_CODE, S_INVOICELINE_I.INVL_LINE_CODE ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING ) ,0)]]></Expression>
+            </MappingExpressions>
+            <Properties>
+                <DataType>NUMBER</DataType>
+                <Length>38</Length>
+                <Scale>2</Scale>
+            </Properties>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

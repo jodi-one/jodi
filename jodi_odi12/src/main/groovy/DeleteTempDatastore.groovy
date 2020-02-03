@@ -15,6 +15,6 @@ ITransactionManager tm = odiInstance.getTransactionManager();
 ITransactionStatus txnStatus = tm.getTransaction(txnDef);
 int counter;
 for (OdiDataStore odiDataStore : finder.findAll()) {
-   counter++
+    counter++
 }
 println counter

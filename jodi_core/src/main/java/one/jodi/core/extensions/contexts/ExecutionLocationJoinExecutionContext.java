@@ -12,7 +12,6 @@ import java.util.List;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used to determine the execution locations
  * for joins.
- *
  */
 public interface ExecutionLocationJoinExecutionContext extends ExecutionLocationExecutionContext {
 

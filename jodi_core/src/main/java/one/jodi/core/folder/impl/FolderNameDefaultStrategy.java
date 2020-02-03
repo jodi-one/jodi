@@ -16,7 +16,6 @@ import java.util.Map;
  * the custom plug-in is executed.
  * <p>
  * The class is a concrete strategy participating in the Strategy Pattern.
- *
  */
 public class FolderNameDefaultStrategy implements FolderNameStrategy {
 

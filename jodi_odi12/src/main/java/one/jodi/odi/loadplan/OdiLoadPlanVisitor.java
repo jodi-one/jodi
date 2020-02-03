@@ -12,7 +12,6 @@ import java.util.Collection;
  * Another implementor uses this to validate the internal model.
  * <p>
  * Antoher implementor uses this to create an OdiLoadPlan while traversing the internal model.
- *
  */
 public interface OdiLoadPlanVisitor<Odiloadplanstep> {
 

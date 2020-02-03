@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 /**
  * The class <code>DatastoreServiceImplTest</code> contains tests for the class
  * {@link DatastoreServiceImpl}
- *
  */
 public class DatastoreServiceImplTest extends TestCase {
     DatastoreServiceProvider mockProvider;

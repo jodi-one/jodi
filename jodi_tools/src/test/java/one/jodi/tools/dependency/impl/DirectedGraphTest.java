@@ -1,6 +1,5 @@
 package one.jodi.tools.dependency.impl;
 
-import one.jodi.tools.ModelMethodsTest;
 import one.jodi.tools.dependency.DirectedGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -8,7 +8,6 @@ import one.jodi.model.extensions.MappingsExtension;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used to determine the execution locations
  * for target column mappings.
- *
  */
 public interface ExecutionLocationDataStoreExecutionContext extends ExecutionLocationExecutionContext {
 

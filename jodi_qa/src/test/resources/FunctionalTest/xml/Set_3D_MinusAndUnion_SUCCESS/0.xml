@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
-  
+          xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+
     <Package>
-      <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-      <PackageName>SET_3D_MINUSANDUNION_SUCCESS</PackageName>
-      <PackageListItem>SET_3D_MINUSANDUNION_SUCCESS</PackageListItem>
-     </Package>
-  
- </Packages>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>SET_3D_MINUSANDUNION_SUCCESS</PackageName>
+        <PackageListItem>SET_3D_MINUSANDUNION_SUCCESS</PackageListItem>
+    </Package>
+
+</Packages>

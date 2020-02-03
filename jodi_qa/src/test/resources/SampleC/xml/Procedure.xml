@@ -1,58 +1,59 @@
 <?xml version="1.0" ?>
-<Procedure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jodi-procedure.v1.0.xsd">
-	<FolderName>InitialORACLE_CHINOOK</FolderName>
-	<Name>Test Proc</Name>
-	<Description>Unit test procedure.
-	</Description>
-	<Tasks>
-		<Task>
-			<Name>Do Nothing</Name>
-			<TargetCommand>
-				<ExecutionContext>GLOBAL</ExecutionContext>
-				<LogicalSchema>model.edw_sds.code</LogicalSchema>
-				<Command><![CDATA[begin
+<Procedure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="jodi-procedure.v1.0.xsd">
+    <FolderName>InitialORACLE_CHINOOK</FolderName>
+    <Name>Test Proc</Name>
+    <Description>Unit test procedure.
+    </Description>
+    <Tasks>
+        <Task>
+            <Name>Do Nothing</Name>
+            <TargetCommand>
+                <ExecutionContext>GLOBAL</ExecutionContext>
+                <LogicalSchema>model.edw_sds.code</LogicalSchema>
+                <Command><![CDATA[begin
 null;
 end;]]></Command>
-			</TargetCommand>
-		</Task>
-	</Tasks>
-	<Options>
-		<Option>
-			<Name>TestBoolean</Name>
-			<Type>BOOLEAN</Type>
-			<DefaultValue  xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</DefaultValue>
-			<Condition>1=1</Condition>
-			<Description>A Description for boolean.</Description>
-			<Help>A help message for boolean.</Help>
-		</Option>	
-			<Option>
-			<Name>TestText</Name>
-			<Type>TEXT</Type>
-			<DefaultValue  xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testString</DefaultValue>
-			<Condition>1=1</Condition>
-			<Description>A Description for text.</Description>
-			<Help>A help message for text.</Help>
-		</Option>
-			<Option>
-			<Name>TestValue</Name>
-			<Type>VALUE</Type><!-- implemented a CHOICE with 1 value. -->
-			<DefaultValue  xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testValue</DefaultValue>
-			<Condition>1=1</Condition>
-			<Description>A Description for value.</Description>
-			<Help>A help message for value.</Help>
-		</Option>		
-		<Option>
-			<Name>TestChoice</Name>
-			<Type>CHOICE</Type><!-- implemented a CHOICE with more than 1 value. -->
-			<DefaultValue  xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testChoice</DefaultValue>
-			<OptionList>Option 1</OptionList>
-			<OptionList>Option 2</OptionList>
-			<OptionList>testChoice</OptionList><!-- should be selected. -->
-			<OptionList>Option 4</OptionList>
-			<OptionList>Option 5</OptionList>		
-			<Condition>1=1</Condition>
-			<Description>A Description for choice.</Description>
-			<Help>A help message for choice.</Help>
-		</Option>			
-	</Options>
+            </TargetCommand>
+        </Task>
+    </Tasks>
+    <Options>
+        <Option>
+            <Name>TestBoolean</Name>
+            <Type>BOOLEAN</Type>
+            <DefaultValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:boolean">true</DefaultValue>
+            <Condition>1=1</Condition>
+            <Description>A Description for boolean.</Description>
+            <Help>A help message for boolean.</Help>
+        </Option>
+        <Option>
+            <Name>TestText</Name>
+            <Type>TEXT</Type>
+            <DefaultValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testString</DefaultValue>
+            <Condition>1=1</Condition>
+            <Description>A Description for text.</Description>
+            <Help>A help message for text.</Help>
+        </Option>
+        <Option>
+            <Name>TestValue</Name>
+            <Type>VALUE</Type><!-- implemented a CHOICE with 1 value. -->
+            <DefaultValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testValue</DefaultValue>
+            <Condition>1=1</Condition>
+            <Description>A Description for value.</Description>
+            <Help>A help message for value.</Help>
+        </Option>
+        <Option>
+            <Name>TestChoice</Name>
+            <Type>CHOICE</Type><!-- implemented a CHOICE with more than 1 value. -->
+            <DefaultValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">testChoice</DefaultValue>
+            <OptionList>Option 1</OptionList>
+            <OptionList>Option 2</OptionList>
+            <OptionList>testChoice</OptionList><!-- should be selected. -->
+            <OptionList>Option 4</OptionList>
+            <OptionList>Option 5</OptionList>
+            <Condition>1=1</Condition>
+            <Description>A Description for choice.</Description>
+            <Help>A help message for choice.</Help>
+        </Option>
+    </Options>
 </Procedure>

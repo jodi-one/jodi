@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verify;
 
 /**
  * DOCUMENT ME!
- *
  */
 public class PackageServiceProviderTest extends TestCase {
 

@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
  * The first regular expression (if specified in Jodi properties) will not check ignore list property,
  * also specified in Jodi Properties.
  * </ul>
- *
  */
 public class ColumnMappingDefaultStrategy implements ColumnMappingStrategy {
 

@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 
 /**
  * The class <code>ModelSolutionLayerTypeTest</code> contains tests for the class <code>{@link ModelSolutionLayerType}</code>.
- *
  */
 public class ModelSolutionLayerTypeTest {
 

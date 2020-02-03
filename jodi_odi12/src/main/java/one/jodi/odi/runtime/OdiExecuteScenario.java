@@ -63,7 +63,7 @@ public class OdiExecuteScenario {
     public void startScenario(String agentUrl, String user, String password, String contextCode, String logLevel,
                               String workRepName, String scenarioName) {
         // backwards compatibility
-        this.startScenario( agentUrl, user, password, contextCode, Integer.parseInt(logLevel),
-         workRepName, scenarioName);
+        this.startScenario(agentUrl, user, password, contextCode, Integer.parseInt(logLevel),
+                workRepName, scenarioName);
     }
 }

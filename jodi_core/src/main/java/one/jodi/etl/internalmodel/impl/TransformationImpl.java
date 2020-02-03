@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * Implementation of Transformation interface.
- *
  */
 public class TransformationImpl implements Transformation {
 

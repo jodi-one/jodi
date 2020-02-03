@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 /**
  * Internal model of a LoadPlan details like the name and folder.
- *
  */
 public class LoadPlanDetails {
     private String loadPlanName;

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 /**
  * Default implementation of a {@link DataStore} interface and represents both
  * standard data stores and temporary tables.
- *
  */
 public class DataStoreImpl implements DataStore, Serializable {
 

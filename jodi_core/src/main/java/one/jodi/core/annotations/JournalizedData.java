@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Method level annotation that defines name for the journalized data property.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

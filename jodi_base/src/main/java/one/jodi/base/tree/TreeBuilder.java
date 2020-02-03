@@ -35,9 +35,9 @@ public class TreeBuilder<T> {
      * a leaf node. Identical sequences from nodes attached to root to leaves
      * will be aligned with the existing tree structure.
      *
-     * @param root       node all other roots will be attached
-     * @param linearPaths     List that contains node values attached from root to leaf
-     * @param comparator comparator to determine if two nodes are identical
+     * @param root        node all other roots will be attached
+     * @param linearPaths List that contains node values attached from root to leaf
+     * @param comparator  comparator to determine if two nodes are identical
      * @return root of the tree
      * @throws IllegalArgumentException the exception to be thrown
      */
@@ -80,7 +80,7 @@ public class TreeBuilder<T> {
      * the existing tree structure.
      *
      * @param linearPaths List that contains node values attached from root to leaf
-     * @param comparator comparator to determine if two nodes are identical
+     * @param comparator  comparator to determine if two nodes are identical
      * @return root of the tree
      * @throws IllegalArgumentException exception to be thrown
      */

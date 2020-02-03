@@ -47,6 +47,7 @@ public class ConstraintValidationServiceImpl implements ConstraintValidationServ
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final Logger logger = LogManager.getLogger(ConstraintValidationServiceImpl.class);
+
     @SuppressWarnings("rawtypes")
     @Inject
     protected ConstraintValidationServiceImpl(

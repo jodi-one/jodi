@@ -5,7 +5,6 @@ import one.jodi.core.extensions.strategies.TransformationNameStrategy;
 
 /**
  * Identity strategy that is used as a placeholder for a custom strategy.
- *
  */
 public class TransformationNameIDStrategy implements TransformationNameStrategy {
 

@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 /**
  * The class <code>FlagsDefaultStrategyTest</code> contains tests for
  * the class <code>{@link FlagsDefaultStrategy}</code>.
- *
  */
 public class FlagsDefaultStrategyTest {
 

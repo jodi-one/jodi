@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
     <!-- XMLSchema 1.1
     Optional values are Attributes,
     Mandatory values are elements.
@@ -50,13 +50,13 @@
 
     <xs:element name="Native" type="SequenceNativetype" substitutionGroup="Sequence"/>
     <xs:complexType name="SequenceNativetype">
-                <xs:complexContent>
-        <xs:extension base="SequenceType">
-            <xs:sequence>
-                <xs:element name="Model" type="xs:string"/>
-                <xs:element name="NativeName" type="xs:string"/>
-            </xs:sequence>
-        </xs:extension>
+        <xs:complexContent>
+            <xs:extension base="SequenceType">
+                <xs:sequence>
+                    <xs:element name="Model" type="xs:string"/>
+                    <xs:element name="NativeName" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 </xs:schema>

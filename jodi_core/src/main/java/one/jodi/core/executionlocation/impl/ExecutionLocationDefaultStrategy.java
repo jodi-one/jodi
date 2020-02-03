@@ -15,7 +15,6 @@ import java.util.Optional;
 /**
  * The default ExecutionLocationStrategy implementation that implements the
  * baseline behavior to determine ExecutionLocation for a given column.
- *
  */
 public class ExecutionLocationDefaultStrategy implements
         ExecutionLocationStrategy {

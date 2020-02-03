@@ -9,7 +9,6 @@ import java.util.List;
  * Modules (LKMs). One important consideration is that set operations are not applied to the source datasets
  * but the target datasets as defined by the MappingsExpressions in the Mappings element. This implies the set
  * operations are applied to the data after its transformation from the source datasets to the target data store.
- *
  */
 public interface Dataset {
     /**

@@ -7,7 +7,6 @@ import java.io.InputStream;
 
 /**
  * Service that provides Transformation management functionality.
- *
  */
 public interface TransformationService {
 

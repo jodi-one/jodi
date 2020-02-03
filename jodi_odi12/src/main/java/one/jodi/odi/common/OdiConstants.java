@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * Contains constants that are directly related to ODI only.
- *
  */
 public class OdiConstants {
 

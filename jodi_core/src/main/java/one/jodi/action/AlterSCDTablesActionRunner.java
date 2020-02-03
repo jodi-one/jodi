@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * An {@link one.jodi.bootstrap.RunConfig$ActionRunner} implementation
  * that invokes the {@link TableServiceProvider#alterSCDTables()} method.
- *
  */
 public class AlterSCDTablesActionRunner implements ActionRunner {
     private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"

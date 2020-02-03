@@ -59,7 +59,7 @@ public abstract class AbstactConfiguration {
      * loading the properties in the specified file.
      *
      * @param fileName properties file
-     * @throws RuntimeException exception to throw
+     * @throws RuntimeException         exception to throw
      * @throws IllegalArgumentException exception to throw
      */
     protected void init(final String fileName) {

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of the Messaging framework {@link ErrorWarningMessageJodi} interface.
- *
  */
 public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 

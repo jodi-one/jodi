@@ -2,7 +2,6 @@ package one.jodi.tools;
 
 import one.jodi.core.model.*;
 import one.jodi.core.model.impl.*;
-import one.jodi.core.service.impl.TransformationServiceImpl;
 import one.jodi.etl.builder.TransformationBuilder;
 import one.jodi.etl.builder.impl.TransformationBuilderImpl;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 
 public class ModelMethodsTest {
 
+    private final static Logger logger = LogManager.getLogger(
+            ModelMethodsTest.class);
     Transformation transformation;
     HashMap<String, List<String>> map = new HashMap<String, List<String>>();
     ArrayList<String> skipColumns = new ArrayList<String>();
@@ -24,9 +25,6 @@ public class ModelMethodsTest {
      * Used for easily building equivalent internal models.
      */
     TransformationBuilder transformationBuilder = new TransformationBuilderImpl(null, null);
-
-    private final static Logger logger = LogManager.getLogger(
-            ModelMethodsTest.class);
 
     @Before
     public void setup() {

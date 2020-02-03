@@ -2,7 +2,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * A mapping command is a command that is executed at the beginning or end of a mapping.
- *
  */
 public interface MappingCommand {
 

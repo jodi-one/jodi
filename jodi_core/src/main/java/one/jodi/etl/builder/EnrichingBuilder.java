@@ -16,7 +16,7 @@ import one.jodi.etl.internalmodel.Transformation;
  * At the highest level this interface serves as the single point by which the internal model is enriched with information not
  * defined from the original external input model (XML).  After the sucessful call to {@link #enrich(Transformation, boolean)} the model
  * is considered fully populated and ready to be consumed by the Jodi ODI layer to create an ODI interface.
- * 
+ * <p>
  * The implementor will delegate the work of deriving information to
  * the various Jodi plugins/contexts
  * <ul>
@@ -29,14 +29,13 @@ import one.jodi.etl.internalmodel.Transformation;
  * <li>{@link ModelCodeContext}</li>
  * <li>{@link TransformationNameContext}</li>
  * </ul>
- * 
+ * <p>
  * The implementor is responsible for orchestrating the order of calls to plugins so that necessary dependent information required for
  * making the derivation is obtained.  Orchestration also must account for the order that Jodi {@link DataStore}s
  * are created from the input model so that both contexts and strategies can acquire from {@link Context}.
- * 
- * 
+ * <p>
+ * <p>
  * The interface also defines a separate method to create information required to delete a transformation, the {@link #createDeleteContext(Transformation, boolean)}
- *
  */
 public interface EnrichingBuilder {
 
@@ -55,7 +54,7 @@ public interface EnrichingBuilder {
      * should be un-enriched.  All values supplied in {@link DeleteTransformationContext} will be derived
      * by Jodi unless supplied in incoming {@link Transformation}
      *
-     * @param transformation the transformation to create the delete context for
+     * @param transformation    the transformation to create the delete context for
      * @param isJournalizedData flag indicating journalization is used
      * @return context
      */

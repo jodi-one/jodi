@@ -3,7 +3,6 @@ package one.jodi.base.config;
 /**
  * Thrown when there is a problem accessing application configuration
  * properties.
- *
  */
 public class ConfigurationException extends RuntimeException {
 
@@ -20,7 +19,7 @@ public class ConfigurationException extends RuntimeException {
      * Creates a new ConfigurationException instance.
      *
      * @param message meaningful message of the exception
-     * @param cause the cause of the exception
+     * @param cause   the cause of the exception
      */
     public ConfigurationException(final String message,
                                   final Throwable cause) {

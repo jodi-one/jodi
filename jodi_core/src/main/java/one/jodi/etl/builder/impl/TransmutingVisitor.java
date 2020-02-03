@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
  * This class uses the visitor pattern where possible to transform the external model into the Jodi internal model.
  * <p>
  * As the visitor only receives events the derivation of model and KM is computed using direct access to the external hierarchy.
- *
  */
 public class TransmutingVisitor extends BaseVisitor {
 
@@ -57,6 +56,7 @@ public class TransmutingVisitor extends BaseVisitor {
             new LinkedList<>();
     private List<FlowImpl> flows =
             new LinkedList<>();
+
     public TransmutingVisitor(final ErrorWarningMessageJodi errorWarningMessages,
                               final @InterfacePrefix String prefix,
                               final JodiProperties properties) {

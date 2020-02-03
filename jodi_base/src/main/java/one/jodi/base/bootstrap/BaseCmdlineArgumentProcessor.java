@@ -13,7 +13,6 @@ import java.util.List;
 
 /**
  * A {@link RunConfig} implementation that is initialized from the command line.
- *
  */
 public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
@@ -168,7 +167,11 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return generateIds;
     }
 
-    public String getDeploymentArchiveType() {return da_type;};
+    public String getDeploymentArchiveType() {
+        return da_type;
+    }
+
+    ;
 
     /**
      * Returns <code>true</code> if the {@link #moduleProviderClass} property
@@ -234,8 +237,8 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     /**
      * Prints the usage message and exits the application.
      *
-     * @param header the header of the usage message
-     * @param opts options
+     * @param header   the header of the usage message
+     * @param opts     options
      * @param exitCode the return / exit code
      */
     protected void usage(final String header, final Options opts,

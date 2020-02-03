@@ -13,7 +13,6 @@ import java.util.List;
  * {@link ModelCodeStrategy
  * ModelCodeStrategy} that is used to determine the model a given data store is
  * associated with.
- *
  */
 public interface ModelNameExecutionContext extends DataStoreExecutionContext {
 

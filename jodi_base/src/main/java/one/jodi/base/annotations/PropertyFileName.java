@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates name to be injected for the property file.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

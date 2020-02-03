@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 
 /**
  * Implementation of the {@link MetadataServiceProvider} interface.
- *
  */
 public class XMLMetadataServiceProvider implements MetadataServiceProvider {
 
@@ -59,6 +58,7 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
     private final Path propFile;
     private CollectXmlObjectsUtil<Packages> packageCollectUtil;
     private CollectXmlObjectsUtil<Transformation> transCollectUtil;
+
     @Inject
     public XMLMetadataServiceProvider(final JodiProperties properties,
                                       final @Nullable @XmlFolderName String metadataFolder,

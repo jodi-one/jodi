@@ -4,49 +4,51 @@
         <Name>LOAD_UP_TO_DATE</Name>
         <DataType>NUMERIC</DataType>
         <Model>model.edw_sds.code</Model>
-        <Query>select nvl( max(  F.INVL_INVE_DATE_WID   )  , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
+        <Query>select nvl( max( F.INVL_INVE_DATE_WID ) , 19000101) from DWH_DMT.W_INVOICELINE_F F</Query>
     </Variable>
     <Variable Global="false" KeepHistory="LATEST_VALUE">
         <Name>VAR_PARTITION_NAME</Name>
         <DataType>TEXT</DataType>
         <Model>model.edw_sds.code</Model>
         <Query>SELECT NVL(c.partition_name,'P9999')
-FROM dual d
-left JOIN
-  (SELECT partition_name
-  FROM
-    ( SELECT DISTINCT 'P'
-      ||INVL_INVE_DATE_CODE partition_name
-    FROM dwh_sto.s_invoiceline_o
-    MINUS
-    SELECT partition_name
-    FROM all_tab_partitions
-    WHERE table_name = 'W_INVOICELINE_F'
-    AND num_rows    != 0
-    )
-  ORDER BY partition_name
-  ) c on ( 1=1 and rownum =1 )</Query>
+            FROM dual d
+            left JOIN
+            (SELECT partition_name
+            FROM
+            ( SELECT DISTINCT 'P'
+            ||INVL_INVE_DATE_CODE partition_name
+            FROM dwh_sto.s_invoiceline_o
+            MINUS
+            SELECT partition_name
+            FROM all_tab_partitions
+            WHERE table_name = 'W_INVOICELINE_F'
+            AND num_rows != 0
+            )
+            ORDER BY partition_name
+            ) c on ( 1=1 and rownum =1 )
+        </Query>
     </Variable>
-    
-     <Variable Global="true" KeepHistory="LATEST_VALUE">
+
+    <Variable Global="true" KeepHistory="LATEST_VALUE">
         <Name>GLOBAL_VAR_PARTITION_NAME</Name>
         <DataType>TEXT</DataType>
         <Model>model.edw_sds.code</Model>
         <Query>SELECT NVL(c.partition_name,'P9999')
-FROM dual d
-left JOIN
-  (SELECT partition_name
-  FROM
-    ( SELECT DISTINCT 'P'
-      ||INVL_INVE_DATE_CODE partition_name
-    FROM dwh_sto.s_invoiceline_o
-    MINUS
-    SELECT partition_name
-    FROM all_tab_partitions
-    WHERE table_name = 'W_INVOICELINE_F'
-    AND num_rows    != 0
-    )
-  ORDER BY partition_name
-  ) c on ( 1=1 and rownum =1 )</Query>
+            FROM dual d
+            left JOIN
+            (SELECT partition_name
+            FROM
+            ( SELECT DISTINCT 'P'
+            ||INVL_INVE_DATE_CODE partition_name
+            FROM dwh_sto.s_invoiceline_o
+            MINUS
+            SELECT partition_name
+            FROM all_tab_partitions
+            WHERE table_name = 'W_INVOICELINE_F'
+            AND num_rows != 0
+            )
+            ORDER BY partition_name
+            ) c on ( 1=1 and rownum =1 )
+        </Query>
     </Variable>
 </Variables>

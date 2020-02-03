@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 /**
  * The ExecutionLocationContext implementation. This class utilizes the defined
  * strategy to determine the ExecutionLocation for a given column.
- *
  */
 public class ExecutionLocationContextImpl implements ExecutionLocationContext {
 

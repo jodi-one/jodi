@@ -19,7 +19,6 @@ import static org.mockito.Mockito.mock;
 /**
  * The class <code>FlagsIDStrategyTest</code> contains tests for
  * the class <code>{@link FlagsIDStrategy}</code>.
- *
  */
 public class FlagsIDStrategyTest {
     FlagsIDStrategy fixture;

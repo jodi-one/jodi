@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Method level annotation that defines caching semantics.
- *
  */
 @Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)

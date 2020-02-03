@@ -13,16 +13,15 @@ import java.util.stream.Collectors;
  * The implementation of Context delegates all requests to a class that
  * maintains the global state (see {@link GlobalContextState} ). This class must
  * not maintain any state than references to context state class instances.
- * 
+ * <p>
  * The main purpose of this is to simplify the implementation of of the scoping
  * and cleanup mechanism and avoid making unintended mistakes that can result in
  * corruption of the context over multiple uses of the Jodi tool.
- * 
+ * <p>
  * This design will simplify extending of the class to manage other non-global
  * contexts.
  *
  * <b>Must be a Singleton!</b>
- *
  */
 public class ContextImpl implements Context {
     private final static Logger logger = LogManager.getLogger(ContextImpl.class);

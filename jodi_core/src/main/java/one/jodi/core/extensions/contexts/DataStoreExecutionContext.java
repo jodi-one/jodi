@@ -8,7 +8,6 @@ import java.util.Map;
 /**
  * This interface is used to provide shared contextual information across
  * source, lookup or target execution context objects.
- *
  */
 public interface DataStoreExecutionContext {
 

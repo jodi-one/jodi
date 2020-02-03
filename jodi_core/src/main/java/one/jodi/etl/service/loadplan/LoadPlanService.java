@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Tranforms an external model into an internal model,
  * and create an OdiLoadPlan from the internal model.
- *
  */
 public interface LoadPlanService {
 

@@ -6,7 +6,6 @@ import java.util.Map;
 
 /**
  * Interface describing a data store a.k.a. table
- *
  */
 public interface DataStoreDescriptor {
 

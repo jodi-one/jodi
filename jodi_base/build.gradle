@@ -1,22 +1,22 @@
 apply plugin: 'com.github.ben-manes.versions'
 
 buildscript {
-   repositories {
-      mavenCentral() 
-      jcenter()
-   }
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
 
-   dependencies {
-      classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
-   }
+    dependencies {
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
+    }
 }
 
 sourceSets {
-	main { 
-		java { 
-			srcDirs += jaxbGenOutputDir
-		}
-	}
+    main {
+        java {
+            srcDirs += jaxbGenOutputDir
+        }
+    }
 }
 
 dependencies {
@@ -26,98 +26,98 @@ dependencies {
     compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
     compile group: 'javax.activation', name: 'activation', version: '1.1.1'
 
-	compile 'commons-cli:commons-cli:1.4' 
-	compile("com.google.inject:guice:4.1.0") {
-	   exclude module: 'com.google.guava'
-	}
-	// replace default Guava version 1.9 to new version 21.0
-	compile group: 'com.google.guava', name: 'guava', version: '21.0'
-	
-	compile("org.apache.commons:commons-configuration2:2.1.1") {
-	   // remove default libraries and replace with more recent versions
-	   exclude module: 'commons-logging'
-	   exclude module: 'commons-beanutils'
-	}
-	   
-	// use latest version of commons libs for commons-configuration;
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
-	compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
-	
-	// Annotation service
-	compile 'org.json:json:20160810'
-   
-   testCompile 'org.apache.commons:commons-csv:1.4'
-   testCompile group: 'org.reflections', name: 'reflections', version: '0.9.11'
+    compile 'commons-cli:commons-cli:1.4'
+    compile("com.google.inject:guice:4.1.0") {
+        exclude module: 'com.google.guava'
+    }
+    // replace default Guava version 1.9 to new version 21.0
+    compile group: 'com.google.guava', name: 'guava', version: '21.0'
+
+    compile("org.apache.commons:commons-configuration2:2.1.1") {
+        // remove default libraries and replace with more recent versions
+        exclude module: 'commons-logging'
+        exclude module: 'commons-beanutils'
+    }
+
+    // use latest version of commons libs for commons-configuration;
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+
+    // Annotation service
+    compile 'org.json:json:20160810'
+
+    testCompile 'org.apache.commons:commons-csv:1.4'
+    testCompile group: 'org.reflections', name: 'reflections', version: '0.9.11'
 }
 
 task srcZip(type: Zip) {
     classifier = 'src'
     from projectDir
-    
+
     include 'src/main/java/**/*.java'
 }
 
 jar {
-	manifest {
-		attributes(
-				"Class-Path": ".")
-	}
+    manifest {
+        attributes(
+                "Class-Path": ".")
+    }
 }
 
 def fixWindowsStartScript(writer, lines) {
-	lines.eachWithIndex { line, i ->
-		if ( i < 6 ) {
-			writer.println line
-		} else if (i == 6) {
-			writer.println ''
-			writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
-			writer.println line
-		} else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
-			writer.println line
-			writer.println ''
-			writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
-			writer.println "goto hasodi"
-			writer.println ":noodi"
-			writer.println "echo."
-			writer.println "echo ERROR: $odiLibPathVariable is not set."
-			writer.println "echo."
-			writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
-			writer.println "echo to the location of the jar files in you ODI installation."
-			writer.println "goto fail"
-			writer.println ":hasodi"
-			writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
-			writer.println ''
-			writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
-			writer.println ''
-		} else {
-			writer.println line
-		}
-	}
+    lines.eachWithIndex { line, i ->
+        if (i < 6) {
+            writer.println line
+        } else if (i == 6) {
+            writer.println ''
+            writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
+            writer.println line
+        } else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
+            writer.println line
+            writer.println ''
+            writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
+            writer.println "goto hasodi"
+            writer.println ":noodi"
+            writer.println "echo."
+            writer.println "echo ERROR: $odiLibPathVariable is not set."
+            writer.println "echo."
+            writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
+            writer.println "echo to the location of the jar files in you ODI installation."
+            writer.println "goto fail"
+            writer.println ":hasodi"
+            writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
+            writer.println ''
+            writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
+            writer.println ''
+        } else {
+            writer.println line
+        }
+    }
 }
 
 def fixUnixStartScript(writer, lines) {
-	lines.eachWithIndex { line, i ->
-		if ( i < 8 ) {
-			writer.println line
-		} else if (i==8) {
-			writer.println ''
-			writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
-			writer.println line
-		} else if (line =~ /^CLASSPATH=\$/) {
-			writer.println line
-			writer.println ''
-			writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
-			writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
-			writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
-			writer.println ''
-			writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
-			writer.println "to the location of the jar files in you ODI installation.\""
-			writer.println "fi"
-			writer.println ''
-			writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml"
-			writer.println ''
-		} else {
-			writer.println line
-		}
-	}
+    lines.eachWithIndex { line, i ->
+        if (i < 8) {
+            writer.println line
+        } else if (i == 8) {
+            writer.println ''
+            writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
+            writer.println line
+        } else if (line =~ /^CLASSPATH=\$/) {
+            writer.println line
+            writer.println ''
+            writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
+            writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
+            writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
+            writer.println ''
+            writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
+            writer.println "to the location of the jar files in you ODI installation.\""
+            writer.println "fi"
+            writer.println ''
+            writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml"
+            writer.println ''
+        } else {
+            writer.println line
+        }
+    }
 }

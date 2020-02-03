@@ -6,7 +6,6 @@ import one.jodi.model.extensions.TargetColumnExtension;
 /**
  * This interface is used to provide shared contextual information for execution
  * context objects that have the scope of a mappings target column.
- *
  */
 public interface TargetColumnExecutionContext {
 

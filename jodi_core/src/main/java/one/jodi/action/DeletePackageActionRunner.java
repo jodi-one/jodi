@@ -15,7 +15,6 @@ import one.jodi.core.service.PackageService;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * PackageService#deletePackage(String, boolean)} method.
- *
  */
 public class DeletePackageActionRunner implements ActionRunner {
 

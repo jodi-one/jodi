@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 /**
  * The methods in this class were copied from commons-lang-2.6 StringUtils because the ODI library includes a version of commons-lang StringUtils that does not include all of the necessary APIs.
- *
  */
 public class StringUtils {
     public static boolean containsIgnoreCase(String str, String searchStr) {

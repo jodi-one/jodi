@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Identity strategy that is used as a placeholder for a custom strategy.
- *
  */
 public class ModelCodeIDStrategy implements ModelCodeStrategy {
 

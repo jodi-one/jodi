@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 /**
  * Adapter of the DatStoreColumn metadata. This allows the extension of the
  * class to reflect specific aspects.
- *
  */
 public class ColumnBase implements ModelNode {
 

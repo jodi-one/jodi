@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * Meta data that describes keys associated with a data store.
- *
  */
 public interface DataStoreKey {
 

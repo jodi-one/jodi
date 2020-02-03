@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Mock MetadataServiceProvider implementation
- *
  */
 public class MockMetadataServiceProvider implements MetadataServiceProvider {
     private List<ETLPackage> etl;

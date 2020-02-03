@@ -12,7 +12,6 @@ import java.util.Set;
 /**
  * This class implements a user defined flag and insert and update flags
  * strategy that simply echoes back the provided default values.
- *
  */
 public class FlagsIDStrategy implements
         FlagsStrategy {

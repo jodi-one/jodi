@@ -68,15 +68,15 @@
                         <Value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">1</Value>
                         <Children>
                             <RunScenario>
-<Name>DDL_ORACLE_DWH_CON_CHINOOK_001</Name>
-<Enabled>true</Enabled>
-<Timeout>0</Timeout>
-<ExceptionName></ExceptionName>
-<ExceptionBehavior>NONE</ExceptionBehavior>
-<Scenario>DDL_ORACLE_DWH_CON_CHINOOK_001</Scenario>
-<Version>1</Version>
-<RestartType>NEW_SESSION</RestartType>
-<Priority>0</Priority>
+                                <Name>DDL_ORACLE_DWH_CON_CHINOOK_001</Name>
+                                <Enabled>true</Enabled>
+                                <Timeout>0</Timeout>
+                                <ExceptionName></ExceptionName>
+                                <ExceptionBehavior>NONE</ExceptionBehavior>
+                                <Scenario>DDL_ORACLE_DWH_CON_CHINOOK_001</Scenario>
+                                <Version>1</Version>
+                                <RestartType>NEW_SESSION</RestartType>
+                                <Priority>0</Priority>
                             </RunScenario>
                         </Children>
                     </When>
@@ -86,25 +86,25 @@
                         <Value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:long">2</Value>
                         <Children>
                             <Parallel>
-<Name>Exeption Parallel</Name>
-<Enabled>true</Enabled>
-<Timeout>0</Timeout>
-<ExceptionName></ExceptionName>
-<ExceptionBehavior>NONE</ExceptionBehavior>
-<RestartType>ALL_CHILDREN</RestartType>
-<Children>
-    <RunScenario>
-        <Name>REALTIMEDWH_DMT_FACT</Name>
-        <Enabled>true</Enabled>
-        <Timeout>0</Timeout>
-        <ExceptionName></ExceptionName>
-        <ExceptionBehavior>NONE</ExceptionBehavior>
-        <Scenario>REALTIMEDWH_DMT_FACT</Scenario>
-        <Version>1</Version>
-        <RestartType>NEW_SESSION</RestartType>
-        <Priority>0</Priority>
-    </RunScenario>
-</Children>
+                                <Name>Exeption Parallel</Name>
+                                <Enabled>true</Enabled>
+                                <Timeout>0</Timeout>
+                                <ExceptionName></ExceptionName>
+                                <ExceptionBehavior>NONE</ExceptionBehavior>
+                                <RestartType>ALL_CHILDREN</RestartType>
+                                <Children>
+                                    <RunScenario>
+                                        <Name>REALTIMEDWH_DMT_FACT</Name>
+                                        <Enabled>true</Enabled>
+                                        <Timeout>0</Timeout>
+                                        <ExceptionName></ExceptionName>
+                                        <ExceptionBehavior>NONE</ExceptionBehavior>
+                                        <Scenario>REALTIMEDWH_DMT_FACT</Scenario>
+                                        <Version>1</Version>
+                                        <RestartType>NEW_SESSION</RestartType>
+                                        <Priority>0</Priority>
+                                    </RunScenario>
+                                </Children>
                             </Parallel>
                         </Children>
                     </When>

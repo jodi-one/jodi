@@ -5,6 +5,7 @@ public class RelationshipBase implements ModelNode {
     private final RelType type;
     private final TableBase parent;
     private final TableBase target;
+
     /**
      * Defines additional relationships that may exist between tables that are only
      * inferred indirectly using naming conventions or relationships that are
@@ -12,7 +13,7 @@ public class RelationshipBase implements ModelNode {
      *
      * @param parent the parent of the table
      * @param target the target of the table
-     * @param type the relationship type
+     * @param type   the relationship type
      */
     protected RelationshipBase(final TableBase parent, final TableBase target,
                                final RelType type) {

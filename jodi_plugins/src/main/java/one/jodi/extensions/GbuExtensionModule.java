@@ -6,7 +6,6 @@ import one.jodi.core.extensions.strategies.*;
 /**
  * The Class GenericExtensionModule provide a Guice Module implementation that
  * overrides core configurations with GBU specific customizations.
- *
  */
 public class GbuExtensionModule extends AbstractModule {
 

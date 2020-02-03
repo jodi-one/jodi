@@ -3,7 +3,6 @@ package one.jodi.base.bootstrap;
 
 /**
  * The Interface implemented by action handlers.
- *
  */
 public interface ActionRunner {
 

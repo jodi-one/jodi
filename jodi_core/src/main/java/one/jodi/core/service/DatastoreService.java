@@ -2,7 +2,6 @@ package one.jodi.core.service;
 
 /**
  * Service that daastore management functionality.
- *
  */
 public interface DatastoreService {
 

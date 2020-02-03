@@ -18,7 +18,6 @@ import java.util.TreeMap;
  * custom plug-in is executed.
  * <p>
  * The class is a concrete strategy participating in the Strategy Pattern.
- *
  */
 public class JournalizingDefaultStrategy implements JournalizingStrategy {
     private final static Logger logger = LogManager.getLogger(JournalizingDefaultStrategy.class);
@@ -26,7 +25,7 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
     /**
      * This method determines on which datastores to apply the Change Data Capture flag to.
      *
-     * @param defaultCDC default change data capture datastores
+     * @param defaultCDC       default change data capture datastores
      * @param executionContext execution context
      * @return Map of datastores where the key is <Model_Code>.<DataStoreName>
      */
@@ -66,8 +65,8 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
      * This method determines the JKMOptions to be applied to a Model.
      *
      * @param defaultJKMOptions default JKM options
-     * @param executionContext the execution context
-     * @param modelCode the model code 
+     * @param executionContext  the execution context
+     * @param modelCode         the model code
      * @return Map of JKMOptions
      */
     @Override
@@ -79,7 +78,7 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
 
     /**
      * @param defaultModelCodes default model codes
-     * @param executionContext the journalizing execution context
+     * @param executionContext  the journalizing execution context
      * @return List of model codes
      */
     @Override
@@ -90,8 +89,8 @@ public class JournalizingDefaultStrategy implements JournalizingStrategy {
 
     /**
      * @param defaultSubscribers default list of subscribers
-     * @param executionContext execution context
-     * @param modelCode the model code in odi
+     * @param executionContext   execution context
+     * @param modelCode          the model code in odi
      * @return List of subscribers
      */
     @Override

@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 /**
  * The class <code>StreamingXMLMetadataServiceProviderTest</code> contains tests
  * for the class <code>{@link StreamingXMLMetadataServiceProvider}</code>.
- *
  */
 public class StreamingXMLMetadataServiceProviderTest {
     @Mock

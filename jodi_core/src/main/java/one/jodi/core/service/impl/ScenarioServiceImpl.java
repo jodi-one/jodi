@@ -21,7 +21,6 @@ import java.util.List;
  * <p>
  * Please change your Generating Option ie INCREMENTAL (or) REGENERATE (or)
  * REPLACE.
- *
  */
 public class ScenarioServiceImpl implements ScenarioService {
     private final static Logger logger =

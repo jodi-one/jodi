@@ -40,7 +40,6 @@ import static org.mockito.Mockito.*;
  * The class <code>ColumnMappingContextImplTest</code> validates that the Column Mapping plugin
  * creates and correctly populates the execution context object for consumption by strategies
  * and that the strategy results are correctly returned.
- *
  */
 
 @RunWith(JUnit4.class)

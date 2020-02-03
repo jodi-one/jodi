@@ -8,7 +8,6 @@ import one.jodi.etl.internalmodel.Transformation;
  * the transformation. It is mostly used as an interface to facilitate Inversion
  * of Control. The interface is passed to the appropriate class and the proper
  * implementation is injected using Guice.
- *
  */
 public interface FolderNameContext {
 

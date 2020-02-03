@@ -11,7 +11,6 @@ import one.jodi.etl.internalmodel.Transformation;
 
 /**
  * Implementation of Dataset interface.
- *
  */
 public class TransformationBuilderImpl implements TransformationBuilder {
 

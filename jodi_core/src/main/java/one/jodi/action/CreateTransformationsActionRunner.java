@@ -14,7 +14,6 @@ import one.jodi.core.service.TransformationService;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * TransformationService#createOrReplaceTransformations(boolean)} method.
- *
  */
 public class CreateTransformationsActionRunner implements ActionRunner {
 

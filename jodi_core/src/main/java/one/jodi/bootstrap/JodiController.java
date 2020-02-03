@@ -11,7 +11,6 @@ import one.jodi.base.bootstrap.RunConfig;
 import one.jodi.base.context.Context;
 import one.jodi.base.factory.BaseModule;
 import one.jodi.core.factory.CoreETLModule;
-import oracle.odi.core.OdiInstance;
 
 import java.util.Collection;
 

@@ -2,7 +2,6 @@ package one.jodi.base.model.types;
 
 /**
  * Defines the typical DW layers.
- *
  */
 public enum DataStoreType {
     // THIRD_NORMAL_FORM, -- potential value

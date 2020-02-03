@@ -3,7 +3,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * Enumeration used to specify where ODI should perform work.
- *
  */
 public enum ExecutionLocationtypeEnum {
 

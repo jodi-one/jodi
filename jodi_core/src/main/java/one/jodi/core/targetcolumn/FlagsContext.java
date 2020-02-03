@@ -11,7 +11,6 @@ import java.util.Set;
 /**
  * The Flags context interface which allows to define insert, update, insert
  * key, mandatory and user-defined flags.
- *
  */
 public interface FlagsContext {
 

@@ -11,7 +11,6 @@ import one.jodi.model.extensions.MappingsExtension;
  * the target columns mappings.
  * <p>
  * Flags Data Store execution context information.
- *
  */
 public interface FlagsDataStoreExecutionContext extends DataStoreExecutionContext {
 

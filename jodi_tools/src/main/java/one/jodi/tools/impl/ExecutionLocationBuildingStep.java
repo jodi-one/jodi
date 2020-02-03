@@ -51,29 +51,29 @@ public class ExecutionLocationBuildingStep implements ModelBuildingStep {
 
     private void generateWarnings(Mapping mapping, one.jodi.etl.internalmodel.Transformation transformation) throws AdapterException, MappingException {
 
-        for(IMapComponent mo : mapping.getTargets()) {
-            for(MapAttribute ma : mo.getAttributes()) {
-                for(one.jodi.etl.internalmodel.Targetcolumn targetcolumn : transformation.getMappings().getTargetColumns()) {
-                    if(targetcolumn.getName().equalsIgnoreCase(ma.getName())) {
-                        if(!isEqual(ma.getExecuteOnHint(), targetcolumn.getExecutionLocations().get(0))) {
+        for (IMapComponent mo : mapping.getTargets()) {
+            for (MapAttribute ma : mo.getAttributes()) {
+                for (one.jodi.etl.internalmodel.Targetcolumn targetcolumn : transformation.getMappings().getTargetColumns()) {
+                    if (targetcolumn.getName().equalsIgnoreCase(ma.getName())) {
+                        if (!isEqual(ma.getExecuteOnHint(), targetcolumn.getExecutionLocations().get(0))) {
                             logger.warn("ExecutionLocation issue. Mapping '" + mapping.getName() + "' and target column '" + ma.getName() + "' specifies '" + ma.getExecuteOnHint() + "' but strategy set '" + targetcolumn.getExecutionLocations().get(0) + "'.");
                         }
 
-                        if(ma.isInsertIndicator() != targetcolumn.isInsert()) {
+                        if (ma.isInsertIndicator() != targetcolumn.isInsert()) {
                             logger.warn("Flags issue. Mapping '" + mapping.getName() + "' and target column '" + ma.getName() + "' specifies insert '" + ma.isInsertIndicator() + "' but strategy set '" + targetcolumn.isInsert() + "'.");
                         }
 
-                        if(ma.isUpdateIndicator() != targetcolumn.isUpdate()) {
+                        if (ma.isUpdateIndicator() != targetcolumn.isUpdate()) {
                             logger.warn("Flags issue. Mapping '" + mapping.getName() + "' and target column '" + ma.getName() + "' specifies update '" + ma.isUpdateIndicator() + "' but strategy set '" + targetcolumn.isUpdate() + "'.");
 
                         }
 
-                        if(ma.isCheckNotNull() != targetcolumn.isMandatory()) {
+                        if (ma.isCheckNotNull() != targetcolumn.isMandatory()) {
                             logger.warn("Flags issue. Mapping '" + mapping.getName() + "' and target column '" + ma.getName() + "' specifies mandatory/checkNotNull '" + ma.isCheckNotNull() + "' but strategy set '" + targetcolumn.isMandatory() + "'.");
 
                         }
 
-                        if(ma.isKeyIndicator() != targetcolumn.isUpdateKey()) {
+                        if (ma.isKeyIndicator() != targetcolumn.isUpdateKey()) {
                             logger.warn("Flags issue. Mapping '" + mapping.getName() + "' and target column '" + ma.getName() + "' specifies update key '" + ma.isKeyIndicator() + "' but strategy set '" + targetcolumn.isUpdateKey() + "'.");
 
                         }

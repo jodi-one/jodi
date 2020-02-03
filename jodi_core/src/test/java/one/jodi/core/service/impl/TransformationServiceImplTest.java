@@ -45,7 +45,6 @@ import static org.mockito.Mockito.*;
 /**
  * The class <code>TransformationServiceImplTest</code> contains tests for the
  * class {@link TransformationServiceImpl}.
- *
  */
 
 @RunWith(JUnit4.class)

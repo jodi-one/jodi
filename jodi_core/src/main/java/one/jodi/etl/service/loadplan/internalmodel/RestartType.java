@@ -5,7 +5,6 @@ package one.jodi.etl.service.loadplan.internalmodel;
  * it contains restart types of the loadplanstepserial type,
  * loadplanstepparalleltype and loadplanstepscenario type,
  * and the null value.
- *
  */
 public enum RestartType {
 

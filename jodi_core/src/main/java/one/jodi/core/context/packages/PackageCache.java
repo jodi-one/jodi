@@ -9,7 +9,6 @@ import java.util.Set;
  * The PackageCache Interface defines the API available for interacting with the
  * Package metadata. The cache maintains the set of defined packages and their
  * relationship to other packages and interfaces.
- *
  */
 public interface PackageCache {
 
@@ -18,7 +17,7 @@ public interface PackageCache {
      *
      * @param packageName the packages metadata object
      * @param association association
-     * @param order integer representing the order
+     * @param order       integer representing the order
      */
     void addPackageAssociation(String packageName, String association, int order);
 

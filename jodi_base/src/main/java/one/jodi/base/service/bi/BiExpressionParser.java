@@ -5,7 +5,6 @@ import one.jodi.base.service.bi.finder.VariableMatcher;
 
 /**
  * This class is implemented by Spoofax module to provide the parser.
- *
  */
 public interface BiExpressionParser {
 

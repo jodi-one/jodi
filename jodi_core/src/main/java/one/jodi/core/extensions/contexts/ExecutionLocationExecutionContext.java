@@ -8,7 +8,6 @@ import one.jodi.core.extensions.strategies.ExecutionLocationStrategy;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used when determining the execution locations
  * for all filters, joins, lookups and target column mappings.
- *
  */
 public interface ExecutionLocationExecutionContext extends DataStoreExecutionContext {
 

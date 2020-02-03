@@ -58,7 +58,7 @@ public class FlagsBuildingStepTest {
     }
 
 
-   // @Test
+    // @Test
     public void testGenerateWarning() throws AdapterException, MappingException {
         IMapComponent target = mock(IMapComponent.class);
         MapAttribute ma1 = mock(MapAttribute.class);

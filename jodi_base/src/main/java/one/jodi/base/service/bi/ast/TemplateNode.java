@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * FOR BACKWARDS COMPATIBILITY
- *
  */
 public interface TemplateNode extends ExprNode {
 

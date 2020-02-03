@@ -6,7 +6,6 @@ import java.util.Map;
 /**
  * Metadata that describes and characterizes a data store and
  * is extended to include layering information.
- *
  */
 public interface DataStore {
 

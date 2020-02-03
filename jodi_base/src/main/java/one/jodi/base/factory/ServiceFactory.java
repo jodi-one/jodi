@@ -5,7 +5,6 @@ import com.google.inject.Injector;
 
 /**
  * DOCUMENT ME!
- *
  */
 public class ServiceFactory {
     private static ServiceFactory instance;

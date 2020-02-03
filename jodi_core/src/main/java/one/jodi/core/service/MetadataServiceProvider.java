@@ -13,7 +13,6 @@ import java.util.List;
  * {@link Transformation} metadata to the application via the via the
  * {@link #getETLMetaData()} method and the callbacks on the
  * {@link ScenarioServiceImpl} interface respectively
- *
  */
 public interface MetadataServiceProvider {
 
@@ -42,7 +41,6 @@ public interface MetadataServiceProvider {
     /**
      * Callback interface for the handler that will receive
      * {@link Transformation} metadata.
-     *
      */
     public interface TransformationMetadataHandler {
 

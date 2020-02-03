@@ -8,7 +8,6 @@ import one.jodi.core.extensions.strategies.TransformationNameStrategy;
  * {@link TransformationNameStrategy
  * TransfromationNameStrategy} that is used to determine the name of the ODI
  * interface to be generated.
- *
  */
 public interface TransformationNameExecutionContext extends DataStoreExecutionContext {
 

@@ -9,7 +9,6 @@ import one.jodi.core.extensions.strategies.TransformationNameStrategy;
  * This logic is always executed before the custom plug-in is executed.
  * <p>
  * The class is a concrete strategy participating in the Strategy Pattern.
- *
  */
 public class TransformationNameDefaultStrategy implements TransformationNameStrategy {
 

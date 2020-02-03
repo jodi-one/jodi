@@ -14,7 +14,6 @@ import java.util.*;
 /**
  * This class implements default user defined flag behavior. The current default
  * behavior is to return an empty collection.
- *
  */
 public class FlagsDefaultStrategy implements FlagsStrategy {
 

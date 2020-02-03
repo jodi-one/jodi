@@ -13,7 +13,6 @@ import java.util.List;
  * The Class GbuModuleProvider provide a ModuleProvider implementation that
  * adds a GBU specific Guice Module implementation that allows for overriding
  * of core bindings.
- *
  */
 public class GbuModuleProvider implements ModuleProvider {
 

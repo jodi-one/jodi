@@ -40,7 +40,6 @@ import java.util.regex.Matcher;
 /**
  * Provider is shared between 11g and 12c implementation. ODI 11g and 12c-specific
  * creation methods are factored out into a separate class.
- *
  */
 public abstract class OdiBasePackageServiceProvider<T extends IOdiEntity, S extends Step>
         extends PackageServiceProvider {

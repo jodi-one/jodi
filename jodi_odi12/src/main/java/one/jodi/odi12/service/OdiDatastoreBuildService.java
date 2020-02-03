@@ -31,7 +31,6 @@ import java.util.Collection;
 /**
  * OdiBuild service builds odi datastore from target datastores from
  * Transformations
- *
  */
 public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
     private final static Logger logger = LogManager.getLogger(OdiDatastoreBuildService.class);
@@ -134,7 +133,7 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
 
     /**
      * @param dataType datatype
-     * @param pModel odiModel
+     * @param pModel   odiModel
      * @return OdiDataType
      * //TODO This is very basic mapping, should be extended.
      */

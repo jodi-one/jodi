@@ -131,17 +131,17 @@ public class XMLParserUtil<T, O> {
     private Source getXsdFileFromFileSystem(String xsdBaseFile) {
         Source schemaFile = null;
         // for jodi_etl, since this class is in base we go to jodi_core
-        File file = Paths.get( xsdBaseFile).toFile();
-        logger.debug("Reading xsdBaseFile: " +xsdBaseFile);
+        File file = Paths.get(xsdBaseFile).toFile();
+        logger.debug("Reading xsdBaseFile: " + xsdBaseFile);
         //File file = new File(location);
         if (file.exists()) {
             schemaFile = new StreamSource(file);
         } else {
-                    String msg = errorWarningMessages.formatMessage(7021,
-                            ERROR_MESSAGE_07021, this.getClass(), xsdBaseFile);
-                    errorWarningMessages.addMessage(msg, MESSAGE_TYPE.ERRORS);
-                    logger.fatal(msg);
-                    throw new UnRecoverableException(msg);
+            String msg = errorWarningMessages.formatMessage(7021,
+                    ERROR_MESSAGE_07021, this.getClass(), xsdBaseFile);
+            errorWarningMessages.addMessage(msg, MESSAGE_TYPE.ERRORS);
+            logger.fatal(msg);
+            throw new UnRecoverableException(msg);
         }
         logger.debug("Read xsd from: " + file.getAbsolutePath());
         return schemaFile;

@@ -1,166 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:ext="http://jodi.one/etlmodel/extensions"
-		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-		   jaxb:version="2.1">
+           xmlns:ext="http://jodi.one/etlmodel/extensions"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.1">
 
-	<xs:import namespace="http://jodi.one/etlmodel/extensions"
-			   schemaLocation="jodi-packages-extensions.v1.1.xsd"/>
+    <xs:import namespace="http://jodi.one/etlmodel/extensions"
+               schemaLocation="jodi-packages-extensions.v1.1.xsd"/>
 
-	<xs:element name="Packages">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Package" maxOccurs="unbounded"/>
-				<xs:element name="extension" type="ext:PackagesExtension" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="Packages">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Package" maxOccurs="unbounded"/>
+                <xs:element name="extension" type="ext:PackagesExtension" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-	<xs:element name="Package">
-		<xs:complexType>
-			<xs:all>
-				<xs:element name="Comments" type="xs:string" minOccurs="0"/>
-				<xs:element name="FolderCode" type="xs:string"/>
-				<xs:element name="PackageName" type="xs:string"/>
-				<xs:element name="PackageListItem" type="xs:string"/>
-				<xs:element name="Before" type="Steps" minOccurs="0"/>
-				<xs:element name="After" type="Steps" minOccurs="0"/>
-				<xs:element name="GotoOnFinalSuccess" type="xs:string" minOccurs="0"/>
-				<xs:element name="Failure" type="Steps" minOccurs="0"/>
-				<xs:element name="extension" type="ext:PackageExtension" minOccurs="0"/>
-			</xs:all>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="Package">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Comments" type="xs:string" minOccurs="0"/>
+                <xs:element name="FolderCode" type="xs:string"/>
+                <xs:element name="PackageName" type="xs:string"/>
+                <xs:element name="PackageListItem" type="xs:string"/>
+                <xs:element name="Before" type="Steps" minOccurs="0"/>
+                <xs:element name="After" type="Steps" minOccurs="0"/>
+                <xs:element name="GotoOnFinalSuccess" type="xs:string" minOccurs="0"/>
+                <xs:element name="Failure" type="Steps" minOccurs="0"/>
+                <xs:element name="extension" type="ext:PackageExtension" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
 
-	<!-- Steps defines abstract type which is the base for multiple sub-types. 
-		It uses the substitution type to allow that a list of steps can have different 
-		sub-types. Sub-types are defined with the extension feature, which forces 
-		the creation of classes that inherit from the Step class. -->
-	<xs:complexType name="Steps">
-		<xs:sequence>
-			<xs:element ref="Step" maxOccurs="unbounded"/>
-			<xs:element name="extension" type="ext:StepsExtension" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+    <!-- Steps defines abstract type which is the base for multiple sub-types.
+        It uses the substitution type to allow that a list of steps can have different
+        sub-types. Sub-types are defined with the extension feature, which forces
+        the creation of classes that inherit from the Step class. -->
+    <xs:complexType name="Steps">
+        <xs:sequence>
+            <xs:element ref="Step" maxOccurs="unbounded"/>
+            <xs:element name="extension" type="ext:StepsExtension" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<xs:element name="Step" type="StepType" abstract="true"/>
-	<xs:complexType name="StepType">
-		<xs:sequence>
-			<xs:element name="Name" type="xs:string"/>
-			<xs:element name="Label" type="xs:string" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
+    <xs:element name="Step" type="StepType" abstract="true"/>
+    <xs:complexType name="StepType">
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Label" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<xs:element name="Variable" type="VariableType" substitutionGroup="Step"/>
+    <xs:element name="Variable" type="VariableType" substitutionGroup="Step"/>
 
-	<xs:element name="ExecPackage" type="ExecPackageType" substitutionGroup="Step"/>
-	<xs:complexType name="ExecPackageType">
-		<xs:complexContent>
-			<xs:extension base="StepType">
-				<xs:sequence>
-					<xs:element name="Asynchronous" type="xs:boolean" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+    <xs:element name="ExecPackage" type="ExecPackageType" substitutionGroup="Step"/>
+    <xs:complexType name="ExecPackageType">
+        <xs:complexContent>
+            <xs:extension base="StepType">
+                <xs:sequence>
+                    <xs:element name="Asynchronous" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
-	<xs:element name="ExecProcedure" type="ExecProcedureType" substitutionGroup="Step"/>
-	<xs:complexType name="ExecProcedureType">
-		<xs:complexContent>
-			<xs:extension base="StepType">
-				<xs:sequence>
-					<xs:element ref="Parameters" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+    <xs:element name="ExecProcedure" type="ExecProcedureType" substitutionGroup="Step"/>
+    <xs:complexType name="ExecProcedureType">
+        <xs:complexContent>
+            <xs:extension base="StepType">
+                <xs:sequence>
+                    <xs:element ref="Parameters" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
-	<xs:element name="Parameters">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Parameter" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="Parameters">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Parameter" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-	<xs:element name="Parameter">
-		<xs:complexType>
-			<xs:all>
-				<xs:element name="Name" type="xs:string"/>
-				<xs:element name="Value" type="xs:string"/>
-			</xs:all>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="Parameter">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Value" type="xs:string"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
 
-	<xs:simpleType name="VariableTypeCodeEnum">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="REFRESH"/>
-			<xs:enumeration value="EVALUATE"/>
-			<xs:enumeration value="SET"/>
-			<xs:enumeration value="DECLARE"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:simpleType name="VariableTypeCodeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="REFRESH"/>
+            <xs:enumeration value="EVALUATE"/>
+            <xs:enumeration value="SET"/>
+            <xs:enumeration value="DECLARE"/>
+        </xs:restriction>
+    </xs:simpleType>
 
-	<xs:simpleType name="SetOperatorEnum">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="ASSIGN"/>
-			<xs:enumeration value="INCREMENT"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:simpleType name="SetOperatorEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ASSIGN"/>
+            <xs:enumeration value="INCREMENT"/>
+        </xs:restriction>
+    </xs:simpleType>
 
-	<xs:element name="ExecCommand" type="ExecCommandType" substitutionGroup="Step"/>
-	<xs:complexType name="ExecCommandType">
-		<xs:complexContent>
-			<xs:extension base="StepType">
-				<xs:sequence>
-					<xs:element ref="Parameters" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+    <xs:element name="ExecCommand" type="ExecCommandType" substitutionGroup="Step"/>
+    <xs:complexType name="ExecCommandType">
+        <xs:complexContent>
+            <xs:extension base="StepType">
+                <xs:sequence>
+                    <xs:element ref="Parameters" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
 
-	<xs:element name="ModelCommand" type="ModelType" substitutionGroup="Step"/>
-	<xs:complexType name="ModelType">
-		<xs:complexContent>
-			<xs:extension base="StepType">
-				<xs:sequence>
-					<xs:element name="Model" type="xs:string"/>
-					<xs:element name="ActionType" type="ModelTypeActionEnum"/>
-					<xs:element name="CreateSubscribers" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="DropSubscribers" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="InstallJournalization" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="UninstallJournalization" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="Subscriber" type="xs:string" minOccurs="0"/>
-					<xs:element name="ExtendWindow" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="PurgeJournal" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="LockSubscribers" type="xs:boolean" minOccurs="0"/>
-					<xs:element name="UnlockSubscribers" type="xs:boolean" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+    <xs:element name="ModelCommand" type="ModelType" substitutionGroup="Step"/>
+    <xs:complexType name="ModelType">
+        <xs:complexContent>
+            <xs:extension base="StepType">
+                <xs:sequence>
+                    <xs:element name="Model" type="xs:string"/>
+                    <xs:element name="ActionType" type="ModelTypeActionEnum"/>
+                    <xs:element name="CreateSubscribers" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="DropSubscribers" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="InstallJournalization" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="UninstallJournalization" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="Subscriber" type="xs:string" minOccurs="0"/>
+                    <xs:element name="ExtendWindow" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="PurgeJournal" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="LockSubscribers" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="UnlockSubscribers" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
-	<xs:simpleType name="ModelTypeActionEnum">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="CONTROL"/>
-			<xs:enumeration value="JOURNALIZE"/>
-			<xs:enumeration value="REVERSE_ENGINEER"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:simpleType name="ModelTypeActionEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CONTROL"/>
+            <xs:enumeration value="JOURNALIZE"/>
+            <xs:enumeration value="REVERSE_ENGINEER"/>
+        </xs:restriction>
+    </xs:simpleType>
 
-	<xs:complexType name="VariableType">
-		<xs:complexContent>
-			<xs:extension base="StepType">
-				<xs:sequence>
-					<xs:element name="Type" type="VariableTypeCodeEnum"/>
-					<xs:element name="Operator" type="xs:string" minOccurs="0"/>
-					<xs:element name="SetOperator" type="SetOperatorEnum" minOccurs="0"/>
-					<xs:element name="Value" type="xs:string" minOccurs="0"/>
-					<xs:element name="IncrementBy" type="xs:int" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+    <xs:complexType name="VariableType">
+        <xs:complexContent>
+            <xs:extension base="StepType">
+                <xs:sequence>
+                    <xs:element name="Type" type="VariableTypeCodeEnum"/>
+                    <xs:element name="Operator" type="xs:string" minOccurs="0"/>
+                    <xs:element name="SetOperator" type="SetOperatorEnum" minOccurs="0"/>
+                    <xs:element name="Value" type="xs:string" minOccurs="0"/>
+                    <xs:element name="IncrementBy" type="xs:int" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
 </xs:schema>

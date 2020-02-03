@@ -15,7 +15,6 @@ import one.jodi.core.service.TransformationService;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * TransformationService#deleteTransformations()} method.
- *
  */
 public class DeleteTransformationsActionRunner implements ActionRunner {
 

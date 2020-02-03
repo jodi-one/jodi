@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * is passed into strategies.
  * <p>
  * The class is the Context that participates in the Strategy Pattern.
- *
  */
 public class JournalizingContextImpl implements JournalizingContext {
 

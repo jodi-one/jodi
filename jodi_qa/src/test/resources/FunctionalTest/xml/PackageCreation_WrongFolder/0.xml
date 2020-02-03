@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode><!--ORACLE_DWH_DMT is wrong model since packages are created in ORACLE_DWH_STG so the folder should be BulkLoadORACLE_DWH_STG  -->
-		<PackageName>PACKAGE_CREATION_TEST1_WRONG_FOLDER</PackageName>
-		<PackageListItem>P1_WRONG_FOLDER</PackageListItem>
-		<Before>
-			<ExecProcedure>
-				<Name>CREATE_PACKAGE_TEST_PROC</Name>
-				<Label>CREATE_PACKAGE_TEST_PROC</Label>
-			</ExecProcedure>
-		</Before>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG
+        </FolderCode><!--ORACLE_DWH_DMT is wrong model since packages are created in ORACLE_DWH_STG so the folder should be BulkLoadORACLE_DWH_STG  -->
+        <PackageName>PACKAGE_CREATION_TEST1_WRONG_FOLDER</PackageName>
+        <PackageListItem>P1_WRONG_FOLDER</PackageListItem>
+        <Before>
+            <ExecProcedure>
+                <Name>CREATE_PACKAGE_TEST_PROC</Name>
+                <Label>CREATE_PACKAGE_TEST_PROC</Label>
+            </ExecProcedure>
+        </Before>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST3_WRONG_FOLDER</PackageName>
-		<PackageListItem>P1_WRONG_FOLDER</PackageListItem>
-		<Before>
-			<ExecProcedure>
-				<Name>CREATE_PACKAGE_TEST_PROC</Name>
-				<Label>CREATE_PACKAGE_TEST_PROC</Label>
-			</ExecProcedure>
-		</Before>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST3_WRONG_FOLDER</PackageName>
+        <PackageListItem>P1_WRONG_FOLDER</PackageListItem>
+        <Before>
+            <ExecProcedure>
+                <Name>CREATE_PACKAGE_TEST_PROC</Name>
+                <Label>CREATE_PACKAGE_TEST_PROC</Label>
+            </ExecProcedure>
+        </Before>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST2_WRONG_FOLDER</PackageName>
-		<PackageListItem>P1_WRONG_FOLDER</PackageListItem>
-		<Before>
-			<ExecProcedure>
-				<Name>CREATE_PACKAGE_TEST_PROC</Name>
-				<Label>CREATE_PACKAGE_TEST_PROC</Label>
-			</ExecProcedure>
-		</Before>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST2_WRONG_FOLDER</PackageName>
+        <PackageListItem>P1_WRONG_FOLDER</PackageListItem>
+        <Before>
+            <ExecProcedure>
+                <Name>CREATE_PACKAGE_TEST_PROC</Name>
+                <Label>CREATE_PACKAGE_TEST_PROC</Label>
+            </ExecProcedure>
+        </Before>
+    </Package>
 </Packages>

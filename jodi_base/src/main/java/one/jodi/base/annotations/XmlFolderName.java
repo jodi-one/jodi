@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates name to be injected for the XML folder location.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

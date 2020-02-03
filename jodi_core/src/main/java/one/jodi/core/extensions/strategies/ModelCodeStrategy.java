@@ -9,7 +9,6 @@ import one.jodi.core.extensions.contexts.ModelNameExecutionContext;
  * in the transformation XML specification. It is used to implement the default
  * model code policy and a custom policy. The default policy plug-in is always
  * executed before the custom plug-in is executed.
- *
  */
 public interface ModelCodeStrategy {
 

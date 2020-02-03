@@ -8,33 +8,22 @@ import one.jodi.core.config.JodiProperties;
 import one.jodi.etl.service.repository.OdiRepositoryExportService;
 import one.jodi.etl.service.repository.OdiRepositoryImportService;
 import oracle.odi.core.OdiInstance;
-import oracle.odi.core.service.deployment.*;
-import oracle.odi.domain.IOdiEntity;
-import oracle.odi.domain.model.OdiModel;
-import oracle.odi.domain.model.finder.IOdiModelFinder;
+import oracle.odi.core.service.deployment.DeploymentArchiveType;
+import oracle.odi.core.service.deployment.DeploymentService;
+import oracle.odi.core.service.deployment.DeploymentServiceException;
+import oracle.odi.core.service.deployment.OdiObjectId;
 import oracle.odi.domain.project.OdiProject;
 import oracle.odi.domain.project.finder.IOdiProjectFinder;
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan;
 import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder;
 import oracle.odi.domain.runtime.scenario.OdiScenario;
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder;
-import oracle.odi.domain.topology.OdiContext;
-import oracle.odi.domain.topology.OdiLogicalSchema;
-import oracle.odi.domain.topology.OdiPhysicalSchema;
-import oracle.odi.domain.topology.finder.IOdiContextFinder;
-import oracle.odi.domain.topology.finder.IOdiLogicalSchemaFinder;
-import oracle.odi.domain.topology.finder.IOdiPhysicalSchemaFinder;
-import oracle.odi.impexp.EncodingOptions;
-import oracle.odi.impexp.support.ExportServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class Odi12RepositoryExportService implements OdiRepositoryExportService {
@@ -62,7 +51,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
         char[] pExportKey = getCipherData().toCharArray();
         boolean pCreateWithoutCipherData = false;
         try {
-           if( da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
+            if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
 
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
@@ -100,7 +89,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                         pIncludeSecurityObjects,
                         regenerateScenarios);
             }
-            if(da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)){
+            if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
 
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
@@ -143,7 +132,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                         regenerateScenarios);
             }
             //
-            if(da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_INITIAL)){
+            if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_INITIAL)) {
                 String pFilename = metaDataDirectory + File.separator +
                         "INITIAL_" + jodiProperties
                         .getProjectCode() + ".zip";

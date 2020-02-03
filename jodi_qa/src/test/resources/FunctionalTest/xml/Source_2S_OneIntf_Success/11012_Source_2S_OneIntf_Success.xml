@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>S_SOURCE_2S_ONEINTF_I</Name>
-	<Comments>
-Alias for first source datastore not available yet, 
-Name element not used for temporary interface naming,
-and TargetDatastore element is.
-Name and Target datastore element requires uppercase.
-	</Comments>
-	<PackageList>Source_2S_OneIntf_Success</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_SOURCE_2S_ONEINTF_I_S01</Name><!-- ALIAS for source datastore not available. -->
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_SOURCE_2S_ONEINTF_I</TargetDataStore>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>S_SOURCE_2S_ONEINTF_I</Name>
+    <Comments>
+        Alias for first source datastore not available yet,
+        Name element not used for temporary interface naming,
+        and TargetDatastore element is.
+        Name and Target datastore element requires uppercase.
+    </Comments>
+    <PackageList>Source_2S_OneIntf_Success</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_SOURCE_2S_ONEINTF_I_S01</Name><!-- ALIAS for source datastore not available. -->
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_SOURCE_2S_ONEINTF_I</TargetDataStore>
+    </Mappings>
 </Transformation>

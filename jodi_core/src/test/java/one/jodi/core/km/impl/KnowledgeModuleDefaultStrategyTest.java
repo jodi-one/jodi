@@ -38,7 +38,7 @@ public class KnowledgeModuleDefaultStrategyTest {
     static String DefaultSourceDataStoreName = "sourceDataStoreName";
     static String DefaultTargetTechnology = "Oracle";
     static String DefaultTargetDataServerName = "targetDataServerName";
-//	@Mock ModelSolutionLayer modelSolutionLayer;
+    //	@Mock ModelSolutionLayer modelSolutionLayer;
     static String DefaultTargetLayer = "targetLayer";
     static String DefaultTargetDataStoreName = "targetDataStoreName";
     static DataStoreType DefaultTargetDataStoreType = DataStoreType.DIMENSION;

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>SET_2D_ILLEGALSETOPS_WARNING</Name>
-	<Comments>
-	</Comments>
-	<PackageList>SET_2D_ILLEGALSETOPS_WARNING</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_DA_I</Name>
-				<Alias>DA_1</Alias>
-			</Source>
-	 		<SetOperator>UNION</SetOperator>
-		</Dataset>
-		<Dataset>
-			<Source>
-				<Name>S_DA_I</Name>
-				<Alias>DA_2</Alias>
-			</Source>
-			<SetOperator>UNION ALL</SetOperator>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-	    <TargetDataStore>S_DA_O</TargetDataStore>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>SET_2D_ILLEGALSETOPS_WARNING</Name>
+    <Comments>
+    </Comments>
+    <PackageList>SET_2D_ILLEGALSETOPS_WARNING</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_DA_I</Name>
+                <Alias>DA_1</Alias>
+            </Source>
+            <SetOperator>UNION</SetOperator>
+        </Dataset>
+        <Dataset>
+            <Source>
+                <Name>S_DA_I</Name>
+                <Alias>DA_2</Alias>
+            </Source>
+            <SetOperator>UNION ALL</SetOperator>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_DA_O</TargetDataStore>
+    </Mappings>
 </Transformation>

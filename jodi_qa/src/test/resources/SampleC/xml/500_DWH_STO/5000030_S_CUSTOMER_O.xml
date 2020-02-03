@@ -1,59 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_CUSTOMER_I</Name>
-				<Lookups>
-				<Lookup>
-					<LookupDataStore>S_CUSTOMER_O_S01</LookupDataStore>
-					<Join>S_CUSTOMER_O_S01.CUST_CODE = S_CUSTOMER_I.CUST_CODE</Join>
-				</Lookup>
-			</Lookups>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_CUSTOMER_O</TargetDataStore>
-		<TargetColumn>
-			<Name>CUST_BILLING_ADDRESS</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_CUSTOMER_I.CUST_BILLING_ADDRESS , S_CUSTOMER_O_S01.CUST_BILLING_ADDRESS)</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>CUST_BILLING_CITY</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_CUSTOMER_I.CUST_BILLING_CITY , S_CUSTOMER_O_S01.CUST_BILLING_CITY)</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>CUST_BILLING_COUNTRY</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_CUSTOMER_I.CUST_BILLING_COUNTRY , S_CUSTOMER_O_S01.CUST_BILLING_COUNTRY)</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>CUST_BILLING_POSTALCODE</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_CUSTOMER_I.CUST_BILLING_POSTALCODE , S_CUSTOMER_O_S01.CUST_BILLING_POSTALCODE)</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>CUST_BILLING_STATE</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_CUSTOMER_I.CUST_BILLING_STATE , S_CUSTOMER_O_S01.CUST_BILLING_STATE )</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>S_INSERT_DT_O</Name>
-			<MappingExpressions>
-				<Expression>SYSDATE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_CUSTOMER_I</Name>
+                <Lookups>
+                    <Lookup>
+                        <LookupDataStore>S_CUSTOMER_O_S01</LookupDataStore>
+                        <Join>S_CUSTOMER_O_S01.CUST_CODE = S_CUSTOMER_I.CUST_CODE</Join>
+                    </Lookup>
+                </Lookups>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_CUSTOMER_O</TargetDataStore>
+        <TargetColumn>
+            <Name>CUST_BILLING_ADDRESS</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_CUSTOMER_I.CUST_BILLING_ADDRESS , S_CUSTOMER_O_S01.CUST_BILLING_ADDRESS)</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>CUST_BILLING_CITY</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_CUSTOMER_I.CUST_BILLING_CITY , S_CUSTOMER_O_S01.CUST_BILLING_CITY)</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>CUST_BILLING_COUNTRY</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_CUSTOMER_I.CUST_BILLING_COUNTRY , S_CUSTOMER_O_S01.CUST_BILLING_COUNTRY)</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>CUST_BILLING_POSTALCODE</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_CUSTOMER_I.CUST_BILLING_POSTALCODE , S_CUSTOMER_O_S01.CUST_BILLING_POSTALCODE)
+                </Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>CUST_BILLING_STATE</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_CUSTOMER_I.CUST_BILLING_STATE , S_CUSTOMER_O_S01.CUST_BILLING_STATE )</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>S_INSERT_DT_O</Name>
+            <MappingExpressions>
+                <Expression>SYSDATE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

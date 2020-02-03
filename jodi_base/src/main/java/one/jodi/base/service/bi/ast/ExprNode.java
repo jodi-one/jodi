@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 
 /**
  * Represents an AST that is created by the BiExpressionParser.
- *
  */
 public interface ExprNode {
 

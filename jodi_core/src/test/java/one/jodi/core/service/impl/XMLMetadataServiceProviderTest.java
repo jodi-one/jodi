@@ -37,7 +37,6 @@ import static org.mockito.Mockito.*;
 /**
  * The class <code>XMLMetadataServiceProviderTest</code> contains tests for the
  * class <code>{@link XMLMetadataServiceProvider}</code>.
- *
  */
 public class XMLMetadataServiceProviderTest {
 

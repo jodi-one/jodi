@@ -1,88 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>Pivot_2S_Success</Name>
-	<Comments>
-	</Comments>
-	<PackageList>Pivot_2S_Success</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_PV_I</Name>
-				<Alias>PA</Alias>
-				<Flows>	
-					<Pivot>
-						<Name>PivotA</Name>
-						<RowLocator>PA.QUARTER</RowLocator>
-						<AggregateFunction>SUM</AggregateFunction>
-						<Column name="YEAR">
-							<Expression>PA.YEAR</Expression>
-						</Column>
-						<Column name="Q1_SALES">
-							<Expression value="'Q1'">PA.SALES</Expression>
-						</Column>
-						<Column name="Q2_SALES">
-							<Expression value="'Q2'">PA.SALES</Expression>
-						</Column>
-						<Column name="Q3_SALES">
-							<Expression value="'Q3'">PA.SALES</Expression>
-						</Column>
-						<Column name="Q4_SALES">
-							<Expression value="'Q4'">PA.SALES</Expression>
-						</Column>
-					</Pivot>
-				</Flows>
-			</Source>
-			<Source>
-				<Name>S_PV_I</Name>
-				<Alias>PB</Alias> 
-				<Join>PA.YEAR = PB.YEAR</Join>
-				<Flows>	
-					<Pivot>
-						<Name>PivotB</Name>
-						<RowLocator>PB.QUARTER</RowLocator>
-						<AggregateFunction>SUM</AggregateFunction>
-						<Column name="YEAR">
-							<Expression>PB.YEAR</Expression>
-						</Column>
-						<Column name="Q1_SALES">
-							<Expression value="'Q1'">PB.SALES</Expression>
-						</Column>
-						<Column name="Q2_SALES">
-							<Expression value="'Q2'">PB.SALES</Expression>
-						</Column>
-						<Column name="Q3_SALES">
-							<Expression value="'Q3'">PB.SALES</Expression>
-						</Column>
-						<Column name="Q4_SALES">
-							<Expression value="'Q4'">PB.SALES</Expression>
-						</Column>
-					</Pivot>
-				</Flows>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-	    <TargetDataStore>S_VP_O</TargetDataStore>
-	    <TargetColumn>
-	    	<Name>YEAR</Name>
-	    	<MappingExpressions><Expression>PivotA.YEAR</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q1_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q1_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q2_SALES</Name>
-	    <MappingExpressions><Expression>PivotA.Q2_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q3_SALES</Name>
-	    <MappingExpressions><Expression>PivotB.Q3_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    <Name>Q4_SALES</Name>
-	    <MappingExpressions><Expression>PivotB.Q4_SALES</Expression></MappingExpressions>
-	    </TargetColumn>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>Pivot_2S_Success</Name>
+    <Comments>
+    </Comments>
+    <PackageList>Pivot_2S_Success</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_PV_I</Name>
+                <Alias>PA</Alias>
+                <Flows>
+                    <Pivot>
+                        <Name>PivotA</Name>
+                        <RowLocator>PA.QUARTER</RowLocator>
+                        <AggregateFunction>SUM</AggregateFunction>
+                        <Column name="YEAR">
+                            <Expression>PA.YEAR</Expression>
+                        </Column>
+                        <Column name="Q1_SALES">
+                            <Expression value="'Q1'">PA.SALES</Expression>
+                        </Column>
+                        <Column name="Q2_SALES">
+                            <Expression value="'Q2'">PA.SALES</Expression>
+                        </Column>
+                        <Column name="Q3_SALES">
+                            <Expression value="'Q3'">PA.SALES</Expression>
+                        </Column>
+                        <Column name="Q4_SALES">
+                            <Expression value="'Q4'">PA.SALES</Expression>
+                        </Column>
+                    </Pivot>
+                </Flows>
+            </Source>
+            <Source>
+                <Name>S_PV_I</Name>
+                <Alias>PB</Alias>
+                <Join>PA.YEAR = PB.YEAR</Join>
+                <Flows>
+                    <Pivot>
+                        <Name>PivotB</Name>
+                        <RowLocator>PB.QUARTER</RowLocator>
+                        <AggregateFunction>SUM</AggregateFunction>
+                        <Column name="YEAR">
+                            <Expression>PB.YEAR</Expression>
+                        </Column>
+                        <Column name="Q1_SALES">
+                            <Expression value="'Q1'">PB.SALES</Expression>
+                        </Column>
+                        <Column name="Q2_SALES">
+                            <Expression value="'Q2'">PB.SALES</Expression>
+                        </Column>
+                        <Column name="Q3_SALES">
+                            <Expression value="'Q3'">PB.SALES</Expression>
+                        </Column>
+                        <Column name="Q4_SALES">
+                            <Expression value="'Q4'">PB.SALES</Expression>
+                        </Column>
+                    </Pivot>
+                </Flows>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_VP_O</TargetDataStore>
+        <TargetColumn>
+            <Name>YEAR</Name>
+            <MappingExpressions>
+                <Expression>PivotA.YEAR</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q1_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q1_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q2_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotA.Q2_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q3_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotB.Q3_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>Q4_SALES</Name>
+            <MappingExpressions>
+                <Expression>PivotB.Q4_SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

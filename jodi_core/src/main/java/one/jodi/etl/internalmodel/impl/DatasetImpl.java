@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 /**
  * Implementation of Dataset interface.
- *
  */
 public class DatasetImpl implements Dataset {
 

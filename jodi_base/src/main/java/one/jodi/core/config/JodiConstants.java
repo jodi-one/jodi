@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * Contains constants that are related to Jodi only.
- *
  */
 public abstract class JodiConstants {
 

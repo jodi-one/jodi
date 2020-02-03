@@ -12,7 +12,6 @@ import one.jodi.bootstrap.EtlRunConfig.ActionType;
 /**
  * A <code>Guice</code> {@link com.google.inject.Module} implementation that
  * configures services necessary for application bootstrap.
- *
  */
 public class BootstrapModule extends AbstractModule {
     private final static String EOL = System.getProperty("line.separator");

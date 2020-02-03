@@ -19,7 +19,6 @@ import java.util.List;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * TableServiceProvider#checkTables()} method.
- *
  */
 public class CheckTablesActionRunner implements ActionRunner {
     private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"

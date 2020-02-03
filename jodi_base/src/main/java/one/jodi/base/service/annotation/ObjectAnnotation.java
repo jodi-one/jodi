@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 /**
  * Infrastructure for validation of annotation
- *
  */
 abstract public class ObjectAnnotation {
 

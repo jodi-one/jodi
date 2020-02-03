@@ -31,7 +31,7 @@ public interface TableBase extends ModelNode {
      * contains the additional abbreviation in the table comment that exist before
      * the meta data separator and matches the abbreviation pattern, e.g. '((*))$'.
      *
-     * @return  abbreviatedBusinessName abbreviation of the name used by end user
+     * @return abbreviatedBusinessName abbreviation of the name used by end user
      */
     String getAbbreviatedBuisnessName();
 

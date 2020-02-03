@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * The class that represents the result of a ETL Transformation validation.
- *
  */
 public class ETLValidationResult {
 

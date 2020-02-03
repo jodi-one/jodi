@@ -9,7 +9,6 @@ import one.jodi.etl.internalmodel.RoleEnum;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used to determine the execution locations
  * for lookups.
- *
  */
 public interface ExecutionLocationSubQueryExecutionContext extends ExecutionLocationExecutionContext {
 

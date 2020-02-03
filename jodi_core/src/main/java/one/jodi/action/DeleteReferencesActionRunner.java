@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * An {@link ActionRunner} implementation that invokes the {@link DeleteReferencesActionRunner} method.
- *
  */
 public class DeleteReferencesActionRunner implements ActionRunner {
     private final static Logger logger =

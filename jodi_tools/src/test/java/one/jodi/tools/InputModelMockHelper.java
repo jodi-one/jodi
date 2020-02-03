@@ -5,8 +5,8 @@ import one.jodi.base.model.types.DataStore;
 import one.jodi.base.model.types.DataStoreColumn;
 import one.jodi.base.model.types.SCDType;
 import one.jodi.core.config.PropertyValueHolder;
-import one.jodi.core.model.*;
 import one.jodi.core.model.Properties;
+import one.jodi.core.model.*;
 import oracle.odi.domain.model.OdiColumn;
 import oracle.odi.domain.model.OdiDataStore;
 

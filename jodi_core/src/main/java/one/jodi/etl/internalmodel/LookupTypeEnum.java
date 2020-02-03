@@ -2,7 +2,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * Describe the lookup types that may be specified as part of a {@link Lookup}
- *
  */
 public enum LookupTypeEnum {
 

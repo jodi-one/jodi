@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>FILTER_2S_ANDFILTERINCORRECTALIASREFERENCE_FAILURE</Name>
-	<Comments>
-	</Comments>
-	<PackageList>FILTER_2S_ANDFILTERINCORRECTALIASREFERENCE_FAILURE</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_DA_I</Name>
-				<Alias>DA_1</Alias>
-				<Filter>DA_1.VALUE = 6</Filter>
-			</Source>
-			<Source>
-				<Name>S_DB_I</Name>
-				<Filter>DA_1.VALUE = 6</Filter>
-				<Join>S_DA_I.KEY = S_DB_I.KEY</Join>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-	    <TargetDataStore>S_DA_O</TargetDataStore>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>FILTER_2S_ANDFILTERINCORRECTALIASREFERENCE_FAILURE</Name>
+    <Comments>
+    </Comments>
+    <PackageList>FILTER_2S_ANDFILTERINCORRECTALIASREFERENCE_FAILURE</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_DA_I</Name>
+                <Alias>DA_1</Alias>
+                <Filter>DA_1.VALUE = 6</Filter>
+            </Source>
+            <Source>
+                <Name>S_DB_I</Name>
+                <Filter>DA_1.VALUE = 6</Filter>
+                <Join>S_DA_I.KEY = S_DB_I.KEY</Join>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_DA_O</TargetDataStore>
+    </Mappings>
 </Transformation>

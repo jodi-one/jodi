@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
  * This is the as-is Jodi solution for computing KM values in Java using both
  * property files and XML input model. It is not meant to be extended but to
  * serve until a refactored solution is presented using groovy.
- *
  */
 public class KnowledgeModuleDefaultStrategy implements KnowledgeModuleStrategy {
 

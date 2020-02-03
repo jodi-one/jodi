@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Defines the solution layer to which a model belongs
- *
  */
 public enum ModelSolutionLayerType implements ModelSolutionLayer {
     UNKNOWN, SOURCE, EDW_SDS, EDW_SIS, EDW, STAR_SDS, STAR_SIS, STAR;

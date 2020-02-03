@@ -24,7 +24,6 @@ import java.util.*;
 /**
  * The bootstrap class that is used to run the Jodi functionality
  * from the command line.
- *
  */
 public abstract class JodiControllerBase implements Register {
     private final static Logger logger = LogManager.getLogger(JodiControllerBase.class);
@@ -64,7 +63,7 @@ public abstract class JodiControllerBase implements Register {
      * Main entry point
      *
      * @param controller the super class of the controller
-     * @param args Command line arguments
+     * @param args       Command line arguments
      */
     protected static void createAndRun(final JodiControllerBase controller,
                                        final String[] args) {

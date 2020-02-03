@@ -26,7 +26,6 @@ import java.util.List;
  * An implementation of the MetadataServiceProvider that supports streaming XML
  * by allowing an implementation of the XMLStreamProvider interface to
  * dynamically provide the XML streams.
- *
  */
 public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvider {
 

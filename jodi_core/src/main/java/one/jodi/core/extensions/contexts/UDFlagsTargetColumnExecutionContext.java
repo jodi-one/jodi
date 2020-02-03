@@ -13,7 +13,6 @@ import java.util.Set;
  * user-defined flags
  * {@link FlagsStrategy#getUserDefinedFlags(java.util.Set, FlagsDataStoreExecutionContext, UDFlagsTargetColumnExecutionContext)
  * FlagsStrategy#getUserDefinedFlags(...)} for a target column.
- *
  */
 public interface UDFlagsTargetColumnExecutionContext extends FlagsTargetColumnExecutionContext {
 

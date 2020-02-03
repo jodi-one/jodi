@@ -20,7 +20,6 @@ import java.util.Map;
  * km.<Rule ID>.<name> = <value>
  * <p>
  * Critical note: the km.<groupname field is used as a reference for the input model XML
- *
  */
 
 public interface KnowledgeModuleProperties {

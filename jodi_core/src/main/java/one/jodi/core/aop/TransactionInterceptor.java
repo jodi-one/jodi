@@ -15,7 +15,6 @@ import javax.inject.Inject;
 
 /**
  * AOP interceptor that provides transaction management functionality.
- *
  */
 public class TransactionInterceptor implements MethodInterceptor {
 

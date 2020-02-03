@@ -13,7 +13,6 @@ import java.util.Set;
  * key and mandatory flags and the user-defined flags. It is used to implement
  * the default flags policy and a custom policy. The default policy plug-in is
  * always executed before the custom plug-in is executed.
- *
  */
 public interface FlagsStrategy {
 

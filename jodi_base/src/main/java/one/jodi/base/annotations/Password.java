@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Method level annotation that defines work repository password or schema password.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

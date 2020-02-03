@@ -4,7 +4,6 @@ import java.util.Map;
 
 /**
  * Interface describing a data model
- *
  */
 public interface DataModelDescriptor {
 

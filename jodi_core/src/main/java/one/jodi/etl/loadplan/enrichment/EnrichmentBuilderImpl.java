@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Actionrunner to create loadplans from textual specifications.
- *
  */
 public class EnrichmentBuilderImpl implements EnrichmentBuilder {
     private final EnrichmentVisitor enrichmentVistor;

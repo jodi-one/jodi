@@ -8,7 +8,6 @@ import java.util.Map;
 
 /**
  * Context interface for the strategy to determine the ExecutionLocation of a column.
- *
  */
 public interface ExecutionLocationContext {
 

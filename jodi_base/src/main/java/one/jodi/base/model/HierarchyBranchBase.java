@@ -8,7 +8,6 @@ import java.util.List;
  * A hierarchy branch represents a path from the Grand Total level to the
  * Detail level. In effect, a hierarchy is defined as a set of all possible paths
  * from Grand Total to Detail.
- *
  */
 public class HierarchyBranchBase {
     private final TableBase parent;

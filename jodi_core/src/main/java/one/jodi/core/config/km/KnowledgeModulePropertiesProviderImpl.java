@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 /**
  * Parses properties related to knowledge module definitions and performs some additional
  * validations.
- *
  */
 @Singleton //should be defined as eager Singleton in model
 public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePropertiesProvider {

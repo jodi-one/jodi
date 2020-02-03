@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * The Interface that defines the Package validator API.
- *
  */
 public interface PackageValidator {
 

@@ -17,7 +17,6 @@ import java.util.Collection;
 
 /**
  * Actionrunner to create loadplans from textual specifications.
- *
  */
 public class EnrichmentVisitorImpl implements EnrichmentVisitor {
 

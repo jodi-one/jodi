@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>MAPPING_2D_FULLAUTO_SUCCESS</Name>
-	<Comments>
-Defaults to union all
-	</Comments>
-	<PackageList>MAPPING_2D_FULLAUTO_SUCCESS</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_DA_I</Name>
-				<Alias>DA</Alias>
-			</Source>
-		</Dataset>
-		<Dataset>
-			<Source>
-				<Name>S_DB_I</Name>
-				<Alias>DB</Alias>
-			</Source>
-			<SetOperator>UNION</SetOperator>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_DA_O</TargetDataStore>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>MAPPING_2D_FULLAUTO_SUCCESS</Name>
+    <Comments>
+        Defaults to union all
+    </Comments>
+    <PackageList>MAPPING_2D_FULLAUTO_SUCCESS</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_DA_I</Name>
+                <Alias>DA</Alias>
+            </Source>
+        </Dataset>
+        <Dataset>
+            <Source>
+                <Name>S_DB_I</Name>
+                <Alias>DB</Alias>
+            </Source>
+            <SetOperator>UNION</SetOperator>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_DA_O</TargetDataStore>
+    </Mappings>
 </Transformation>

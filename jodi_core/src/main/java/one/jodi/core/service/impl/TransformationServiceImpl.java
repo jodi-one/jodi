@@ -38,7 +38,6 @@ import java.io.InputStream;
 
 /**
  * Implementation of the {@link TransformationService} interface.
- *
  */
 @Singleton
 public class TransformationServiceImpl implements TransformationService {

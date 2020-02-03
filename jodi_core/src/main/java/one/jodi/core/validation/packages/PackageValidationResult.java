@@ -10,7 +10,6 @@ import java.util.Set;
 
 /**
  * The Class that represents the result of a Package validation.
- *
  */
 public class PackageValidationResult {
 

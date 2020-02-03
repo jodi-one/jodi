@@ -14,7 +14,6 @@ import java.io.File;
 /**
  * Actionrunner to import loadplans from ODI into an external model,
  * textual specification.
- *
  */
 public class LoadPlanExportActionRunner implements ActionRunner {
 

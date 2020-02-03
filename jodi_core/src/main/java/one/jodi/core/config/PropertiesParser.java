@@ -65,7 +65,6 @@ import java.util.stream.Collectors;
  * defined postfixes is considered part of the GBU_DATA_MART_MODEL. The order property
  * reflects ordering within the layer and between layers and will be used to offer
  * precedence rules.
- *
  */
 public class PropertiesParser<T> {
 

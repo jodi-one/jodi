@@ -6,7 +6,6 @@ import java.util.Map;
 
 /**
  * Metadata that describes the ODI KM.
- *
  */
 public interface KnowledgeModule {
     /**

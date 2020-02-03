@@ -36,7 +36,6 @@ import java.util.*;
  * A default strategy must be wired into this class if using Guice.  Optionally a
  * custom strategy ({@link #customStrategy}) may be wired in to modify the
  * decision of the default strategy.
- *
  */
 public class ColumnMappingContextImpl implements ColumnMappingContext {
     private final static Logger logger =

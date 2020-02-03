@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 /**
  * This FlagsContext implementation uses the specified strategy
  * implementations to determine the user defined flags for a given column.
- *
  */
 public class FlagsContextImpl implements FlagsContext {
 

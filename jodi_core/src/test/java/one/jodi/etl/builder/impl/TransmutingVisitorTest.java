@@ -31,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for builder and visitor.
- *
  */
 public class TransmutingVisitorTest {
 

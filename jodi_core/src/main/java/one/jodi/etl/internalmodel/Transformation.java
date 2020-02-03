@@ -9,7 +9,6 @@ import java.util.List;
  * The Transformation class is the top level object in the Jodi hierarchy which describes how Jodi will create interfaces and packages in ODI.
  * This object hierarchy contains both information specified by the input model via XML but also "enriched" information, that is, information
  * computed by Jodi by recognition of patterns in the source and target data models.
- *
  */
 public interface Transformation {
     /**

@@ -2,7 +2,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * Describes a the suite of Join Types available in SQL.
- *
  */
 public enum JoinTypeEnum {
 

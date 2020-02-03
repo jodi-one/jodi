@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Interface that allows ETL specific application extensions to define
  * dependency injection {@link Module} instances at runtime.
- *
  */
 public interface ModuleProvider {
 

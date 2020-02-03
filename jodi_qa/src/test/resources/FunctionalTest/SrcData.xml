@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <DWH_SRC.SRC_DA/>
-  <DWH_SRC.SRC_DB/>
-  <DWH_SRC.SRC_FA/>
+    <DWH_SRC.SRC_DA/>
+    <DWH_SRC.SRC_DB/>
+    <DWH_SRC.SRC_FA/>
 </dataset>

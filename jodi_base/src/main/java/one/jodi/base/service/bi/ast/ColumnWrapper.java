@@ -8,7 +8,6 @@ package one.jodi.base.service.bi.ast;
  * The class is also used by implementation to identify the proper column. This
  * will be realized through an alternative interface that is not shared with the
  * Spoofax implementation.
- *
  */
 public interface ColumnWrapper {
 

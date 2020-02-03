@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments>This interface loads data into datastore 'W_FA_F'.</Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_FA_O</Name>
-				<Alias>SRC</Alias>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-    <TargetDataStore>W_FA_F</TargetDataStore>
-		<TargetColumn>
-			<Name>DA_WID</Name>
-			<MappingExpressions>
-				<Expression>-1</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>DB_WID</Name>
-			<MappingExpressions>
-				<Expression>-1</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments>This interface loads data into datastore 'W_FA_F'.</Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_FA_O</Name>
+                <Alias>SRC</Alias>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>W_FA_F</TargetDataStore>
+        <TargetColumn>
+            <Name>DA_WID</Name>
+            <MappingExpressions>
+                <Expression>-1</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>DB_WID</Name>
+            <MappingExpressions>
+                <Expression>-1</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

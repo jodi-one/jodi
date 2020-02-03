@@ -1,6 +1,5 @@
 package one.jodi.tools.dependency.impl;
 
-import one.jodi.tools.ModelMethodsTest;
 import one.jodi.tools.dependency.MappingHolder;
 import one.jodi.tools.dependency.MappingNameComparator;
 import org.apache.logging.log4j.LogManager;

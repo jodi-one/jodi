@@ -4,88 +4,88 @@
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
     <xs:import namespace="http://jodi.one/model/extensions" schemaLocation="jodi-extensions.v1.0.xsd"/>
-    
+
     <!-- Supporting BeginMapping and EndMapping;
     	 a command execute at the begin and or end of each mapping. -->
-     <xs:complexType name="MappingCommandType">
-     	   <xs:all>
-             <xs:element name="Text" type="xs:string" minOccurs="1"/>
-             <xs:element name="Technology" type="TechnologyType" minOccurs="1"/>
-             <xs:element name="Location" type="xs:string" minOccurs="1"/>
-           </xs:all>
+    <xs:complexType name="MappingCommandType">
+        <xs:all>
+            <xs:element name="Text" type="xs:string" minOccurs="1"/>
+            <xs:element name="Technology" type="TechnologyType" minOccurs="1"/>
+            <xs:element name="Location" type="xs:string" minOccurs="1"/>
+        </xs:all>
     </xs:complexType>
     <!-- 
     <xs:element
 		name="MappingCommand"
 		type="MappingCommandType" />
 		-->
-    	<xs:simpleType name="TechnologyType">
-			<xs:restriction base="xs:string">
-			   <xs:enumeration value="ANY" />
-					<xs:enumeration value="ATTUNITY" />
-					<xs:enumeration value="BEANSHELL" />
-					<xs:enumeration value="BTRIEVE" />
-					<xs:enumeration value="COMPLEX_FILE" />
-					<xs:enumeration value="DBASE" />
-					<xs:enumeration value="DERBY" />
-					<xs:enumeration value="EDQ" />
-					<xs:enumeration value="FILE" />
-					<xs:enumeration value="GENERIC_FILE" />
-					<xs:enumeration value="GENERIC_SQL" />
-					<xs:enumeration value="GOLDENGATE" />
-					<xs:enumeration value="GROOVY" />
-					<xs:enumeration value="HADOOP" />
-					<xs:enumeration value="HBASE" />
-					<xs:enumeration value="HIVE" />
-					<xs:enumeration value="HYPERION_ESSBASE" />
-					<xs:enumeration value="HYPERION_FINANCIAL_MANAGEMENT" />
-					<xs:enumeration value="HYPERION_PLANNING" />
-					<xs:enumeration value="HYPERSONIC_SQL" />
-					<xs:enumeration value="IBM_DB2_400" />
-					<xs:enumeration value="IBM_DB2_UDB" />
-					<xs:enumeration value="INFORMIX" />
-					<xs:enumeration value="INGRES" />
-					<xs:enumeration value="INTERBASE" />
-					<xs:enumeration value="JAVASCRIPT" />
-					<xs:enumeration value="JAX_WS" />
-					<xs:enumeration value="JMS_QUEUE_XML" />
-					<xs:enumeration value="JMS_TOPIC_XML" />
-					<xs:enumeration value="JMSQUEUE" />
-					<xs:enumeration value="JMSTOPIC" />
-					<xs:enumeration value="JYTHON" />
-					<xs:enumeration value="LDAP" />
-					<xs:enumeration value="MICROSOFT_ACCESS" />
-					<xs:enumeration value="MICROSOFT_EXCEL" />
-					<xs:enumeration value="MICROSOFT_SQL_SERVER" />
-					<xs:enumeration value="MYSQL" />
-					<xs:enumeration value="NETEZZA" />
-					<xs:enumeration value="NETREXX" />
-					<xs:enumeration value="OPERATING_SYSTEM" />
-					<xs:enumeration value="ORACLE" />
-					<xs:enumeration value="ORACLE_BAM" />
-					<xs:enumeration value="ORACLE_BI" />
-					<xs:enumeration value="OWB_RUNTIME_REPOSITORY" />
-					<xs:enumeration value="PARADOX" />
-					<xs:enumeration value="PIG" />
-					<xs:enumeration value="POSTGRESSQL" />
-					<xs:enumeration value="PROGRESS" />
-					<xs:enumeration value="SALESFORCE" />
-					<xs:enumeration value="SAP_ABAP" />
-					<xs:enumeration value="SAPJCO" />
-					<xs:enumeration value="SAS" />
-					<xs:enumeration value="SOAP_WEB_SERVICE" />
-					<xs:enumeration value="SPARK_PYTHON" />
-					<xs:enumeration value="SUNOPSIS_API" />
-					<xs:enumeration value="SUNOPSIS_ENGINE" />
-					<xs:enumeration value="SYBASE_AS_ANYWHERE" />
-					<xs:enumeration value="SYBASE_AS_ENTERPRISE" />
-					<xs:enumeration value="SYBASE_AS_IQ" />
-					<xs:enumeration value="TERADATA" />
-					<xs:enumeration value="TIMESTEN" />
-					<xs:enumeration value="UNIVERSE" />
-					<xs:enumeration value="XML" />
-			</xs:restriction>
-    	</xs:simpleType>
+    <xs:simpleType name="TechnologyType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ANY"/>
+            <xs:enumeration value="ATTUNITY"/>
+            <xs:enumeration value="BEANSHELL"/>
+            <xs:enumeration value="BTRIEVE"/>
+            <xs:enumeration value="COMPLEX_FILE"/>
+            <xs:enumeration value="DBASE"/>
+            <xs:enumeration value="DERBY"/>
+            <xs:enumeration value="EDQ"/>
+            <xs:enumeration value="FILE"/>
+            <xs:enumeration value="GENERIC_FILE"/>
+            <xs:enumeration value="GENERIC_SQL"/>
+            <xs:enumeration value="GOLDENGATE"/>
+            <xs:enumeration value="GROOVY"/>
+            <xs:enumeration value="HADOOP"/>
+            <xs:enumeration value="HBASE"/>
+            <xs:enumeration value="HIVE"/>
+            <xs:enumeration value="HYPERION_ESSBASE"/>
+            <xs:enumeration value="HYPERION_FINANCIAL_MANAGEMENT"/>
+            <xs:enumeration value="HYPERION_PLANNING"/>
+            <xs:enumeration value="HYPERSONIC_SQL"/>
+            <xs:enumeration value="IBM_DB2_400"/>
+            <xs:enumeration value="IBM_DB2_UDB"/>
+            <xs:enumeration value="INFORMIX"/>
+            <xs:enumeration value="INGRES"/>
+            <xs:enumeration value="INTERBASE"/>
+            <xs:enumeration value="JAVASCRIPT"/>
+            <xs:enumeration value="JAX_WS"/>
+            <xs:enumeration value="JMS_QUEUE_XML"/>
+            <xs:enumeration value="JMS_TOPIC_XML"/>
+            <xs:enumeration value="JMSQUEUE"/>
+            <xs:enumeration value="JMSTOPIC"/>
+            <xs:enumeration value="JYTHON"/>
+            <xs:enumeration value="LDAP"/>
+            <xs:enumeration value="MICROSOFT_ACCESS"/>
+            <xs:enumeration value="MICROSOFT_EXCEL"/>
+            <xs:enumeration value="MICROSOFT_SQL_SERVER"/>
+            <xs:enumeration value="MYSQL"/>
+            <xs:enumeration value="NETEZZA"/>
+            <xs:enumeration value="NETREXX"/>
+            <xs:enumeration value="OPERATING_SYSTEM"/>
+            <xs:enumeration value="ORACLE"/>
+            <xs:enumeration value="ORACLE_BAM"/>
+            <xs:enumeration value="ORACLE_BI"/>
+            <xs:enumeration value="OWB_RUNTIME_REPOSITORY"/>
+            <xs:enumeration value="PARADOX"/>
+            <xs:enumeration value="PIG"/>
+            <xs:enumeration value="POSTGRESSQL"/>
+            <xs:enumeration value="PROGRESS"/>
+            <xs:enumeration value="SALESFORCE"/>
+            <xs:enumeration value="SAP_ABAP"/>
+            <xs:enumeration value="SAPJCO"/>
+            <xs:enumeration value="SAS"/>
+            <xs:enumeration value="SOAP_WEB_SERVICE"/>
+            <xs:enumeration value="SPARK_PYTHON"/>
+            <xs:enumeration value="SUNOPSIS_API"/>
+            <xs:enumeration value="SUNOPSIS_ENGINE"/>
+            <xs:enumeration value="SYBASE_AS_ANYWHERE"/>
+            <xs:enumeration value="SYBASE_AS_ENTERPRISE"/>
+            <xs:enumeration value="SYBASE_AS_IQ"/>
+            <xs:enumeration value="TERADATA"/>
+            <xs:enumeration value="TIMESTEN"/>
+            <xs:enumeration value="UNIVERSE"/>
+            <xs:enumeration value="XML"/>
+        </xs:restriction>
+    </xs:simpleType>
     <!--  Defines a unit of transformation that combines multiple data sources
           using filters, joins, lookups, set operations and maps the resulting
           data set into a target data store (e.g. table) using projections
@@ -99,19 +99,19 @@
                 <xs:element name="Name" type="xs:string" minOccurs="0"/>
                 <xs:element name="FolderName" type="xs:string" minOccurs="0"/>
                 <xs:element name="PackageList" type="xs:string"/>
-                <xs:element name="Asynchronous" type="xs:boolean" minOccurs="0"/> 
+                <xs:element name="Asynchronous" type="xs:boolean" minOccurs="0"/>
                 <xs:element ref="Datasets"/>
                 <!-- Mappings are optional. This implies that mapping will be
                      performed using convention-based auto-mapping. -->
-                <xs:element ref="Mappings" /> 
+                <xs:element ref="Mappings"/>
                 <xs:element name="extension" type="ext:TransformationExtension" minOccurs="0"/>
                 <!-- Begin and End Mapping commands -->
                 <xs:element name="BeginCommand" type="MappingCommandType" minOccurs="0"/>
-				<xs:element name="EndCommand" type="MappingCommandType" minOccurs="0"/>
+                <xs:element name="EndCommand" type="MappingCommandType" minOccurs="0"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
-    
+
     <!-- Multiple data sets can be defined that are combined with set operations
          associated to individual data sets. The order of each Dataset element is 
          relevant because the set operations are applied in the order defined by
@@ -139,7 +139,7 @@
                 <!-- This optional element defines the name of the dataset in
                      the ETL tool. If not defined, the first source table
                      name plus a sequence number will define this name. -->
-                <xs:element name="Name"  minOccurs="0" type="xs:string"/>
+                <xs:element name="Name" minOccurs="0" type="xs:string"/>
                 <xs:element ref="Source" maxOccurs="unbounded"/>
                 <xs:element name="SetOperator" type="SetOperatorTypeEnum" minOccurs="0"/>
                 <xs:element name="Lkm" type="KmType" minOccurs="0"/>
@@ -162,14 +162,14 @@
                 <!-- Filter expression on data source. The filter condition must
                      contain the name or alias of the enclosing source. -->
                 <xs:element name="Filter" type="xs:string" minOccurs="0"/>
-				<!--  Contains the location of execution for filter -->
-                <xs:element name="FilterExecutionLocation"  type="ExecutionLocationtypeEnum" minOccurs="0"/>
+                <!--  Contains the location of execution for filter -->
+                <xs:element name="FilterExecutionLocation" type="ExecutionLocationtypeEnum" minOccurs="0"/>
                 <!-- Contain the join condition for INNER and OUTER joins. 
                      For CROSS and NATURAL joins it defines the name or alias
                      of the data source to join with. This is optional if the
                      join is intended to join with the previously defined 
                      data source. -->
-                <xs:element name="Join" type="xs:string" minOccurs="0"/> 
+                <xs:element name="Join" type="xs:string" minOccurs="0"/>
                 <xs:element name="JoinType" default="INNER" type="JoinTypeEnum" minOccurs="0"/>
                 <!-- Join Expression referring to sources through their names or
                      aliases. The join expression joins the enclosing source to
@@ -181,12 +181,12 @@
                 <!-- If "true", incorporates SQL expression defined by a temporary
                      interface source as a sub-query into the interface defined by 
                      the enclosing Transformation. -->
-                  <xs:element name="SubSelect" default="false" type="xs:boolean" minOccurs="0"/>                 
-                 <xs:element name="Lkm" type="KmType" minOccurs="0"/> 
+                <xs:element name="SubSelect" default="false" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="Lkm" type="KmType" minOccurs="0"/>
                 <xs:element name="extension" type="ext:SourceExtension" minOccurs="0"/>
                 <!--  -->
                 <xs:element name="Journalized" default="false" type="xs:boolean" minOccurs="0"/>
-                <xs:element ref="Flows" minOccurs="0" />
+                <xs:element ref="Flows" minOccurs="0"/>
             </xs:all>
 
         </xs:complexType>
@@ -195,8 +195,8 @@
     <!-- Enumeration type for join operations between two sources in one Dataset
          element. -->
     <xs:simpleType name="JoinTypeEnum">
-       <xs:restriction base="xs:string">
-            <xs:enumeration value="INNER"/> 
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="INNER"/>
             <xs:enumeration value="LEFT OUTER"/>
             <!-- use LEFT OUTER join instead of RIGHT OUTER join -->
             <!-- <xs:enumeration value="RIGHT OUTER"/> -->
@@ -204,122 +204,122 @@
             <xs:enumeration value="CROSS"/>
             <!-- likely never or infrequently used; deprecate?-->
             <xs:enumeration value="NATURAL"/>
-       </xs:restriction>
+        </xs:restriction>
     </xs:simpleType>
 
-    
+
     <!-- Enumeration type for set operation between two Dataset elements. -->
     <xs:simpleType name="SetOperatorTypeEnum">
-       <xs:restriction base="xs:string">
-            <xs:enumeration value="MINUS"/> 
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MINUS"/>
             <xs:enumeration value="UNION"/>
             <xs:enumeration value="UNION ALL"/>
             <xs:enumeration value="INTERSECT"/>
-       </xs:restriction>
+        </xs:restriction>
     </xs:simpleType>
-     
- 
-    <xs:element name="Flows" type="FlowsType" />
-    	<xs:complexType name="FlowsType">
-    		<xs:sequence>
-    			<xs:element ref="Flow" minOccurs="1" maxOccurs="unbounded" />
-    		</xs:sequence>
-    	</xs:complexType>
-   
-	
-	
+
+
+    <xs:element name="Flows" type="FlowsType"/>
+    <xs:complexType name="FlowsType">
+        <xs:sequence>
+            <xs:element ref="Flow" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
     <xs:element name="Flow" type="FlowType"/>
     <xs:complexType name="FlowType">
-		<xs:sequence>
-			<xs:element name="Name" type="xs:string" />
-		</xs:sequence>
-	</xs:complexType>
-    
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 
-	<xs:element name="SubQuery" type="SubQueryType" substitutionGroup="Flow" />
+
+    <xs:element name="SubQuery" type="SubQueryType" substitutionGroup="Flow"/>
     <xs:complexType name="SubQueryType">
-    	<xs:complexContent>
-			<xs:extension base="FlowType">
-    			<xs:sequence>
-					<xs:element name="FilterSource" type="xs:string" />
-					<xs:element name="Model" type="xs:string" minOccurs="0"/>
-					<xs:element name="Role" type="RoleEnum" />
-					<xs:element name="ExecutionLocation" type="ExecutionLocationtypeEnum" minOccurs="0" />
-					<xs:element name="Condition" type="xs:string" minOccurs="0"/>
-					<xs:element name="GroupComparison" type="GroupComparisonConditionEnum" default="NONE" minOccurs="0"/>
-					<!-- <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>-->
-					
-					<xs:element name="Column" minOccurs="0" maxOccurs="unbounded">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="Expression" minOccurs="0" maxOccurs="unbounded" >
-  				 					<xs:complexType>
-   									<xs:simpleContent>
-    									<xs:extension base="xs:string">
-       										<xs:attribute name="isFilter" type="xs:boolean" default="false"/>
-       									</xs:extension>
-									</xs:simpleContent>
-									</xs:complexType>
-			    				</xs:element>
-							</xs:sequence>
-							<xs:attribute name="name" type="xs:string" use="required" />
-						</xs:complexType>
-					</xs:element>
-					
-            	</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
- 
-	<xs:element name="Pivot" type="PivotType" substitutionGroup="Flow" />
+        <xs:complexContent>
+            <xs:extension base="FlowType">
+                <xs:sequence>
+                    <xs:element name="FilterSource" type="xs:string"/>
+                    <xs:element name="Model" type="xs:string" minOccurs="0"/>
+                    <xs:element name="Role" type="RoleEnum"/>
+                    <xs:element name="ExecutionLocation" type="ExecutionLocationtypeEnum" minOccurs="0"/>
+                    <xs:element name="Condition" type="xs:string" minOccurs="0"/>
+                    <xs:element name="GroupComparison" type="GroupComparisonConditionEnum" default="NONE"
+                                minOccurs="0"/>
+                    <!-- <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>-->
+
+                    <xs:element name="Column" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Expression" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:simpleContent>
+                                            <xs:extension base="xs:string">
+                                                <xs:attribute name="isFilter" type="xs:boolean" default="false"/>
+                                            </xs:extension>
+                                        </xs:simpleContent>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                            <xs:attribute name="name" type="xs:string" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="Pivot" type="PivotType" substitutionGroup="Flow"/>
     <xs:complexType name="PivotType">
-    		<xs:complexContent>
-    			<xs:extension base="FlowType">
-    				<xs:sequence>
-               			 <xs:element name="RowLocator" type="xs:string" />
-               			 <xs:element name="AggregateFunction" default="MIN" type="AggregateFunctionEnum" minOccurs="0" />
-               			 <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>
-            		</xs:sequence>
-    			</xs:extension>
-    		</xs:complexContent>
-        </xs:complexType>
- 
- 
- 	<xs:element name="UnPivot" type="UnPivotType" substitutionGroup="Flow" />
-    	<xs:complexType name="UnPivotType">
-    		<xs:complexContent>
-    			<xs:extension base="FlowType">
-    				<xs:sequence>
-               			 <xs:element name="RowLocator" type="xs:string" />
-               			 <xs:element name="IncludeNulls" type="xs:boolean" default="false" minOccurs="0"/>
-               			 <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>
-            		</xs:sequence>
-    			</xs:extension>
-    		</xs:complexContent>
-        </xs:complexType>
- 
+        <xs:complexContent>
+            <xs:extension base="FlowType">
+                <xs:sequence>
+                    <xs:element name="RowLocator" type="xs:string"/>
+                    <xs:element name="AggregateFunction" default="MIN" type="AggregateFunctionEnum" minOccurs="0"/>
+                    <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:element name="UnPivot" type="UnPivotType" substitutionGroup="Flow"/>
+    <xs:complexType name="UnPivotType">
+        <xs:complexContent>
+            <xs:extension base="FlowType">
+                <xs:sequence>
+                    <xs:element name="RowLocator" type="xs:string"/>
+                    <xs:element name="IncludeNulls" type="xs:boolean" default="false" minOccurs="0"/>
+                    <xs:element name="Column" type="ColumnType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:simpleType name="AggregateFunctionEnum">
-    	<xs:restriction base="xs:string">
-    	    <xs:enumeration value="MIN"/>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MIN"/>
             <xs:enumeration value="MAX"/>
             <xs:enumeration value="SUM"/>
             <xs:enumeration value="AVG"/>
             <xs:enumeration value="COUNT"/>
             <xs:enumeration value="MAX"/>
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="GroupComparisonConditionEnum">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="NONE" />
-			<xs:enumeration value="ANY" />
-			<xs:enumeration value="SOME" />
-			<xs:enumeration value="ALL" />
-		</xs:restriction>
-	</xs:simpleType>
+        </xs:restriction>
+    </xs:simpleType>
 
-	<xs:simpleType name="RoleEnum">
-    	<xs:restriction base="xs:string">
+    <xs:simpleType name="GroupComparisonConditionEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="ANY"/>
+            <xs:enumeration value="SOME"/>
+            <xs:enumeration value="ALL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="RoleEnum">
+        <xs:restriction base="xs:string">
             <xs:enumeration value="EQUAL"/>
             <xs:enumeration value="GREATER OR EQUAL"/>
             <xs:enumeration value="LESS OR EQUAL"/>
@@ -333,40 +333,40 @@
             <xs:enumeration value="UNEQUAL"/>
             <xs:enumeration value="XOR"/>
             <xs:enumeration value="XOR BEFORE EQUAL"/>
-		</xs:restriction>
-	</xs:simpleType>
-	
-		<xs:complexType name="ColumnType">
-			<xs:sequence>
-				<!-- 
-				<xs:element name="Name" type="xs:string" /> 
-				<xs:element name="Value" type="xs:string" minOccurs="0"/>
-				<xs:element name="Expression" type="xs:string" minOccurs="0" /> -->
-				<!-- <xs:element name="Expression" type="ExpressionType" />-->
-				<xs:element name="Expression" minOccurs="0" maxOccurs="unbounded" >
-  				  <xs:complexType>
-   					 <xs:simpleContent>
-    					  <xs:extension base="xs:string">
-       						 <xs:attribute name="value" type="xs:string"/>
-       					  </xs:extension>
-					</xs:simpleContent>
-				  </xs:complexType>
-			    </xs:element>
-			    <xs:element name="Type" type="xs:string" minOccurs="0" maxOccurs="1" />
-			</xs:sequence>
-			<xs:attribute name="name" type="xs:string" use="required" />
-		</xs:complexType>
-	<!-- 
-	<xs:element name="Expression" type="ExpressionType" />
-    <xs:complexType name="ExpressionType">
-    	<xs:simpleContent>
-    		<xs:extension base="xs:string">
-    			<xs:attribute name="when" type="xs:string"/>
-    		</xs:extension>
-    	</xs:simpleContent>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ColumnType">
+        <xs:sequence>
+            <!--
+            <xs:element name="Name" type="xs:string" />
+            <xs:element name="Value" type="xs:string" minOccurs="0"/>
+            <xs:element name="Expression" type="xs:string" minOccurs="0" /> -->
+            <!-- <xs:element name="Expression" type="ExpressionType" />-->
+            <xs:element name="Expression" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="value" type="xs:string"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Type" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:complexType>
-	-->
-	
+    <!--
+    <xs:element name="Expression" type="ExpressionType" />
+    <xs:complexType name="ExpressionType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="when" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    -->
+
     <!-- Lookups are define in the scope of the Datsets element. Each Lookup
          element is associated with one Source element. -->
     <xs:element name="Lookups">
@@ -378,7 +378,7 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <!-- Defines join and filter condition between a driver source and a lookup
          data store. The assumption is that the lookup produces exactly one row
          that contains the lookup value. -->
@@ -396,60 +396,59 @@
                 <!-- Lookup join between driver table and lookup table and
                      filter conditions to narrow result set to one row. -->
                 <xs:element name="Join" type="xs:string"/>
-                <xs:element name="LookupType" type="LookupTypeEnum" minOccurs="0"/> 
+                <xs:element name="LookupType" type="LookupTypeEnum" minOccurs="0"/>
                 <xs:element name="JoinExecutionLocation" type="ExecutionLocationtypeEnum" minOccurs="0"/>
                 <xs:element name="Journalized" default="false" type="xs:boolean" minOccurs="0"/>
-                <xs:element name="SubSelect" default="false" type="xs:boolean" minOccurs="0"/>   
-                <xs:element name="NoMatchRow" type="SyntheticRowType" minOccurs="0" />
+                <xs:element name="SubSelect" default="false" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="NoMatchRow" type="SyntheticRowType" minOccurs="0"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
 
-	<xs:complexType name="SyntheticRowType">
-		<xs:sequence>
-    		<xs:element name="Column" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:simpleContent>
-						<xs:extension base="xs:string">
-							<xs:attribute name="name" type="xs:string"/>
-						</xs:extension>
-					</xs:simpleContent>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	
-    
-    
+    <xs:complexType name="SyntheticRowType">
+        <xs:sequence>
+            <xs:element name="Column" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="name" type="xs:string"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
     <!-- Enumeration type for join operations between sources in one Dataset
          element. Lookups are realized either as a left outer join or scalar
          sub-queries. Scalar sub-queries can have advantages since the sub-query
          and its result may be cached in Oracle 11g. -->
     <xs:simpleType name="LookupTypeEnum">
-       <xs:restriction base="xs:string">
+        <xs:restriction base="xs:string">
             <xs:enumeration value="LEFT OUTER"/>
             <xs:enumeration value="SCALAR"/>
-            
-            <xs:enumeration value="ALL_ROWS"/> 
+
+            <xs:enumeration value="ALL_ROWS"/>
             <xs:enumeration value="ANY_ROW"/>
             <xs:enumeration value="ERROR_WHEN_MULTIPLE_ROW"/>
             <xs:enumeration value="FIRST_ROW"/>
             <xs:enumeration value="LAST_ROW"/>
             <!-- not implemented -->
             <!-- <xs:enumeration value="NTH_SINGLE_ROW"/> -->
-       </xs:restriction>
+        </xs:restriction>
     </xs:simpleType>
-    
-    
+
+
     <!-- Enumeration type for execution location. -->
     <xs:simpleType name="ExecutionLocationtypeEnum">
-       <xs:restriction base="xs:string">
+        <xs:restriction base="xs:string">
             <xs:enumeration value="SOURCE"/>
             <xs:enumeration value="WORK"/>
             <xs:enumeration value="TARGET"/>
-       </xs:restriction>
+        </xs:restriction>
     </xs:simpleType>
-    
+
     <!-- Mappings define the target data store and a number of additional details
          associated with the target data store. The majority of mappings defines
          projections from Dataset elements to the target data store. -->
@@ -462,8 +461,8 @@
                 <!-- This overwrites the default target model location. -->
                 <xs:element ref="Model" minOccurs="0"/>
                 <xs:element name="StagingModel" type="xs:string" minOccurs="0"/>
-                
-                 <!-- Name of the target data store. -->
+
+                <!-- Name of the target data store. -->
                 <xs:element name="TargetDataStore" type="xs:string"/>
                 <xs:element name="TargetDataStoreComment" type="xs:string" minOccurs="0"/>
                 <!-- Defines the mapping to target columns in the target data store.
@@ -491,30 +490,30 @@
                 <xs:element name="Name" type="xs:string"/>
                 <!-- Defines a mapping expression for each dataset in the
                      Datasets element. -->
-                <xs:element ref="MappingExpressions" />
+                <xs:element ref="MappingExpressions"/>
                 <!-- Indicates if a target column is nullable ("false") or 
                      not nullable ("true") -->
                 <xs:element name="Mandatory" type="xs:boolean" minOccurs="0"/>
-                
+
                 <!--  Indicates if the target column is used as a key -->
                 <xs:element name="Key" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="Insert" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="Update" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="ExecutionLocation" type="ExecutionLocationtypeEnum" minOccurs="0"/>
                 <xs:element name="ud1" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud2" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud3" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud4" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud5" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud6" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud7" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud8" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud9" type="xs:boolean" minOccurs="0"/>
-	             <xs:element name="ud10" type="xs:boolean" minOccurs="0"/>
-                
+                <xs:element name="ud2" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud3" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud4" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud5" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud6" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud7" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud8" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud9" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="ud10" type="xs:boolean" minOccurs="0"/>
+
                 <!-- DataType, Length, Scale are optional and only used when the
                      target data store is a temporary table. -->
-      			<xs:element ref="Properties" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="Properties" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="extension" type="ext:TargetColumnExtension" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
@@ -524,20 +523,20 @@
     <xs:element name="MappingExpressions">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="Expression" type="xs:string" maxOccurs="unbounded"/> 
+                <xs:element name="Expression" type="xs:string" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="Model" type="xs:string"/>
-    
+
     <!-- Defines details for a knowledge module (KM) used for loading data from
          a source data store, checking data and inserting data into a target
          data store. This includes the name of the KM and its options.  -->
     <xs:complexType name="KmType">
         <xs:all>
             <xs:element name="Code" type="xs:string"/>
-             <xs:element ref="KmOptions" minOccurs="0"/>
+            <xs:element ref="KmOptions" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
     <xs:element name="KmOptions">
@@ -554,11 +553,11 @@
                 <xs:element name="Value" type="xs:string"/>
             </xs:all>
         </xs:complexType>
-    </xs:element> 
+    </xs:element>
     <xs:element name="Properties">
         <xs:complexType>
             <xs:all>
-             <xs:element name="DataType" type="xs:string" minOccurs="1"/>
+                <xs:element name="DataType" type="xs:string" minOccurs="1"/>
                 <xs:element name="Length" type="xs:int" minOccurs="0"/>
                 <xs:element name="Scale" type="xs:int" minOccurs="0"/>
                 <xs:element name="Comments" type="xs:string" minOccurs="0"/>

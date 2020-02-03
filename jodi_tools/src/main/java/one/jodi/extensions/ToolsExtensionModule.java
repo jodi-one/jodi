@@ -17,7 +17,6 @@ import one.jodi.tools.service.impl.ReverseGeneratorImpl;
 /**
  * The Class CustomExtensionModule provide a Guice Module implementation that
  * overrides core configurations to allow to run the Reverse Generator to produce XML.
- *
  */
 public class ToolsExtensionModule extends AbstractModule {
 

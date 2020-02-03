@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Derived class of BaseCmdlineArgumentProcessor class for an
  * {@link RunConfig} implementation that is initialized from the command line.
- *
  */
 @SuppressWarnings("deprecation")
 public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor implements EtlRunConfig {
@@ -33,6 +32,7 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
     private boolean includingConstraints;
     private boolean exportingDBConstraints;
     private String deploymentArchivePassword;
+
     public EtlCmdlineArgumentProcessor() {
         super();
     }

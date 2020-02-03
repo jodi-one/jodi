@@ -17,7 +17,6 @@ import java.util.Set;
  * Service Interface to retrieve model and data store meta data. It combines
  * information from the ETL subsystem with information available through the
  * Jodi properties.
- *
  */
 public interface DatabaseMetadataService extends DatabaseSchemaService {
 

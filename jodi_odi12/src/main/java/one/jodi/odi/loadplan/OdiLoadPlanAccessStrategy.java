@@ -363,18 +363,18 @@ public abstract class OdiLoadPlanAccessStrategy<A extends Object, B extends IOdi
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void deleteLoadPlans(){
+    public void deleteLoadPlans() {
 //        DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
 //        ITransactionManager tm = odiInstance.getTransactionManager();
 //        ITransactionStatus txnStatus = tm.getTransaction(txnDef);
         IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) odiInstance.getTransactionalEntityManager()
                 .getFinder(OdiLoadPlan.class);
-        Collection<OdiLoadPlan> loadPlans =  loadPlanFinder.findAll();
-        logger.info("Found "+ loadPlans.size() + " loadplans to delete.");
-        loadPlans.stream().forEach( l -> {
-            logger.info("Trying to delete loadplan "+ l.getName() + ".");
-            odiInstance.getTransactionalEntityManager().remove((OdiLoadPlan)l);
+        Collection<OdiLoadPlan> loadPlans = loadPlanFinder.findAll();
+        logger.info("Found " + loadPlans.size() + " loadplans to delete.");
+        loadPlans.stream().forEach(l -> {
+            logger.info("Trying to delete loadplan " + l.getName() + ".");
+            odiInstance.getTransactionalEntityManager().remove((OdiLoadPlan) l);
         });
-   //     tm.commit(txnStatus);
+        //     tm.commit(txnStatus);
     }
 }

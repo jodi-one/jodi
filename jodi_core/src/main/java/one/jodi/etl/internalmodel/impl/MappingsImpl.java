@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * Implementation of Mappings interface.
- *
  */
 public class MappingsImpl implements Mappings {
 

@@ -11,7 +11,6 @@ import one.jodi.tools.ReverseGenerator;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * one.jodi.base.util.Resource} method.
- *
  */
 public class ToolsActionRunner implements ActionRunner {
 

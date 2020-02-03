@@ -7,7 +7,6 @@ import one.jodi.core.extensions.types.ExecutionLocationType;
 /**
  * The ExecutionLocationStrategy implementation that simply echoes back the
  * default ExecutionLocation.
- *
  */
 public class ExecutionLocationIDStrategy implements ExecutionLocationStrategy {
 

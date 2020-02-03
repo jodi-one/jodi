@@ -34,6 +34,7 @@ public class CommandInternalImpl implements CommandInternal, Validate {
     private final String context;
     private final DictionaryModelLogicalSchema dictionaryModelLogicalSchema;
     private final String logicalSchema;
+
     public CommandInternalImpl(final TaskInternal parent, final String technology,
                                final String modelName, final String context,
                                final String command,

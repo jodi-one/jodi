@@ -24,7 +24,6 @@ import java.util.*;
 /**
  * Implements the {@link JodiProperties} interface using a
  * properties file.
- *
  */
 @Singleton
 public class JodiPropertiesImpl implements JodiProperties {

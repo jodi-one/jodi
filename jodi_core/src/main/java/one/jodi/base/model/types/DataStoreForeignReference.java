@@ -16,7 +16,6 @@ import java.util.List;
  *
  * <b>Note</b>: references between data stores can also be expressed by complex
  * expressions. However, this feature is not yet implemented at this point.
- *
  */
 public interface DataStoreForeignReference {
 

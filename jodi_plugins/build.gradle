@@ -22,9 +22,9 @@ dependencies {
     testCompile project(':jodi_odi12')
 }
 
-task jaxb () {
-    inputs.dir  'src/main/resources'
-    outputs.dir  jaxbGenOutputDir
+task jaxb() {
+    inputs.dir 'src/main/resources'
+    outputs.dir jaxbGenOutputDir
 
     doLast {
         file(jaxbGenOutputDir).mkdirs()
@@ -32,15 +32,15 @@ task jaxb () {
                 classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
 
         ant.xjc(
-                removeOldOutput : true,
+                removeOldOutput: true,
                 extension: true,
                 destdir: "${jaxbGenOutputDir}",
                 package: 'one.jodi.model.extensions',
-                schema:  'src/main/resources/jodi-extensions.v1.0.xsd')
+                schema: 'src/main/resources/jodi-extensions.v1.0.xsd')
     }
 }
 
-task jaxbp () {
+task jaxbp() {
     inputs.dir 'src/main/resources/'
     outputs.dir jaxbGenOutputDir
 
@@ -50,11 +50,11 @@ task jaxbp () {
                 classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
 
         ant.xjc(
-                removeOldOutput : true,
+                removeOldOutput: true,
                 extension: true,
-                destdir:  "${jaxbGenOutputDir}",
+                destdir: "${jaxbGenOutputDir}",
                 package: 'one.jodi.etlmodel.extensions',
-                schema:  'src/main/resources/jodi-packages-extensions.v1.1.xsd')
+                schema: 'src/main/resources/jodi-packages-extensions.v1.1.xsd')
     }
 }
 
@@ -62,7 +62,7 @@ compileJava.dependsOn(['jaxb', 'jaxbp'])
 
 def fixWindowsStartScript(writer, lines) {
     lines.eachWithIndex { line, i ->
-        if ( i < 6 ) {
+        if (i < 6) {
             writer.println line
         } else if (i == 6) {
             writer.println ''
@@ -93,9 +93,9 @@ def fixWindowsStartScript(writer, lines) {
 
 def fixUnixStartScript(writer, lines) {
     lines.eachWithIndex { line, i ->
-        if ( i < 8 ) {
+        if (i < 8) {
             writer.println line
-        } else if (i==8) {
+        } else if (i == 8) {
             writer.println ''
             writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
             writer.println line

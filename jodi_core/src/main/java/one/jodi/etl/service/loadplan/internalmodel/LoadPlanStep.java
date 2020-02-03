@@ -8,7 +8,6 @@ import java.util.List;
  * Internal model representation of a LoadPlanStep.
  * A loadplanstep is a leaf of a LoadPlanTree which represents the tree of a loadplan,
  * and their indivudual loadplansteps.
- *
  */
 public class LoadPlanStep {
 

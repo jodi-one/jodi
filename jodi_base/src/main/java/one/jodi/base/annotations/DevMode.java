@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates development mode value.
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

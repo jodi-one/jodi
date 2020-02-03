@@ -2,7 +2,6 @@ package one.jodi.etl.service.loadplan.internalmodel;
 
 /**
  * Internal model representation of a Variable used in a loadplan
- *
  */
 public class Variable {
     private final String name;

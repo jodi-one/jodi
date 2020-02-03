@@ -3,7 +3,6 @@ package one.jodi.etl.internalmodel;
 
 /**
  * Represents a named user-defined flag value.
- *
  */
 public interface UserDefinedFlag {
 

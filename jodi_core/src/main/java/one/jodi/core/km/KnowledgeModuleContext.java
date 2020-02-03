@@ -12,7 +12,6 @@ import one.jodi.etl.internalmodel.Transformation;
  * It may be possible to condense the various KM calls into a single
  * <code>configure</code> function however it appears that in future refactoring
  * efforts KM type specific information will need to be provided.
- *
  */
 public interface KnowledgeModuleContext {
 

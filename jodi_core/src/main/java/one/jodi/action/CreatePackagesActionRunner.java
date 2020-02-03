@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * TransformationService#createOrReplaceTransformations(boolean)} method.
- *
  */
 public class CreatePackagesActionRunner implements ActionRunner {
 

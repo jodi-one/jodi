@@ -6,17 +6,16 @@ import java.util.List;
  * Represents a foreign key relationship between two data stores based on
  * column equality. data store has a foreign key that refers to a primary key in
  * the primary data store.s
- * 
+ * <p>
  * Since a primary key can be a composite key (referring to multiple data store
  * columns), the foreign key must consist of the same number of columns. The
  * equality between each column pair from primary and foreign key is defined in a
  * RefColumn reference column.
- * 
+ * <p>
  * A class instance must be referenced by a {@link DataStoreDescriptor}.
  *
  * <b>Note</b>: references between data stores can also be expressed by complex
  * expressions. However, this feature is not yet implemented at this point.
- *
  */
 public interface ForeignReference {
 

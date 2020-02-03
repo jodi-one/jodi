@@ -103,8 +103,8 @@ public class FlagsBuildingStep implements ModelBuildingStep {
     private void generate(Mapping mapping, one.jodi.etl.internalmodel.Transformation enrichedTransformation, Transformation transformation) throws AdapterException, MappingException {
 
         for (IMapComponent mo : mapping.getTargets()) {
-            if(mo.getAttributes() == null){
-                logger.info("No attributes for "+mapping.getName());
+            if (mo.getAttributes() == null) {
+                logger.info("No attributes for " + mapping.getName());
             }
             for (MapAttribute ma : mo.getAttributes()) {
                 for (one.jodi.etl.internalmodel.Targetcolumn targetcolumn : enrichedTransformation.getMappings().getTargetColumns()) {

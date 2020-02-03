@@ -11,7 +11,6 @@ import one.jodi.etl.internalmodel.Transformation;
  * of Control. The interface is passed to the ODI layer and the proper implementation
  * is injected using Guice. This allows the ODI-layer to call the Jodi core functionality
  * without breaking architecture / dependency rules.
- *
  */
 public interface TransformationNameContext {
 

@@ -7,7 +7,6 @@ import one.jodi.base.service.odb.OdbETLProvider;
 /**
  * The Class defines the modules required to run when retrieving
  * data from the JDBC connection.
- *
  */
 public class OdbModule extends AbstractModule {
 

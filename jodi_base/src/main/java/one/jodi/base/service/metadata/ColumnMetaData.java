@@ -4,13 +4,11 @@ import java.util.Map;
 
 /**
  * Column meta data information.
- *
  */
 public interface ColumnMetaData {
 
     /**
-     *
-     * @return  dataStoreName name of the datastore
+     * @return dataStoreName name of the datastore
      */
     String getDataStoreName();
 

@@ -157,7 +157,7 @@ public class DirectoryTransformer {
         private final String fileFilterRegExp;
 
         public JodiDirectoryWalker(File baseDirectory, File outputDirectory,
-                                  String fileFilter, XslTransformer xslTransformer, boolean debug) {
+                                   String fileFilter, XslTransformer xslTransformer, boolean debug) {
             this.fileFilterRegExp = fileFilter;//super(fileFilter, -1);
             this.baseDirectory = baseDirectory;
             this.outputDirectory = outputDirectory;

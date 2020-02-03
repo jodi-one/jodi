@@ -2,7 +2,6 @@ package one.jodi.base.service.bi.finder;
 
 /**
  * Represents all errors that were detected while parsing the expression.
- *
  */
 public interface FinderError {
     String getErrorMessage();

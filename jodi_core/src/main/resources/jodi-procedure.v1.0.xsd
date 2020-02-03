@@ -1,178 +1,177 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:ext="http://jodi.one/etlmodel/extensions"
-		   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-		   jaxb:version="2.1">
-	<!-- OdiUserProcedure procedure = https://docs.oracle.com/middleware/1213/odi/reference-java-api/oracle/odi/domain/project/OdiUserProcedure.html -->
-	<xs:element name="Procedure" >
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="FolderName" type="xs:string" />
-				<xs:element name="Name" type="xs:string" />
-				<xs:element name="Description" type="xs:string" minOccurs="0" />
-				<xs:element ref="Tasks" />
-				<xs:element ref="Options" minOccurs="0"/>
-			</xs:sequence>
-		    <xs:attribute name="MultiConnectionSupported" type="xs:boolean" default="false"/>
-		    <xs:attribute name="RemoveTemporaryObjectsonError" type="xs:boolean" default="false"/>
-		    <xs:attribute name="UseUniqueTemporaryObjectNames" type="xs:boolean" default="false"/>
-		</xs:complexType>
-	</xs:element>
-	
-	<!-- select '<xs:enumeration value="'||tech_int_name||'" />' 
-	     from dev_odi_repo.snp_techno order by 1 asc; -->
-	<xs:simpleType name="TechnologyType">
-		<xs:restriction base="xs:string">
-		   <xs:enumeration value="ANY" />
-				<xs:enumeration value="ATTUNITY" />
-				<xs:enumeration value="BEANSHELL" />
-				<xs:enumeration value="BTRIEVE" />
-				<xs:enumeration value="COMPLEX_FILE" />
-				<xs:enumeration value="DBASE" />
-				<xs:enumeration value="DERBY" />
-				<xs:enumeration value="EDQ" />
-				<xs:enumeration value="FILE" />
-				<xs:enumeration value="GENERIC_FILE" />
-				<xs:enumeration value="GENERIC_SQL" />
-				<xs:enumeration value="GOLDENGATE" />
-				<xs:enumeration value="GROOVY" />
-				<xs:enumeration value="HADOOP" />
-				<xs:enumeration value="HBASE" />
-				<xs:enumeration value="HIVE" />
-				<xs:enumeration value="HYPERION_ESSBASE" />
-				<xs:enumeration value="HYPERION_FINANCIAL_MANAGEMENT" />
-				<xs:enumeration value="HYPERION_PLANNING" />
-				<xs:enumeration value="HYPERSONIC_SQL" />
-				<xs:enumeration value="IBM_DB2_400" />
-				<xs:enumeration value="IBM_DB2_UDB" />
-				<xs:enumeration value="INFORMIX" />
-				<xs:enumeration value="INGRES" />
-				<xs:enumeration value="INTERBASE" />
-				<xs:enumeration value="JAVASCRIPT" />
-				<xs:enumeration value="JAX_WS" />
-				<xs:enumeration value="JMS_QUEUE_XML" />
-				<xs:enumeration value="JMS_TOPIC_XML" />
-				<xs:enumeration value="JMSQUEUE" />
-				<xs:enumeration value="JMSTOPIC" />
-				<xs:enumeration value="JYTHON" />
-				<xs:enumeration value="LDAP" />
-				<xs:enumeration value="MICROSOFT_ACCESS" />
-				<xs:enumeration value="MICROSOFT_EXCEL" />
-				<xs:enumeration value="MICROSOFT_SQL_SERVER" />
-				<xs:enumeration value="MYSQL" />
-				<xs:enumeration value="NETEZZA" />
-				<xs:enumeration value="NETREXX" />
-				<xs:enumeration value="OPERATING_SYSTEM" />
-				<xs:enumeration value="ORACLE" />
-				<xs:enumeration value="ORACLE_BAM" />
-				<xs:enumeration value="ORACLE_BI" />
-				<xs:enumeration value="OWB_RUNTIME_REPOSITORY" />
-				<xs:enumeration value="PARADOX" />
-				<xs:enumeration value="PIG" />
-				<xs:enumeration value="POSTGRESSQL" />
-				<xs:enumeration value="PROGRESS" />
-				<xs:enumeration value="SALESFORCE" />
-				<xs:enumeration value="SAP_ABAP" />
-				<xs:enumeration value="SAPJCO" />
-				<xs:enumeration value="SAS" />
-				<xs:enumeration value="SOAP_WEB_SERVICE" />
-				<xs:enumeration value="SPARK_PYTHON" />
-				<xs:enumeration value="SUNOPSIS_API" />
-				<xs:enumeration value="SUNOPSIS_ENGINE" />
-				<xs:enumeration value="SYBASE_AS_ANYWHERE" />
-				<xs:enumeration value="SYBASE_AS_ENTERPRISE" />
-				<xs:enumeration value="SYBASE_AS_IQ" />
-				<xs:enumeration value="TERADATA" />
-				<xs:enumeration value="TIMESTEN" />
-				<xs:enumeration value="UNIVERSE" />
-				<xs:enumeration value="XML" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:element name="Tasks">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Task" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	
-	<xs:element name="Task">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Name" type="xs:string" />
-				<!--  constraint enforced in Code: at least one must be defined -->
-				<xs:element name="SourceCommand" type="SourceCommandType" minOccurs="0"/>
-				<xs:element name="TargetCommand" type="TargetCommandType" minOccurs="0"/>
-			</xs:sequence>
-			<xs:attribute name="Cleanup" type="xs:boolean" default="false" />
-			<xs:attribute name="IgnoreErrors" type="xs:boolean" default="false" />
-		</xs:complexType>
-	</xs:element>
-	
-	<xs:element name="Options">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Option" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	
-	<xs:element name="Option">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Name" type="xs:string" />
-				<xs:element name="Type" type="OptionType" />
-				<xs:element name="DefaultValue" type="xs:anySimpleType" />
-				<xs:element ref="OptionList" minOccurs="0" maxOccurs="unbounded" />
-				<!-- not implemented; no SDK api for this;
-				 <xs:element name="DirectExecutionValue" type="xs:anySimpleType" minOccurs="0"/> -->
-				<xs:element name="Condition" type="xs:string" minOccurs="0" />
-				<xs:element name="Description" type="xs:string" minOccurs="0" />
-				<xs:element name="Help" type="xs:string" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	
-	<xs:simpleType name="OptionType">
-		<xs:restriction base="xs:string">
-		<xs:enumeration value="BOOLEAN" />
-		<xs:enumeration value="TEXT" />
-		<xs:enumeration value="VALUE" />
-		<xs:enumeration value="CHOICE" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:element name="OptionList" type="xs:string" />
-	
-	<xs:element name="Command" type="CommandType" abstract="true" />
-	<xs:complexType name="CommandType">
-		<xs:sequence>
-		    <!-- Default is technology default at Procedure, which will be Oracle -->
-			<xs:element name="Technology" type="TechnologyType" minOccurs="0"/>
-			<xs:element name="ExecutionContext" type="xs:string" minOccurs="0" /> 
-			<!-- 
-			 Valid values are: 
-			 DEFAULT_CONTEXT, (the value that is set as the default context in the contexts)
-			 EXECUTION_CONTEXT,  (the default)
-			 or Code of the context.
-			 -->
-			<xs:element name="LogicalSchema" type="xs:string" />
-			<xs:element name="Command" type="xs:string" />
-		</xs:sequence>
-	</xs:complexType>
-	
-	<xs:element name="TargetCommand" type="CommandType" substitutionGroup="Command" />
-	<xs:complexType name="TargetCommandType">
-		<xs:complexContent>
-			<xs:extension base="CommandType"> </xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	
-	<xs:element name="SourceCommand" type="CommandType" substitutionGroup="Command" />
-	<xs:complexType name="SourceCommandType">
-		<xs:complexContent>
-			<xs:extension base="CommandType"> </xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.1">
+    <!-- OdiUserProcedure procedure = https://docs.oracle.com/middleware/1213/odi/reference-java-api/oracle/odi/domain/project/OdiUserProcedure.html -->
+    <xs:element name="Procedure">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="FolderName" type="xs:string"/>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Description" type="xs:string" minOccurs="0"/>
+                <xs:element ref="Tasks"/>
+                <xs:element ref="Options" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="MultiConnectionSupported" type="xs:boolean" default="false"/>
+            <xs:attribute name="RemoveTemporaryObjectsonError" type="xs:boolean" default="false"/>
+            <xs:attribute name="UseUniqueTemporaryObjectNames" type="xs:boolean" default="false"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- select '<xs:enumeration value="'||tech_int_name||'" />'
+         from dev_odi_repo.snp_techno order by 1 asc; -->
+    <xs:simpleType name="TechnologyType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ANY"/>
+            <xs:enumeration value="ATTUNITY"/>
+            <xs:enumeration value="BEANSHELL"/>
+            <xs:enumeration value="BTRIEVE"/>
+            <xs:enumeration value="COMPLEX_FILE"/>
+            <xs:enumeration value="DBASE"/>
+            <xs:enumeration value="DERBY"/>
+            <xs:enumeration value="EDQ"/>
+            <xs:enumeration value="FILE"/>
+            <xs:enumeration value="GENERIC_FILE"/>
+            <xs:enumeration value="GENERIC_SQL"/>
+            <xs:enumeration value="GOLDENGATE"/>
+            <xs:enumeration value="GROOVY"/>
+            <xs:enumeration value="HADOOP"/>
+            <xs:enumeration value="HBASE"/>
+            <xs:enumeration value="HIVE"/>
+            <xs:enumeration value="HYPERION_ESSBASE"/>
+            <xs:enumeration value="HYPERION_FINANCIAL_MANAGEMENT"/>
+            <xs:enumeration value="HYPERION_PLANNING"/>
+            <xs:enumeration value="HYPERSONIC_SQL"/>
+            <xs:enumeration value="IBM_DB2_400"/>
+            <xs:enumeration value="IBM_DB2_UDB"/>
+            <xs:enumeration value="INFORMIX"/>
+            <xs:enumeration value="INGRES"/>
+            <xs:enumeration value="INTERBASE"/>
+            <xs:enumeration value="JAVASCRIPT"/>
+            <xs:enumeration value="JAX_WS"/>
+            <xs:enumeration value="JMS_QUEUE_XML"/>
+            <xs:enumeration value="JMS_TOPIC_XML"/>
+            <xs:enumeration value="JMSQUEUE"/>
+            <xs:enumeration value="JMSTOPIC"/>
+            <xs:enumeration value="JYTHON"/>
+            <xs:enumeration value="LDAP"/>
+            <xs:enumeration value="MICROSOFT_ACCESS"/>
+            <xs:enumeration value="MICROSOFT_EXCEL"/>
+            <xs:enumeration value="MICROSOFT_SQL_SERVER"/>
+            <xs:enumeration value="MYSQL"/>
+            <xs:enumeration value="NETEZZA"/>
+            <xs:enumeration value="NETREXX"/>
+            <xs:enumeration value="OPERATING_SYSTEM"/>
+            <xs:enumeration value="ORACLE"/>
+            <xs:enumeration value="ORACLE_BAM"/>
+            <xs:enumeration value="ORACLE_BI"/>
+            <xs:enumeration value="OWB_RUNTIME_REPOSITORY"/>
+            <xs:enumeration value="PARADOX"/>
+            <xs:enumeration value="PIG"/>
+            <xs:enumeration value="POSTGRESSQL"/>
+            <xs:enumeration value="PROGRESS"/>
+            <xs:enumeration value="SALESFORCE"/>
+            <xs:enumeration value="SAP_ABAP"/>
+            <xs:enumeration value="SAPJCO"/>
+            <xs:enumeration value="SAS"/>
+            <xs:enumeration value="SOAP_WEB_SERVICE"/>
+            <xs:enumeration value="SPARK_PYTHON"/>
+            <xs:enumeration value="SUNOPSIS_API"/>
+            <xs:enumeration value="SUNOPSIS_ENGINE"/>
+            <xs:enumeration value="SYBASE_AS_ANYWHERE"/>
+            <xs:enumeration value="SYBASE_AS_ENTERPRISE"/>
+            <xs:enumeration value="SYBASE_AS_IQ"/>
+            <xs:enumeration value="TERADATA"/>
+            <xs:enumeration value="TIMESTEN"/>
+            <xs:enumeration value="UNIVERSE"/>
+            <xs:enumeration value="XML"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="Tasks">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Task" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Task">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <!--  constraint enforced in Code: at least one must be defined -->
+                <xs:element name="SourceCommand" type="SourceCommandType" minOccurs="0"/>
+                <xs:element name="TargetCommand" type="TargetCommandType" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="Cleanup" type="xs:boolean" default="false"/>
+            <xs:attribute name="IgnoreErrors" type="xs:boolean" default="false"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Options">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Option" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Option">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Type" type="OptionType"/>
+                <xs:element name="DefaultValue" type="xs:anySimpleType"/>
+                <xs:element ref="OptionList" minOccurs="0" maxOccurs="unbounded"/>
+                <!-- not implemented; no SDK api for this;
+                 <xs:element name="DirectExecutionValue" type="xs:anySimpleType" minOccurs="0"/> -->
+                <xs:element name="Condition" type="xs:string" minOccurs="0"/>
+                <xs:element name="Description" type="xs:string" minOccurs="0"/>
+                <xs:element name="Help" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="OptionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BOOLEAN"/>
+            <xs:enumeration value="TEXT"/>
+            <xs:enumeration value="VALUE"/>
+            <xs:enumeration value="CHOICE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="OptionList" type="xs:string"/>
+
+    <xs:element name="Command" type="CommandType" abstract="true"/>
+    <xs:complexType name="CommandType">
+        <xs:sequence>
+            <!-- Default is technology default at Procedure, which will be Oracle -->
+            <xs:element name="Technology" type="TechnologyType" minOccurs="0"/>
+            <xs:element name="ExecutionContext" type="xs:string" minOccurs="0"/>
+            <!--
+             Valid values are:
+             DEFAULT_CONTEXT, (the value that is set as the default context in the contexts)
+             EXECUTION_CONTEXT,  (the default)
+             or Code of the context.
+             -->
+            <xs:element name="LogicalSchema" type="xs:string"/>
+            <xs:element name="Command" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="TargetCommand" type="CommandType" substitutionGroup="Command"/>
+    <xs:complexType name="TargetCommandType">
+        <xs:complexContent>
+            <xs:extension base="CommandType"></xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="SourceCommand" type="CommandType" substitutionGroup="Command"/>
+    <xs:complexType name="SourceCommandType">
+        <xs:complexContent>
+            <xs:extension base="CommandType"></xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 </xs:schema>

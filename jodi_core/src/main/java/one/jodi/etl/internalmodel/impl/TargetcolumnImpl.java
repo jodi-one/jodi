@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 /**
  * Implementation of interface.
- *
  */
 public class TargetcolumnImpl implements Targetcolumn {
 

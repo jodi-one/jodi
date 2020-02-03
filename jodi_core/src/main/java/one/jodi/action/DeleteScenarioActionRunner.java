@@ -14,7 +14,6 @@ import one.jodi.core.service.ScenarioService;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * ScenarioService#deleteScenario(java.util.List)} method.
- *
  */
 public class DeleteScenarioActionRunner implements ActionRunner {
 

@@ -15,7 +15,6 @@ import java.util.List;
  * <p>
  * This extends {@link KnowledgeModuleExecutionContext} in order to provide data
  * source information used for KM configuration process.
- *
  */
 public interface StagingKnowledgeModuleExecutionContext extends
         KnowledgeModuleExecutionContext {

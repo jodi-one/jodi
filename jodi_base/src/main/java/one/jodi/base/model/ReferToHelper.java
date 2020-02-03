@@ -43,6 +43,7 @@ public abstract class ReferToHelper<T> {
     private final String key;
     private final String regExPattern; // assumes three parts surrounded by '(...)'
     private final ErrorWarningMessageJodi errorWarningMessages;
+
     protected ReferToHelper(final String key, final String regExPattern,
                             final ErrorWarningMessageJodi errorWarningMessages) {
         this.key = key;

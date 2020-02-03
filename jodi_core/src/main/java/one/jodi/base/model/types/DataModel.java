@@ -7,7 +7,6 @@ import java.util.Map;
 
 /**
  * Metadata that describes and characterizes an ODI data model
- *
  */
 public interface DataModel {
 

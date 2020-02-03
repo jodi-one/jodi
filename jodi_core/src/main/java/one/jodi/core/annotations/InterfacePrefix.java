@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 /**
  * Method level annotation that defines transformation prefix used as part of name
  * of Interfaces (ODI 11g) or Mappings (ODI 12c)
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

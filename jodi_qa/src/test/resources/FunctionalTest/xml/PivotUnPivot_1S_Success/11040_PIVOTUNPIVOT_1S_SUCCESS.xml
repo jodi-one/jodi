@@ -1,74 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Transformation xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>PivotUnPivot_1S_Success</Name>
-	<Comments>
-	</Comments>
-	<PackageList>PivotUnPivot_1S_Success</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_PV_I</Name>
-				<Alias>P_IN</Alias>
-				<Flows>	
-					<Pivot>
-						<Name>PV</Name>
-						<RowLocator>P_IN.QUARTER</RowLocator>
-						<AggregateFunction>SUM</AggregateFunction>
-						<Column name="YEAR">
-							<Expression>P_IN.YEAR</Expression>
-						</Column>
-						<Column name="Q1_SALES">
-							<Expression value="'Q1'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q2_SALES">
-							<Expression value="'Q2'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q3_SALES">
-							<Expression value="'Q3'">P_IN.SALES</Expression>
-						</Column>
-						<Column name="Q4_SALES">
-							<Expression value="'Q4'">P_IN.SALES</Expression>
-						</Column>
-					</Pivot>
-					<UnPivot>
-						<Name>UPV</Name>
-						<RowLocator>QUARTER</RowLocator>
-						<Column name="YEAR">
-							<Expression>PV.YEAR</Expression>
-						</Column>
-						<Column name="QUARTER">
-						</Column>
-						<Column name="SALES">
-							<Expression value="'Q1'">PV.Q1_SALES</Expression>
-							<Expression value="'Q2'">PV.Q2_SALES</Expression>
-							<Expression value="'Q3'">PV.Q3_SALES</Expression>
-							<Expression value="'Q4'">PV.Q4_SALES</Expression>
-						</Column>
-					</UnPivot>
-				</Flows>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-	    <TargetDataStore>S_PV_O</TargetDataStore>
-	    <TargetColumn>
-	    	<Name>YEAR</Name>
-	    	<MappingExpressions>
-	    		<Expression>UPV.YEAR</Expression>
-	    	</MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    	<Name>QUARTER</Name>
-	    	<MappingExpressions>
-	    		<Expression>UPV.QUARTER</Expression>
-	    	</MappingExpressions>
-	    </TargetColumn>
-	    <TargetColumn>
-	    	<Name>SALES</Name>
-	    	<MappingExpressions>
-	    		<Expression>UPV.SALES</Expression>
-	    	</MappingExpressions>
-	    </TargetColumn>
-	</Mappings>
+<Transformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Name>PivotUnPivot_1S_Success</Name>
+    <Comments>
+    </Comments>
+    <PackageList>PivotUnPivot_1S_Success</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_PV_I</Name>
+                <Alias>P_IN</Alias>
+                <Flows>
+                    <Pivot>
+                        <Name>PV</Name>
+                        <RowLocator>P_IN.QUARTER</RowLocator>
+                        <AggregateFunction>SUM</AggregateFunction>
+                        <Column name="YEAR">
+                            <Expression>P_IN.YEAR</Expression>
+                        </Column>
+                        <Column name="Q1_SALES">
+                            <Expression value="'Q1'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q2_SALES">
+                            <Expression value="'Q2'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q3_SALES">
+                            <Expression value="'Q3'">P_IN.SALES</Expression>
+                        </Column>
+                        <Column name="Q4_SALES">
+                            <Expression value="'Q4'">P_IN.SALES</Expression>
+                        </Column>
+                    </Pivot>
+                    <UnPivot>
+                        <Name>UPV</Name>
+                        <RowLocator>QUARTER</RowLocator>
+                        <Column name="YEAR">
+                            <Expression>PV.YEAR</Expression>
+                        </Column>
+                        <Column name="QUARTER">
+                        </Column>
+                        <Column name="SALES">
+                            <Expression value="'Q1'">PV.Q1_SALES</Expression>
+                            <Expression value="'Q2'">PV.Q2_SALES</Expression>
+                            <Expression value="'Q3'">PV.Q3_SALES</Expression>
+                            <Expression value="'Q4'">PV.Q4_SALES</Expression>
+                        </Column>
+                    </UnPivot>
+                </Flows>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_PV_O</TargetDataStore>
+        <TargetColumn>
+            <Name>YEAR</Name>
+            <MappingExpressions>
+                <Expression>UPV.YEAR</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>QUARTER</Name>
+            <MappingExpressions>
+                <Expression>UPV.QUARTER</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>SALES</Name>
+            <MappingExpressions>
+                <Expression>UPV.SALES</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * This interface defines the properties (aka rules) available for use in a configuration-based KM approach
  * as set in the Jodi properties file.
- *
  */
 public interface KnowledgeModulePropertiesProvider {
 

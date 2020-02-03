@@ -10,7 +10,6 @@ import one.jodi.core.extensions.types.ExecutionLocationType;
  * plug-in is always executed before the custom plug-in is executed.
  * <p>
  * The ExecutionLocation strategy interface.
- *
  */
 public interface ExecutionLocationStrategy {
 

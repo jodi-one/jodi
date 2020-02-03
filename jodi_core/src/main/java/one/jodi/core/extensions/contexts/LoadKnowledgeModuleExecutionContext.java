@@ -12,7 +12,6 @@ import one.jodi.core.extensions.strategies.KnowledgeModuleStrategy;
  * <p>
  * This extends {@link KnowledgeModuleExecutionContext} in order to provide data
  * source information used for KM configuration process.
- *
  */
 public interface LoadKnowledgeModuleExecutionContext extends
         KnowledgeModuleExecutionContext {

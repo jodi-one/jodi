@@ -11,7 +11,6 @@ import java.util.List;
  * {@link ExecutionLocationStrategy
  * ExecutionLocationStrategy} that is used to determine the execution locations
  * for filters.
- *
  */
 public interface ExecutionLocationFilterExecutionContext extends ExecutionLocationExecutionContext {
 

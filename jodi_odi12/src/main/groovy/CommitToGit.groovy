@@ -1,11 +1,8 @@
 import com.sunopsis.dwg.DwgObject
-import oracle.odi.core.OdiInstance
 import oracle.odi.core.service.vcs.generic.OdiObjectInfo
 import oracle.odi.core.service.vcs.generic.adapter.OdiVcsAdapterType
 import oracle.odi.core.service.vcs.generic.adapter.impl.OdiVcsAdapterFactory
-import oracle.odi.core.service.vcs.generic.adapter.impl.OdiVcsRepositoryInfo
 import oracle.odi.core.service.vcs.generic.delegate.OdiVcsDelegate
-import oracle.odi.core.service.vcs.generic.exceptions.OdiVcsException
 import oracle.odi.core.service.vcs.generic.utils.OdiVcsUtils
 import oracle.odi.core.service.vcs.git.adapter.impl.OdiGitRepositoryInfo
 import oracle.odi.core.service.vcs.git.adapter.impl.OdiJGitAdapter
@@ -60,7 +57,7 @@ class CommitToGit {
         OdiVcsDelegate odiVcsDelegate = new OdiVcsDelegate(odiInstance)
         odiVcsDelegate.createConnection(wrl, walletPwd, repoInfo, isSaveLoginCredPwd)
         List<OdiObjectInfo> modified = odiVcsDelegate.getAllPendingChangesInRepository(repoInfo)
-        odiVcsDelegate.createVersion( repoInfo, modified,  "modified",  includeDependencies,  regenerateScen)
+        odiVcsDelegate.createVersion(repoInfo, modified, "modified", includeDependencies, regenerateScen)
         odiVcsAdapter.pushToRemoteRepository(repoInfo, "master")
 
         assert !odiInstance.closed

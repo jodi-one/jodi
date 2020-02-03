@@ -8,7 +8,6 @@ import java.util.Optional;
 /**
  * Represents the result of a call to the ColumnFinder. It represents the
  * identified column or the error code and error message.
- *
  */
 public interface FinderResult {
 

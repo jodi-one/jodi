@@ -1,91 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>TEST</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_INVOICELINE_O</Name>
-				<Lookups>
-					<Lookup> 
-						<LookupDataStore>W_CUSTOMER_D</LookupDataStore>
-						<Join>W_CUSTOMER_D.CUST_CODE = S_INVOICELINE_O.INVL_CUST_CODE</Join>
-					</Lookup>
-					<Lookup>
-						<LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
-						<Alias>SUPPORTREP</Alias>
-						<Join>SUPPORTREP.EMPL_CODE = S_INVOICELINE_O.INVL_SUPPORTREP_CODE</Join>
-					</Lookup>
-					<Lookup>
-						<LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
-						<Alias>SUPERVISOR</Alias>
-						<Join>SUPERVISOR.EMPL_CODE = S_INVOICELINE_O.INVL_SUPERVISOR_CODE</Join>
-					</Lookup>
-					<Lookup>
-						<LookupDataStore>W_ALBUM_D</LookupDataStore>
-						<Alias>ALBUM</Alias>
-						<Join>ALBUM.ALBM_CODE = S_INVOICELINE_O.INVL_ALBM_CODE</Join>
-					</Lookup>
-					<Lookup>
-						<LookupDataStore>W_TRACK_D</LookupDataStore>
-						<Alias>TRACK</Alias>
-						<Join>TRACK.TRCK_CODE = S_INVOICELINE_O.INVL_TRCK_CODE</Join>
-					</Lookup>
-				</Lookups>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>W_INVOICELINE_F</TargetDataStore>
-		<TargetColumn>
-			<Name>ROW_WID</Name>
-			<MappingExpressions> 
-				<Expression>NEXT VALUE FOR DWH_DMT.SEQ_W_INVOICELINE_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_TRCK_WID</Name>
-			<MappingExpressions>
-				<Expression>TRACK.ROW_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_CUST_WID</Name>
-			<MappingExpressions>
-				<Expression>W_CUSTOMER_D.ROW_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_ALBM_WID</Name>
-			<MappingExpressions>
-				<Expression>ALBUM.ROW_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_SUPPORTREP_WID</Name>
-			<MappingExpressions>
-				<Expression>SUPPORTREP.ROW_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_SUPERVISOR_WID</Name>
-			<MappingExpressions>
-				<Expression>SUPERVISOR.ROW_WID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_INVE_DATE_WID</Name>
-			<MappingExpressions>
-				<Expression>S_INVOICELINE_O.INVL_INVE_DATE_CODE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>W_INSERT_DT</Name>
-			<MappingExpressions>
-				<Expression>CURDATE ()</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>TEST</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_INVOICELINE_O</Name>
+                <Lookups>
+                    <Lookup>
+                        <LookupDataStore>W_CUSTOMER_D</LookupDataStore>
+                        <Join>W_CUSTOMER_D.CUST_CODE = S_INVOICELINE_O.INVL_CUST_CODE</Join>
+                    </Lookup>
+                    <Lookup>
+                        <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
+                        <Alias>SUPPORTREP</Alias>
+                        <Join>SUPPORTREP.EMPL_CODE = S_INVOICELINE_O.INVL_SUPPORTREP_CODE</Join>
+                    </Lookup>
+                    <Lookup>
+                        <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
+                        <Alias>SUPERVISOR</Alias>
+                        <Join>SUPERVISOR.EMPL_CODE = S_INVOICELINE_O.INVL_SUPERVISOR_CODE</Join>
+                    </Lookup>
+                    <Lookup>
+                        <LookupDataStore>W_ALBUM_D</LookupDataStore>
+                        <Alias>ALBUM</Alias>
+                        <Join>ALBUM.ALBM_CODE = S_INVOICELINE_O.INVL_ALBM_CODE</Join>
+                    </Lookup>
+                    <Lookup>
+                        <LookupDataStore>W_TRACK_D</LookupDataStore>
+                        <Alias>TRACK</Alias>
+                        <Join>TRACK.TRCK_CODE = S_INVOICELINE_O.INVL_TRCK_CODE</Join>
+                    </Lookup>
+                </Lookups>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>W_INVOICELINE_F</TargetDataStore>
+        <TargetColumn>
+            <Name>ROW_WID</Name>
+            <MappingExpressions>
+                <Expression>NEXT VALUE FOR DWH_DMT.SEQ_W_INVOICELINE_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_TRCK_WID</Name>
+            <MappingExpressions>
+                <Expression>TRACK.ROW_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_CUST_WID</Name>
+            <MappingExpressions>
+                <Expression>W_CUSTOMER_D.ROW_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_ALBM_WID</Name>
+            <MappingExpressions>
+                <Expression>ALBUM.ROW_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_SUPPORTREP_WID</Name>
+            <MappingExpressions>
+                <Expression>SUPPORTREP.ROW_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_SUPERVISOR_WID</Name>
+            <MappingExpressions>
+                <Expression>SUPERVISOR.ROW_WID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_INVE_DATE_WID</Name>
+            <MappingExpressions>
+                <Expression>S_INVOICELINE_O.INVL_INVE_DATE_CODE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>W_INSERT_DT</Name>
+            <MappingExpressions>
+                <Expression>CURDATE ()</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

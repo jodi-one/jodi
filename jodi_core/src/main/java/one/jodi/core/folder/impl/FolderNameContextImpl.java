@@ -32,7 +32,6 @@ import java.util.Map;
  * is passed into strategies.
  * <p>
  * The class is the Context that participates in the Strategy Pattern.
- *
  */
 public class FolderNameContextImpl implements FolderNameContext {
 

@@ -14,7 +14,6 @@ import java.util.List;
  * Note that if Dataset-specific information is intended to be used the
  * information is provided in the {@link LoadKnowledgeModuleExecutionContext}
  * class.
- *
  */
 public interface KnowledgeModuleExecutionContext extends DataStoreExecutionContext {
 

@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST_ORCHESTRATION</PackageName>
-		<PackageListItem></PackageListItem>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST_ORCHESTRATION</PackageName>
+        <PackageListItem></PackageListItem>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST1</PackageName>
-		<PackageListItem>P1</PackageListItem>
-		<Failure>
-			<Variable>
-				<Name>TestVariable3</Name>
-				<Type>REFRESH</Type>
-			</Variable>
-			<Variable>
-				<Name>TestVariable2</Name>
-				<Type>REFRESH</Type>
-			</Variable>
-			<Variable>
-				<Name>TestVariable1</Name>
-				<Type>REFRESH</Type>
-			</Variable>
-			<Variable>
-				<Name>TestVariable1</Name>
-				<Type>EVALUATE</Type>
-				<Operator>=</Operator>
-				<Value>TEST</Value>
-			</Variable>
-			<ExecProcedure>
-				<Name>CREATE_PACKAGE_TEST_PROC</Name>
-				<Label>CREATE_PACKAGE_TEST_PROC</Label>
-				<Parameters>
-					<Parameter>
-						<Name>Option1</Name>
-						<Value>Option value from XML</Value>
-					</Parameter>
-				</Parameters>
-			</ExecProcedure>
-		</Failure>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST1</PackageName>
+        <PackageListItem>P1</PackageListItem>
+        <Failure>
+            <Variable>
+                <Name>TestVariable3</Name>
+                <Type>REFRESH</Type>
+            </Variable>
+            <Variable>
+                <Name>TestVariable2</Name>
+                <Type>REFRESH</Type>
+            </Variable>
+            <Variable>
+                <Name>TestVariable1</Name>
+                <Type>REFRESH</Type>
+            </Variable>
+            <Variable>
+                <Name>TestVariable1</Name>
+                <Type>EVALUATE</Type>
+                <Operator>=</Operator>
+                <Value>TEST</Value>
+            </Variable>
+            <ExecProcedure>
+                <Name>CREATE_PACKAGE_TEST_PROC</Name>
+                <Label>CREATE_PACKAGE_TEST_PROC</Label>
+                <Parameters>
+                    <Parameter>
+                        <Name>Option1</Name>
+                        <Value>Option value from XML</Value>
+                    </Parameter>
+                </Parameters>
+            </ExecProcedure>
+        </Failure>
         <After>
             <Variable>
                 <Name>TestVariable2</Name>
@@ -52,17 +52,17 @@
                 <Type>REFRESH</Type>
             </Variable>
         </After>
-	</Package>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST3</PackageName>
-		<PackageListItem>P3</PackageListItem>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST3</PackageName>
+        <PackageListItem>P3</PackageListItem>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST2</PackageName>
-		<PackageListItem>P2</PackageListItem>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadORACLE_DWH_STG</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST2</PackageName>
+        <PackageListItem>P2</PackageListItem>
+    </Package>
 </Packages>

@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  * yield one Map with key the name of the filter component. and as value the
  * actual filter component. The key of the map; the filters name, has naming
  * conventions to extract to which source the filter applies.
- *
  */
 public class EtlOperators {
 
@@ -43,13 +42,13 @@ public class EtlOperators {
      * Constructor of EtlOperators, normally this is just to construct the
      * object; the final objects are created with empty lists.
      *
-     * @param targetComponents targetComponent
-     * @param targetExpressions targetExpressions
-     * @param joiners joiners
-     * @param lookups lookups
-     * @param setComponents setc omponents
-     * @param filterComponents filter components
-     * @param distinctComponents distinct components
+     * @param targetComponents    targetComponent
+     * @param targetExpressions   targetExpressions
+     * @param joiners             joiners
+     * @param lookups             lookups
+     * @param setComponents       setc omponents
+     * @param filterComponents    filter components
+     * @param distinctComponents  distinct components
      * @param aggregateComponents aggregate components
      */
     public EtlOperators(final IMapComponent targetComponents, final ExpressionComponent targetExpressions,
@@ -92,7 +91,7 @@ public class EtlOperators {
      * Add a join component; a join component is used to join two source
      * component.
      *
-     * @param sequence sequence number
+     * @param sequence      sequence number
      * @param joinComponent join component
      */
     public void addJoiner(final int sequence, final JoinComponent joinComponent) {
@@ -124,7 +123,7 @@ public class EtlOperators {
      * key that is of type string, and refers to a source component by naming
      * conventions.
      *
-     * @param sequence sequence number
+     * @param sequence        sequence number
      * @param filterComponent filter component
      */
     public void addFilterComponent(final String sequence, final FilterComponent filterComponent) {

@@ -15,7 +15,6 @@ import one.jodi.base.util.Register;
 /**
  * An implementation of a guice {@link com.google.inject.Module} that configures
  * dependency injection instances that are fundamental to the core framework.
- *
  */
 public class BaseModule extends AbstractModule {
 
@@ -29,7 +28,7 @@ public class BaseModule extends AbstractModule {
     /**
      * Creates a new CoreModule instance.
      *
-     * @param config runconfiguration of the module
+     * @param config   runconfiguration of the module
      * @param register a link to register the module
      */
     public BaseModule(final RunConfig config, final Register register) {

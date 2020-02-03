@@ -11,13 +11,12 @@ import java.util.Map;
  * This logic is always executed before the custom plug-in is executed.
  * <p>
  * The interface defines the strategy and participates in the Strategy Pattern.
- *
  */
 public interface JournalizingStrategy {
     /**
      * Determines a list of changed data capture enabled models.
      *
-     * @param defaultModelCodes default model codes
+     * @param defaultModelCodes            default model codes
      * @param journalizingExecutionContext execution context
      * @return list of model codes
      */
@@ -36,18 +35,18 @@ public interface JournalizingStrategy {
     /**
      * This method determines a Map of JKMOptions on which to apply to a CDC enabled model.
      *
-     * @param defaultJKMOptions default JKM options
+     * @param defaultJKMOptions            default JKM options
      * @param journalizingExecutionContext execution context of journalizing
-     * @param modelCode model code of the journalizing
+     * @param modelCode                    model code of the journalizing
      * @return Map of JKMOptions
      */
     Map<String, Object> getJKMOptions(Map<String, Object> defaultJKMOptions,
                                       JournalizingExecutionContext journalizingExecutionContext, String modelCode);
 
     /**
-     * @param defaultSubscribers default set of subscribers
+     * @param defaultSubscribers           default set of subscribers
      * @param journalizingExecutionContext execution context of the journalizing
-     * @param modelCode the model code of journalizing
+     * @param modelCode                    the model code of journalizing
      * @return List of subscribers
      */
     List<String> getSubscribers(List<String> defaultSubscribers,
@@ -56,7 +55,7 @@ public interface JournalizingStrategy {
     /**
      * @param defaultName                  default name of the Journalizing Knowledge Module
      * @param journalizingExecutionContext execution context
-     * @param modelCode the model code
+     * @param modelCode                    the model code
      * @return Journalizing Knowledge Module name
      */
     String getName(String defaultName, JournalizingExecutionContext journalizingExecutionContext, String modelCode);

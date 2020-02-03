@@ -3,83 +3,83 @@
     REMEMBER goal is to reduce this file in size, not expand it
     -->
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider" />
-        <Bug code="LG" />
+        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider"/>
+        <Bug code="LG"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider" />
-        <Bug code="LG" />
+        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider"/>
+        <Bug code="LG"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.procedure.Odi12ProcedureServiceProvider" />
-        <Bug code="LG" />
-    </Match>
-
-    <Match>
-        <Class name="oracle.odi.generation.support.OdiScenarioGeneratorImpl$1" />
-        <Bug code="NP" />
+        <Class name="one.jodi.odi12.procedure.Odi12ProcedureServiceProvider"/>
+        <Bug code="LG"/>
     </Match>
 
     <Match>
-        <Class name="~.*\.*Test" />
+        <Class name="oracle.odi.generation.support.OdiScenarioGeneratorImpl$1"/>
+        <Bug code="NP"/>
+    </Match>
+
+    <Match>
+        <Class name="~.*\.*Test"/>
         <Not>
-            <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
+            <Bug code="IJU"/> <!-- 'IJU' is the code for bugs related to JUnit test code -->
         </Not>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.common.DeferredCleanupCache." />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi.common.DeferredCleanupCache."/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider" />
-        <Bug code="Se" />
+        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider"/>
+        <Bug code="Se"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.packages.OdiBasePackageServiceProvider" />
-        <Bug code="NP" />
+        <Class name="one.jodi.odi.packages.OdiBasePackageServiceProvider"/>
+        <Bug code="NP"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService" />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService"/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.loadplan.internal.LevelPrintingVisitor" />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi.loadplan.internal.LevelPrintingVisitor"/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService" />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService"/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService" />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService"/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.common.DeferredCleanupCache" />
-        <Bug code="Se" />
+        <Class name="one.jodi.odi.common.DeferredCleanupCache"/>
+        <Bug code="Se"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider" />
-        <Bug code="RCN" />
+        <Class name="one.jodi.odi12.mappings.Odi12TransformationServiceProvider"/>
+        <Bug code="RCN"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService" />
-        <Bug code="REC" />
+        <Class name="one.jodi.odi.loadplan.service.OdiLoadPlanService"/>
+        <Bug code="REC"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider" />
-        <Bug code="RpC" />
+        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider"/>
+        <Bug code="RpC"/>
     </Match>
     <Match>
-        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider" />
-        <Bug code="RANGE" />
+        <Class name="one.jodi.odi12.mappings.Odi12PrintServiceProvider"/>
+        <Bug code="RANGE"/>
     </Match>
     <Match>
-    <Class name="one.jodi.odi.common.OdiInstanceManager" />
-    <Bug code="MS" />
-</Match>
+        <Class name="one.jodi.odi.common.OdiInstanceManager"/>
+        <Bug code="MS"/>
+    </Match>
     <Match>
-    <Class name="ReadFlags" />
-    <Bug code="SnVI" />
-</Match>
+        <Class name="ReadFlags"/>
+        <Bug code="SnVI"/>
+    </Match>
 </FindBugsFilter>

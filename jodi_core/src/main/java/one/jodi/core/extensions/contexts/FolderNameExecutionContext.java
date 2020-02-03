@@ -8,7 +8,6 @@ import one.jodi.core.extensions.strategies.FolderNameStrategy;
  * {@link FolderNameStrategy
  * FolderNameStrategy} that is used to determine the folder name into which a
  * newly created ODI interface is inserted.
- *
  */
 public interface FolderNameExecutionContext extends DataStoreExecutionContext {
 

@@ -2,7 +2,6 @@ package one.jodi.etl.service.loadplan.internalmodel;
 
 /**
  * Internal model representation of a LoadPlanStepType.
- *
  */
 public enum LoadPlanStepType {
     SERIAL("Serial"),

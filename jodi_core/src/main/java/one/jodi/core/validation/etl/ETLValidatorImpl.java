@@ -1168,15 +1168,15 @@ public class ETLValidatorImpl implements ETLValidator {
     private List<KMValidation> validateKM(String code, String name, Map<String, String> options) {
         ArrayList<KMValidation> errors = new ArrayList<>();
         //  TODO check Boolean option type CHOICE and other types.
-       // return errors;
-		KnowledgeModule referenceKm = getKnowledgeModule(name);
-		if (referenceKm != null) {
-			for (String option : options.keySet()) {
-				KnowledgeModule.KMOptionType referenceType = referenceKm.getOptions()
-						.get(option);
-				String optionValue = options.get(option);
+        // return errors;
+        KnowledgeModule referenceKm = getKnowledgeModule(name);
+        if (referenceKm != null) {
+            for (String option : options.keySet()) {
+                KnowledgeModule.KMOptionType referenceType = referenceKm.getOptions()
+                        .get(option);
+                String optionValue = options.get(option);
 
-				if (referenceType != null) {
+                if (referenceType != null) {
                     switch (referenceType) {
                         case CHECKBOX:
                             if (!optionValue.toUpperCase().equalsIgnoreCase("TRUE")
@@ -1199,15 +1199,15 @@ public class ETLValidatorImpl implements ETLValidator {
                         case CHOICE:
                             break;
                     }
-				} else {
-					errors.add(new KMValidation(
-							KMValidationEnum.INVALID_OPTION, option));
-				}
-			}
-		} else {
-			errors.add(new KMValidation(KMValidationEnum.NOT_LOADED, code + ".name", name));
-		}
-         return errors;
+                } else {
+                    errors.add(new KMValidation(
+                            KMValidationEnum.INVALID_OPTION, option));
+                }
+            }
+        } else {
+            errors.add(new KMValidation(KMValidationEnum.NOT_LOADED, code + ".name", name));
+        }
+        return errors;
     }
 
     KnowledgeModule getKnowledgeModule(String kmName) {

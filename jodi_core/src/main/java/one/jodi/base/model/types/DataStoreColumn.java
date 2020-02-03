@@ -2,7 +2,6 @@ package one.jodi.base.model.types;
 
 /**
  * Column meta data information.
- *
  */
 public interface DataStoreColumn {
 

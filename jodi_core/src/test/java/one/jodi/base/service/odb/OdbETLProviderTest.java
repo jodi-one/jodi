@@ -2,7 +2,6 @@ package one.jodi.base.service.odb;
 
 import one.jodi.base.config.BaseConfigurations;
 import one.jodi.base.config.BaseConfigurationsHelper;
-import one.jodi.base.config.PasswordConfig;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodiHelper;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Unit test for OdbETLProvider.
- *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OdbETLProviderTest {
@@ -46,7 +44,6 @@ public class OdbETLProviderTest {
     private static final String FACT_PK1 = "FACT_PK1";
     private static final String DIM_UK1 = "DIM_UK1";
     private static final String DIM_PK1 = "DIM_PK1";
-    private final String SCHEMA_PWD ;
     private static final String W_X_TEST_DV = "W_X_TEST_DV";
     private static final String W_X_TEST_F = "W_X_TEST_F";
     private static final String W_X_TEST_D = "W_X_TEST_D";
@@ -74,6 +71,7 @@ public class OdbETLProviderTest {
             + " left join user_synonyms us on (us.table_name = ucc.table_name) "
             + "WHERE (ucc.table_name = ? or us.synonym_name = ?) "
             + "AND uc.constraint_type in ('P','U') ORDER BY uc.constraint_type, ucc.constraint_name";
+    private final String SCHEMA_PWD;
     @Mock
     Connection conn;
     @Mock
@@ -93,7 +91,7 @@ public class OdbETLProviderTest {
             ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
     private DbConnectionUtil dbConnUtil = new DbConnectionUtil(errorWarningMessages);
 
-    public OdbETLProviderTest(){
+    public OdbETLProviderTest() {
         SCHEMA_PWD = new PasswordConfigImpl().getOdiMasterRepoPassword();
 
     }

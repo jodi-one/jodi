@@ -77,7 +77,6 @@ import java.lang.reflect.Method;
 
 /**
  * Defines the injection bindings
- *
  */
 public class CoreETLModule extends AbstractModule {
 

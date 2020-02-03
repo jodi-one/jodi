@@ -10,14 +10,14 @@ public abstract class ETLStepImpl implements ETLStep {
 
     public ETLStepImpl(String name, String label) {
         super();
-        this.name = name;
+        this.name = name.trim();
         this.label = label;
     }
 
     public ETLStepImpl(String name, String label, ETLStep nextStepOnSuccess,
                        ETLStep nextStepOnFailure) {
         super();
-        this.name = name;
+        this.name = name.trim();
         this.label = label;
         this.nextStepOnSuccess = nextStepOnSuccess;
         this.nextStepOnFailure = nextStepOnFailure;
@@ -25,7 +25,7 @@ public abstract class ETLStepImpl implements ETLStep {
 
     @Override
     public String getName() {
-        return name;
+        return name.trim();
     }
 
     @Override

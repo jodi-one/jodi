@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * A marker annotation used to identify a default strategy implementation
- *
  */
 @BindingAnnotation
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

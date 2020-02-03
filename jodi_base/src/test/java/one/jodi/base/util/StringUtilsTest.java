@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * The class <code>StringUtilsTest</code> contains tests for the class
  * <code>{@link StringUtils}</code>.
- *
  */
 public class StringUtilsTest {
     /**

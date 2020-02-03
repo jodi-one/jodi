@@ -13,7 +13,6 @@ interface Visitable<T> {
 
 /**
  * Internal model representation of a LoadPlanTree.
- *
  */
 public class LoadPlanTree<T> implements Visitable<T> {
 

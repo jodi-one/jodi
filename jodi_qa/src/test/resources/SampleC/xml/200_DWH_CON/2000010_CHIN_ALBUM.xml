@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>ALBUM</Name>
-				<Alias>ALBUM</Alias>		
-			</Source>
-			<Source>
-				<Name>ARTIST</Name>
-				<Alias>ARTIST</Alias>		
-				<JoinType>LEFT OUTER</JoinType>
-				<Join>ALBUM.ARTISTID = ARTIST.ARTISTID</Join>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>CHIN_ALBUM</TargetDataStore>
-		<TargetColumn>
-			<Name>ALBUMID</Name>
-			<MappingExpressions>
-				<Expression>ALBUM.ALBUMID</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>ALBUM_CODE</Name>
-			<MappingExpressions>
-				<Expression>ARTIST.NAME ||'|'|| ALBUM.TITLE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>TITLE</Name>
-			<MappingExpressions>
-				<Expression>ALBUM.TITLE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>ARTIST</Name>
-			<MappingExpressions>
-				<Expression>ARTIST.NAME</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>ALBUM</Name>
+                <Alias>ALBUM</Alias>
+            </Source>
+            <Source>
+                <Name>ARTIST</Name>
+                <Alias>ARTIST</Alias>
+                <JoinType>LEFT OUTER</JoinType>
+                <Join>ALBUM.ARTISTID = ARTIST.ARTISTID</Join>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>CHIN_ALBUM</TargetDataStore>
+        <TargetColumn>
+            <Name>ALBUMID</Name>
+            <MappingExpressions>
+                <Expression>ALBUM.ALBUMID</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>ALBUM_CODE</Name>
+            <MappingExpressions>
+                <Expression>ARTIST.NAME ||'|'|| ALBUM.TITLE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>TITLE</Name>
+            <MappingExpressions>
+                <Expression>ALBUM.TITLE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>ARTIST</Name>
+            <MappingExpressions>
+                <Expression>ARTIST.NAME</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * A Source describes a data store or a Temporary Interface as part of a dataset definition. Sources are combined with filter, join and
  * lookup operations.
- *
  */
 public interface Source {
     /**

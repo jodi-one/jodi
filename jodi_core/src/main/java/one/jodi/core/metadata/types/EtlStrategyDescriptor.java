@@ -7,7 +7,6 @@ import java.util.Map;
 /**
  * Represents a ETL Strategy descriptor to express how data is extracted,
  * transformed and inserted.
- *
  */
 public interface EtlStrategyDescriptor {
 

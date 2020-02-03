@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Packages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-packages.v1.1.xsd">
 
-	<Package>
-		<FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST_ORCHESTRATION</PackageName>
-		<PackageListItem></PackageListItem>
-		<Before>
-			<ExecProcedure>
-				<Name>CREATE_PACKAGE_TEST_PROC</Name>
-				<Label>CREATE_PACKAGE_TEST_PROC</Label>
-			</ExecProcedure>
-		</Before>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST_ORCHESTRATION</PackageName>
+        <PackageListItem></PackageListItem>
+        <Before>
+            <ExecProcedure>
+                <Name>CREATE_PACKAGE_TEST_PROC</Name>
+                <Label>CREATE_PACKAGE_TEST_PROC</Label>
+            </ExecProcedure>
+        </Before>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST1</PackageName>
-		<PackageListItem>P1</PackageListItem>
-		<Before>
-			<ExecProcedure>
-				<Name>PROC_DUAL_TEST</Name>
-				<Label>PROC_DUAL_TEST</Label>
-			</ExecProcedure>
-		</Before>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST1</PackageName>
+        <PackageListItem>P1</PackageListItem>
+        <Before>
+            <ExecProcedure>
+                <Name>PROC_DUAL_TEST</Name>
+                <Label>PROC_DUAL_TEST</Label>
+            </ExecProcedure>
+        </Before>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST3</PackageName>
-		<PackageListItem>P3</PackageListItem>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST3</PackageName>
+        <PackageListItem>P3</PackageListItem>
+    </Package>
 
-	<Package>
-		<FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
-		<PackageName>PACKAGE_CREATION_TEST2</PackageName>
-		<PackageListItem>P2</PackageListItem>
-	</Package>
+    <Package>
+        <FolderCode>BulkLoadExplicit/TargetFolder</FolderCode>
+        <PackageName>PACKAGE_CREATION_TEST2</PackageName>
+        <PackageListItem>P2</PackageListItem>
+    </Package>
 </Packages>

@@ -74,7 +74,7 @@ public class ModelMethods {
      * There is no equals method.
      *
      * @param transformation transformation
-     * @param name name of the column
+     * @param name           name of the column
      */
     public static void removeTargetColumn(one.jodi.core.model.Transformation transformation, String name) {
         for (one.jodi.core.model.Targetcolumn tc : transformation.getMappings().getTargetColumn()) {
@@ -87,7 +87,7 @@ public class ModelMethods {
 
     /**
      * @param expression in the form SRC.C1 + EXP.C2
-     * @param columns        of expressions to descope eg EXP.C1 = SRC.C1, EXP.C2 = SRC.C2
+     * @param columns    of expressions to descope eg EXP.C1 = SRC.C1, EXP.C2 = SRC.C2
      * @return expression
      */
     public static String telescopeNamesInExpression(String expression, Map<String, String> columns) {
@@ -101,9 +101,9 @@ public class ModelMethods {
      * <p>
      * Similarly means target column name and expressions are identical case insensitive.
      *
-     * @param transformation external transformation
+     * @param transformation         external transformation
      * @param enrichedTransformation internal transformation
-     * @param  skipColumns columns to skip
+     * @param skipColumns            columns to skip
      */
     public static void removeSuperfluousTargetColumns(one.jodi.core.model.Transformation transformation, one.jodi.etl.internalmodel.Transformation enrichedTransformation, List<String> skipColumns) {
         Map<String, List<String>> internalTCs = getTargetcolumns(enrichedTransformation);

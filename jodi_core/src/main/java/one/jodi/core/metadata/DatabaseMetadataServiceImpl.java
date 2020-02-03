@@ -50,8 +50,8 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
 
     /**
      * @param jodiProperties - reference to the Jodi properties files that are injected
-     * @param etlProvider  - refers to a service for accessing functionality of the ETL
-     *                     tool
+     * @param etlProvider    - refers to a service for accessing functionality of the ETL
+     *                       tool
      */
     @Inject
     public DatabaseMetadataServiceImpl(final SchemaMetaDataProvider etlProvider,

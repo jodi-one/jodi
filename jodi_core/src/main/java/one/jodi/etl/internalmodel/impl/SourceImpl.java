@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 /**
  * Implementation of Source interface.
- *
  */
 public class SourceImpl implements Source {
 

@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Service that provides Scenario management functionality.
- *
  */
 public interface ScenarioService {
 
@@ -41,7 +40,6 @@ public interface ScenarioService {
 
     /**
      * Delete all scenarios that matches the provided name
-     *
      */
     void deleteScenarios();
 

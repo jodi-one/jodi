@@ -13,7 +13,6 @@ import java.util.Map;
  * <p>
  * This interface should collect information between successive calls from any methods {@link #validateTransformationName(Transformation)}
  * in order to ensure conditions are met on a warehouse-wide basis (e.g. uniqueness for {@link Transformation#getPackageSequence()})
- *
  */
 public interface ETLValidator {
 

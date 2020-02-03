@@ -15,7 +15,6 @@ import one.jodi.core.service.ExtractionTables;
 /**
  * An {@link ActionRunner} implementation that invokes the {@link
  * TableServiceProvider#alterSCDTables()} method.
- *
  */
 public class ExtractTablesActionRunner implements ActionRunner {
     private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"

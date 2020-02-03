@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 /**
  * Mock Helper that creates mock TableBase objects with columns, PK, FKs. This class
  * contains also a self-test.
- *
  */
 @RunWith(JUnit4.class)
 public class MockTableBaseHelper {

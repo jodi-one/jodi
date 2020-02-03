@@ -18,7 +18,6 @@ import java.util.Map;
  * <p>
  * The cache can be used on any method that returns an object type. Method
  * signature and its parameters are the key to the result to be cached.
- *
  */
 @Singleton
 public class WriteThroughCacheInterceptor implements MethodInterceptor, Resource {

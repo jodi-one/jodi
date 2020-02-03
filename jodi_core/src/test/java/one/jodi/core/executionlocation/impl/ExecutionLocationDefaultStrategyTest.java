@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 /**
  * The class <code>ExecutionLocationDefaultStrategyTest</code> contains tests
  * for the class <code>{@link ExecutionLocationDefaultStrategy}</code>.
- *
  */
 public class ExecutionLocationDefaultStrategyTest {
     @Mock

@@ -10,7 +10,6 @@ import one.jodi.etl.service.datastore.DatastoreServiceProvider;
 
 /**
  * Implementation of the {@link DatastoreService} interface.
- *
  */
 public class DatastoreServiceImpl implements DatastoreService {
     private final DatastoreServiceProvider datastoreServiceProvider;

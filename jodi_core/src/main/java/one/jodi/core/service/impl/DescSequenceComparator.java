@@ -8,7 +8,6 @@ import java.util.Comparator;
 
 /**
  * Sort path based on the name of the leading numbers in the file name.
- *
  */
 public class DescSequenceComparator implements Comparator<Path> {
 

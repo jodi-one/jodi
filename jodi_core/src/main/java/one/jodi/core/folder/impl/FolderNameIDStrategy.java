@@ -5,7 +5,6 @@ import one.jodi.core.extensions.strategies.FolderNameStrategy;
 
 /**
  * Identity strategy that is used as a placeholder for a custom strategy.
- *
  */
 public class FolderNameIDStrategy implements FolderNameStrategy {
 

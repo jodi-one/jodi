@@ -13,7 +13,6 @@ import java.util.Set;
  * of join, filter and lookup operations per dataset) to a target column. In the case the target column is
  * defined for a temporary table, it defines its data type. Lastly, the target column may include an indication
  * if the column is mandatory (not null) or used as a key for merge operations.
- *
  */
 public interface Targetcolumn {
     /**

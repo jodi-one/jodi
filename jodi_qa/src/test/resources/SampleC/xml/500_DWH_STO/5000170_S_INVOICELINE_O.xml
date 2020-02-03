@@ -1,57 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transformation
-	xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Comments></Comments>
-	<PackageList>PACKAGE_ALL</PackageList>
-	<Datasets>
-		<Dataset>
-			<Source>
-				<Name>S_INVOICELINE_I</Name>
-				<Lookups> 
-					<Lookup>
-						<LookupDataStore>S_INVOICELINE_O_S01</LookupDataStore>     
-						<Join>S_INVOICELINE_I.INVL_LINE_CODE = S_INVOICELINE_O_S01.INVL_LINE_CODE</Join>
-					</Lookup>
-					<Lookup>
-						<LookupDataStore>S_INVOICELINE_O_S02</LookupDataStore>     
-						<Join>S_INVOICELINE_I.INVL_CUST_CODE = S_INVOICELINE_O_S02.INVL_CUST_CODE AND SUBSTR(S_INVOICELINE_I.INVL_INVE_DATE_CODE,0,4) =  S_INVOICELINE_O_S02.INVL_YEAR_DATE_CODE</Join>
-					</Lookup>
-				</Lookups>
-			</Source>
-		</Dataset>
-	</Datasets>
-	<Mappings>
-		<TargetDataStore>S_INVOICELINE_O</TargetDataStore>
-		<TargetColumn>
-			<Name>INVL_CUST_FIRST_PURCHASE</Name>
-			<MappingExpressions>
-				<Expression><![CDATA[CASE WHEN S_INVOICELINE_O_S02.INVL_CUST_CODE IS NOT NULL THEN 'N' WHEN MIN( S_INVOICELINE_I.INVL_INVE_DATE_CODE) OVER (PARTITION BY  S_INVOICELINE_I.INVL_CUST_CODE ) = S_INVOICELINE_I.INVL_INVE_DATE_CODE THEN 'Y' ELSE 'N' END]]></Expression>
-			</MappingExpressions> 
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_CUST_INVE_AMOUNT_YEAR</Name>
-			<MappingExpressions>
-				<Expression>NVL( S_INVOICELINE_O_S01.INVE_YEAR_AMOUNT,0) + NVL(S_INVOICELINE_O_S02.INVE_AMOUNT,0) + NVL( S_INVOICELINE_I.INVL_AMOUNT ,0) </Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>INVL_CUST_BGHT_ALBUMS_ART_IND</Name>
-			<MappingExpressions>
-				<Expression>'-'</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>PARTITION_NAME</Name>
-			<MappingExpressions>
-				<Expression>'P'|| S_INVOICELINE_I.INVL_INVE_DATE_CODE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-		<TargetColumn>
-			<Name>S_INSERT_DT_O</Name>
-			<MappingExpressions>
-				<Expression>SYSDATE</Expression>
-			</MappingExpressions>
-		</TargetColumn>
-	</Mappings>
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
+    <Comments></Comments>
+    <PackageList>PACKAGE_ALL</PackageList>
+    <Datasets>
+        <Dataset>
+            <Source>
+                <Name>S_INVOICELINE_I</Name>
+                <Lookups>
+                    <Lookup>
+                        <LookupDataStore>S_INVOICELINE_O_S01</LookupDataStore>
+                        <Join>S_INVOICELINE_I.INVL_LINE_CODE = S_INVOICELINE_O_S01.INVL_LINE_CODE</Join>
+                    </Lookup>
+                    <Lookup>
+                        <LookupDataStore>S_INVOICELINE_O_S02</LookupDataStore>
+                        <Join>S_INVOICELINE_I.INVL_CUST_CODE = S_INVOICELINE_O_S02.INVL_CUST_CODE AND
+                            SUBSTR(S_INVOICELINE_I.INVL_INVE_DATE_CODE,0,4) = S_INVOICELINE_O_S02.INVL_YEAR_DATE_CODE
+                        </Join>
+                    </Lookup>
+                </Lookups>
+            </Source>
+        </Dataset>
+    </Datasets>
+    <Mappings>
+        <TargetDataStore>S_INVOICELINE_O</TargetDataStore>
+        <TargetColumn>
+            <Name>INVL_CUST_FIRST_PURCHASE</Name>
+            <MappingExpressions>
+                <Expression>
+                    <![CDATA[CASE WHEN S_INVOICELINE_O_S02.INVL_CUST_CODE IS NOT NULL THEN 'N' WHEN MIN( S_INVOICELINE_I.INVL_INVE_DATE_CODE) OVER (PARTITION BY  S_INVOICELINE_I.INVL_CUST_CODE ) = S_INVOICELINE_I.INVL_INVE_DATE_CODE THEN 'Y' ELSE 'N' END]]></Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_CUST_INVE_AMOUNT_YEAR</Name>
+            <MappingExpressions>
+                <Expression>NVL( S_INVOICELINE_O_S01.INVE_YEAR_AMOUNT,0) + NVL(S_INVOICELINE_O_S02.INVE_AMOUNT,0) + NVL(
+                    S_INVOICELINE_I.INVL_AMOUNT ,0)
+                </Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>INVL_CUST_BGHT_ALBUMS_ART_IND</Name>
+            <MappingExpressions>
+                <Expression>'-'</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>PARTITION_NAME</Name>
+            <MappingExpressions>
+                <Expression>'P'|| S_INVOICELINE_I.INVL_INVE_DATE_CODE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+        <TargetColumn>
+            <Name>S_INSERT_DT_O</Name>
+            <MappingExpressions>
+                <Expression>SYSDATE</Expression>
+            </MappingExpressions>
+        </TargetColumn>
+    </Mappings>
 </Transformation>

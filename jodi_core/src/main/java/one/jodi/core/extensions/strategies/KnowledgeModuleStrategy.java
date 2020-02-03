@@ -12,7 +12,6 @@ import one.jodi.core.extensions.types.KnowledgeModuleConfiguration;
  * <p>
  * Customization of behavior using Java may be achieved by writing a class that
  * implements the KnowledgeModuleStrategy interface.
- *
  */
 public interface KnowledgeModuleStrategy {
 
