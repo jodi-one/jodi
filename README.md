@@ -102,6 +102,7 @@
 
 <h2>Building a binaries</h2>
 
+* use this link to install ojdbc.jar into maven: https://mkyong.com/maven/how-to-add-oracle-jdbc-driver-in-your-maven-local-repository/
 * See commands in createDist.bat
 * You'll need  jodi_core\build\distributions\jodi_core-x.x.x-x-x-x-SNAPSHOT.zip
 * and plugins you'll need for providing custom plugins jodi_plugins\build\distributions\jodi_plugins-x.x.x-x-x-x-SNAPSHOT.zip
@@ -111,6 +112,7 @@
 * create a metadata folder e.g: jodi_qa/src/test/resources/SampleC/xml
 * When using in IDEA call JodiController
 * When using as binary call bin\jodi_core[.bat]
+
 
 <h2>Examples</h2>
 
