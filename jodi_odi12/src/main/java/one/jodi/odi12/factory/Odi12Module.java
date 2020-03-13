@@ -8,14 +8,8 @@ import one.jodi.base.annotations.Cached;
 import one.jodi.base.aop.WriteThroughCacheInterceptor;
 import one.jodi.core.annotations.TransactionAttribute;
 import one.jodi.core.aop.TransactionInterceptor;
-import one.jodi.core.service.ConstraintService;
-import one.jodi.core.service.SequenceService;
-import one.jodi.core.service.ValidationService;
-import one.jodi.core.service.VariableService;
-import one.jodi.core.service.impl.ConstraintServiceImpl;
-import one.jodi.core.service.impl.SequenceServiceImpl;
-import one.jodi.core.service.impl.ValidationServiceImpl;
-import one.jodi.core.service.impl.VariableServiceImpl;
+import one.jodi.core.service.*;
+import one.jodi.core.service.impl.*;
 import one.jodi.core.validation.sequences.SequenceValidator;
 import one.jodi.core.validation.sequences.SequenceValidatorImpl;
 import one.jodi.core.validation.variables.VariableValidator;
@@ -37,6 +31,7 @@ import one.jodi.etl.service.loadplan.LoadPlanExportService;
 import one.jodi.etl.service.loadplan.LoadPlanService;
 import one.jodi.etl.service.packages.PackageServiceProvider;
 import one.jodi.etl.service.procedure.ProcedureServiceProvider;
+import one.jodi.etl.service.project.ProjectServiceProvider;
 import one.jodi.etl.service.repository.OdiRepositoryExportService;
 import one.jodi.etl.service.repository.OdiRepositoryImportService;
 import one.jodi.etl.service.sequences.SequenceServiceProvider;
@@ -67,6 +62,7 @@ import one.jodi.odi12.mappings.Odi12TransformationServiceProvider;
 import one.jodi.odi12.packages.Odi12PackageAccessStrategyImpl;
 import one.jodi.odi12.packages.Odi12PackageServiceProviderImpl;
 import one.jodi.odi12.procedure.Odi12ProcedureServiceProvider;
+import one.jodi.odi12.project.Odi12ProjectServiceProvider;
 import one.jodi.odi12.sequences.Odi12SequenceAccessStrategy;
 import one.jodi.odi12.sequences.Odi12SequenceServiceProvider;
 import one.jodi.odi12.service.*;
@@ -162,6 +158,10 @@ public class Odi12Module extends AbstractModule {
         bind(OdiLoadPlanAccessStrategy.class).to(Odi12LoadPlanAccessStrategy.class);
         bind(EtlSubSystemVersion.class).to(OdiVersion.class);
         bind(EtlDataStoreBuildService.class).to(OdiDatastoreBuildService.class);
+
+        bind(ProjectService.class).to(ProjectServiceImpl.class);
+        bind(ProjectServiceProvider.class).to(Odi12ProjectServiceProvider.class);
+
 
         // add transactions to classes annotated with @TransactionAttribute
         TransactionInterceptor ti = new TransactionInterceptor();

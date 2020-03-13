@@ -42,8 +42,4 @@ public interface ScenarioService {
      * Delete all scenarios that matches the provided name
      */
     void deleteScenarios();
-
-    void deleteProjects();
-
-    void deleteModels();
 }

@@ -4,6 +4,7 @@ package one.jodi.qa.test;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.bootstrap.JodiController;
 import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Ec {
 
-    // @Test
+    @Test
     public void test011Install() {
         String sourceDir = "D:/git/jodi/jodi_qa/src/test/resources/Ec/";
         final String action = "oim";

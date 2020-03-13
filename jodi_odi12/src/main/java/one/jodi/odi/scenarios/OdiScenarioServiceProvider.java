@@ -16,6 +16,7 @@ import one.jodi.etl.service.scenarios.ScenarioServiceProvider;
 import one.jodi.logging.OdiLogHandler;
 import one.jodi.odi.interfaces.OdiTransformationAccessStrategy;
 import one.jodi.odi.packages.OdiPackageAccessStrategy;
+import one.jodi.odi.runtime.OdiConnection;
 import oracle.odi.core.OdiInstance;
 import oracle.odi.core.persistence.IOdiEntityManager;
 import oracle.odi.core.persistence.transaction.ITransactionDefinition;
@@ -24,10 +25,11 @@ import oracle.odi.core.persistence.transaction.ITransactionStatus;
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition;
 import oracle.odi.domain.mapping.Mapping;
 import oracle.odi.domain.mapping.finder.IMappingFinder;
-import oracle.odi.domain.model.OdiModel;
-import oracle.odi.domain.model.finder.IOdiModelFinder;
 import oracle.odi.domain.project.*;
-import oracle.odi.domain.project.finder.*;
+import oracle.odi.domain.project.finder.IOdiPackageFinder;
+import oracle.odi.domain.project.finder.IOdiProjectFinder;
+import oracle.odi.domain.project.finder.IOdiUserProcedureFinder;
+import oracle.odi.domain.project.finder.IOdiVariableFinder;
 import oracle.odi.domain.runtime.scenario.OdiScenario;
 import oracle.odi.domain.runtime.scenario.OdiScenarioFolder;
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder;
@@ -416,84 +418,24 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void deleteScenarios() {
-        IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
+        IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
+        IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) tem
                 .getFinder(OdiScenario.class);
         Collection<OdiScenario> scenarios = scenarioFinder.findAll();
         logger.info("Found " + scenarios.size() + " scenarios to delete.");
         scenarios.stream().forEach(s -> {
-            odiInstance.getTransactionalEntityManager().remove((OdiScenario) s);
+            removeScenario(s.getGlobalId());
             logger.info("Trying to delete: " + ((OdiScenario) s).getName());
         });
     }
 
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void deleteProjects() {
-        IOdiFolderFinder folderFinder = (IOdiFolderFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiFolder.class);
-        Collection<OdiFolder> odiFolders = folderFinder.findAll();
-        logger.info("Found " + odiFolders.size() + " odifolders to delete");
-
-        odiFolders.forEach(f -> {
-                    logger.info("Deleting folder : " + f.getName());
-                    removeFolder((OdiFolder) f);
-                }
-        );
-
-        IOdiProjectFinder projectFinder = (IOdiProjectFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiProject.class);
-        projectFinder.findAll().stream().forEach(s -> {
-            odiInstance.getTransactionalEntityManager().remove((OdiProject) s);
-        });
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void deleteModels() {
-        IOdiModelFinder projectFinder = (IOdiModelFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiModel.class);
-        projectFinder.findAll().stream().forEach(s -> {
-            logger.info("Deleting model " + ((OdiModel) s).getName());
-            odiInstance.getTransactionalEntityManager().remove((OdiModel) s);
-        });
-
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    protected void removeFolder(OdiFolder odiFolder) {
-        if (odiFolder != null) {
-            odiFolder.getSubFolders().forEach(f -> removeFolder(f));
-        } else {
-            return;
-        }
-        odiFolder.getMappings().forEach(m -> {
-                    logger.info("Deleting mapping " + m.getName());
-                    odiInstance.getTransactionalEntityManager().remove(m);
-                }
-        );
-        odiFolder.getPackages().forEach(p -> {
-                    logger.info("Deleting package " + p.getName());
-                    odiInstance.getTransactionalEntityManager().remove(p);
-                }
-        );
-        odiFolder.getInterfaces().forEach(i -> {
-                    logger.info("Deleting interface " + i.getName());
-                    odiInstance.getTransactionalEntityManager().remove(i);
-                }
-        );
-        odiFolder.getUserProcedures().forEach(p -> {
-                    logger.info("Deleting procedure " + p.getName());
-                    odiInstance.getTransactionalEntityManager().remove(p);
-                }
-        );
-        odiFolder.getReusableMappings().forEach(p -> {
-                    logger.info("Deleting reusable mapping  " + p.getName());
-                    odiInstance.getTransactionalEntityManager().remove(p);
-                }
-        );
-        if (odiFolder.getSubFolders() == null || odiFolder.getSubFolders().size() == 0) {
-            logger.info("Deleting folder " + odiFolder.getName());
-            odiInstance.getTransactionalEntityManager().remove(odiFolder);
-        }
+    public void removeScenario(String globalId) {
+        ITransactionStatus trans = odiInstance.getTransactionManager()
+                .getTransaction(new DefaultTransactionDefinition());
+        OdiConnection odiConnection = new OdiConnection(odiInstance, trans);
+        IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiConnection.getOdiInstance().getFinder(OdiScenario.class);
+        OdiScenario scenario = (OdiScenario) scenarioFinder.findByGlobalId(globalId);
+        odiConnection.getOdiInstance().removeEntity(scenario);
+        odiConnection.getOdiInstance().getTransactionManager().commit(odiConnection.getTransactionStatus());
     }
 }

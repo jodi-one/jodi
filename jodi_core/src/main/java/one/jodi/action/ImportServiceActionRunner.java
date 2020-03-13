@@ -6,6 +6,7 @@ import one.jodi.base.bootstrap.RunConfig;
 import one.jodi.base.bootstrap.UsageException;
 import one.jodi.base.util.StringUtils;
 import one.jodi.core.config.JodiProperties;
+import one.jodi.core.service.ProjectService;
 import one.jodi.core.service.ScenarioService;
 import one.jodi.etl.service.loadplan.LoadPlanService;
 import one.jodi.etl.service.repository.OdiRepositoryExportImportException;
@@ -20,17 +21,20 @@ public class ImportServiceActionRunner implements ActionRunner {
     public final static String EXPORTMPORTDIR = "DeploymentService";
     private final OdiRepositoryImportService importService;
     private final Logger logger = LogManager.getLogger(ImportServiceActionRunner.class);
+    private final ProjectService projectService;
     private final ScenarioService scenarioService;
     private final JodiProperties jodiProperties;
     private final LoadPlanService loadPlanService;
 
     @Inject
     protected ImportServiceActionRunner(final OdiRepositoryImportService importService,
+                                        final ProjectService projectService,
                                         final ScenarioService scenarioService,
                                         final JodiProperties jodiProperties,
                                         final LoadPlanService loadPlanService
     ) {
         this.importService = importService;
+        this.projectService = projectService;
         this.scenarioService = scenarioService;
         this.jodiProperties = jodiProperties;
         this.loadPlanService = loadPlanService;
@@ -80,8 +84,7 @@ public class ImportServiceActionRunner implements ActionRunner {
                 scenarioService.deleteScenarios();
                 loadPlanService.deleteLoadPlans();
                 // TOODO move into own access strategy
-                scenarioService.deleteModels();
-                scenarioService.deleteProjects();
+                projectService.deleteProject();
             }
             importService.doImport(exportImport.getAbsolutePath(), pDAType);
         } catch (Exception ex) {

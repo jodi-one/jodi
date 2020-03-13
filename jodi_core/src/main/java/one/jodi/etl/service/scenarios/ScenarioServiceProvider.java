@@ -17,7 +17,4 @@ public interface ScenarioServiceProvider {
 
     void deleteScenarios();
 
-    void deleteProjects();
-
-    void deleteModels();
 }

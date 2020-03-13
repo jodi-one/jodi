@@ -34,15 +34,6 @@ public class Odi12RepositoryImportService implements OdiRepositoryImportService 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void doImport(final String metaDataDirectory, final DA_TYPE pDAType) {
-        /*
-        ImportServiceImpl exportService = new ImportServiceImpl(odiInstance);
-        exportService.importExecutionEnvironmentFromFolder(metaDataDirectory,new EncodingOptions());
-        exportService.importLogicalTopologyFromFolder(metaDataDirectory,new EncodingOptions());
-        exportService.importTopologyFromFolder(metaDataDirectory,new EncodingOptions());
-        exportService.importWorkFromFolder(metaDataDirectory,new EncodingOptions());
-        exportService.importMasterFromFolder(metaDataDirectory,new EncodingOptions(),true,true);
-        exportService.importSecurityFromFolder(metaDataDirectory,new EncodingOptions());
-         */
         java.lang.String pFilename = metaDataDirectory + File.separator +
                 jodiProperties
                         .getProjectCode() + ".zip";
@@ -73,6 +64,7 @@ public class Odi12RepositoryImportService implements OdiRepositoryImportService 
                         "ROLLBACK_" + jodiProperties
                         .getProjectCode() + ".zip";
                 logger.info("Importing Deployment Archive with scenarios and loadplans and projects with filename " + pFilename);
+
                 DeploymentService.applyPatchDeploymentArchive
                         (odiInstance,
                                 pFilename,

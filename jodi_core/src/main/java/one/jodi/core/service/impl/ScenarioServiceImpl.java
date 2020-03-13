@@ -8,6 +8,7 @@ import one.jodi.core.service.ScenarioService;
 import one.jodi.etl.builder.EnrichingBuilder;
 import one.jodi.etl.internalmodel.ETLPackageHeader;
 import one.jodi.etl.internalmodel.Transformation;
+import one.jodi.etl.service.project.ProjectServiceProvider;
 import one.jodi.etl.service.scenarios.ScenarioServiceProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -105,16 +106,4 @@ public class ScenarioServiceImpl implements ScenarioService {
         logger.debug("Exit deleting scenarios");
     }
 
-
-    //TODO move in onwn access strategy
-    @Override
-    public void deleteProjects() {
-        scenarioService.deleteProjects();
-    }
-
-    //TODO moe in own access strategy
-    @Override
-    public void deleteModels() {
-        scenarioService.deleteModels();
-    }
 }
