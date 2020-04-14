@@ -66,7 +66,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                 });
 
                 boolean pIncludeSecurityObjects = true;
-                boolean regenerateScenarios = false;
+                boolean regenerateScenarios = true;
 
                 java.lang.String pFilename;
                 java.lang.String pName;
@@ -108,7 +108,7 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                     patchList.add(new OdiObjectId(OdiProject.class, ((OdiProject) p).getInternalId()));
                 });
                 boolean pIncludeSecurityObjects = true;
-                boolean regenerateScenarios = false;
+                boolean regenerateScenarios = true;
 
                 java.lang.String pFilename;
                 java.lang.String pName;
