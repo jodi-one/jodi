@@ -47,13 +47,12 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void doExport(final String metaDataDirectory, final OdiRepositoryImportService.DA_TYPE da_type) throws IOException {
-        boolean pIncludePhysicalTopologyData = true;
+        boolean pIncludePhysicalTopologyData = false;
         char[] pExportKey = getCipherData().toCharArray();
         boolean pCreateWithoutCipherData = false;
         try {
             if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
-
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
                         .getFinder(OdiScenario.class);
                 scenarioFinder.findAll().stream().forEach(s -> {
