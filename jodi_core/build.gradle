@@ -79,6 +79,7 @@ sourceSets {
             srcDirs += 'src/main/java'
             srcDirs += jaxbGenOutputDir
             srcDirs += customDir
+            srcDirs += 'gen-src-ext/main/java'
         }
         resources {
             srcDirs += '../shared/resources'
