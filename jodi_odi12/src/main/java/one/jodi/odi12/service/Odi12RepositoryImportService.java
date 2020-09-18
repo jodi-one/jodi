@@ -74,7 +74,7 @@ public class Odi12RepositoryImportService implements OdiRepositoryImportService 
                                 pExportKey,
                                 pApplyWithoutCipherData);
             } else {
-                boolean pIncludePhysicalTopologyData = true;
+                boolean pIncludePhysicalTopologyData = false;
                 logger.info("Importing Initial Deployment Archive with filename " + pFilename);
                 DeploymentService.applyFullDeploymentArchive(
                         odiInstance,
