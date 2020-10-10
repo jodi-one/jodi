@@ -4,6 +4,8 @@ allprojects {
     apply plugin: 'application'
     apply plugin: "com.github.spotbugs"
     apply plugin: 'com.github.jacobono.jaxb'
+    apply plugin: 'org.liquibase.gradle'
+
     ext.jaxbGenOutputDir = 'gen-src/main/java'
 
     // The following configuration defines a test library artifact that typically
@@ -16,6 +18,7 @@ allprojects {
         // provided implies that the project artifacts are added to the
         // compileClasspath for main and test and the runtimeClasspath for test
         provided
+        liquibaseRuntime.extendsFrom runtime
     }
     // this makes the wrapper work on windows,
     // before it was somehow overwritten on the second "gradlew.bat build"
@@ -98,8 +101,8 @@ allprojects {
         testImplementation "junit:junit:4.12"
         testImplementation "org.mockito:mockito-all:1.10.19"
 
-
-
+        liquibaseRuntime 'org.liquibase:liquibase-core:3.8.1'
+        liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.1.1'
 
     }
 
@@ -390,6 +393,7 @@ buildscript {
         classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
         classpath 'com.massfords:jaxb-visitor:1.13'
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
+        classpath "org.liquibase:liquibase-gradle-plugin:2.0.3"
     }
 }
 
