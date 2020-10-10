@@ -20,7 +20,7 @@ mainClassName = "one.jodi.bootstrap.JodiController"
 // Jar task configuration
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': archiveVersion
     }
 }
 
@@ -222,29 +222,29 @@ jar.dependsOn extensionsJar
 assemble.dependsOn extensionsJar
 
 dependencies {
-    compile project(':jodi_base')
-    testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
-    testCompile project(':jodi_base').sourceSets.test.output
-    testCompile 'org.apache.commons:commons-csv:1.4'
+    implementation project(':jodi_base')
+    testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
+    testImplementation project(':jodi_base').sourceSets.test.output
+    testImplementation 'org.apache.commons:commons-csv:1.4'
 
     //JAXB xjc plugin
     jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
 
-    compile("org.apache.commons:commons-configuration2:2.1") {
+    implementation("org.apache.commons:commons-configuration2:2.1") {
         // remove default libraries and replace with more recent versions
         exclude module: 'commons-logging'
         exclude module: 'commons-beanutils'
     }
 
     // use latest version of commons libs for commons-configuration;
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 
     // cloning with upgraded dependent library
-    compile("uk.com.robust-it:cloning:1.9.2") {
+    implementation("uk.com.robust-it:cloning:1.9.2") {
         exclude module: 'Objenesis'
     }
-    compile("org.objenesis:objenesis:2.4")
+    implementation("org.objenesis:objenesis:2.4")
 }
 
 task sourceSetJavaProperties {

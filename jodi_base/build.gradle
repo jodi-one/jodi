@@ -21,33 +21,23 @@ sourceSets {
 
 dependencies {
 
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
-    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
-    compile group: 'javax.activation', name: 'activation', version: '1.1.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+    implementation 'javax.activation:activation:1.1.1'
 
-    compile 'commons-cli:commons-cli:1.4'
-    compile("com.google.inject:guice:4.1.0") {
-        exclude module: 'com.google.guava'
-    }
     // replace default Guava version 1.9 to new version 21.0
-    compile group: 'com.google.guava', name: 'guava', version: '21.0'
-
-    compile("org.apache.commons:commons-configuration2:2.1.1") {
-        // remove default libraries and replace with more recent versions
-        exclude module: 'commons-logging'
-        exclude module: 'commons-beanutils'
-    }
+    implementation 'com.google.guava:guava:21.0'
 
     // use latest version of commons libs for commons-configuration;
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
-    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    implementation 'org.apache.commons:commons-lang3:3.5'
+    implementation 'commons-beanutils:commons-beanutils:1.9.3'
 
     // Annotation service
-    compile 'org.json:json:20160810'
+    implementation 'org.json:json:20160810'
 
-    testCompile 'org.apache.commons:commons-csv:1.4'
-    testCompile group: 'org.reflections', name: 'reflections', version: '0.9.11'
+    testImplementation 'org.apache.commons:commons-csv:1.4'
+    testImplementation 'org.reflections:reflections:0.9.11'
 }
 
 task srcZip(type: Zip) {

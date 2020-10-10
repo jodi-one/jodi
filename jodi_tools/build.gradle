@@ -1,22 +1,15 @@
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'findbugs'
+apply plugin: 'com.github.spotbugs'
 
 mainClassName = "one.jodi.bootstrap.JodiController"
 
 // do not fail build in case findbugs issue is found for tool only
-tasks.withType(FindBugs) {
-    ignoreFailures = true
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
 
 // Jar task configuration
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Jodi Tools', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Jodi Tools', 'Implementation-Version': archiveVersion
     }
 }
 
@@ -36,7 +29,7 @@ dependencies {
     testCompile project(':jodi_odi12')
     testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
     compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
+    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
     //testCompile project(':jodi_core').sourceSets.test.output
 
     //JAXB xjc plugin

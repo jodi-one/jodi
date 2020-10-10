@@ -1,14 +1,14 @@
-include 'jodi_base'
-include 'jodi_core'
+include ':jodi_base'
+include ':jodi_core'
 if (doExtraProjects().equals('yes')) {
     println "Including extra projects."
 }
-include 'jodi_qa'
-include 'jodi_odi12'
+include ':jodi_qa'
+include ':jodi_odi12'
 // plugin projects
-include 'jodi_plugins'
-include 'jodi_tools'
-include 'jodi_model'
+include ':jodi_plugins'
+include ':jodi_tools'
+include ':jodi_model'
 
 String getDate() {
     def df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")

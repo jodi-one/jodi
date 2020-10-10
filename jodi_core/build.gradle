@@ -26,7 +26,7 @@ mainClassName = "one.jodi.bootstrap.JodiController"
 // Jar task configuration
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': archiveVersion
     }
 }
 
@@ -225,36 +225,36 @@ assemble.dependsOn extensionsJar
 
 dependencies {
 
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
-    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
-    compile group: 'javax.activation', name: 'activation', version: '1.1.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+    implementation 'javax.activation:activation:1.1.1'
     compile project(':jodi_base')
-    testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
-    testCompile project(':jodi_base').sourceSets.test.output
-    // include ODI 12.2 (in compile context for Eclipse or provided for build)
-//	compile project(':jodi_model')
+    compile project(path: ':jodi_base', configuration: 'testArtifacts')
+    compile project(':jodi_base').sourceSets.test.output
+    // include ODI 12.2 (in implementation context for Eclipse or provided for build)
+//	implementation project(':jodi_model')
 
-    testCompile 'org.apache.commons:commons-csv:1.4'
+    testImplementation 'org.apache.commons:commons-csv:1.4'
 
     //JAXB xjc plugin
     jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
 
-    compile("org.apache.commons:commons-configuration2:2.1") {
+    implementation("org.apache.commons:commons-configuration2:2.1") {
         // remove default libraries and replace with more recent versions
         exclude module: 'commons-logging'
         exclude module: 'commons-beanutils'
     }
 
     // use latest version of commons libs for commons-configuration;
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 
     // cloning with upgraded dependent library
-    compile("uk.com.robust-it:cloning:1.9.2") {
+    implementation("uk.com.robust-it:cloning:1.9.2") {
         exclude module: 'Objenesis'
     }
-    compile("org.objenesis:objenesis:2.4")
+    implementation("org.objenesis:objenesis:2.4")
 }
 
 task sourceSetJavaProperties {

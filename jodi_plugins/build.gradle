@@ -12,14 +12,14 @@ sourceSets {
 }
 
 dependencies {
+    implementation project(':jodi_core')
+    implementation project(':jodi_odi12')
+    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
+    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+    compile project(':jodi_base').sourceSets.test.output
+    compile project(':jodi_core').sourceSets.test.output
     compile project(':jodi_core')
     compile project(':jodi_odi12')
-    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    testCompile project(':jodi_base').sourceSets.test.output
-    testCompile project(':jodi_core').sourceSets.test.output
-    testCompile project(':jodi_core')
-    testCompile project(':jodi_odi12')
 }
 
 task jaxb() {
