@@ -3,10 +3,10 @@ apply plugin: 'groovy'
 liquibase {
     activities {
         main {
-            changeLogFile 'src/main/resources/main.xml'
-            url 'jdbc:oracle:thin:@jodi:1521/SAMPLE20'
-            username ''
-            password ''
+            changeLogFile 'src/main/resources/main.groovy'
+            url  'jdbc:oracle:thin:@DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet/'
+            username 'ADMIN'
+            password System.getProperty('OCI_DB_ADMIN_PWD')
         }
 //        security {
 //            changeLogFile 'src/main/db/security.xml'
@@ -54,7 +54,7 @@ sourceSets {
 dependencies {
     // include ODI 12.2 (in implementation context for Eclipse or provided for build)
     implementation project(':jodi_odi12')
-//    implementation fileTree(dir: 'lib', include: '*.jar')
+//    implementation fileTree(dir: 'lib', include: '*/**.jar')
     implementation project(':jodi_odi12')
     implementation 'org.codehaus.groovy:groovy-all:2.4.14'
     implementation project(path: ':jodi_core', configuration: 'xmlExtensions')

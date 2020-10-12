@@ -426,3 +426,8 @@ gradle-app.setting
 
 **/SmartExport.xml
 
+/gradlew
+/gradlew.bat
+/jodi_qa/BASIC_LICENSE.txt
+/jodi_qa/ojdbc.policy
+/jodi_qa/README.txt
