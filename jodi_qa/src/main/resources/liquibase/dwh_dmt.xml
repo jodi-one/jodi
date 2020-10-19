@@ -1,0 +1,516 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+   <changeSet id="1603045030494-1" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="4848" sequenceName="SEQ_W_ALBUM_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-2" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="400" sequenceName="SEQ_W_CUSTOMER_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-3" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="109" sequenceName="SEQ_W_EMPLOYEE_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-4" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="7" sequenceName="SEQ_W_FA_F_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-5" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="11525" sequenceName="SEQ_W_INVOICELINE_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-6" author="dukevanleeuwen (generated)">
+      <createSequence maxValue="9999999999999999999999999999" startValue="28204" sequenceName="SEQ_W_TRACK_WID"/>
+   </changeSet>
+   <changeSet id="1603045030494-7" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_ALBUM_D">
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(281 BYTE)" name="ALBM_CODE"/>
+         <column type="VARCHAR2(160 BYTE)" name="ALBM_TITLE"/>
+         <column type="VARCHAR2(120 BYTE)" name="ALBM_ARTIST"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-8" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_CUSTOMER_D">
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_CODE"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_FIRSTNAME"/>
+         <column type="VARCHAR2(20 BYTE)" name="CUST_LASTNAME"/>
+         <column type="VARCHAR2(80 BYTE)" name="CUST_COMPANY"/>
+         <column type="VARCHAR2(70 BYTE)" name="CUST_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="CUST_POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="CUST_PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="CUST_FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_SUPPORTREP_CODE"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_EMAIL"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="VARCHAR2(70 BYTE)" name="CUST_BILLING_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="CUST_BILLING_POSTALCODE"/>
+         <column type="date" name="EFFECTIVE_DATE"/>
+         <column type="NUMBER(1, 0)" name="CURRENT_FLG"/>
+         <column type="date" name="EXPIRATION_DATE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-9" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_DA_D">
+         <column type="UROWID" name="ODI_ROW_ID"/>
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(30 BYTE)" name="KEY"/>
+         <column type="NUMBER" name="VALUE"/>
+         <column type="date" name="LAST_CHANGED_DT"/>
+         <column type="date" name="EFFECTIVE_DT"/>
+         <column type="date" name="EXPIRATION_DT"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(32 CHAR)" name="ODI_PK">
+            <constraints primaryKeyName="SYS_C0016376" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-10" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_DC_D">
+         <column type="UROWID" name="ODI_ROW_ID"/>
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="VARCHAR2(10 BYTE)" name="COL_1"/>
+         <column type="NUMBER(10, 0)" name="COL_2"/>
+         <column type="date" name="COL_3"/>
+         <column type="VARCHAR2(10 BYTE)" name="AGRP_DYN_CHAR_VALUE_0"/>
+         <column type="VARCHAR2(10 BYTE)" name="AGRP_DYN_CHAR_VALUE_1"/>
+         <column type="date" name="AGRP_DYN_DT_VALUE_0"/>
+         <column type="date" name="AGRP_DYN_DT_VALUE_1"/>
+         <column type="NUMBER(10, 0)" name="AGRP_DYN_NR_VALUE_0"/>
+         <column type="NUMBER(10, 0)" name="AGRP_DYN_NR_VALUE_1"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(32 CHAR)" name="ODI_PK">
+            <constraints primaryKeyName="SYS_C0016377" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-11" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_EMPLOYEE_D">
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_CODE"/>
+         <column type="VARCHAR2(20 BYTE)" name="EMPL_LASTNAME"/>
+         <column type="VARCHAR2(20 BYTE)" name="EMPL_FIRSTNAME"/>
+         <column type="VARCHAR2(30 BYTE)" name="EMPL_TITLE"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_SUPERVISOR_CODE"/>
+         <column type="NUMBER" name="EMPL_BIRTH_DATE_CODE"/>
+         <column type="NUMBER" name="EMPL_HIRE_DATE_CODE"/>
+         <column type="VARCHAR2(70 BYTE)" name="EMPL_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="EMPL_POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="EMPL_PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="EMPL_FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_EMAIL"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="date" name="EFFECTIVE_DATE"/>
+         <column type="NUMBER(1, 0)" name="CURRENT_FLG"/>
+         <column type="date" name="EXPIRATION_DATE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-12" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_FA_F">
+         <column type="UROWID" name="ODI_ROW_ID"/>
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(30 BYTE)" name="KEY"/>
+         <column type="NUMBER" name="VALUE"/>
+         <column type="NUMBER" name="DA_WID"/>
+         <column type="NUMBER" name="DB_WID"/>
+         <column type="date" name="LAST_CHANGED_DT"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(32 CHAR)" name="ODI_PK">
+            <constraints primaryKeyName="SYS_C0016378" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-13" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_INVOICELINE_F">
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(120 BYTE)" name="INVL_LINE_CODE"/>
+         <column type="VARCHAR2(61 BYTE)" name="INVL_CODE"/>
+         <column type="NUMBER" name="INVL_TRCK_WID"/>
+         <column type="NUMBER(10, 2)" name="INVL_UNITPRICE"/>
+         <column type="NUMBER(32, 0)" name="INVL_QUANTITY"/>
+         <column type="NUMBER(38, 2)" name="INVL_AMOUNT"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="NUMBER" name="INVL_CUST_WID"/>
+         <column type="NUMBER" name="INVL_INVE_DATE_WID"/>
+         <column type="NUMBER" name="INVL_ALBM_WID"/>
+         <column type="NUMBER" name="INVL_SUPPORTREP_WID"/>
+         <column type="NUMBER" name="INVL_SUPERVISOR_WID"/>
+         <column type="VARCHAR2(1 BYTE)" name="INVL_CUST_FIRST_PURCHASE"/>
+         <column type="NUMBER(38, 2)" name="INVL_CUST_INVE_AMOUNT_YEAR"/>
+         <column type="VARCHAR2(1 BYTE)" name="INVL_CUST_BGHT_ALBUMS_ART_IND"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-14" author="dukevanleeuwen (generated)">
+      <createTable tableName="E$_W_TRACK_D">
+         <column type="VARCHAR2(1 CHAR)" name="ODI_ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ERR_MESS"/>
+         <column type="date" name="ODI_CHECK_DATE"/>
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(482 BYTE)" name="TRCK_CODE"/>
+         <column type="VARCHAR2(200 BYTE)" name="TRCK_NAME"/>
+         <column type="VARCHAR2(281 BYTE)" name="TRCK_ALBUM_CODE"/>
+         <column type="VARCHAR2(120 BYTE)" name="TRCK_MEDIATYPE"/>
+         <column type="VARCHAR2(120 BYTE)" name="TRCK_GENRE"/>
+         <column type="VARCHAR2(220 BYTE)" name="TRCK_COMPOSER"/>
+         <column type="NUMBER(32, 0)" name="TRCK_MILISECONDS"/>
+         <column type="NUMBER(32, 0)" name="TRCK_BYTES"/>
+         <column type="NUMBER(10, 2)" name="TRCK_UNITPRICE"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="VARCHAR2(250 CHAR)" name="ODI_ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="ODI_CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="ODI_CONS_TYPE"/>
+         <column type="VARCHAR2(36 CHAR)" name="ODI_SESS_NO"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-15" author="dukevanleeuwen (generated)">
+      <createTable tableName="SNP_CHECK_TAB">
+         <column type="VARCHAR2(100 CHAR)" name="CATALOG_NAME"/>
+         <column type="VARCHAR2(100 CHAR)" name="SCHEMA_NAME"/>
+         <column type="VARCHAR2(100 CHAR)" name="RESOURCE_NAME"/>
+         <column type="VARCHAR2(100 CHAR)" name="FULL_RES_NAME"/>
+         <column type="VARCHAR2(1 CHAR)" name="ERR_TYPE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ERR_MESS"/>
+         <column type="date" name="CHECK_DATE"/>
+         <column type="VARCHAR2(250 CHAR)" name="ORIGIN"/>
+         <column type="VARCHAR2(128 CHAR)" name="CONS_NAME"/>
+         <column type="VARCHAR2(2 CHAR)" name="CONS_TYPE"/>
+         <column type="NUMBER(10, 0)" name="ERR_COUNT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-16" author="dukevanleeuwen (generated)">
+      <createTable remarks="This is the Album table." tableName="W_ALBUM_D">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_ALBUM_D_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(281 BYTE)" name="ALBM_CODE" remarks="The album code consists of the ARTIST concatenated with | concatenated with TITLE"/>
+         <column type="VARCHAR2(160 BYTE)" name="ALBM_TITLE"/>
+         <column type="VARCHAR2(120 BYTE)" name="ALBM_ARTIST"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-17" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_CUSTOMER_D">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_CUSTOMER_D_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_CODE" remarks="The customer code is the customer email."/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_FIRSTNAME" remarks="The customer firstname"/>
+         <column type="VARCHAR2(20 BYTE)" name="CUST_LASTNAME"/>
+         <column type="VARCHAR2(80 BYTE)" name="CUST_COMPANY"/>
+         <column type="VARCHAR2(70 BYTE)" name="CUST_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="CUST_POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="CUST_PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="CUST_FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_SUPPORTREP_CODE"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUST_EMAIL"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="VARCHAR2(70 BYTE)" name="CUST_BILLING_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="CUST_BILLING_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="CUST_BILLING_POSTALCODE"/>
+         <column type="date" name="EFFECTIVE_DATE"/>
+         <column type="NUMBER(1, 0)" name="CURRENT_FLG"/>
+         <column type="date" name="EXPIRATION_DATE"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-18" author="dukevanleeuwen (generated)">
+      <createTable remarks="Datamart slowly changing dimension A" tableName="W_DA_D">
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(30 BYTE)" name="KEY"/>
+         <column type="NUMBER" name="VALUE"/>
+         <column type="date" name="LAST_CHANGED_DT"/>
+         <column type="date" name="EFFECTIVE_DT"/>
+         <column type="date" name="EXPIRATION_DT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-19" author="dukevanleeuwen (generated)">
+      <createTable remarks="Datamart dimension B" tableName="W_DB_D">
+         <column type="NUMBER" name="ROW_WID"/>
+         <column type="VARCHAR2(30 BYTE)" name="KEY"/>
+         <column type="NUMBER" name="VALUE"/>
+         <column type="date" name="LAST_CHANGED_DT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-20" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_DC_D">
+         <column type="VARCHAR2(10 BYTE)" name="COL_1"/>
+         <column type="NUMBER(10, 0)" name="COL_2"/>
+         <column type="date" name="COL_3"/>
+         <column type="VARCHAR2(10 BYTE)" name="AGRP_DYN_CHAR_VALUE_0"/>
+         <column type="VARCHAR2(10 BYTE)" name="AGRP_DYN_CHAR_VALUE_1"/>
+         <column type="TIMESTAMP(6)" name="AGRP_DYN_DT_VALUE_0"/>
+         <column type="TIMESTAMP(6)" name="AGRP_DYN_DT_VALUE_1"/>
+         <column type="NUMBER(10, 0)" name="AGRP_DYN_NR_VALUE_0"/>
+         <column type="NUMBER(10, 0)" name="AGRP_DYN_NR_VALUE_1"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-21" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_EMPLOYEE_D">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_EMPLOYEE_D_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_CODE" remarks="The employee code is the email of the employee."/>
+         <column type="VARCHAR2(20 BYTE)" name="EMPL_LASTNAME"/>
+         <column type="VARCHAR2(20 BYTE)" name="EMPL_FIRSTNAME"/>
+         <column type="VARCHAR2(30 BYTE)" name="EMPL_TITLE"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_SUPERVISOR_CODE" remarks="Reportsto code is the email address of the boss."/>
+         <column type="NUMBER" name="EMPL_BIRTH_DATE_CODE"/>
+         <column type="NUMBER" name="EMPL_HIRE_DATE_CODE"/>
+         <column type="VARCHAR2(70 BYTE)" name="EMPL_ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="EMPL_COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="EMPL_POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="EMPL_PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="EMPL_FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMPL_EMAIL"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="date" name="EFFECTIVE_DATE"/>
+         <column type="NUMBER(1, 0)" name="CURRENT_FLG"/>
+         <column type="date" name="EXPIRATION_DATE"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-22" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_FA_F">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_FA_F_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(30 BYTE)" name="KEY">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="VALUE"/>
+         <column type="NUMBER" name="DA_WID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="DB_WID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="date" name="LAST_CHANGED_DT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-23" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_INVOICELINE_F">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_INVOICELINE_F_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="INVL_LINE_CODE" remarks="The invoice line is het invoice code concatenated with | concatenated with invoice line id."/>
+         <column type="VARCHAR2(61 BYTE)" name="INVL_CODE" remarks="see Invoice, Invoice Code for details"/>
+         <column type="NUMBER" name="INVL_TRCK_WID"/>
+         <column type="NUMBER(10, 2)" name="INVL_UNITPRICE"/>
+         <column type="NUMBER(32, 0)" name="INVL_QUANTITY"/>
+         <column type="NUMBER(38, 2)" name="INVL_AMOUNT"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+         <column type="NUMBER" name="INVL_CUST_WID"/>
+         <column type="NUMBER" name="INVL_INVE_DATE_WID"/>
+         <column type="NUMBER" name="INVL_ALBM_WID"/>
+         <column type="NUMBER" name="INVL_SUPPORTREP_WID"/>
+         <column type="NUMBER" name="INVL_SUPERVISOR_WID"/>
+         <column type="VARCHAR2(1 BYTE)" name="INVL_CUST_FIRST_PURCHASE"/>
+         <column type="NUMBER(38, 2)" name="INVL_CUST_INVE_AMOUNT_YEAR"/>
+         <column type="VARCHAR2(1 BYTE)" name="INVL_CUST_BGHT_ALBUMS_ART_IND"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-24" author="dukevanleeuwen (generated)">
+      <createTable tableName="W_TRACK_D">
+         <column type="NUMBER" name="ROW_WID">
+            <constraints primaryKeyName="W_TRACK_D_P1" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(482 BYTE)" name="TRCK_CODE" remarks="Artist Name | Album Name | Track Name"/>
+         <column type="VARCHAR2(200 BYTE)" name="TRCK_NAME"/>
+         <column type="VARCHAR2(281 BYTE)" name="TRCK_ALBUM_CODE"/>
+         <column type="VARCHAR2(120 BYTE)" name="TRCK_MEDIATYPE"/>
+         <column type="VARCHAR2(120 BYTE)" name="TRCK_GENRE"/>
+         <column type="VARCHAR2(220 BYTE)" name="TRCK_COMPOSER"/>
+         <column type="NUMBER(32, 0)" name="TRCK_MILISECONDS"/>
+         <column type="NUMBER(32, 0)" name="TRCK_BYTES"/>
+         <column type="NUMBER(10, 2)" name="TRCK_UNITPRICE"/>
+         <column type="TIMESTAMP(9)" name="W_INSERT_DT"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045030494-25" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_ALBUM_D_U1" unique="true" tableName="W_ALBUM_D">
+         <column name="ALBM_CODE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-26" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_ALBUM_D_U1" constraintName="W_ALBUM_D_U1" tableName="W_ALBUM_D" columnNames="ALBM_CODE"/>
+   </changeSet>
+   <changeSet id="1603045030494-27" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_CUSTOMER_D_U1" unique="true" tableName="W_CUSTOMER_D">
+         <column name="CUST_CODE"/>
+         <column name="EFFECTIVE_DATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-28" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_CUSTOMER_D_U1" constraintName="W_CUSTOMER_D_U1" tableName="W_CUSTOMER_D" columnNames="CUST_CODE, EFFECTIVE_DATE"/>
+   </changeSet>
+   <changeSet id="1603045030494-29" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_DA_D_U1" unique="true" tableName="W_DA_D">
+         <column name="KEY"/>
+         <column name="EFFECTIVE_DT"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-30" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_DA_D_U1" constraintName="W_DA_D_U1" tableName="W_DA_D" columnNames="KEY, EFFECTIVE_DT"/>
+   </changeSet>
+   <changeSet id="1603045030494-31" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_DB_D_U1" unique="true" tableName="W_DB_D">
+         <column name="KEY"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-32" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_DB_D_U1" constraintName="W_DB_D_U1" tableName="W_DB_D" columnNames="KEY"/>
+   </changeSet>
+   <changeSet id="1603045030494-33" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_DC_D_U1" unique="true" tableName="W_DC_D">
+         <column name="COL_1"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-34" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_DC_D_U1" constraintName="W_DC_D_U1" tableName="W_DC_D" columnNames="COL_1"/>
+   </changeSet>
+   <changeSet id="1603045030494-35" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_EMPLOYEE_D_U1" unique="true" tableName="W_EMPLOYEE_D">
+         <column name="EMPL_CODE"/>
+         <column name="EFFECTIVE_DATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-36" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_EMPLOYEE_D_U1" constraintName="W_EMPLOYEE_D_U1" tableName="W_EMPLOYEE_D" columnNames="EMPL_CODE, EFFECTIVE_DATE"/>
+   </changeSet>
+   <changeSet id="1603045030494-37" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_FA_F_U1" unique="true" tableName="W_FA_F">
+         <column name="KEY"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-38" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_FA_F_U1" constraintName="W_FA_F_U1" tableName="W_FA_F" columnNames="KEY"/>
+   </changeSet>
+   <changeSet id="1603045030494-39" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_U1" unique="true" tableName="W_INVOICELINE_F">
+         <column name="INVL_LINE_CODE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-40" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_INVOICELINE_F_U1" constraintName="W_INVOICELINE_F_U1" tableName="W_INVOICELINE_F" columnNames="INVL_LINE_CODE"/>
+   </changeSet>
+   <changeSet id="1603045030494-41" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_TRACK_D_U1" unique="true" tableName="W_TRACK_D">
+         <column name="TRCK_CODE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-42" author="dukevanleeuwen (generated)">
+      <addUniqueConstraint forIndexName="W_TRACK_D_U1" constraintName="W_TRACK_D_U1" tableName="W_TRACK_D" columnNames="TRCK_CODE"/>
+   </changeSet>
+   <changeSet id="1603045030494-43" author="dukevanleeuwen (generated)">
+      <createIndex indexName="E$_W_DA_D_IDX" tableName="E$_W_DA_D">
+         <column name="ODI_ROW_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-44" author="dukevanleeuwen (generated)">
+      <createIndex indexName="E$_W_DC_D_IDX" tableName="E$_W_DC_D">
+         <column name="ODI_ROW_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-45" author="dukevanleeuwen (generated)">
+      <createIndex indexName="E$_W_FA_F" tableName="E$_W_FA_F">
+         <column name="ODI_ROW_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-46" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_I1" tableName="W_INVOICELINE_F">
+         <column name="INVL_CUST_WID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-47" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_I2" tableName="W_INVOICELINE_F">
+         <column name="INVL_SUPPORTREP_WID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-48" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_I3" tableName="W_INVOICELINE_F">
+         <column name="INVL_SUPERVISOR_WID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-49" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_I4" tableName="W_INVOICELINE_F">
+         <column name="INVL_TRCK_WID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-50" author="dukevanleeuwen (generated)">
+      <createIndex indexName="W_INVOICELINE_F_I5" tableName="W_INVOICELINE_F">
+         <column name="INVL_ALBM_WID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet id="1603045030494-51" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVL_ALBM_WID" constraintName="W_INVOICELINE_F_W_ALBUM_D" onDelete="RESTRICT" referencedTableName="W_ALBUM_D" referencedColumnNames="ROW_WID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="W_INVOICELINE_F" validate="true"/>
+   </changeSet>
+   <changeSet id="1603045030494-52" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVL_CUST_WID" constraintName="W_INVOICELINE_F_W_CUSTOMER_D" onDelete="RESTRICT" referencedTableName="W_CUSTOMER_D" referencedColumnNames="ROW_WID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="W_INVOICELINE_F" validate="true"/>
+   </changeSet>
+   <changeSet id="1603045030494-53" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVL_SUPERVISOR_WID" constraintName="W_INVOICELINE_F_W_EMPLOYEE_D" onDelete="RESTRICT" referencedTableName="W_EMPLOYEE_D" referencedColumnNames="ROW_WID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="W_INVOICELINE_F" validate="true"/>
+   </changeSet>
+   <changeSet id="1603045030494-54" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVL_SUPPORTREP_WID" constraintName="W_INVOICELINE_F_W_REPRESENTATI" onDelete="RESTRICT" referencedTableName="W_EMPLOYEE_D" referencedColumnNames="ROW_WID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="W_INVOICELINE_F" validate="true"/>
+   </changeSet>
+   <changeSet id="1603045030494-55" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVL_TRCK_WID" constraintName="W_INVOICELINE_F_W_TRACK_D" onDelete="RESTRICT" referencedTableName="W_TRACK_D" referencedColumnNames="ROW_WID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="W_INVOICELINE_F" validate="true"/>
+   </changeSet>
+</databaseChangeLog>

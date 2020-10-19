@@ -54,7 +54,7 @@ RETVAL=$?
 [ $RETVAL -ne 0 ] && exit 1
 echo "jodi_core subprojects tests exists with code $RETVAL"
 
-##sh ./gradlew -P distribution=true --debug jodi_pbe_tools:build jodi_pbe:build jodi_pbe:distZip jodi_plugins:findbugsMain jodi_plugins:findbugsTest jodi_plugins:test
+##sh ./gradle -P distribution=true --debug jodi_pbe_tools:build jodi_pbe:build jodi_pbe:distZip jodi_plugins:findbugsMain jodi_plugins:findbugsTest jodi_plugins:test
 # RETVAL=$?
 #[ $RETVAL -ne 0 ] && exit 1
 # echo "jodi_core subprojects tests exists with code $RETVAL"

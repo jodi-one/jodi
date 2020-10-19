@@ -13,7 +13,6 @@ import one.jodi.base.factory.ModuleProvider;
 import one.jodi.base.factory.ServiceFactory;
 import one.jodi.base.util.Register;
 import one.jodi.base.util.Resource;
-import oracle.odi.core.OdiInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -141,11 +140,6 @@ public abstract class JodiControllerBase implements Register {
         cleanup();
         cachedErrorWarningMessages = errorWarningMessages.printMessages();
         errorWarningMessages.clear();
-    }
-
-
-    public synchronized int run(OdiInstance odiInstance, String[] args, String... fileName) {
-        return this.run(args, fileName);
     }
 
     /**

@@ -25,11 +25,11 @@ sourceSets {
 repositories { mavenCentral() }
 
 dependencies {
-    compile project(':jodi_odi12')
-    testCompile project(':jodi_odi12')
-    testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
-    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+//    compile project(':jodi_odi12')
+//    testCompile project(':jodi_odi12')
+//    testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
+//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
     //testCompile project(':jodi_core').sourceSets.test.output
 
     //JAXB xjc plugin

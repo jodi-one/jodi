@@ -9,14 +9,14 @@ jar {
 
 dependencies {
     // include ODI 12.2 (in compile context for Eclipse or provided for build)
-    compile project(':jodi_core')
+ //   compile project(':jodi_core')
 //	compile project(':jodi_model')
-    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
     testImplementation "xmlunit:xmlunit:1.6"
-    compile project(path: ':jodi_base', configuration: 'testArtifacts')
-    compile project(':jodi_core')
-    compile project(':jodi_base').sourceSets.test.output
-    compile project(':jodi_core').sourceSets.test.output
+//    compile project(path: ':jodi_base', configuration: 'testArtifacts')
+//    compile project(':jodi_core')
+//    compile project(':jodi_base').sourceSets.test.output
+//    compile project(':jodi_core').sourceSets.test.output
 //	testImplementation project(':jodi_model')
     provided 'org.codehaus.groovy:groovy-all:2.4.14'
 }

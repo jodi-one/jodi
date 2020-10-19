@@ -1,0 +1,818 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+   <changeSet id="1603044962392-1" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$ARTIST">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="ARTISTID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-2" author="dukevanleeuwen (generated)">
+      <createTable tableName="ARTIST">
+         <column type="NUMBER" name="ARTISTID">
+            <constraints primaryKeyName="PK_ARTIST" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-3" author="dukevanleeuwen (generated)">
+      <createTable tableName="INVOICELINE">
+         <column type="NUMBER" name="INVOICELINEID">
+            <constraints primaryKeyName="PK_INVOICELINE" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="INVOICEID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="TRACKID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER(10, 2)" name="UNITPRICE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="QUANTITY">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-4" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$TRACK">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="TRACKID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-5" author="dukevanleeuwen (generated)">
+      <createTable tableName="EMPLOYEE">
+         <column type="NUMBER" name="EMPLOYEEID">
+            <constraints primaryKeyName="PK_EMPLOYEE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="FIRSTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(30 BYTE)" name="TITLE"/>
+         <column type="NUMBER" name="REPORTSTO"/>
+         <column type="date" name="BIRTHDATE"/>
+         <column type="date" name="HIREDATE"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-6" author="dukevanleeuwen (generated)">
+      <createTable tableName="ALBUM">
+         <column type="NUMBER" name="ALBUMID">
+            <constraints primaryKeyName="PK_ALBUM" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(160 BYTE)" name="TITLE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="ARTISTID">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-7" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$INVOICELINE">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="INVOICELINEID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-8" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$CUSTOMER">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="CUSTOMERID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-9" author="dukevanleeuwen (generated)">
+      <createTable tableName="INVOICE">
+         <column type="NUMBER" name="INVOICEID">
+            <constraints primaryKeyName="PK_INVOICE" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="CUSTOMERID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="date" name="INVOICEDATE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(70 BYTE)" name="BILLINGADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGSTATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCOUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="BILLINGPOSTALCODE"/>
+         <column type="NUMBER(10, 2)" name="TOTAL">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-10" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$MEDIATYPE">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="MEDIATYPEID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-11" author="dukevanleeuwen (generated)">
+      <createTable tableName="CUSTOMER">
+         <column type="NUMBER" name="CUSTOMERID">
+            <constraints primaryKeyName="PK_CUSTOMER" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(40 BYTE)" name="FIRSTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(80 BYTE)" name="COMPANY"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="SUPPORTREPID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-12" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$INVOICE">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="INVOICEID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-13" author="dukevanleeuwen (generated)">
+      <createTable tableName="PLAYLIST">
+         <column type="NUMBER" name="PLAYLISTID">
+            <constraints primaryKeyName="PK_PLAYLIST" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-14" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$ALBUM">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="ALBUMID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-15" author="dukevanleeuwen (generated)">
+      <createTable tableName="SNP_SUBSCRIBERS">
+         <column type="VARCHAR2(61 CHAR)" name="JRN_TNAME">
+            <constraints primaryKeyName="PK_SNP_JRN_SBS" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints primaryKeyName="PK_SNP_JRN_SBS" primaryKey="true"/>
+         </column>
+         <column type="date" name="JRN_REFDATE"/>
+         <column type="NUMBER(20, 0)" name="JRN_ROW_COUNT"/>
+         <column type="VARCHAR2(2000 CHAR)" name="JRN_DATA_CMD"/>
+         <column type="VARCHAR2(2000 CHAR)" name="JRN_COUNT_CMD"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-16" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$PLAYLIST">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="PLAYLISTID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-17" author="dukevanleeuwen (generated)">
+      <createTable tableName="TRACK">
+         <column type="NUMBER" name="TRACKID">
+            <constraints primaryKeyName="PK_TRACK" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(200 BYTE)" name="NAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="ALBUMID"/>
+         <column type="NUMBER" name="MEDIATYPEID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="GENREID"/>
+         <column type="VARCHAR2(220 BYTE)" name="COMPOSER"/>
+         <column type="NUMBER" name="MILLISECONDS">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="BYTES"/>
+         <column type="NUMBER(10, 2)" name="UNITPRICE">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-18" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$GENRE">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="GENREID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-19" author="dukevanleeuwen (generated)">
+      <createTable tableName="PLAYLISTTRACK">
+         <column type="NUMBER" name="PLAYLISTID">
+            <constraints primaryKeyName="PK_PLAYLISTTRACK" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="TRACKID">
+            <constraints primaryKeyName="PK_PLAYLISTTRACK" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(1 BYTE)" name="DUMMY_COL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-20" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$PLAYLISTTRACK">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="PLAYLISTID"/>
+         <column type="NUMBER" name="TRACKID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-21" author="dukevanleeuwen (generated)">
+      <createTable tableName="GENRE">
+         <column type="NUMBER" name="GENREID">
+            <constraints primaryKeyName="PK_GENRE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-22" author="dukevanleeuwen (generated)">
+      <createTable tableName="J$EMPLOYEE">
+         <column type="VARCHAR2(400 CHAR)" name="JRN_SUBSCRIBER">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_CONSUMED"/>
+         <column type="VARCHAR2(1 CHAR)" name="JRN_FLAG"/>
+         <column type="date" name="JRN_DATE"/>
+         <column type="NUMBER" name="EMPLOYEEID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-23" author="dukevanleeuwen (generated)">
+      <createTable tableName="MEDIATYPE">
+         <column type="NUMBER" name="MEDIATYPEID">
+            <constraints primaryKeyName="PK_MEDIATYPE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603044962392-24" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$ARTIST" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$ARTIST" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, ARTISTID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.ARTISTID		   ARTISTID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.ARTISTID	   ARTISTID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$ARTIST    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.ARTISTID
+	)    JRN,
+	CHINOOK.ARTIST    TARG
+where	JRN.ARTISTID	= TARG.ARTISTID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-25" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DARTIST" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DARTIST" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, ARTISTID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.ARTISTID		   ARTISTID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.ARTISTID	   ARTISTID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$ARTIST    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.ARTISTID
+	)    JRN,
+	CHINOOK.ARTIST    TARG
+where	JRN.ARTISTID	= TARG.ARTISTID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-26" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DINVOICELINE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DINVOICELINE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, INVOICELINEID, INVOICEID, TRACKID, UNITPRICE, QUANTITY) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICELINEID		   INVOICELINEID,
+	TARG.INVOICEID		   INVOICEID,
+	TARG.TRACKID		   TRACKID,
+	TARG.UNITPRICE		   UNITPRICE,
+	TARG.QUANTITY		   QUANTITY
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICELINEID	   INVOICELINEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICELINE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.INVOICELINEID
+	)    JRN,
+	CHINOOK.INVOICELINE    TARG
+where	JRN.INVOICELINEID	= TARG.INVOICELINEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-27" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$INVOICELINE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$INVOICELINE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, INVOICELINEID, INVOICEID, TRACKID, UNITPRICE, QUANTITY) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICELINEID		   INVOICELINEID,
+	TARG.INVOICEID		   INVOICEID,
+	TARG.TRACKID		   TRACKID,
+	TARG.UNITPRICE		   UNITPRICE,
+	TARG.QUANTITY		   QUANTITY
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICELINEID	   INVOICELINEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICELINE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.INVOICELINEID
+	)    JRN,
+	CHINOOK.INVOICELINE    TARG
+where	JRN.INVOICELINEID	= TARG.INVOICELINEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-28" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DTRACK" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DTRACK" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, TRACKID, NAME, ALBUMID, MEDIATYPEID, GENREID, COMPOSER, MILLISECONDS, BYTES, UNITPRICE) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.TRACKID		   TRACKID,
+	TARG.NAME		   NAME,
+	TARG.ALBUMID		   ALBUMID,
+	TARG.MEDIATYPEID		   MEDIATYPEID,
+	TARG.GENREID		   GENREID,
+	TARG.COMPOSER		   COMPOSER,
+	TARG.MILLISECONDS		   MILLISECONDS,
+	TARG.BYTES		   BYTES,
+	TARG.UNITPRICE		   UNITPRICE
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.TRACKID	   TRACKID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$TRACK    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.TRACKID
+	)    JRN,
+	CHINOOK.TRACK    TARG
+where	JRN.TRACKID	= TARG.TRACKID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-29" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$TRACK" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$TRACK" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, TRACKID, NAME, ALBUMID, MEDIATYPEID, GENREID, COMPOSER, MILLISECONDS, BYTES, UNITPRICE) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.TRACKID		   TRACKID,
+	TARG.NAME		   NAME,
+	TARG.ALBUMID		   ALBUMID,
+	TARG.MEDIATYPEID		   MEDIATYPEID,
+	TARG.GENREID		   GENREID,
+	TARG.COMPOSER		   COMPOSER,
+	TARG.MILLISECONDS		   MILLISECONDS,
+	TARG.BYTES		   BYTES,
+	TARG.UNITPRICE		   UNITPRICE
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.TRACKID	   TRACKID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$TRACK    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.TRACKID
+	)    JRN,
+	CHINOOK.TRACK    TARG
+where	JRN.TRACKID	= TARG.TRACKID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-30" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DEMPLOYEE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DEMPLOYEE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, EMPLOYEEID, LASTNAME, FIRSTNAME, TITLE, REPORTSTO, BIRTHDATE, HIREDATE, ADDRESS, CITY, STATE, COUNTRY, POSTALCODE, PHONE, FAX, EMAIL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.EMPLOYEEID		   EMPLOYEEID,
+	TARG.LASTNAME		   LASTNAME,
+	TARG.FIRSTNAME		   FIRSTNAME,
+	TARG.TITLE		   TITLE,
+	TARG.REPORTSTO		   REPORTSTO,
+	TARG.BIRTHDATE		   BIRTHDATE,
+	TARG.HIREDATE		   HIREDATE,
+	TARG.ADDRESS		   ADDRESS,
+	TARG.CITY		   CITY,
+	TARG.STATE		   STATE,
+	TARG.COUNTRY		   COUNTRY,
+	TARG.POSTALCODE		   POSTALCODE,
+	TARG.PHONE		   PHONE,
+	TARG.FAX		   FAX,
+	TARG.EMAIL		   EMAIL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.EMPLOYEEID	   EMPLOYEEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$EMPLOYEE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.EMPLOYEEID
+	)    JRN,
+	CHINOOK.EMPLOYEE    TARG
+where	JRN.EMPLOYEEID	= TARG.EMPLOYEEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-31" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$EMPLOYEE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$EMPLOYEE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, EMPLOYEEID, LASTNAME, FIRSTNAME, TITLE, REPORTSTO, BIRTHDATE, HIREDATE, ADDRESS, CITY, STATE, COUNTRY, POSTALCODE, PHONE, FAX, EMAIL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.EMPLOYEEID		   EMPLOYEEID,
+	TARG.LASTNAME		   LASTNAME,
+	TARG.FIRSTNAME		   FIRSTNAME,
+	TARG.TITLE		   TITLE,
+	TARG.REPORTSTO		   REPORTSTO,
+	TARG.BIRTHDATE		   BIRTHDATE,
+	TARG.HIREDATE		   HIREDATE,
+	TARG.ADDRESS		   ADDRESS,
+	TARG.CITY		   CITY,
+	TARG.STATE		   STATE,
+	TARG.COUNTRY		   COUNTRY,
+	TARG.POSTALCODE		   POSTALCODE,
+	TARG.PHONE		   PHONE,
+	TARG.FAX		   FAX,
+	TARG.EMAIL		   EMAIL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.EMPLOYEEID	   EMPLOYEEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$EMPLOYEE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.EMPLOYEEID
+	)    JRN,
+	CHINOOK.EMPLOYEE    TARG
+where	JRN.EMPLOYEEID	= TARG.EMPLOYEEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-32" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$ALBUM" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$ALBUM" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, ALBUMID, TITLE, ARTISTID) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.ALBUMID		   ALBUMID,
+	TARG.TITLE		   TITLE,
+	TARG.ARTISTID		   ARTISTID
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.ALBUMID	   ALBUMID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$ALBUM    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.ALBUMID
+	)    JRN,
+	CHINOOK.ALBUM    TARG
+where	JRN.ALBUMID	= TARG.ALBUMID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-33" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DALBUM" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DALBUM" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, ALBUMID, TITLE, ARTISTID) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.ALBUMID		   ALBUMID,
+	TARG.TITLE		   TITLE,
+	TARG.ARTISTID		   ARTISTID
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.ALBUMID	   ALBUMID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$ALBUM    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.ALBUMID
+	)    JRN,
+	CHINOOK.ALBUM    TARG
+where	JRN.ALBUMID	= TARG.ALBUMID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-34" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$CUSTOMER" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$CUSTOMER" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, CUSTOMERID, FIRSTNAME, LASTNAME, COMPANY, ADDRESS, CITY, STATE, COUNTRY, POSTALCODE, PHONE, FAX, EMAIL, SUPPORTREPID) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.CUSTOMERID		   CUSTOMERID,
+	TARG.FIRSTNAME		   FIRSTNAME,
+	TARG.LASTNAME		   LASTNAME,
+	TARG.COMPANY		   COMPANY,
+	TARG.ADDRESS		   ADDRESS,
+	TARG.CITY		   CITY,
+	TARG.STATE		   STATE,
+	TARG.COUNTRY		   COUNTRY,
+	TARG.POSTALCODE		   POSTALCODE,
+	TARG.PHONE		   PHONE,
+	TARG.FAX		   FAX,
+	TARG.EMAIL		   EMAIL,
+	TARG.SUPPORTREPID		   SUPPORTREPID
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.CUSTOMERID	   CUSTOMERID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$CUSTOMER    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.CUSTOMERID
+	)    JRN,
+	CHINOOK.CUSTOMER    TARG
+where	JRN.CUSTOMERID	= TARG.CUSTOMERID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-35" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DCUSTOMER" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DCUSTOMER" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, CUSTOMERID, FIRSTNAME, LASTNAME, COMPANY, ADDRESS, CITY, STATE, COUNTRY, POSTALCODE, PHONE, FAX, EMAIL, SUPPORTREPID) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.CUSTOMERID		   CUSTOMERID,
+	TARG.FIRSTNAME		   FIRSTNAME,
+	TARG.LASTNAME		   LASTNAME,
+	TARG.COMPANY		   COMPANY,
+	TARG.ADDRESS		   ADDRESS,
+	TARG.CITY		   CITY,
+	TARG.STATE		   STATE,
+	TARG.COUNTRY		   COUNTRY,
+	TARG.POSTALCODE		   POSTALCODE,
+	TARG.PHONE		   PHONE,
+	TARG.FAX		   FAX,
+	TARG.EMAIL		   EMAIL,
+	TARG.SUPPORTREPID		   SUPPORTREPID
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.CUSTOMERID	   CUSTOMERID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$CUSTOMER    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.CUSTOMERID
+	)    JRN,
+	CHINOOK.CUSTOMER    TARG
+where	JRN.CUSTOMERID	= TARG.CUSTOMERID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-36" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DINVOICE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DINVOICE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, INVOICEID, CUSTOMERID, INVOICEDATE, BILLINGADDRESS, BILLINGCITY, BILLINGSTATE, BILLINGCOUNTRY, BILLINGPOSTALCODE, TOTAL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICEID		   INVOICEID,
+	TARG.CUSTOMERID		   CUSTOMERID,
+	TARG.INVOICEDATE		   INVOICEDATE,
+	TARG.BILLINGADDRESS		   BILLINGADDRESS,
+	TARG.BILLINGCITY		   BILLINGCITY,
+	TARG.BILLINGSTATE		   BILLINGSTATE,
+	TARG.BILLINGCOUNTRY		   BILLINGCOUNTRY,
+	TARG.BILLINGPOSTALCODE		   BILLINGPOSTALCODE,
+	TARG.TOTAL		   TOTAL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICEID	   INVOICEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.INVOICEID
+	)    JRN,
+	CHINOOK.INVOICE    TARG
+where	JRN.INVOICEID	= TARG.INVOICEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-37" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$INVOICE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$INVOICE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, INVOICEID, CUSTOMERID, INVOICEDATE, BILLINGADDRESS, BILLINGCITY, BILLINGSTATE, BILLINGCOUNTRY, BILLINGPOSTALCODE, TOTAL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICEID		   INVOICEID,
+	TARG.CUSTOMERID		   CUSTOMERID,
+	TARG.INVOICEDATE		   INVOICEDATE,
+	TARG.BILLINGADDRESS		   BILLINGADDRESS,
+	TARG.BILLINGCITY		   BILLINGCITY,
+	TARG.BILLINGSTATE		   BILLINGSTATE,
+	TARG.BILLINGCOUNTRY		   BILLINGCOUNTRY,
+	TARG.BILLINGPOSTALCODE		   BILLINGPOSTALCODE,
+	TARG.TOTAL		   TOTAL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICEID	   INVOICEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.INVOICEID
+	)    JRN,
+	CHINOOK.INVOICE    TARG
+where	JRN.INVOICEID	= TARG.INVOICEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-38" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DMEDIATYPE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DMEDIATYPE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, MEDIATYPEID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.MEDIATYPEID		   MEDIATYPEID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.MEDIATYPEID	   MEDIATYPEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$MEDIATYPE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.MEDIATYPEID
+	)    JRN,
+	CHINOOK.MEDIATYPE    TARG
+where	JRN.MEDIATYPEID	= TARG.MEDIATYPEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-39" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$MEDIATYPE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$MEDIATYPE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, MEDIATYPEID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.MEDIATYPEID		   MEDIATYPEID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.MEDIATYPEID	   MEDIATYPEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$MEDIATYPE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.MEDIATYPEID
+	)    JRN,
+	CHINOOK.MEDIATYPE    TARG
+where	JRN.MEDIATYPEID	= TARG.MEDIATYPEID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-40" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DPLAYLIST" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DPLAYLIST" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, PLAYLISTID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.PLAYLISTID		   PLAYLISTID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.PLAYLISTID	   PLAYLISTID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$PLAYLIST    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.PLAYLISTID
+	)    JRN,
+	CHINOOK.PLAYLIST    TARG
+where	JRN.PLAYLISTID	= TARG.PLAYLISTID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-41" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$PLAYLIST" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$PLAYLIST" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, PLAYLISTID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.PLAYLISTID		   PLAYLISTID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.PLAYLISTID	   PLAYLISTID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$PLAYLIST    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.PLAYLISTID
+	)    JRN,
+	CHINOOK.PLAYLIST    TARG
+where	JRN.PLAYLISTID	= TARG.PLAYLISTID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-42" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DGENRE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DGENRE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, GENREID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.GENREID		   GENREID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.GENREID	   GENREID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$GENRE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.GENREID
+	)    JRN,
+	CHINOOK.GENRE    TARG
+where	JRN.GENREID	= TARG.GENREID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-43" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$GENRE" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$GENRE" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, GENREID, NAME) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.GENREID		   GENREID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.GENREID	   GENREID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$GENRE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.GENREID
+	)    JRN,
+	CHINOOK.GENRE    TARG
+where	JRN.GENREID	= TARG.GENREID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-44" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$DPLAYLISTTRACK" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$DPLAYLISTTRACK" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, PLAYLISTID, TRACKID, DUMMY_COL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.PLAYLISTID		   PLAYLISTID,
+	JRN.TRACKID		   TRACKID,
+	TARG.DUMMY_COL		   DUMMY_COL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.PLAYLISTID	   PLAYLISTID,
+			L.TRACKID	   TRACKID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$PLAYLISTTRACK    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.PLAYLISTID,
+			L.TRACKID
+	)    JRN,
+	CHINOOK.PLAYLISTTRACK    TARG
+where	JRN.PLAYLISTID	= TARG.PLAYLISTID (+)
+and	JRN.TRACKID	= TARG.TRACKID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-45" author="dukevanleeuwen (generated)">
+      <createView viewName="JV$PLAYLISTTRACK" fullDefinition="true">CREATE OR REPLACE FORCE VIEW "JV$PLAYLISTTRACK" (JRN_FLAG, JRN_SUBSCRIBER, JRN_DATE, PLAYLISTID, TRACKID, DUMMY_COL) AS select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.PLAYLISTID		   PLAYLISTID,
+	JRN.TRACKID		   TRACKID,
+	TARG.DUMMY_COL		   DUMMY_COL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.PLAYLISTID	   PLAYLISTID,
+			L.TRACKID	   TRACKID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$PLAYLISTTRACK    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.PLAYLISTID,
+			L.TRACKID
+	)    JRN,
+	CHINOOK.PLAYLISTTRACK    TARG
+where	JRN.PLAYLISTID	= TARG.PLAYLISTID (+)
+and	JRN.TRACKID	= TARG.TRACKID (+)</createView>
+   </changeSet>
+   <changeSet id="1603044962392-46" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="ARTISTID" constraintName="FK_ALBUMARTISTID" onDelete="RESTRICT" referencedTableName="ARTIST" referencedColumnNames="ARTISTID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="ALBUM" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-47" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="SUPPORTREPID" constraintName="FK_CUSTOMERSUPPORTREPID" onDelete="RESTRICT" referencedTableName="EMPLOYEE" referencedColumnNames="EMPLOYEEID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="CUSTOMER" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-48" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="REPORTSTO" constraintName="FK_EMPLOYEEREPORTSTO" onDelete="RESTRICT" referencedTableName="EMPLOYEE" referencedColumnNames="EMPLOYEEID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="EMPLOYEE" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-49" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="CUSTOMERID" constraintName="FK_INVOICECUSTOMERID" onDelete="RESTRICT" referencedTableName="CUSTOMER" referencedColumnNames="CUSTOMERID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="INVOICE" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-50" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="INVOICEID" constraintName="FK_INVOICELINEINVOICEID" onDelete="RESTRICT" referencedTableName="INVOICE" referencedColumnNames="INVOICEID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="INVOICELINE" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-51" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="TRACKID" constraintName="FK_INVOICELINETRACKID" onDelete="RESTRICT" referencedTableName="TRACK" referencedColumnNames="TRACKID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="INVOICELINE" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-52" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="PLAYLISTID" constraintName="FK_PLAYLISTTRACKPLAYLISTID" onDelete="RESTRICT" referencedTableName="PLAYLIST" referencedColumnNames="PLAYLISTID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="PLAYLISTTRACK" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-53" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="TRACKID" constraintName="FK_PLAYLISTTRACKTRACKID" onDelete="RESTRICT" referencedTableName="TRACK" referencedColumnNames="TRACKID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="PLAYLISTTRACK" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-54" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="ALBUMID" constraintName="FK_TRACKALBUMID" onDelete="RESTRICT" referencedTableName="ALBUM" referencedColumnNames="ALBUMID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="TRACK" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-55" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="GENREID" constraintName="FK_TRACKGENREID" onDelete="RESTRICT" referencedTableName="GENRE" referencedColumnNames="GENREID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="TRACK" validate="true"/>
+   </changeSet>
+   <changeSet id="1603044962392-56" author="dukevanleeuwen (generated)">
+      <addForeignKeyConstraint deferrable="false" baseColumnNames="MEDIATYPEID" constraintName="FK_TRACKMEDIATYPEID" onDelete="RESTRICT" referencedTableName="MEDIATYPE" referencedColumnNames="MEDIATYPEID" initiallyDeferred="false" onUpdate="RESTRICT" baseTableName="TRACK" validate="true"/>
+   </changeSet>
+</databaseChangeLog>

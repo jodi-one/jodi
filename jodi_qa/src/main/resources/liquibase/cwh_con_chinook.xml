@@ -1,0 +1,171 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+   <changeSet id="1603045194574-1" author="dukevanleeuwen (generated)">
+      <createTable tableName="ALBUM">
+         <column type="NUMBER" name="ALBUMID">
+            <constraints primaryKeyName="PK_ALBUM" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(160 BYTE)" name="TITLE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="ARTISTID">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-2" author="dukevanleeuwen (generated)">
+      <createTable tableName="ARTIST">
+         <column type="NUMBER" name="ARTISTID">
+            <constraints primaryKeyName="PK_ARTIST" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-3" author="dukevanleeuwen (generated)">
+      <createTable tableName="CUSTOMER">
+         <column type="NUMBER" name="CUSTOMERID">
+            <constraints primaryKeyName="PK_CUSTOMER" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(40 BYTE)" name="FIRSTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(80 BYTE)" name="COMPANY"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="SUPPORTREPID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-4" author="dukevanleeuwen (generated)">
+      <createTable tableName="EMPLOYEE">
+         <column type="NUMBER" name="EMPLOYEEID">
+            <constraints primaryKeyName="PK_EMPLOYEE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(20 BYTE)" name="FIRSTNAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(30 BYTE)" name="TITLE"/>
+         <column type="NUMBER" name="REPORTSTO"/>
+         <column type="date" name="BIRTHDATE"/>
+         <column type="date" name="HIREDATE"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-5" author="dukevanleeuwen (generated)">
+      <createTable tableName="GENRE">
+         <column type="NUMBER" name="GENREID">
+            <constraints primaryKeyName="PK_GENRE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-6" author="dukevanleeuwen (generated)">
+      <createTable tableName="INVOICE">
+         <column type="NUMBER" name="INVOICEID">
+            <constraints primaryKeyName="PK_INVOICE" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="CUSTOMERID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="date" name="INVOICEDATE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="VARCHAR2(70 BYTE)" name="BILLINGADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGSTATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCOUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="BILLINGPOSTALCODE"/>
+         <column type="NUMBER(10, 2)" name="TOTAL">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-7" author="dukevanleeuwen (generated)">
+      <createTable tableName="INVOICELINE">
+         <column type="NUMBER" name="INVOICELINEID">
+            <constraints primaryKeyName="PK_INVOICELINE" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="INVOICEID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="TRACKID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER(10, 2)" name="UNITPRICE">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="QUANTITY">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-8" author="dukevanleeuwen (generated)">
+      <createTable tableName="MEDIATYPE">
+         <column type="NUMBER" name="MEDIATYPEID">
+            <constraints primaryKeyName="PK_MEDIATYPE" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-9" author="dukevanleeuwen (generated)">
+      <createTable tableName="PLAYLIST">
+         <column type="NUMBER" name="PLAYLISTID">
+            <constraints primaryKeyName="PK_PLAYLIST" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-10" author="dukevanleeuwen (generated)">
+      <createTable tableName="PLAYLISTTRACK">
+         <column type="NUMBER" name="PLAYLISTID">
+            <constraints primaryKeyName="PK_PLAYLISTTRACK" primaryKey="true"/>
+         </column>
+         <column type="NUMBER" name="TRACKID">
+            <constraints primaryKeyName="PK_PLAYLISTTRACK" primaryKey="true"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045194574-11" author="dukevanleeuwen (generated)">
+      <createTable tableName="TRACK">
+         <column type="NUMBER" name="TRACKID">
+            <constraints primaryKeyName="PK_TRACK" primaryKey="true"/>
+         </column>
+         <column type="VARCHAR2(200 BYTE)" name="NAME">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="ALBUMID"/>
+         <column type="NUMBER" name="MEDIATYPEID">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="GENREID"/>
+         <column type="VARCHAR2(220 BYTE)" name="COMPOSER"/>
+         <column type="NUMBER" name="MILLISECONDS">
+            <constraints nullable="false"/>
+         </column>
+         <column type="NUMBER" name="BYTES"/>
+         <column type="NUMBER(10, 2)" name="UNITPRICE">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+</databaseChangeLog>

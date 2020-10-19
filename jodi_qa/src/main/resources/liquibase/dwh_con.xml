@@ -1,0 +1,112 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+   <changeSet id="1603045247805-1" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_ALBUM">
+         <column type="VARCHAR2(281 BYTE)" name="ALBUM_CODE" remarks="The album code consists of the ARTIST concatenated with | concatenated with TITLE"/>
+         <column type="VARCHAR2(160 BYTE)" name="TITLE"/>
+         <column type="VARCHAR2(120 BYTE)" name="ARTIST"/>
+         <column type="NUMBER" name="ALBUMID"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-2" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_ARTIST">
+         <column type="VARCHAR2(120 BYTE)" name="ARTIST"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-3" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_CUSTOMER">
+         <column type="VARCHAR2(60 BYTE)" name="CUSTOMER_CODE" remarks="The customer code is the customer email."/>
+         <column type="VARCHAR2(40 BYTE)" name="FIRSTNAME"/>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME"/>
+         <column type="VARCHAR2(80 BYTE)" name="COMPANY"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="SUPPORTREP_CODE"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-4" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_EMPLOYEE">
+         <column type="VARCHAR2(60 BYTE)" name="EMPLOYEE_CODE" remarks="The employee code is the email of the employee."/>
+         <column type="VARCHAR2(20 BYTE)" name="LASTNAME"/>
+         <column type="VARCHAR2(20 BYTE)" name="FIRSTNAME"/>
+         <column type="VARCHAR2(30 BYTE)" name="TITLE"/>
+         <column type="VARCHAR2(60 BYTE)" name="REPORTSTO_CODE" remarks="Reportsto code is the email address of the boss."/>
+         <column type="TIMESTAMP(7)" name="BIRTHDATE"/>
+         <column type="TIMESTAMP(7)" name="HIREDATE"/>
+         <column type="VARCHAR2(70 BYTE)" name="ADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="CITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="STATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="COUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="POSTALCODE"/>
+         <column type="VARCHAR2(24 BYTE)" name="PHONE"/>
+         <column type="VARCHAR2(24 BYTE)" name="FAX"/>
+         <column type="VARCHAR2(60 BYTE)" name="EMAIL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-5" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_GENRE">
+         <column type="NUMBER" name="GENREID"/>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-6" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_INVOICE">
+         <column type="VARCHAR2(61 BYTE)" name="INVOICE_CODE" remarks="The invoice code is 'CHIN' concatenated with | then concentenated with invoice id"/>
+         <column type="VARCHAR2(60 BYTE)" name="CUSTOMER_CODE"/>
+         <column type="TIMESTAMP(7)" name="INVOICEDATE"/>
+         <column type="VARCHAR2(70 BYTE)" name="BILLINGADDRESS"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCITY"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGSTATE"/>
+         <column type="VARCHAR2(40 BYTE)" name="BILLINGCOUNTRY"/>
+         <column type="VARCHAR2(10 BYTE)" name="BILLINGPOSTALCODE"/>
+         <column type="NUMBER(10, 2)" name="TOTAL"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-7" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_INVOICELINE">
+         <column type="VARCHAR2(120 BYTE)" name="INVOICE_LINE_CODE" remarks="The invoice line is het invoice code concatenated with | concatenated with invoice line id."/>
+         <column type="VARCHAR2(61 BYTE)" name="INVOICE_CODE" remarks="see Invoice, Invoice Code for details"/>
+         <column type="VARCHAR2(482 BYTE)" name="TRACK_CODE"/>
+         <column type="NUMBER(10, 2)" name="UNITPRICE"/>
+         <column type="NUMBER(32, 0)" name="QUANTITY"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-8" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_MEDIATYPE">
+         <column type="NUMBER(32, 0)" name="MEDIATYPEID"/>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-9" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_PLAYLIST">
+         <column type="VARCHAR2(60 BYTE)" name="PLAYLIST_CODE" remarks="Playlist code is 'CHIN' concatenated with | concatenateed with playlist id"/>
+         <column type="VARCHAR2(120 BYTE)" name="NAME"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-10" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_PLAYLISTTRACK">
+         <column type="VARCHAR2(60 BYTE)" name="PLAYLIST_CODE"/>
+         <column type="VARCHAR2(482 BYTE)" name="TRACK_CODE"/>
+      </createTable>
+   </changeSet>
+   <changeSet id="1603045247805-11" author="dukevanleeuwen (generated)">
+      <createTable tableName="CHIN_TRACK">
+         <column type="VARCHAR2(482 BYTE)" name="TRACK_CODE" remarks="Artist Name | Album Name | Track Name"/>
+         <column type="VARCHAR2(200 BYTE)" name="NAME"/>
+         <column type="VARCHAR2(281 BYTE)" name="ALBUM_CODE"/>
+         <column type="VARCHAR2(120 BYTE)" name="MEDIATYPE"/>
+         <column type="VARCHAR2(120 BYTE)" name="GENRE"/>
+         <column type="VARCHAR2(220 BYTE)" name="COMPOSER"/>
+         <column type="NUMBER(32, 0)" name="MILISECONDS"/>
+         <column type="NUMBER(32, 0)" name="BYTES"/>
+         <column type="NUMBER(10, 2)" name="UNITPRICE"/>
+         <column type="NUMBER" name="TRACKID"/>
+      </createTable>
+   </changeSet>
+</databaseChangeLog>
