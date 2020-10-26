@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="3b63c603fdd3cb2c8c048816e4a5075f7a26d796" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="SEQ_W_INVOICELINE_WID" objectType="SEQUENCE" ownerName="DWH_DMT"   >
+			<n0:source><![CDATA[<SEQUENCE xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>DWH_DMT</SCHEMA>
+   <NAME>SEQ_W_INVOICELINE_WID</NAME>
+   <START_WITH>11525</START_WITH>
+   <INCREMENT>1</INCREMENT>
+   <MINVALUE>1</MINVALUE>
+   <MAXVALUE>9999999999999999999999999999</MAXVALUE>
+   <CACHE>20</CACHE>
+   <SCALE>NOSCALE</SCALE>
+</SEQUENCE>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

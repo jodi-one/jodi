@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="58b31565c3796b9c3113b75709a9435e7bcac4c2" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createOracleRefConstraint objectName="W_INVOICELINE_F_W_ALBUM_D" objectType="REF_CONSTRAINT" ownerName="DWH_DMT"   >
+			<n0:source><![CDATA[ALTER TABLE "DWH_DMT"."W_INVOICELINE_F" ADD CONSTRAINT "W_INVOICELINE_F_W_ALBUM_D" FOREIGN KEY ("INVL_ALBM_WID")
+	  REFERENCES "DWH_DMT"."W_ALBUM_D" ("ROW_WID") ENABLE]]></n0:source>
+		</n0:createOracleRefConstraint>
+	</changeSet>
+</databaseChangeLog>

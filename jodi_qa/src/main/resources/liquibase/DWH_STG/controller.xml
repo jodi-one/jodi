@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <include file="s_da_i_table.xml"/> 
+  <include file="s_da_i_comments.xml"/> 
+  <include file="s_da_o_table.xml"/> 
+  <include file="s_da_o_comments.xml"/> 
+  <include file="s_db_i_table.xml"/> 
+  <include file="s_db_i_comments.xml"/> 
+  <include file="s_db_o_table.xml"/> 
+  <include file="s_db_o_comments.xml"/> 
+  <include file="s_dc_i_table.xml"/> 
+  <include file="s_dc_o_table.xml"/> 
+  <include file="s_fa_i_table.xml"/> 
+  <include file="s_fa_i_comments.xml"/> 
+  <include file="s_fa_o_table.xml"/> 
+  <include file="s_fa_o_comments.xml"/> 
+  <include file="s_mapping_1s_temp_o_table.xml"/> 
+  <include file="s_pv_i_table.xml"/> 
+  <include file="s_pv_o_table.xml"/> 
+  <include file="s_source_2s_oneintf_i_table.xml"/> 
+  <include file="s_vp_i_table.xml"/> 
+  <include file="s_vp_o_table.xml"/> 
+</databaseChangeLog> 

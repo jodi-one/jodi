@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="49644b827692bf30492d1c176319257ea4312e4e" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="JV$DGENRE" objectType="VIEW" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[<VIEW xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>CHINOOK</SCHEMA>
+   <NAME>JV$DGENRE</NAME>
+   <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+   <COL_LIST>
+      <COL_LIST_ITEM>
+         <NAME>JRN_FLAG</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_SUBSCRIBER</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_DATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>GENREID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>NAME</NAME>
+      </COL_LIST_ITEM>
+   </COL_LIST>
+   <SUBQUERY>select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.GENREID		   GENREID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.GENREID	   GENREID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$GENRE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.GENREID
+	)    JRN,
+	CHINOOK.GENRE    TARG
+where	JRN.GENREID	= TARG.GENREID (+)</SUBQUERY>
+</VIEW>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

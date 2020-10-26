@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <include file="s_album_i_table.xml"/> 
+  <include file="s_album_i_comments.xml"/> 
+  <include file="s_artist_i_table.xml"/> 
+  <include file="s_customer_i_table.xml"/> 
+  <include file="s_customer_i_comments.xml"/> 
+  <include file="s_employee_i_table.xml"/> 
+  <include file="s_employee_i_comments.xml"/> 
+  <include file="s_genre_i_table.xml"/> 
+  <include file="s_invoiceline_i_table.xml"/> 
+  <include file="s_invoiceline_i_comments.xml"/> 
+  <include file="s_invoice_i_table.xml"/> 
+  <include file="s_invoice_i_comments.xml"/> 
+  <include file="s_mediatype_i_table.xml"/> 
+  <include file="s_playlisttrack_i_table.xml"/> 
+  <include file="s_playlist_i_table.xml"/> 
+  <include file="s_playlist_i_comments.xml"/> 
+  <include file="s_track_i_table.xml"/> 
+  <include file="s_track_i_comments.xml"/> 
+</databaseChangeLog> 

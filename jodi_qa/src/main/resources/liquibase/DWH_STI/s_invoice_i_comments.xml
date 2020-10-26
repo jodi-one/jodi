@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="e7da3b691ada21e2be5911a9c540b8171d90405b" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="S_INVOICE_I" objectType="COMMENT" ownerName="DWH_STI" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON COLUMN "DWH_STI"."S_INVOICE_I"."INVE_CODE" IS 'The invoice code is ''''CHIN'''' concatenated with | then concentenated with invoice id';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

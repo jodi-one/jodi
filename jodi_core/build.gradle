@@ -27,7 +27,6 @@ buildscript {
         classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
         classpath 'com.massfords:jaxb-visitor:1.13'
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
-        classpath "org.liquibase:liquibase-gradle-plugin:2.0.3"
     }
 }
 
@@ -55,6 +54,64 @@ repositories {
     jcenter()
 }
 
+ext {
+    versionProperties = file("../jodi_base/src/main/resources/version.properties")
+    dayFormat = 'MM/dd/yyy'
+    timeFormat = 'H:mm:ss z'
+    odiLibPathVariable = 'ODI_LIB_PATH'
+}
+
+class VersionInfo {
+    Integer major
+    Integer minor
+    Integer patch
+    Integer patch2
+    Integer patch3
+    String buildDay
+    String buildTime
+    Integer buildNumber
+    Boolean isRelease
+
+    VersionInfo(Integer major, Integer minor, Integer patch, Integer patch2, Integer patch3, Integer buildNumber, String buildDay, String buildTime, Boolean isRelease) {
+        this.major = major
+        this.minor = minor
+        this.patch = patch
+        this.patch2 = patch2
+        this.patch3 = patch3
+        this.buildNumber = buildNumber
+        this.isRelease = isRelease
+        this.buildDay = buildDay
+        this.buildTime = buildTime
+    }
+
+    String toString() {
+        "$major.$minor.$patch-$patch2-$patch3-$buildNumber${isRelease ? '' : '-SNAPSHOT'}"
+    }
+}
+
+VersionInfo readVersionInfo(propertiesFile) {
+    //println 'Using ' + propertiesFile
+    if (!propertiesFile.exists()) {
+        throw new GradleException("Version information properties file does not exist: $versionProperties.canonicalPath")
+    }
+
+    Properties props = new Properties()
+
+    propertiesFile.withInputStream { it ->
+        props.load(it)
+    }
+
+    new VersionInfo(props.'product.version.major'.toInteger(),
+            props.'product.version.minor'.toInteger(),
+            props.'product.version.patch'.toInteger(),
+            props.'product.version.patch2'.toInteger(),
+            props.'product.version.patch3'.toInteger(),
+            props.'build.number'.toInteger(),
+            props.'build.date',
+            props.'build.time',
+            props.'build.isRelease'.toBoolean())
+}
+
 // Load version info during configuration phase
 version = readVersionInfo(versionProperties)
 group = "one.jodi"
@@ -62,13 +119,14 @@ group = "one.jodi"
 // common libraries that should exist in each projects independently
 dependencies {
 
-    provided group: 'one.jodi', name: 'jodi_odi', version: '12.2.1.3.2.6'
+    implementation 'one.jodi:jodi_odi:12.2.1.3.2.6'
+    implementation project (':jodi_base')
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'com.sun.activation:javax.activation:1.2.0'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.validation:validation-api:1.0.0.GA'
-    provided group: 'com.oracle', name: 'ojdbc8', version: '19.3'
+    compileOnly     'com.oracle:ojdbc8:19.3'
 
     implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
     implementation  'org.apache.logging.log4j:log4j-core:2.9.1'
@@ -83,8 +141,9 @@ dependencies {
         exclude module: 'commons-logging'
         exclude module: 'commons-beanutils'
     }
+   // implementation project(':jodi_base')
 
-    provided fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
+    compileOnly fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
 
     testImplementation "org.hamcrest:hamcrest-all:1.3"
     testImplementation "junit:junit:4.12"
@@ -288,9 +347,9 @@ dependencies {
     implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
     implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
     implementation 'javax.activation:activation:1.1.1'
-//    compile project(':jodi_base')
-//    compile project(path: ':jodi_base', configuration: 'testArtifacts')
-//    compile project(':jodi_base').sourceSets.test.output
+    implementation project(':jodi_base')
+    testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
+    testImplementation project(':jodi_base').sourceSets.test.output
     // include ODI 12.2 (in implementation context for Eclipse or provided for build)
 //	implementation project(':jodi_model')
 

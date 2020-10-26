@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="190f50a8fb01756133ac44898fccc11a5febe5f1" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="JV$DINVOICELINE" objectType="VIEW" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[<VIEW xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>CHINOOK</SCHEMA>
+   <NAME>JV$DINVOICELINE</NAME>
+   <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+   <COL_LIST>
+      <COL_LIST_ITEM>
+         <NAME>JRN_FLAG</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_SUBSCRIBER</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_DATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>INVOICELINEID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>INVOICEID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>TRACKID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>UNITPRICE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>QUANTITY</NAME>
+      </COL_LIST_ITEM>
+   </COL_LIST>
+   <SUBQUERY>select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICELINEID		   INVOICELINEID,
+	TARG.INVOICEID		   INVOICEID,
+	TARG.TRACKID		   TRACKID,
+	TARG.UNITPRICE		   UNITPRICE,
+	TARG.QUANTITY		   QUANTITY
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICELINEID	   INVOICELINEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICELINE    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.INVOICELINEID
+	)    JRN,
+	CHINOOK.INVOICELINE    TARG
+where	JRN.INVOICELINEID	= TARG.INVOICELINEID (+)</SUBQUERY>
+</VIEW>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

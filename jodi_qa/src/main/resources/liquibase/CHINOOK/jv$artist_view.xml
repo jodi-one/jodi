@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="9d9eadbd9e9f7555975fbde1e984d3bdb8d673fc" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="JV$ARTIST" objectType="VIEW" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[<VIEW xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>CHINOOK</SCHEMA>
+   <NAME>JV$ARTIST</NAME>
+   <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+   <COL_LIST>
+      <COL_LIST_ITEM>
+         <NAME>JRN_FLAG</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_SUBSCRIBER</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_DATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>ARTISTID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>NAME</NAME>
+      </COL_LIST_ITEM>
+   </COL_LIST>
+   <SUBQUERY>select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.ARTISTID		   ARTISTID,
+	TARG.NAME		   NAME
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.ARTISTID	   ARTISTID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$ARTIST    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.ARTISTID
+	)    JRN,
+	CHINOOK.ARTIST    TARG
+where	JRN.ARTISTID	= TARG.ARTISTID (+)</SUBQUERY>
+</VIEW>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

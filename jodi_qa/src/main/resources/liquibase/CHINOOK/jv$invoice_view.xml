@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="4886bcddec274decc7860b5cf3344edd68a2c8b0" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="JV$INVOICE" objectType="VIEW" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[<VIEW xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>CHINOOK</SCHEMA>
+   <NAME>JV$INVOICE</NAME>
+   <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+   <COL_LIST>
+      <COL_LIST_ITEM>
+         <NAME>JRN_FLAG</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_SUBSCRIBER</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_DATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>INVOICEID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>CUSTOMERID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>INVOICEDATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>BILLINGADDRESS</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>BILLINGCITY</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>BILLINGSTATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>BILLINGCOUNTRY</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>BILLINGPOSTALCODE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>TOTAL</NAME>
+      </COL_LIST_ITEM>
+   </COL_LIST>
+   <SUBQUERY>select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.INVOICEID		   INVOICEID,
+	TARG.CUSTOMERID		   CUSTOMERID,
+	TARG.INVOICEDATE		   INVOICEDATE,
+	TARG.BILLINGADDRESS		   BILLINGADDRESS,
+	TARG.BILLINGCITY		   BILLINGCITY,
+	TARG.BILLINGSTATE		   BILLINGSTATE,
+	TARG.BILLINGCOUNTRY		   BILLINGCOUNTRY,
+	TARG.BILLINGPOSTALCODE		   BILLINGPOSTALCODE,
+	TARG.TOTAL		   TOTAL
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.INVOICEID	   INVOICEID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$INVOICE    L
+		where	L.JRN_CONSUMED = '1'
+		group by	L.JRN_SUBSCRIBER,
+			L.INVOICEID
+	)    JRN,
+	CHINOOK.INVOICE    TARG
+where	JRN.INVOICEID	= TARG.INVOICEID (+)</SUBQUERY>
+</VIEW>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

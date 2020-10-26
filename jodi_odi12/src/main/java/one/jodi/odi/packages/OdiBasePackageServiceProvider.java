@@ -233,7 +233,7 @@ public abstract class OdiBasePackageServiceProvider<T extends IOdiEntity, S exte
         try {
             boolean raiseErrorOnFailurePackage = false;
             removePackages(Arrays.asList(jodiPackage), raiseErrorOnFailurePackage);
-        } catch (IllegalArgumentException | org.springframework.dao.DataAccessException e) {
+        } catch (IllegalArgumentException e) {
             logger.info("Cannot delete packages: " + e.getMessage());
         }
 

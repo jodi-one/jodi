@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="e415267fe962a12556ec2bbb73a7d08b3a40b3ac" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="S_DC_I" objectType="TABLE" ownerName="DWH_STG"   >
+			<n0:source><![CDATA[<TABLE xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>DWH_STG</SCHEMA>
+   <NAME>S_DC_I</NAME>
+   <RELATIONAL_TABLE>
+      <COL_LIST>
+         <COL_LIST_ITEM>
+            <NAME>COL_1</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>10</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>COL_2</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+            <PRECISION>10</PRECISION>
+            <SCALE>0</SCALE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>COL_3</NAME>
+            <DATATYPE>TIMESTAMP</DATATYPE>
+            <SCALE>9</SCALE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_CHAR_VALUE_0</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>10</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_CHAR_VALUE_1</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>10</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_DT_VALUE_0</NAME>
+            <DATATYPE>DATE</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_DT_VALUE_1</NAME>
+            <DATATYPE>DATE</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_NR_VALUE_0</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+            <PRECISION>10</PRECISION>
+            <SCALE>0</SCALE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>AGE_GROUP_DYN_NR_VALUE_1</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+            <PRECISION>10</PRECISION>
+            <SCALE>0</SCALE>
+         </COL_LIST_ITEM>
+      </COL_LIST>
+      <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+      <PHYSICAL_PROPERTIES>
+         <HEAP_TABLE>
+            <SEGMENT_ATTRIBUTES>
+               <SEGMENT_CREATION_DEFERRED></SEGMENT_CREATION_DEFERRED>
+               <PCTFREE>10</PCTFREE>
+               <PCTUSED>40</PCTUSED>
+               <INITRANS>10</INITRANS>
+               <MAXTRANS>255</MAXTRANS>
+               <TABLESPACE>DATA</TABLESPACE>
+               <LOGGING>Y</LOGGING>
+            </SEGMENT_ATTRIBUTES>
+            <COMPRESS>N</COMPRESS>
+         </HEAP_TABLE>
+      </PHYSICAL_PROPERTIES>
+   </RELATIONAL_TABLE>
+</TABLE>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

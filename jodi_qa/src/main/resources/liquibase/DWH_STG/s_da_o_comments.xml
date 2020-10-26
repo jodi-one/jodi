@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="151fbd3b3d6dcf0dbb7f186c8e7e222fe2bbf876" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="S_DA_O" objectType="COMMENT" ownerName="DWH_STG" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON TABLE "DWH_STG"."S_DA_O"  IS 'Dimension A staging out';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="bcf8fd1b4829ab5495ffd6a7e8c0ea993a9e549b" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createOracleTrigger objectName="T$ALBUM" objectType="TRIGGER" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE TRIGGER "CHINOOK"."T$ALBUM" 
+	after insert or update or delete on CHINOOK.ALBUM
+	for each row
+	declare
+		V_FLAG	VARCHAR(1);
+		V_ALBUMID	NUMBER;
+	begin
+		if inserting then
+			V_ALBUMID := :new.ALBUMID;
+			V_FLAG := 'I';
+		end if;
+
+		if updating then
+			V_ALBUMID := :new.ALBUMID;
+			V_FLAG := 'I';
+		end if;
+
+		if deleting then
+			V_ALBUMID := :old.ALBUMID;
+			V_FLAG := 'D';
+		end if;
+
+		insert into CHINOOK.J$ALBUM
+		(
+			JRN_SUBSCRIBER,
+			JRN_CONSUMED,
+			JRN_FLAG,
+			JRN_DATE,
+			ALBUMID
+		)
+		select	JRN_SUBSCRIBER,
+			'0',
+			V_FLAG,
+			sysdate,
+			V_ALBUMID
+		from	CHINOOK.SNP_SUBSCRIBERS
+		where	JRN_TNAME = 'CHINOOK.ALBUM'
+		/* The following line can be uncommented for symetric replication */
+		/* and	upper(USER) <> upper('CHINOOK') */
+		;
+	end;
+
+
+//
+ALTER TRIGGER "CHINOOK"."T$ALBUM" ENABLE;]]></n0:source>
+		</n0:createOracleTrigger>
+	</changeSet>
+</databaseChangeLog>

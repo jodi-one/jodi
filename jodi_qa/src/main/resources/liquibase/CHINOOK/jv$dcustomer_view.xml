@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="5c08667466caff948f4c312707ec2b28cf89df22" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="JV$DCUSTOMER" objectType="VIEW" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[<VIEW xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>CHINOOK</SCHEMA>
+   <NAME>JV$DCUSTOMER</NAME>
+   <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+   <COL_LIST>
+      <COL_LIST_ITEM>
+         <NAME>JRN_FLAG</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_SUBSCRIBER</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>JRN_DATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>CUSTOMERID</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>FIRSTNAME</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>LASTNAME</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>COMPANY</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>ADDRESS</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>CITY</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>STATE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>COUNTRY</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>POSTALCODE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>PHONE</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>FAX</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>EMAIL</NAME>
+      </COL_LIST_ITEM>
+      <COL_LIST_ITEM>
+         <NAME>SUPPORTREPID</NAME>
+      </COL_LIST_ITEM>
+   </COL_LIST>
+   <SUBQUERY>select 	decode(TARG.ROWID, null, 'D', 'I')	   JRN_FLAG,
+	JRN.JRN_SUBSCRIBER		   JRN_SUBSCRIBER,
+	JRN.JRN_DATE		   JRN_DATE,
+	JRN.CUSTOMERID		   CUSTOMERID,
+	TARG.FIRSTNAME		   FIRSTNAME,
+	TARG.LASTNAME		   LASTNAME,
+	TARG.COMPANY		   COMPANY,
+	TARG.ADDRESS		   ADDRESS,
+	TARG.CITY		   CITY,
+	TARG.STATE		   STATE,
+	TARG.COUNTRY		   COUNTRY,
+	TARG.POSTALCODE		   POSTALCODE,
+	TARG.PHONE		   PHONE,
+	TARG.FAX		   FAX,
+	TARG.EMAIL		   EMAIL,
+	TARG.SUPPORTREPID		   SUPPORTREPID
+from	(
+		select	L.JRN_SUBSCRIBER	   JRN_SUBSCRIBER,
+			L.CUSTOMERID	   CUSTOMERID,
+			max(L.JRN_DATE)	   JRN_DATE
+		from	CHINOOK.J$CUSTOMER    L
+		group by 	L.JRN_SUBSCRIBER,
+			L.CUSTOMERID
+	)    JRN,
+	CHINOOK.CUSTOMER    TARG
+where	JRN.CUSTOMERID	= TARG.CUSTOMERID (+)</SUBQUERY>
+</VIEW>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

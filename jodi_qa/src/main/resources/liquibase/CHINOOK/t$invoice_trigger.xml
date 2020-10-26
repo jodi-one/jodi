@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="f065a1bab82db7f52741abc77f775df2bbbd9604" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createOracleTrigger objectName="T$INVOICE" objectType="TRIGGER" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE TRIGGER "CHINOOK"."T$INVOICE" 
+	after insert or update or delete on CHINOOK.INVOICE
+	for each row
+	declare
+		V_FLAG	VARCHAR(1);
+		V_INVOICEID	NUMBER;
+	begin
+		if inserting then
+			V_INVOICEID := :new.INVOICEID;
+			V_FLAG := 'I';
+		end if;
+
+		if updating then
+			V_INVOICEID := :new.INVOICEID;
+			V_FLAG := 'I';
+		end if;
+
+		if deleting then
+			V_INVOICEID := :old.INVOICEID;
+			V_FLAG := 'D';
+		end if;
+
+		insert into CHINOOK.J$INVOICE
+		(
+			JRN_SUBSCRIBER,
+			JRN_CONSUMED,
+			JRN_FLAG,
+			JRN_DATE,
+			INVOICEID
+		)
+		select	JRN_SUBSCRIBER,
+			'0',
+			V_FLAG,
+			sysdate,
+			V_INVOICEID
+		from	CHINOOK.SNP_SUBSCRIBERS
+		where	JRN_TNAME = 'CHINOOK.INVOICE'
+		/* The following line can be uncommented for symetric replication */
+		/* and	upper(USER) <> upper('CHINOOK') */
+		;
+	end;
+
+
+//
+ALTER TRIGGER "CHINOOK"."T$INVOICE" ENABLE;]]></n0:source>
+		</n0:createOracleTrigger>
+	</changeSet>
+</databaseChangeLog>

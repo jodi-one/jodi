@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="28b3503f559e2c6757f8657e025fd8ec39b1189c" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="S_VP_O" objectType="TABLE" ownerName="DWH_STG"   >
+			<n0:source><![CDATA[<TABLE xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>DWH_STG</SCHEMA>
+   <NAME>S_VP_O</NAME>
+   <RELATIONAL_TABLE>
+      <COL_LIST>
+         <COL_LIST_ITEM>
+            <NAME>YEAR</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>Q1_SALES</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>Q2_SALES</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>Q3_SALES</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>Q4_SALES</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+      </COL_LIST>
+      <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+      <PHYSICAL_PROPERTIES>
+         <HEAP_TABLE>
+            <SEGMENT_ATTRIBUTES>
+               <SEGMENT_CREATION_DEFERRED></SEGMENT_CREATION_DEFERRED>
+               <PCTFREE>10</PCTFREE>
+               <PCTUSED>40</PCTUSED>
+               <INITRANS>10</INITRANS>
+               <MAXTRANS>255</MAXTRANS>
+               <TABLESPACE>DATA</TABLESPACE>
+               <LOGGING>Y</LOGGING>
+            </SEGMENT_ATTRIBUTES>
+            <COMPRESS>N</COMPRESS>
+         </HEAP_TABLE>
+      </PHYSICAL_PROPERTIES>
+   </RELATIONAL_TABLE>
+</TABLE>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

@@ -12,8 +12,9 @@ sourceSets {
 }
 
 dependencies {
-//    implementation project(':jodi_core')
-//    implementation project(':jodi_odi12')
+    implementation project(':jodi_base')
+    implementation project(':jodi_core')
+    implementation project(':jodi_odi12')
 //    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
 //    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
 //    compile project(':jodi_base').sourceSets.test.output

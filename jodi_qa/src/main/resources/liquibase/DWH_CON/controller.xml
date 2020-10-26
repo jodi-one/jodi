@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <include file="chin_customer_table.xml"/> 
+  <include file="chin_customer_comments.xml"/> 
+  <include file="chin_album_table.xml"/> 
+  <include file="chin_album_comments.xml"/> 
+  <include file="chin_artist_table.xml"/> 
+  <include file="chin_employee_table.xml"/> 
+  <include file="chin_employee_comments.xml"/> 
+  <include file="chin_genre_table.xml"/> 
+  <include file="chin_invoice_table.xml"/> 
+  <include file="chin_invoice_comments.xml"/> 
+  <include file="chin_invoiceline_table.xml"/> 
+  <include file="chin_invoiceline_comments.xml"/> 
+  <include file="chin_mediatype_table.xml"/> 
+  <include file="chin_playlist_table.xml"/> 
+  <include file="chin_playlist_comments.xml"/> 
+  <include file="chin_playlisttrack_table.xml"/> 
+  <include file="chin_track_table.xml"/> 
+  <include file="chin_track_comments.xml"/> 
+</databaseChangeLog> 

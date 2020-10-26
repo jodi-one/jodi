@@ -1,4 +1,4 @@
-mainClassName = "one.jodi.bootstrap.JodiController"
+//mainClassName = "one.jodi.bootstrap.JodiController"
 
 // Jar task configuration
 jar {
@@ -9,15 +9,19 @@ jar {
 
 dependencies {
     // include ODI 12.2 (in compile context for Eclipse or provided for build)
- //   compile project(':jodi_core')
-//	compile project(':jodi_model')
-//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+    compileOnly 'one.jodi:jodi_odi:12.2.1.3.2.6'
+    implementation project(':jodi_base')
+    implementation project(':jodi_core')
+///    implementation project(':jodi_model')
+//    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
     testImplementation "xmlunit:xmlunit:1.6"
-//    compile project(path: ':jodi_base', configuration: 'testArtifacts')
+    testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
 //    compile project(':jodi_core')
-//    compile project(':jodi_base').sourceSets.test.output
-//    compile project(':jodi_core').sourceSets.test.output
-//	testImplementation project(':jodi_model')
+    testImplementation project(':jodi_base').sourceSets.test.output
+    testImplementation project(':jodi_core').sourceSets.test.output
+    testImplementation project(':jodi_core')
+    testImplementation project(':jodi_base')
+    testImplementation project(':jodi_model')
     provided 'org.codehaus.groovy:groovy-all:2.4.14'
 }
 

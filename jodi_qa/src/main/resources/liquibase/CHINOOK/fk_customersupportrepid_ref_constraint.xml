@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="2a0c874d492f6fa781f17d7b2bb23dc1b65e6fad" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createOracleRefConstraint objectName="FK_CUSTOMERSUPPORTREPID" objectType="REF_CONSTRAINT" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[ALTER TABLE "CHINOOK"."CUSTOMER" ADD CONSTRAINT "FK_CUSTOMERSUPPORTREPID" FOREIGN KEY ("SUPPORTREPID")
+	  REFERENCES "CHINOOK"."EMPLOYEE" ("EMPLOYEEID") ENABLE;]]></n0:source>
+		</n0:createOracleRefConstraint>
+	</changeSet>
+</databaseChangeLog>

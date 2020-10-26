@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="814c87027007c6436e3f0e98de9b8e01e8242de2" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="S_ALBUM_O" objectType="COMMENT" ownerName="DWH_STO" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON COLUMN "DWH_STO"."S_ALBUM_O"."ALBM_CODE" IS 'The album code consists of the ARTIST concatenated with | concatenated with TITLE';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

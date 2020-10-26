@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="74e06db7a4656364f192cc26875fbc411b74f7d8" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="W_DA_D" objectType="COMMENT" ownerName="DWH_DMT" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON TABLE "DWH_DMT"."W_DA_D"  IS 'Datamart slowly changing dimension A';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

@@ -1,6 +1,5 @@
 package one.jodi.qa.test;
 
-
 import one.jodi.base.ListAppender;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.base.exception.UnRecoverableException;

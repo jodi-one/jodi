@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="9a6512d99937737b6e500620bb0e93fad7752124" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="CHIN_EMPLOYEE" objectType="COMMENT" ownerName="DWH_CON" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON COLUMN "DWH_CON"."CHIN_EMPLOYEE"."EMPLOYEE_CODE" IS 'The employee code is the email of the employee.';
+   COMMENT ON COLUMN "DWH_CON"."CHIN_EMPLOYEE"."REPORTSTO_CODE" IS 'Reportsto code is the email address of the boss.';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

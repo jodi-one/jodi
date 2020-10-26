@@ -25,19 +25,24 @@ sourceSets {
 repositories { mavenCentral() }
 
 dependencies {
-//    compile project(':jodi_odi12')
-//    testCompile project(':jodi_odi12')
-//    testCompile project(path: ':jodi_base', configuration: 'testArtifacts')
-//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-//    compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    //testCompile project(':jodi_core').sourceSets.test.output
+    implementation project(':jodi_base')
+    implementation project(':jodi_core')
+    implementation project(':jodi_odi12')
+
+    testImplementation project(':jodi_base')
+    testImplementation project(':jodi_core')
+    testImplementation project(':jodi_odi12')
+  //  testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
+//    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
+//j   implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
+    testImplementation project(':jodi_core').sourceSets.test.output
 
     //JAXB xjc plugin
     jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
 
     testCompile "xmlunit:xmlunit:1.6"
 
-    //testCompile project(path: ':jodi_core', configuration: 'xmlExtensions')
+    testImplementation project(path: ':jodi_core', configuration: 'xmlExtensions')
 }
 
 task jaxb_task() {

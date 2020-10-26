@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="154384185f418d4cf45a1536bb81cceb4bc52918" author="Generated" failOnError="false" context="legacy"   >
+		<n0:runOracleScript objectName="CHIN_PLAYLIST" objectType="COMMENT" ownerName="DWH_CON" sourceType="STRING"  >
+			<n0:source><![CDATA[
+   COMMENT ON COLUMN "DWH_CON"."CHIN_PLAYLIST"."PLAYLIST_CODE" IS 'Playlist code is ''''CHIN'''' concatenated with | concatenateed with playlist id';]]></n0:source>
+		</n0:runOracleScript>
+	</changeSet>
+</databaseChangeLog>

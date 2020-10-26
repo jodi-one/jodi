@@ -1,0 +1,315 @@
+--------------------------------------------------------------------------------------------------------------
+-- Generated with liquibase.groovy at 2020/10/26/18:23:55
+-- groovy liquibase.groovy  genschema -context legacy -debug
+-- logFile written to /opt/git/jodi/jodi_qa/./src/main/resources/liquibase/genschema_log.txt
+-- urlDev DB202007280549_high --this is standard connection
+-- urlPrd mx1-scan:1521/ --this is used for diff as -url param
+--------------------------------------------------------------------------------------------------------------
+
+
+connect DWH_CON_CHINOOK/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config2820869037591443701
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                           94 ms
+[Type - TYPE_BODY]:                           42 ms
+[Type - SEQUENCE]:                            36 ms
+[Type - DIRECTORY]:                           35 ms
+[Type - CLUSTER]:                             68 ms
+[Type - TABLE]:                              634 ms
+[Type - MATERIALIZED_VIEW_LOG]:               41 ms
+[Type - MATERIALIZED_VIEW]:                   27 ms
+[Type - VIEW]:                                51 ms
+[Type - REF_CONSTRAINT]:                      40 ms
+[Type - DIMENSION]:                           45 ms
+[Type - FUNCTION]:                            47 ms
+[Type - PROCEDURE]:                           45 ms
+[Type - PACKAGE_SPEC]:                        60 ms
+[Type - DB_LINK]:                             44 ms
+[Type - SYNONYM]:                             45 ms
+[Type - INDEX]:                             1124 ms
+[Type - TRIGGER]:                             52 ms
+[Type - PACKAGE_BODY]:                        39 ms
+[Type - JOB]:                                 42 ms
+[Method loadCaptureTable]:                  2612 ms
+[Method parseCaptureTableRecords]:          9725 ms
+[Method sortCaptureTable]:                    79 ms
+[Method createExportChangeLogs]:               1 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_CON/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config4943071998653539350
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                           93 ms
+[Type - TYPE_BODY]:                           45 ms
+[Type - SEQUENCE]:                            41 ms
+[Type - DIRECTORY]:                           43 ms
+[Type - CLUSTER]:                             46 ms
+[Type - TABLE]:                              633 ms
+[Type - MATERIALIZED_VIEW_LOG]:               48 ms
+[Type - MATERIALIZED_VIEW]:                   27 ms
+[Type - VIEW]:                                52 ms
+[Type - REF_CONSTRAINT]:                      38 ms
+[Type - DIMENSION]:                           37 ms
+[Type - FUNCTION]:                            54 ms
+[Type - PROCEDURE]:                           58 ms
+[Type - PACKAGE_SPEC]:                        57 ms
+[Type - DB_LINK]:                             45 ms
+[Type - SYNONYM]:                             46 ms
+[Type - INDEX]:                               52 ms
+[Type - TRIGGER]:                             49 ms
+[Type - PACKAGE_BODY]:                        42 ms
+[Type - JOB]:                                 48 ms
+[Method loadCaptureTable]:                  1555 ms
+[Method parseCaptureTableRecords]:          7780 ms
+[Method sortCaptureTable]:                    71 ms
+[Method createExportChangeLogs]:               1 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_DMT/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config5210362643315776573
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                          103 ms
+[Type - TYPE_BODY]:                           50 ms
+[Type - SEQUENCE]:                           114 ms
+[Type - DIRECTORY]:                           45 ms
+[Type - CLUSTER]:                             55 ms
+[Type - TABLE]:                              818 ms
+[Type - MATERIALIZED_VIEW_LOG]:               41 ms
+[Type - MATERIALIZED_VIEW]:                   66 ms
+[Type - VIEW]:                                51 ms
+[Type - REF_CONSTRAINT]:                     277 ms
+[Type - DIMENSION]:                           36 ms
+[Type - FUNCTION]:                            48 ms
+[Type - PROCEDURE]:                           53 ms
+[Type - PACKAGE_SPEC]:                       240 ms
+[Type - DB_LINK]:                             39 ms
+[Type - SYNONYM]:                             49 ms
+[Type - INDEX]:                             1346 ms
+[Type - TRIGGER]:                             48 ms
+[Type - PACKAGE_BODY]:                        46 ms
+[Type - JOB]:                                 60 ms
+[Method loadCaptureTable]:                  3585 ms
+[Method parseCaptureTableRecords]:         20105 ms
+[Method sortCaptureTable]:                    77 ms
+[Method createExportChangeLogs]:               1 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_SRC/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config4556815105277718099
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                          103 ms
+[Type - TYPE_BODY]:                           47 ms
+[Type - SEQUENCE]:                            39 ms
+[Type - DIRECTORY]:                           44 ms
+[Type - CLUSTER]:                             66 ms
+[Type - TABLE]:                              390 ms
+[Type - MATERIALIZED_VIEW_LOG]:              300 ms
+[Type - MATERIALIZED_VIEW]:                   38 ms
+[Type - VIEW]:                                49 ms
+[Type - REF_CONSTRAINT]:                      40 ms
+[Type - DIMENSION]:                           37 ms
+[Type - FUNCTION]:                            54 ms
+[Type - PROCEDURE]:                           52 ms
+[Type - PACKAGE_SPEC]:                        52 ms
+[Type - DB_LINK]:                             45 ms
+[Type - SYNONYM]:                             51 ms
+[Type - INDEX]:                               45 ms
+[Type - TRIGGER]:                             42 ms
+[Type - PACKAGE_BODY]:                        45 ms
+[Type - JOB]:                                 45 ms
+[Method loadCaptureTable]:                  1585 ms
+[Method parseCaptureTableRecords]:          3729 ms
+[Method sortCaptureTable]:                   193 ms
+[Method createExportChangeLogs]:               1 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_STG/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config8944931819222039420
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                           94 ms
+[Type - TYPE_BODY]:                           54 ms
+[Type - SEQUENCE]:                            45 ms
+[Type - DIRECTORY]:                           39 ms
+[Type - CLUSTER]:                             61 ms
+[Type - TABLE]:                              699 ms
+[Type - MATERIALIZED_VIEW_LOG]:               44 ms
+[Type - MATERIALIZED_VIEW]:                   28 ms
+[Type - VIEW]:                                51 ms
+[Type - REF_CONSTRAINT]:                      38 ms
+[Type - DIMENSION]:                           35 ms
+[Type - FUNCTION]:                            48 ms
+[Type - PROCEDURE]:                           46 ms
+[Type - PACKAGE_SPEC]:                        49 ms
+[Type - DB_LINK]:                             36 ms
+[Type - SYNONYM]:                             42 ms
+[Type - INDEX]:                               43 ms
+[Type - TRIGGER]:                             43 ms
+[Type - PACKAGE_BODY]:                        42 ms
+[Type - JOB]:                                 42 ms
+[Method loadCaptureTable]:                  1591 ms
+[Method parseCaptureTableRecords]:          9196 ms
+[Method sortCaptureTable]:                    91 ms
+[Method createExportChangeLogs]:               0 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_STI/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config8782206789842162139
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                           95 ms
+[Type - TYPE_BODY]:                           52 ms
+[Type - SEQUENCE]:                            38 ms
+[Type - DIRECTORY]:                           37 ms
+[Type - CLUSTER]:                             48 ms
+[Type - TABLE]:                             1025 ms
+[Type - MATERIALIZED_VIEW_LOG]:               46 ms
+[Type - MATERIALIZED_VIEW]:                   28 ms
+[Type - VIEW]:                                50 ms
+[Type - REF_CONSTRAINT]:                      40 ms
+[Type - DIMENSION]:                           36 ms
+[Type - FUNCTION]:                            55 ms
+[Type - PROCEDURE]:                           50 ms
+[Type - PACKAGE_SPEC]:                        53 ms
+[Type - DB_LINK]:                            108 ms
+[Type - SYNONYM]:                             58 ms
+[Type - INDEX]:                               44 ms
+[Type - TRIGGER]:                             44 ms
+[Type - PACKAGE_BODY]:                        44 ms
+[Type - JOB]:                                 44 ms
+[Method loadCaptureTable]:                  1998 ms
+[Method parseCaptureTableRecords]:          7229 ms
+[Method sortCaptureTable]:                    95 ms
+[Method createExportChangeLogs]:               2 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;
+
+
+connect DWH_STO/LETMEIN@DB202007280549_high
+
+
+Operation is successfully completed.
+Operation is successfully completed.
+
+
+Using temp directory:/tmp/oracle_cloud_config5968660440018718897
+
+
+[{log=false, replace=false, type=, password=, enable=true, context=legacy, grants=false, silent=false, debug=true, runalways=false, synonyms=false, emit_schema=false, count=, changelog=, label=, runonchange=false, url=, command=genschema, fail=false, help=, filename=, report=true, name=, privs=true, user=}]
+[Type - TYPE_SPEC]:                           89 ms
+[Type - TYPE_BODY]:                           48 ms
+[Type - SEQUENCE]:                            41 ms
+[Type - DIRECTORY]:                           39 ms
+[Type - CLUSTER]:                             49 ms
+[Type - TABLE]:                              568 ms
+[Type - MATERIALIZED_VIEW_LOG]:               37 ms
+[Type - MATERIALIZED_VIEW]:                   28 ms
+[Type - VIEW]:                                46 ms
+[Type - REF_CONSTRAINT]:                      38 ms
+[Type - DIMENSION]:                           33 ms
+[Type - FUNCTION]:                            46 ms
+[Type - PROCEDURE]:                           45 ms
+[Type - PACKAGE_SPEC]:                        45 ms
+[Type - DB_LINK]:                             36 ms
+[Type - SYNONYM]:                             42 ms
+[Type - INDEX]:                               44 ms
+[Type - TRIGGER]:                             42 ms
+[Type - PACKAGE_BODY]:                        38 ms
+[Type - JOB]:                                 40 ms
+[Method loadCaptureTable]:                  1395 ms
+[Method parseCaptureTableRecords]:          8561 ms
+[Method sortCaptureTable]:                    97 ms
+[Method createExportChangeLogs]:               1 ms
+
+
+Export Flags Used:
+
+Export Grants		false
+Export Synonyms		false
+commit;

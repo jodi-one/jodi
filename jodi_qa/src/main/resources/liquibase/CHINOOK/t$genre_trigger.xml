@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="a6b121492d67df94842409d2094eae345a209bea" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createOracleTrigger objectName="T$GENRE" objectType="TRIGGER" ownerName="CHINOOK"   >
+			<n0:source><![CDATA[CREATE OR REPLACE EDITIONABLE TRIGGER "CHINOOK"."T$GENRE" 
+	after insert or update or delete on CHINOOK.GENRE
+	for each row
+	declare
+		V_FLAG	VARCHAR(1);
+		V_GENREID	NUMBER;
+	begin
+		if inserting then
+			V_GENREID := :new.GENREID;
+			V_FLAG := 'I';
+		end if;
+
+		if updating then
+			V_GENREID := :new.GENREID;
+			V_FLAG := 'I';
+		end if;
+
+		if deleting then
+			V_GENREID := :old.GENREID;
+			V_FLAG := 'D';
+		end if;
+
+		insert into CHINOOK.J$GENRE
+		(
+			JRN_SUBSCRIBER,
+			JRN_CONSUMED,
+			JRN_FLAG,
+			JRN_DATE,
+			GENREID
+		)
+		select	JRN_SUBSCRIBER,
+			'0',
+			V_FLAG,
+			sysdate,
+			V_GENREID
+		from	CHINOOK.SNP_SUBSCRIBERS
+		where	JRN_TNAME = 'CHINOOK.GENRE'
+		/* The following line can be uncommented for symetric replication */
+		/* and	upper(USER) <> upper('CHINOOK') */
+		;
+	end;
+
+
+//
+ALTER TRIGGER "CHINOOK"."T$GENRE" ENABLE;]]></n0:source>
+		</n0:createOracleTrigger>
+	</changeSet>
+</databaseChangeLog>

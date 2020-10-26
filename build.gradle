@@ -73,7 +73,7 @@ allprojects {
     // common libraries that should exist in each projects independently
     dependencies {
 
-        provided group: 'one.jodi', name: 'jodi_odi', version: '12.2.1.3.2.6'
+        implementation 'one.jodi:jodi_odi:12.2.1.3.2.6'
         implementation 'javax.xml.bind:jaxb-api:2.3.1'
         implementation 'com.sun.activation:javax.activation:1.2.0'
         implementation 'javax.xml.bind:jaxb-api:2.3.1'
@@ -100,7 +100,6 @@ allprojects {
         testImplementation "org.hamcrest:hamcrest-all:1.3"
         testImplementation "junit:junit:4.12"
         testImplementation "org.mockito:mockito-all:1.10.19"
-
 
     }
 
@@ -391,7 +390,6 @@ buildscript {
         classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
         classpath 'com.massfords:jaxb-visitor:1.13'
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
-        classpath "org.liquibase:liquibase-gradle-plugin:2.0.3"
     }
 }
 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<changeSet id="1f66c2e7fe359728bae4953252acb1fd9d8d0248" author="Generated" failOnError="false" context="legacy"   >
+		<n0:createSxmlObject objectName="SRC_FA" objectType="TABLE" ownerName="DWH_SRC"   >
+			<n0:source><![CDATA[<TABLE xmlns="http://xmlns.oracle.com/ku" version="1.0">
+   <SCHEMA>DWH_SRC</SCHEMA>
+   <NAME>SRC_FA</NAME>
+   <RELATIONAL_TABLE>
+      <COL_LIST>
+         <COL_LIST_ITEM>
+            <NAME>KEY</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>30</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+            <NOT_NULL></NOT_NULL>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>JOIN_TYPE</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>30</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>VALUE</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>KEY_DA</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>30</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>KEY_DB</NAME>
+            <DATATYPE>VARCHAR2</DATATYPE>
+            <LENGTH>30</LENGTH>
+            <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>LAST_CHANGED_DT</NAME>
+            <DATATYPE>DATE</DATATYPE>
+         </COL_LIST_ITEM>
+      </COL_LIST>
+      <DEFAULT_COLLATION>USING_NLS_COMP</DEFAULT_COLLATION>
+      <PHYSICAL_PROPERTIES>
+         <HEAP_TABLE>
+            <SEGMENT_ATTRIBUTES>
+               <SEGMENT_CREATION_DEFERRED></SEGMENT_CREATION_DEFERRED>
+               <PCTFREE>10</PCTFREE>
+               <PCTUSED>40</PCTUSED>
+               <INITRANS>10</INITRANS>
+               <MAXTRANS>255</MAXTRANS>
+               <TABLESPACE>DATA</TABLESPACE>
+               <LOGGING>Y</LOGGING>
+            </SEGMENT_ATTRIBUTES>
+            <COMPRESS>N</COMPRESS>
+         </HEAP_TABLE>
+      </PHYSICAL_PROPERTIES>
+   </RELATIONAL_TABLE>
+</TABLE>]]></n0:source>
+		</n0:createSxmlObject>
+	</changeSet>
+</databaseChangeLog>

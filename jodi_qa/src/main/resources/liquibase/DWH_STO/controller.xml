@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+  <include file="s_album_o_table.xml"/> 
+  <include file="s_album_o_comments.xml"/> 
+  <include file="s_customer_o_table.xml"/> 
+  <include file="s_customer_o_comments.xml"/> 
+  <include file="s_employee_o_table.xml"/> 
+  <include file="s_employee_o_comments.xml"/> 
+  <include file="s_invoiceline_o_table.xml"/> 
+  <include file="s_invoiceline_o_comments.xml"/> 
+  <include file="s_track_o_table.xml"/> 
+  <include file="s_track_o_comments.xml"/> 
+</databaseChangeLog> 
