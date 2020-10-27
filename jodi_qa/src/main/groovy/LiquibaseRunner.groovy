@@ -79,7 +79,7 @@ class LiquibaseRunner{
 
     def processLb(lbCommand, firstCommand){
         def urlDev = 'JODI2010270733_high'
-        def cloudConfigDev = '/opt/git/opc/src/main/resources/wallet/Wallet_JODI2010270733.zip'
+        def cloudConfigDev = '/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip'
         def urlPrd = 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp' // over time this should be alpha6
         def logFile = new File(resource, firstCommand + "_log.txt")
         logFile.write("")
