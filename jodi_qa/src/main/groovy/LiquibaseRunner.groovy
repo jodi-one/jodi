@@ -78,8 +78,9 @@ class LiquibaseRunner{
     ]
 
     def processLb(lbCommand, firstCommand){
-        def urlDev = 'DB202007280549_high'
-        def urlPrd = 'localhost:1521/ORCL' // over time this should be alpha6
+        def urlDev = 'JODI2010270733_high'
+        def cloudConfigDev = '/opt/git/opc/src/main/resources/wallet/Wallet_JODI2010270733.zip'
+        def urlPrd = 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp' // over time this should be alpha6
         def logFile = new File(resource, firstCommand + "_log.txt")
         logFile.write("")
         def date = new Date()
@@ -104,7 +105,7 @@ class LiquibaseRunner{
                 cmdFile.write("""lb $lbCommand\n""".toString())
                 cmdFile << "exit\n"
                 assert DB_PWD
-                def cmd = """cd $schemaDir.absolutePath;\nsql -cloudconfig /opt/git/opc/src/main/resources/wallet/Wallet_DB202007280549.zip -S $schema/'$DB_PWD'@$urlDev @$cmdFile.absolutePath\n"""
+                def cmd = """cd $schemaDir.absolutePath;\nsql -cloudconfig $cloudConfigDev -S $schema/'$DB_PWD'@$urlDev @$cmdFile.absolutePath\n"""
                 File cmdBashFile = new File(resource,"cmd.sh")
                 cmdBashFile.write("#!/bin/sh\n")
                 cmdBashFile << cmd.toString()

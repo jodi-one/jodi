@@ -1,0 +1,135 @@
+--------------------------------------------------------------------------------------------------------------
+-- Generated with LiquibaseRunner.groovy at 2020/10/27/10:50:46
+-- groovy LiquibaseRunner.groovy  diff -diffTypes=data
+-- logFile written to /opt/git/jodi/jodi_qa/./src/main/resources/liquibase/diff_log.txt
+-- urlDev JODI2010270733_high --this is standard connection
+-- urlPrd DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp --this is used for diff as -url param
+--------------------------------------------------------------------------------------------------------------
+
+
+connect CHINOOK/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config6174472959506346734
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_CON_CHINOOK/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config6105354256748682122
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_CON/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config3232946718518973528
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_DMT/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config5053032877640116198
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_SRC/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config4121871603680772740
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_STG/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config6416046952454108249
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_STI/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config3693842779515470754
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;
+
+
+connect DWH_STO/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config9116935514060331918
+
+
+
+--[ERROR] Processing has failed for your request.
+ERROR: Unknown parameter or bad value supplied -diffTypes=data
+commit;

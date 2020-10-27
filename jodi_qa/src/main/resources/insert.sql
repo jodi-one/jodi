@@ -1,6 +1,21 @@
 --------------------------------------------------------
 --  File created - Monday-October-26-2020   
 --------------------------------------------------------
+spool insert.log
+set timing on
+whenever sqlerror exit failure
+
+begin
+  for cur in (select owner, constraint_name , table_name 
+    from all_constraints
+     where owner = 'CHINOOK') loop
+     begin
+     execute immediate 'ALTER TABLE '||cur.owner||'.'||cur.table_name||' MODIFY CONSTRAINT "'||cur.constraint_name||'" DISABLE ';
+     exception when others then null;
+     end;
+  end loop;
+end;
+/
 REM INSERTING into CHINOOK.ALBUM
 SET DEFINE OFF;
 Insert into CHINOOK.ALBUM (ALBUMID,TITLE,ARTISTID) values (1,'For Those About To Rock We Salute You',1);
@@ -15683,3 +15698,18 @@ Insert into CHINOOK.TRACK (TRACKID,NAME,ALBUMID,MEDIATYPEID,GENREID,COMPOSER,MIL
 Insert into CHINOOK.TRACK (TRACKID,NAME,ALBUMID,MEDIATYPEID,GENREID,COMPOSER,MILLISECONDS,BYTES,UNITPRICE) values (3388,'You Know My Name',270,2,23,'Chris Cornell',240255,3940651,0.99);
 Insert into CHINOOK.TRACK (TRACKID,NAME,ALBUMID,MEDIATYPEID,GENREID,COMPOSER,MILLISECONDS,BYTES,UNITPRICE) values (3389,'Revelations',271,2,23,null,252376,4111051,0.99);
 Insert into CHINOOK.TRACK (TRACKID,NAME,ALBUMID,MEDIATYPEID,GENREID,COMPOSER,MILLISECONDS,BYTES,UNITPRICE) values (3390,'One and the Same',271,2,23,null,217732,3559040,0.99);
+
+commit;
+
+begin
+  for cur in (select owner, constraint_name , table_name 
+    from all_constraints
+     where owner = 'CHINOOK') loop
+     begin
+     execute immediate 'ALTER TABLE '||cur.owner||'.'||cur.table_name||' MODIFY CONSTRAINT "'||cur.constraint_name||'" ENABLE ';
+     exception when others then null;
+     end;
+  end loop;
+end;
+/
+spool off

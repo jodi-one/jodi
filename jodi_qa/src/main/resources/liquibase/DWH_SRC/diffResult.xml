@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="dukevanleeuwen (generated)" id="1603791681804-1">
+        <createTable tableName="DATABASECHANGELOG_ACTIONS">
+            <column name="ID" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEQUENCE" type="NUMBER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SQL" type="CLOB"/>
+            <column name="SXML" type="CLOB"/>
+            <column name="AUTHOR" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPLOYMENT_ID" type="VARCHAR2(10 BYTE)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="dukevanleeuwen (generated)" id="1603791681804-2">
+        <createView fullDefinition="true" viewName="DATABASECHANGELOG_DETAILS">CREATE OR REPLACE FORCE VIEW DATABASECHANGELOG_DETAILS (DEPLOYMENT_ID, ID, AUTHOR, FILENAME, SQL, SXML, DATEEXECUTED, EXECTYPE, MD5SUM, DESCRIPTION, COMMENTS, LIQUIBASE, CONTEXTS, LABELS) AS SELECT  da.deployment_id,    da.id,    da.author,    da.filename,  da.sql,     da.sxml,    d.dateexecuted,    d.exectype,    d.md5sum,  d.description,    d.comments,    d.liquibase,    d.contexts,    d.labels 
+FROM databasechangelog d  LEFT JOIN databasechangelog_actions da ON d.id = da.id AND d.author = da.author AND d.filename = da.filename ORDER BY   1,7</createView>
+    </changeSet>
+    <changeSet author="dukevanleeuwen (generated)" id="1603791681804-3">
+        <createIndex indexName="SYS_C0020105" tableName="DATABASECHANGELOG_ACTIONS" unique="true">
+            <column name="ID"/>
+            <column name="AUTHOR"/>
+            <column name="FILENAME"/>
+            <column name="SEQUENCE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="dukevanleeuwen (generated)" id="1603791681804-4">
+        <addPrimaryKey columnNames="ID, AUTHOR, FILENAME, SEQUENCE" constraintName="SYS_C0020105" forIndexName="SYS_C0020105" tableName="DATABASECHANGELOG_ACTIONS"/>
+    </changeSet>
+</databaseChangeLog>

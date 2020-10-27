@@ -101,8 +101,8 @@ task lbUpdatesql(type: Exec) {
 task lbUpdate(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase updatesql"                                                                                                      // updatesql -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
-    commandLine "java", "-DOCI_JODI_PWD="+System.getProperty('OCI_JODI_PWD'), "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update'
+    description = "liquibase updatesql"                                                                                                      // update -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
+    commandLine "java", "-DOCI_JODI_PWD="+System.getProperty('OCI_JODI_PWD'), "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update','-changelog', 'controller.xml'
 }
 
 task lbDiff(type: Exec) {
@@ -111,7 +111,7 @@ task lbDiff(type: Exec) {
     description = "liquibase diff between dev and alpha6"                                                                                    //  diff -url x -user INF -password  -noreport
     // while connected to urlDev  //  diff -url $urlPrd -user $schema -password system.getProperties('x')  -noreport
     // connected to beta6a with diff on prd over time
-    commandLine "java", "-DOCI_JODI_PWD="+System.getProperty('OCI_JODI_PWD'), "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'diff'
+    commandLine "java", "-DOCI_JODI_PWD="+System.getProperty('OCI_JODI_PWD'), "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'diff' , '-diffTypes=data'
 }
 
 // not needed and remains empty

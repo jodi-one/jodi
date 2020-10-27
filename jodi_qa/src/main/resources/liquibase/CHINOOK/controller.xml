@@ -59,16 +59,5 @@
   <include file="fk_playlisttracktrackid_ref_constraint.xml"/> 
   <include file="fk_trackalbumid_ref_constraint.xml"/> 
   <include file="fk_trackgenreid_ref_constraint.xml"/> 
-  <include file="fk_trackmediatypeid_ref_constraint.xml"/> 
-  <include file="t$mediatype_trigger.xml"/> 
-  <include file="t$playlist_trigger.xml"/> 
-  <include file="t$playlisttrack_trigger.xml"/> 
-  <include file="t$track_trigger.xml"/> 
-  <include file="t$album_trigger.xml"/> 
-  <include file="t$artist_trigger.xml"/> 
-  <include file="t$customer_trigger.xml"/> 
-  <include file="t$employee_trigger.xml"/> 
-  <include file="t$genre_trigger.xml"/> 
-  <include file="t$invoice_trigger.xml"/> 
-  <include file="t$invoiceline_trigger.xml"/> 
+  <include file="fk_trackmediatypeid_ref_constraint.xml"/>
 </databaseChangeLog> 
