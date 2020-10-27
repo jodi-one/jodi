@@ -1,9 +1,8 @@
 --------------------------------------------------------------------------------------------------------------
--- Generated with LiquibaseRunner.groovy at 2020/10/27/10:50:46
--- groovy LiquibaseRunner.groovy  diff -diffTypes=data
+-- Generated with LiquibaseRunner.groovy at 2020/10/27/20:10:1
+-- groovy LiquibaseRunner.groovy  diff -url DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp -password DaViDGoGoGoggins42$ -noreport
 -- logFile written to /opt/git/jodi/jodi_qa/./src/main/resources/liquibase/diff_log.txt
--- urlDev JODI2010270733_high --this is standard connection
--- urlPrd DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp --this is used for diff as -url param
+-- LB_URL "JODI2010270733_high" --this is standard connection
 --------------------------------------------------------------------------------------------------------------
 
 
@@ -14,12 +13,11 @@ connect CHINOOK/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config6174472959506346734
+-- Using temp directory:/tmp/oracle_cloud_config8303537378032575927
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -30,12 +28,11 @@ connect DWH_CON_CHINOOK/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config6105354256748682122
+-- Using temp directory:/tmp/oracle_cloud_config2231639416752300220
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -46,12 +43,11 @@ connect DWH_CON/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config3232946718518973528
+-- Using temp directory:/tmp/oracle_cloud_config363549061021649530
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -62,12 +58,11 @@ connect DWH_DMT/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config5053032877640116198
+-- Using temp directory:/tmp/oracle_cloud_config8004416364830056833
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -78,12 +73,11 @@ connect DWH_SRC/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config4121871603680772740
+-- Using temp directory:/tmp/oracle_cloud_config3617507356738464890
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -94,12 +88,11 @@ connect DWH_STG/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config6416046952454108249
+-- Using temp directory:/tmp/oracle_cloud_config707310291181461703
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -110,12 +103,11 @@ connect DWH_STI/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config3693842779515470754
+-- Using temp directory:/tmp/oracle_cloud_config468247356202929572
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;
 
 
@@ -126,10 +118,9 @@ connect DWH_STO/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config9116935514060331918
+-- Using temp directory:/tmp/oracle_cloud_config5519527509836023293
 
 
 
---[ERROR] Processing has failed for your request.
-ERROR: Unknown parameter or bad value supplied -diffTypes=data
+Action successfully completed please review created file diffResult.xml
 commit;

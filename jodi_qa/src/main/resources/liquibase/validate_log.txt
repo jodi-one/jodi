@@ -1,36 +1,20 @@
 --------------------------------------------------------------------------------------------------------------
--- Generated with liquibase.groovy at 2020/10/26/18:37:47
--- groovy liquibase.groovy  validate -changelog controller.xml
+-- Generated with LiquibaseRunner.groovy at 2020/10/27/19:54:47
+-- groovy LiquibaseRunner.groovy  validate -changelog controller.xml
 -- logFile written to /opt/git/jodi/jodi_qa/./src/main/resources/liquibase/validate_log.txt
--- urlDev DB202007280549_high --this is standard connection
--- urlPrd mx1-scan:1521/ --this is used for diff as -url param
+-- LB_URL "JODI2010270733_high" --this is standard connection
+-- LB_URL_DIFF "DB202007280549_high" --this is used for diff as -url param
 --------------------------------------------------------------------------------------------------------------
 
 
-connect CHINOOK/LETMEIN@DB202007280549_high
+connect CHINOOK/LETMEIN@localhost:1521/ORCL
 
 
-Operation is successfully completed.
-Operation is successfully completed.
+-- Operation is successfully completed.
+-- Operation is successfully completed.
 
 
-Using temp directory:/tmp/oracle_cloud_config7575562975312726330
-
-
-
-
-No issues were found in file controller.xml, validation passed.
-commit;
-
-
-connect DWH_CON_CHINOOK/LETMEIN@DB202007280549_high
-
-
-Operation is successfully completed.
-Operation is successfully completed.
-
-
-Using temp directory:/tmp/oracle_cloud_config4900493304985621174
+-- Using temp directory:/tmp/oracle_cloud_config6390276678941632887
 
 
 
@@ -39,30 +23,14 @@ No issues were found in file controller.xml, validation passed.
 commit;
 
 
-connect DWH_CON/LETMEIN@DB202007280549_high
+connect DWH_CON_CHINOOK/LETMEIN@localhost:1521/ORCL
 
 
-Operation is successfully completed.
-Operation is successfully completed.
+-- Operation is successfully completed.
+-- Operation is successfully completed.
 
 
-Using temp directory:/tmp/oracle_cloud_config1991242593110416596
-
-
-
-
-No issues were found in file controller.xml, validation passed.
-commit;
-
-
-connect DWH_DMT/LETMEIN@DB202007280549_high
-
-
-Operation is successfully completed.
-Operation is successfully completed.
-
-
-Using temp directory:/tmp/oracle_cloud_config8135474781700926998
+-- Using temp directory:/tmp/oracle_cloud_config4672458178667848132
 
 
 
@@ -71,30 +39,14 @@ No issues were found in file controller.xml, validation passed.
 commit;
 
 
-connect DWH_SRC/LETMEIN@DB202007280549_high
+connect DWH_CON/LETMEIN@localhost:1521/ORCL
 
 
-Operation is successfully completed.
-Operation is successfully completed.
+-- Operation is successfully completed.
+-- Operation is successfully completed.
 
 
-Using temp directory:/tmp/oracle_cloud_config4366991171449959288
-
-
-
-
-No issues were found in file controller.xml, validation passed.
-commit;
-
-
-connect DWH_STG/LETMEIN@DB202007280549_high
-
-
-Operation is successfully completed.
-Operation is successfully completed.
-
-
-Using temp directory:/tmp/oracle_cloud_config1169712675396695076
+-- Using temp directory:/tmp/oracle_cloud_config7661748654440323706
 
 
 
@@ -103,14 +55,14 @@ No issues were found in file controller.xml, validation passed.
 commit;
 
 
-connect DWH_STI/LETMEIN@DB202007280549_high
+connect DWH_DMT/LETMEIN@localhost:1521/ORCL
 
 
-Operation is successfully completed.
-Operation is successfully completed.
+-- Operation is successfully completed.
+-- Operation is successfully completed.
 
 
-Using temp directory:/tmp/oracle_cloud_config1010963331400947802
+-- Using temp directory:/tmp/oracle_cloud_config6852943213964498340
 
 
 
@@ -119,14 +71,62 @@ No issues were found in file controller.xml, validation passed.
 commit;
 
 
-connect DWH_STO/LETMEIN@DB202007280549_high
+connect DWH_SRC/LETMEIN@localhost:1521/ORCL
 
 
-Operation is successfully completed.
-Operation is successfully completed.
+-- Operation is successfully completed.
+-- Operation is successfully completed.
 
 
-Using temp directory:/tmp/oracle_cloud_config4824828061533849848
+-- Using temp directory:/tmp/oracle_cloud_config2981803874332841473
+
+
+
+
+No issues were found in file controller.xml, validation passed.
+commit;
+
+
+connect DWH_STG/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config4908124556653512990
+
+
+
+
+No issues were found in file controller.xml, validation passed.
+commit;
+
+
+connect DWH_STI/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config4602190828907764782
+
+
+
+
+No issues were found in file controller.xml, validation passed.
+commit;
+
+
+connect DWH_STO/LETMEIN@localhost:1521/ORCL
+
+
+-- Operation is successfully completed.
+-- Operation is successfully completed.
+
+
+-- Using temp directory:/tmp/oracle_cloud_config1892065946403230573
 
 
 

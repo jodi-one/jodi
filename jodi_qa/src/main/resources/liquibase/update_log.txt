@@ -1,9 +1,8 @@
 --------------------------------------------------------------------------------------------------------------
--- Generated with LiquibaseRunner.groovy at 2020/10/27/9:42:43
+-- Generated with LiquibaseRunner.groovy at 2020/10/27/20:16:55
 -- groovy LiquibaseRunner.groovy  update -changelog controller.xml
 -- logFile written to /opt/git/jodi/jodi_qa/./src/main/resources/liquibase/update_log.txt
--- urlDev JODI2010270733_high --this is standard connection
--- urlPrd localhost:1521/ORCL --this is used for diff as -url param
+-- LB_URL "JODI2010270733_high" --this is standard connection
 --------------------------------------------------------------------------------------------------------------
 
 
@@ -14,76 +13,7 @@ connect CHINOOK/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config1510284746164213376
-
-
-ScriptRunner Executed:snp_subscribers_table.xml::c335c52ea2124c1137e23e90c21fe5aa38e7ace7::Generated
-ScriptRunner Executed:album_table.xml::a74988a6db45a5a54d38d588d000b52f790c9283::Generated
-ScriptRunner Executed:artist_table.xml::0eab884cb258bd548bd8a6308073d1cf7eeb0283::Generated
-ScriptRunner Executed:customer_table.xml::31678b164d06a695f3d6703d03fccb50007a98fc::Generated
-ScriptRunner Executed:employee_table.xml::1d82ae606ade5b76037be6e9f1d8b7a321081f88::Generated
-ScriptRunner Executed:genre_table.xml::8f51e37216cd5186a8ca902d2af27497ad9d4cd5::Generated
-ScriptRunner Executed:invoice_table.xml::74ad5972f81776b938a4ec0baf9383cb9b7176eb::Generated
-ScriptRunner Executed:invoiceline_table.xml::2adcb524c13c784d45541fa57fca2a52004521a5::Generated
-ScriptRunner Executed:j$album_table.xml::01fa57d591e1be6edad738036dbde5975afa986d::Generated
-ScriptRunner Executed:j$artist_table.xml::229ad7102592b950faf71c9e718cf82464f35f7f::Generated
-ScriptRunner Executed:j$customer_table.xml::26254e0d14b6ffb751a2be35572737b584364546::Generated
-ScriptRunner Executed:j$employee_table.xml::1c6f8426e5da346cacdb637ab6f5e9975c3678f9::Generated
-ScriptRunner Executed:j$genre_table.xml::888b44ed3ac6b3d82c15c6eaabaa5c9712147443::Generated
-ScriptRunner Executed:j$invoice_table.xml::559cdb78f85bf18af9390df470e4757534b94018::Generated
-ScriptRunner Executed:j$invoiceline_table.xml::57e4531363736f666c1334aac7bd2a053a9b1f9a::Generated
-ScriptRunner Executed:j$mediatype_table.xml::903ce22061749765ffcbb804c929e5d8e0c9539d::Generated
-ScriptRunner Executed:j$playlist_table.xml::8962b008904232e2c5a62022bc20fb42e06986be::Generated
-ScriptRunner Executed:j$playlisttrack_table.xml::7db1d5cafb330e91411e5375b2d8c2bffc1399a3::Generated
-ScriptRunner Executed:j$track_table.xml::ea9d8824c83f8a1a2e02566abd3d53dfb23920e8::Generated
-ScriptRunner Executed:mediatype_table.xml::b5802b86c8d51ea62f068927b4b42842e58fa633::Generated
-ScriptRunner Executed:playlist_table.xml::d10b9d51486ab10f8127f2fa3780006d670e8b78::Generated
-ScriptRunner Executed:playlisttrack_table.xml::052efda6855e2585b8774f2ea2061330413fdef6::Generated
-ScriptRunner Executed:track_table.xml::eeb483cb2e029fcd822806e624c2fff623e015e8::Generated
-ScriptRunner Executed:jv$album_view.xml::ca79fec45fcca50db497097cf9cbc2643bce4245::Generated
-ScriptRunner Executed:jv$artist_view.xml::9d9eadbd9e9f7555975fbde1e984d3bdb8d673fc::Generated
-ScriptRunner Executed:jv$customer_view.xml::55154d6ae134b46853dc389450681344c848126b::Generated
-ScriptRunner Executed:jv$dalbum_view.xml::d457c3dcc1dd8da3d10266b56c4b2357b56275f7::Generated
-ScriptRunner Executed:jv$dartist_view.xml::f3f056bdff9a0c5a3702d8a6bf07b4901a7037ae::Generated
-ScriptRunner Executed:jv$dcustomer_view.xml::5c08667466caff948f4c312707ec2b28cf89df22::Generated
-ScriptRunner Executed:jv$demployee_view.xml::bf6f143c116c26c09c4ce37be501688a1a569f38::Generated
-ScriptRunner Executed:jv$dgenre_view.xml::49644b827692bf30492d1c176319257ea4312e4e::Generated
-ScriptRunner Executed:jv$dinvoice_view.xml::9b6b5117042bb589c5eaa7a912b2011a9bd24e18::Generated
-ScriptRunner Executed:jv$dinvoiceline_view.xml::190f50a8fb01756133ac44898fccc11a5febe5f1::Generated
-ScriptRunner Executed:jv$dmediatype_view.xml::0ccf8c2f106cc6b3ad25d9883696d08e534148fd::Generated
-ScriptRunner Executed:jv$dplaylist_view.xml::9c2fc32ee73a62cc85e6c9836a73d444619fd040::Generated
-ScriptRunner Executed:jv$dplaylisttrack_view.xml::3e83852c6b09f3e8616972524b0e1c46bb193c64::Generated
-ScriptRunner Executed:jv$dtrack_view.xml::0b7214e3c1911791ff529353a7db123ca9309e54::Generated
-ScriptRunner Executed:jv$employee_view.xml::4505da3b97e9495f42262731363a1fa55a178d6b::Generated
-ScriptRunner Executed:jv$genre_view.xml::b8b3aced88d98e429ea847665c695b29f5d9a322::Generated
-ScriptRunner Executed:jv$invoice_view.xml::4886bcddec274decc7860b5cf3344edd68a2c8b0::Generated
-ScriptRunner Executed:jv$invoiceline_view.xml::766f215af3862263298af94f180a34912ab758e7::Generated
-ScriptRunner Executed:jv$mediatype_view.xml::2f7a8071d56223cf5394d35400dd42a00b6792af::Generated
-ScriptRunner Executed:jv$playlist_view.xml::757ca919557fc32639b522a2cf44dbf45c8cbebb::Generated
-ScriptRunner Executed:jv$playlisttrack_view.xml::3118d401ef872c639f07ea2dd4c4d6db01c5f9bb::Generated
-ScriptRunner Executed:jv$track_view.xml::7027b93f7fb66054835dccdf93acada03162be48::Generated
-ScriptRunner Executed:fk_albumartistid_ref_constraint.xml::c0201343a18c07d5bb3c38eaee7fcfe52dd6c16a::Generated
-ScriptRunner Executed:fk_customersupportrepid_ref_constraint.xml::2a0c874d492f6fa781f17d7b2bb23dc1b65e6fad::Generated
-ScriptRunner Executed:fk_employeereportsto_ref_constraint.xml::c88178f08bb2e67eab859ac2dea558d19230eae7::Generated
-ScriptRunner Executed:fk_invoicecustomerid_ref_constraint.xml::9d7fa5422c7a7a2f567e223568142e410cb2ad87::Generated
-ScriptRunner Executed:fk_invoicelineinvoiceid_ref_constraint.xml::5a59c6be82acdc79a401a36c2bfa8a0dc8b656a1::Generated
-ScriptRunner Executed:fk_invoicelinetrackid_ref_constraint.xml::90b84af614c9ebf9c155f2dba17ea7ec5dba6b71::Generated
-ScriptRunner Executed:fk_playlisttrackplaylistid_ref_constraint.xml::e64f30edc9c0108f9329c94546cf7d7bb5f181e0::Generated
-ScriptRunner Executed:fk_playlisttracktrackid_ref_constraint.xml::a87624e62c95932b4fac78c91844e0f1fe769867::Generated
-ScriptRunner Executed:fk_trackalbumid_ref_constraint.xml::bb1fb315732c42d03da6e92791afc5e1ae3a8c61::Generated
-ScriptRunner Executed:fk_trackgenreid_ref_constraint.xml::49337be3b6ec958a21ba974e6a23b35d4af57b94::Generated
-ScriptRunner Executed:fk_trackmediatypeid_ref_constraint.xml::575d732730165f4aa871ba81126b15514f7e8ecb::Generated
-ScriptRunner Executed:t$mediatype_trigger.xml::a6c5e444af9b1d89b6e649d47df99865f73ad12a::Generated
-ScriptRunner Executed:t$playlist_trigger.xml::23cde58ec1c01e06fd3d0187758fa26f49d1e4ed::Generated
-ScriptRunner Executed:t$playlisttrack_trigger.xml::2a30c7e17f5b53120fbb9afb87b7cdae69571f80::Generated
-ScriptRunner Executed:t$track_trigger.xml::44929a83ab9286363895f3dcc2c5cfea4957d6f2::Generated
-ScriptRunner Executed:t$album_trigger.xml::bcf8fd1b4829ab5495ffd6a7e8c0ea993a9e549b::Generated
-ScriptRunner Executed:t$artist_trigger.xml::220042fb807dfd013543c366fc91abdea1feb899::Generated
-ScriptRunner Executed:t$customer_trigger.xml::b0813756703bff45242ab26c5849ff96a99dc520::Generated
-ScriptRunner Executed:t$employee_trigger.xml::3ba239c89981fdfa98f5c70e7376b5c51dd4f852::Generated
-ScriptRunner Executed:t$genre_trigger.xml::a6b121492d67df94842409d2094eae345a209bea::Generated
-ScriptRunner Executed:t$invoice_trigger.xml::f065a1bab82db7f52741abc77f775df2bbbd9604::Generated
-ScriptRunner Executed:t$invoiceline_trigger.xml::5c7281a6d2770da649b7b9d3dd64813beffc1130::Generated
+-- Using temp directory:/tmp/oracle_cloud_config8719909222845436044
 commit;
 
 
@@ -94,20 +24,7 @@ connect DWH_CON_CHINOOK/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config5598521260025631519
-
-
-ScriptRunner Executed:album_table.xml::393a27e912848aa2d414aca6487d4a6d4f98e9ca::Generated
-ScriptRunner Executed:artist_table.xml::d35a1365f0d25ddd4dd5d581304a0b29404dc469::Generated
-ScriptRunner Executed:customer_table.xml::971a5759a90f0f5336d3d44de31eb8c62e77adc1::Generated
-ScriptRunner Executed:employee_table.xml::45c9ea0fe1977697a22f3573bac4e2681ecf6702::Generated
-ScriptRunner Executed:genre_table.xml::81e3985e5c0419e24d4e1bdce1ffd2644a1e6382::Generated
-ScriptRunner Executed:invoice_table.xml::b60b27a8c20e552378d7b6609d1c7bfd030e9f6e::Generated
-ScriptRunner Executed:invoiceline_table.xml::7233c610cfc1bdc9cfaa69146d7ad123f3a380ec::Generated
-ScriptRunner Executed:mediatype_table.xml::5f756d008583e1d2e6f9eccca2d946cbc75f0ed8::Generated
-ScriptRunner Executed:playlist_table.xml::135d16fa8511e406756e9b5d7ac06e7660c9c909::Generated
-ScriptRunner Executed:playlisttrack_table.xml::904d8d644b849a0100193d000192f7869af5d643::Generated
-ScriptRunner Executed:track_table.xml::e0035879c1216867588a66526b8f594462d80059::Generated
+-- Using temp directory:/tmp/oracle_cloud_config9119053600108806890
 commit;
 
 
@@ -118,27 +35,7 @@ connect DWH_CON/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config1486105008260120174
-
-
-ScriptRunner Executed:chin_customer_table.xml::1448f79ba2959c01e486d2e22e3d2da700aff39b::Generated
-ScriptRunner Executed:chin_customer_comments.xml::3dc38d5f2456f59ab31e8b8cc89a2ba5cb152483::Generated
-ScriptRunner Executed:chin_album_table.xml::5a49f3de4e222901d7459905f58edf9510edbc9c::Generated
-ScriptRunner Executed:chin_album_comments.xml::f98ee24cd09b0d9b4b86947c55d58d55bab16b33::Generated
-ScriptRunner Executed:chin_artist_table.xml::7dc991ddeae4c078eeabc6ed6f3cf34e37f184bc::Generated
-ScriptRunner Executed:chin_employee_table.xml::a04be3366a2fff7e15d0b5e96fa2302cd6a8f832::Generated
-ScriptRunner Executed:chin_employee_comments.xml::9a6512d99937737b6e500620bb0e93fad7752124::Generated
-ScriptRunner Executed:chin_genre_table.xml::66a848a501305f1d98891dcfd94e497afe734134::Generated
-ScriptRunner Executed:chin_invoice_table.xml::a744e4905fbb490e76b703f093434115966263bc::Generated
-ScriptRunner Executed:chin_invoice_comments.xml::08508ffc1d5ff520554e9a2e3dc56c7cce9a5550::Generated
-ScriptRunner Executed:chin_invoiceline_table.xml::a8e24da8989477b3669a660a5cec638bda889e0b::Generated
-ScriptRunner Executed:chin_invoiceline_comments.xml::385d3362b7d27a099ac6c6d453d0b65df8b0f746::Generated
-ScriptRunner Executed:chin_mediatype_table.xml::ebb55ccde64d01a6f19bdb03951fc903652d7bad::Generated
-ScriptRunner Executed:chin_playlist_table.xml::ff8be701b45459df8f15d6816fcce160b1b138ea::Generated
-ScriptRunner Executed:chin_playlist_comments.xml::154384185f418d4cf45a1536bb81cceb4bc52918::Generated
-ScriptRunner Executed:chin_playlisttrack_table.xml::1fa528b040743d52e28af4b70f8064eabd532e68::Generated
-ScriptRunner Executed:chin_track_table.xml::3b6c9a8d19d4f88e677e2f92126c34b2de47d3fc::Generated
-ScriptRunner Executed:chin_track_comments.xml::0ede45b31434fbaae4c161df0017a6af35dfa4bd::Generated
+-- Using temp directory:/tmp/oracle_cloud_config9077696012720191551
 commit;
 
 
@@ -149,105 +46,7 @@ connect DWH_DMT/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config1117617489635456665
-
-
-ScriptRunner Executed:seq_w_album_wid_sequence.xml::fb73ba25f43eb0c3ce6d5545f29b6429687bb815::Generated
-ScriptRunner Executed:seq_w_customer_wid_sequence.xml::6c0687de080a86aa4702f0746367c58eb0729cbe::Generated
-ScriptRunner Executed:seq_w_employee_wid_sequence.xml::4d2107cef9abd02b8fa29b4697572fab37151483::Generated
-ScriptRunner Executed:seq_w_fa_f_wid_sequence.xml::187f7f9fc00966a945419869c24199769d97004f::Generated
-ScriptRunner Executed:seq_w_invoiceline_wid_sequence.xml::3b63c603fdd3cb2c8c048816e4a5075f7a26d796::Generated
-ScriptRunner Executed:seq_w_track_wid_sequence.xml::ac5e19e01955c468451c36d44bf6ffe8b6da5e17::Generated
-ScriptRunner Executed:e$_w_album_d_table.xml::91d1eea5425e2a65655ec6eaf1cfe8732a85fe60::Generated
-ScriptRunner Executed:e$_w_customer_d_table.xml::e5705e335d88b17e16336c1d7f982d291f45cda6::Generated
-ScriptRunner Executed:e$_w_da_d_table.xml::2e12e0d2893ba3ecb67d3ee31d98cc447bd384d1::Generated
-ScriptRunner Executed:e$_w_dc_d_table.xml::96ad69e28cc4c8854944791c02a2d4748cbcc633::Generated
-ScriptRunner Executed:e$_w_employee_d_table.xml::f1a2fd4b28b8ee1b0681218745ac912725b42c06::Generated
-ScriptRunner Executed:e$_w_fa_f_table.xml::e12034b10f7ab1aa007d81eb55b02a61c4352914::Generated
-ScriptRunner Executed:e$_w_invoiceline_f_table.xml::f7662101aa78e0adeed04268cc379be4a229f384::Generated
-ScriptRunner Executed:e$_w_track_d_table.xml::1f4b941cece6c5d9e7d0ee29ac64f6122466297f::Generated
-ScriptRunner Executed:snp_check_tab_table.xml::ce1b28e8b4fe98534887410f379aa195b04431a3::Generated
-ScriptRunner Executed:w_album_d_table.xml::68db741866bc24bc972c53f0cb1d8d0e02a43ef6::Generated
-ScriptRunner Executed:w_album_d_comments.xml::3cac8408f95b2a3d6a9c862006b77888e182a555::Generated
-ScriptRunner Executed:w_customer_d_table.xml::822b4473815260bf8bcaceb603dc521ee3a112b2::Generated
-ScriptRunner Executed:w_customer_d_comments.xml::332a84e3597e26156be627c8ba2274152b63e79d::Generated
-ScriptRunner Executed:w_da_d_table.xml::fd6dd88e0690dd36fcee935759b4abb164d0525f::Generated
-ScriptRunner Executed:w_da_d_comments.xml::74e06db7a4656364f192cc26875fbc411b74f7d8::Generated
-ScriptRunner Executed:w_db_d_table.xml::f0aea65cd5b6b1b0cc312ff5709f9be50943fe12::Generated
-ScriptRunner Executed:w_db_d_comments.xml::0031d5f3f62a3b2575c9d0d118d8f335f0c764e4::Generated
-ScriptRunner Executed:w_dc_d_table.xml::71563668271d9c707db3922909b0261cacf19b62::Generated
-ScriptRunner Executed:w_employee_d_table.xml::ad8135621c8e90525eaa89ed3c535ebe1de52c33::Generated
-ScriptRunner Executed:w_employee_d_comments.xml::156967f9217df532e8b3c459818e9ff8cac65358::Generated
-ScriptRunner Executed:w_fa_f_table.xml::f48a0d8514eb94978970ee1ad737aaf5bd9085d5::Generated
-ScriptRunner Executed:w_invoiceline_f_table.xml::af49e6a2d713fc3de5f421bab5a9b7394d94214c::Generated
-ScriptRunner Executed:w_invoiceline_f_comments.xml::da77869f66752f48647ebd9c8e747c182a1c6147::Generated
-ScriptRunner Executed:w_track_d_table.xml::ae4576c9232c1c36d3bed96cd63d73ac2098b216::Generated
-ScriptRunner Executed:w_track_d_comments.xml::461669beb0c90562444f62fb0a8e0a96c1e155de::Generated
-ScriptRunner Executed:w_invoiceline_f_w_album_d_ref_constraint.xml::58b31565c3796b9c3113b75709a9435e7bcac4c2::Generated
-ScriptRunner Executed:w_invoiceline_f_w_customer_d_ref_constraint.xml::d988a18257cde872f5eeb7209ae381ca9635d67e::Generated
-ScriptRunner Executed:w_invoiceline_f_w_employee_d_ref_constraint.xml::f15c0b4cb4f20c22905b13730bda4cfff9f0e935::Generated
-ScriptRunner Executed:w_invoiceline_f_w_representati_ref_constraint.xml::8324d4c496c9f2f38d436807431361c9591761cc::Generated
-ScriptRunner Executed:w_invoiceline_f_w_track_d_ref_constraint.xml::26b7cd6707c31f3aa5a690fa5b81f3cdfd47321b::Generated
-ScriptRunner Executed:w_da_d_u1_index.xml::3c073d28ea1eae88d27ad21baa0e06cc49a0fd61::Generated
-ScriptRunner Executed:e$_w_da_d_idx_index.xml::d059d6d1c50b9cb7e887e51a5ef439d0db777d92::Generated
-Error executing statement 'liquibase.ext.ora.createoraclesxml.CreateOracleSxmlStatement@13741d5a', but continuing
-
-
-
-Error starting at line : 1 in command -
-CREATE UNIQUE INDEX "SYS_C0027720" ON "E$_W_DA_D" ("ODI_PK")
-  PCTFREE 10 INITRANS 20 MAXTRANS 255 LOGGING
-  TABLESPACE "DATA"
-Error report -
-ORA-01408: such column list already indexed
-01408. 00000 -  "such column list already indexed"
-*Cause:    
-*Action:
-
-ScriptRunner Executed:w_employee_d_u1_index.xml::a08bc6104a6c80995f4f5934af517afca248cb18::Generated
-ScriptRunner Executed:w_fa_f_u1_index.xml::88d5d757e8507940b32a83b2ed2836754eb7db06::Generated
-ScriptRunner Executed:w_invoiceline_f_i3_index.xml::cc3fa7b028eb2c8f2509bab98e4d0e0036207e3f::Generated
-ScriptRunner Executed:w_album_d_u1_index.xml::b9cff59ed654c51cc5c01eba1cb30f233a8ea8d7::Generated
-ScriptRunner Executed:w_invoiceline_f_i4_index.xml::6c5ea1c00bb83e0fbd0cbc18381836d220d80399::Generated
-ScriptRunner Executed:w_db_d_u1_index.xml::3bb362e839794322419f2ce3b8c3614cb6bdeb89::Generated
-ScriptRunner Executed:w_dc_d_u1_index.xml::e45952d52703fb3d8a7a2b850d05da55685317da::Generated
-ScriptRunner Executed:e$_w_dc_d_idx_index.xml::c5045e522ce4b614eac96245d38404a4c93ddee2::Generated
-Error executing statement 'liquibase.ext.ora.createoraclesxml.CreateOracleSxmlStatement@51841ac6', but continuing
-
-
-
-Error starting at line : 1 in command -
-CREATE UNIQUE INDEX "SYS_C0027721" ON "E$_W_DC_D" ("ODI_PK")
-  PCTFREE 10 INITRANS 20 MAXTRANS 255 LOGGING
-  TABLESPACE "DATA"
-Error report -
-ORA-01408: such column list already indexed
-01408. 00000 -  "such column list already indexed"
-*Cause:    
-*Action:
-
-ScriptRunner Executed:w_invoiceline_f_i5_index.xml::2182e1735a8b6a32c42bebcdb18a07852f7ffea1::Generated
-ScriptRunner Executed:w_invoiceline_f_i2_index.xml::020342f7c5b5a9adad4e717cfb4be14e089c42ed::Generated
-ScriptRunner Executed:w_track_d_u1_index.xml::b991cef2d17d853dcf8d41bfb16191bcbe617c6d::Generated
-ScriptRunner Executed:w_customer_d_u1_index.xml::c97c009043cd230feff374742f3770604de08e42::Generated
-ScriptRunner Executed:w_invoiceline_f_u1_index.xml::af0c8722091cb4b0ed704db4f5eb9c1755dc2b36::Generated
-ScriptRunner Executed:w_invoiceline_f_i1_index.xml::7c4420a05ddf3326eb816945ebd4e1421d96ec85::Generated
-ScriptRunner Executed:e$_w_fa_f_index.xml::a71f37b759d2cf94b69e35d5ee9e92aba5d03e1b::Generated
-Error executing statement 'liquibase.ext.ora.createoraclesxml.CreateOracleSxmlStatement@6ed16657', but continuing
-
-
-
-Error starting at line : 1 in command -
-CREATE UNIQUE INDEX "SYS_C0027722" ON "E$_W_FA_F" ("ODI_PK")
-  PCTFREE 10 INITRANS 20 MAXTRANS 255 LOGGING
-  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645 
-  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
-  TABLESPACE "DATA"
-Error report -
-ORA-01408: such column list already indexed
-01408. 00000 -  "such column list already indexed"
-*Cause:    
-*Action:
+-- Using temp directory:/tmp/oracle_cloud_config3393755414762430240
 commit;
 
 
@@ -258,15 +57,7 @@ connect DWH_SRC/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config7537422522663074305
-
-
-ScriptRunner Executed:src_db_table.xml::0abc0e25fc60ef5af332120cc8ba49febc2d5da2::Generated
-ScriptRunner Executed:src_db_comments.xml::6dfef1d5270452d846d29e80afccd46ee4b2f396::Generated
-ScriptRunner Executed:src_da_table.xml::c8a6e9004c96785fc62a02e649580c6bf2b21cfb::Generated
-ScriptRunner Executed:src_da_comments.xml::55547b739aa5dd932fa9d5a389da6ec1b41ded81::Generated
-ScriptRunner Executed:src_fa_table.xml::1f66c2e7fe359728bae4953252acb1fd9d8d0248::Generated
-ScriptRunner Executed:src_fa_comments.xml::d35662d2dffef7363c0e22d72129d62a54cb22ff::Generated
+-- Using temp directory:/tmp/oracle_cloud_config3639055632695252811
 commit;
 
 
@@ -277,29 +68,7 @@ connect DWH_STG/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config5595560425904066762
-
-
-ScriptRunner Executed:s_da_i_table.xml::ee977b1b0de37f8e90bfaa3e522b423c80a0732f::Generated
-ScriptRunner Executed:s_da_i_comments.xml::de76160e5cc2a7879f8e5873065f811998ace71d::Generated
-ScriptRunner Executed:s_da_o_table.xml::d056bed130cb6b94b122a63a73704bc2c7e4527f::Generated
-ScriptRunner Executed:s_da_o_comments.xml::151fbd3b3d6dcf0dbb7f186c8e7e222fe2bbf876::Generated
-ScriptRunner Executed:s_db_i_table.xml::8330d16a852d4bdac3ba64ad0fbb1fcb6f7c9b4c::Generated
-ScriptRunner Executed:s_db_i_comments.xml::401d729ae1c90f15da41a5fc3eb875c5f1eb62de::Generated
-ScriptRunner Executed:s_db_o_table.xml::ec6c0cbccbdcc2bdfc8889a3526a66c5dbbf8a88::Generated
-ScriptRunner Executed:s_db_o_comments.xml::d8d57c7f39f6b8fa472aafa2657d9918368ad555::Generated
-ScriptRunner Executed:s_dc_i_table.xml::e415267fe962a12556ec2bbb73a7d08b3a40b3ac::Generated
-ScriptRunner Executed:s_dc_o_table.xml::34649cb43bff87f7ed148e6fb948ff0e5b28435a::Generated
-ScriptRunner Executed:s_fa_i_table.xml::0ebb7cf909d15895c7f3e3fa075620d350eff03c::Generated
-ScriptRunner Executed:s_fa_i_comments.xml::bdcaba9c4e341501c3d1cff46017e9adee8efd50::Generated
-ScriptRunner Executed:s_fa_o_table.xml::23f1229985a519b36114ff7e5befaecd63ebadc1::Generated
-ScriptRunner Executed:s_fa_o_comments.xml::b3bd05e025a9af2c34ccda1c85341ec482682d71::Generated
-ScriptRunner Executed:s_mapping_1s_temp_o_table.xml::95d19dc67e08cbf38b2f8890b01f55d8d34251b4::Generated
-ScriptRunner Executed:s_pv_i_table.xml::0f6b05a83b7293013448d7e7bba226f0c1859d24::Generated
-ScriptRunner Executed:s_pv_o_table.xml::4e816f33f5191e203feb7911443ed6b3be432da8::Generated
-ScriptRunner Executed:s_source_2s_oneintf_i_table.xml::092b6f86922cd6c6bc9230ed9e88452795424bc7::Generated
-ScriptRunner Executed:s_vp_i_table.xml::55c28e770dcf0b314f2ad27e638c04f0d37aec22::Generated
-ScriptRunner Executed:s_vp_o_table.xml::28b3503f559e2c6757f8657e025fd8ec39b1189c::Generated
+-- Using temp directory:/tmp/oracle_cloud_config9010538004163851870
 commit;
 
 
@@ -310,27 +79,7 @@ connect DWH_STI/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config887478706410463147
-
-
-ScriptRunner Executed:s_album_i_table.xml::d4cfb8884b9da8c507456209ea91544a89ce8e1a::Generated
-ScriptRunner Executed:s_album_i_comments.xml::b0d2e1fe6ef48e36dd7f6c1e023041b0921a5257::Generated
-ScriptRunner Executed:s_artist_i_table.xml::a95b93150169e193584958fa5d2b249b7fd01e7d::Generated
-ScriptRunner Executed:s_customer_i_table.xml::6dfb113adc3f8860c211c66c4a30ba023ef1228b::Generated
-ScriptRunner Executed:s_customer_i_comments.xml::6835519f45b66cf65dadf813c8d4aa5b4b220f8a::Generated
-ScriptRunner Executed:s_employee_i_table.xml::ae3a2df53eaa52926189059a62e27d1f09761112::Generated
-ScriptRunner Executed:s_employee_i_comments.xml::c388dfbe2d016db6f9ef1102c46d8885c72a3384::Generated
-ScriptRunner Executed:s_genre_i_table.xml::0c3c31d73cb35bb678a156adf565a2d829e6ee46::Generated
-ScriptRunner Executed:s_invoiceline_i_table.xml::18d0b4c1dee1fef5a072203da385bb2e034ab264::Generated
-ScriptRunner Executed:s_invoiceline_i_comments.xml::5e88b6f03b8a0e9f44c4e8b4104b21c4a714389e::Generated
-ScriptRunner Executed:s_invoice_i_table.xml::8c96bf34b602499c7e0e6583e758d6c6bd49b155::Generated
-ScriptRunner Executed:s_invoice_i_comments.xml::e7da3b691ada21e2be5911a9c540b8171d90405b::Generated
-ScriptRunner Executed:s_mediatype_i_table.xml::c104d9053dc057358e516c2c86fa15b43c33aaf8::Generated
-ScriptRunner Executed:s_playlisttrack_i_table.xml::f6f2d6836b4ea2d8991ebcc50674cc738aaaa89d::Generated
-ScriptRunner Executed:s_playlist_i_table.xml::03383a06df3a7e1fb46ca28d3bbd31f8024dc2ec::Generated
-ScriptRunner Executed:s_playlist_i_comments.xml::971cc51f4e91cf6433150d7b63f13efb094e4cc7::Generated
-ScriptRunner Executed:s_track_i_table.xml::0bf074912d2c77a2557b26b54a0001dab2e6529b::Generated
-ScriptRunner Executed:s_track_i_comments.xml::f08969980d46fe905fbc852f23522655b89ed71d::Generated
+-- Using temp directory:/tmp/oracle_cloud_config6163035301883157863
 commit;
 
 
@@ -341,17 +90,5 @@ connect DWH_STO/LETMEIN@localhost:1521/ORCL
 -- Operation is successfully completed.
 
 
--- Using temp directory:/tmp/oracle_cloud_config8922708615587712553
-
-
-ScriptRunner Executed:s_album_o_table.xml::ee3e8061bdf687e6118f29c53f7d851c4499c9b9::Generated
-ScriptRunner Executed:s_album_o_comments.xml::814c87027007c6436e3f0e98de9b8e01e8242de2::Generated
-ScriptRunner Executed:s_customer_o_table.xml::9b8bdd0a74eaeff3bb0d86a906a73bb1436f5a67::Generated
-ScriptRunner Executed:s_customer_o_comments.xml::0743cb50b87ade883452debff8c0fc70cbff008a::Generated
-ScriptRunner Executed:s_employee_o_table.xml::091ea26f2c2491fced0c91c3868c525c017f78c6::Generated
-ScriptRunner Executed:s_employee_o_comments.xml::4663962e16c5612775172da393996c57ba5fa8c9::Generated
-ScriptRunner Executed:s_invoiceline_o_table.xml::048f89e0f99d7dfaa70cb8d608fc273392ceef4f::Generated
-ScriptRunner Executed:s_invoiceline_o_comments.xml::0473038ba700ffc8f8bd71597fcf7ecb2778a354::Generated
-ScriptRunner Executed:s_track_o_table.xml::ca53cb31ef8ca98091910fb5b01e9405df05c5b4::Generated
-ScriptRunner Executed:s_track_o_comments.xml::b138d1ed6f0496c85ae6b5bfa87fa0abd8bc7496::Generated
+-- Using temp directory:/tmp/oracle_cloud_config9152491360912225578
 commit;

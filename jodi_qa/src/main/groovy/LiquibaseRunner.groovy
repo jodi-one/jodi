@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat
  * This script basically passed command line arguments to all schemas,
  * and executes it on all schemas defined in schemas.
  *
- * It uses the urlDev for connection details.
+ * It uses the LB_URL for connection details.
  *
  * The script requires the SQLCL binary from Oracle to be added to the path.
  * <a href="https://www.oracle.com/tools/downloads/sqlcl-downloads.html">SQLCL</a>
@@ -64,12 +64,21 @@ class LiquibaseRunner{
 
     static void main(String[] args) {
         def lbCommand =""
+        def LB_URL = System.getProperty("LB_URL")
+        def LB_CLOUDCONFIG = System.getProperty("LB_CLOUDCONFIG")
+        def LB_DB_PWD = System.getProperty("LB_DB_PWD")
+
         for(String arg : args){
-            lbCommand += " " +arg
+                lbCommand += " " + arg
         }
         def firstCommand = args[0]
-        println("$lbCommand")
-        new LiquibaseRunner().processLb(lbCommand, firstCommand)
+
+        assert firstCommand
+        assert LB_URL
+        assert LB_CLOUDCONFIG
+        assert LB_DB_PWD
+
+        new LiquibaseRunner().processLb(lbCommand, firstCommand, LB_URL, LB_DB_PWD, LB_CLOUDCONFIG)
     }
 
     def schemas = [
@@ -77,10 +86,7 @@ class LiquibaseRunner{
             "DWH_CON_CHINOOK","DWH_CON","DWH_DMT", "DWH_SRC","DWH_STG", "DWH_STI","DWH_STO"
     ]
 
-    def processLb(lbCommand, firstCommand){
-        def urlDev = 'JODI2010270733_high'
-        def cloudConfigDev = '/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip'
-        def urlPrd = 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp' // over time this should be alpha6
+    def processLb(lbCommand, firstCommand, LB_URL, LB_DB_PWD, LB_CLOUDCONFIG){
         def logFile = new File(resource, firstCommand + "_log.txt")
         logFile.write("")
         def date = new Date()
@@ -89,8 +95,7 @@ class LiquibaseRunner{
         writeLogLine ("-- Generated with LiquibaseRunner.groovy at "+sdf.format(date), logFile)
         writeLogLine ("-- groovy LiquibaseRunner.groovy $lbCommand", logFile)
         writeLogLine ("-- logFile written to $logFile.absolutePath", logFile)
-        writeLogLine ("-- urlDev $urlDev --this is standard connection", logFile)
-        writeLogLine ("-- urlPrd $urlPrd --this is used for diff as -url param", logFile)
+        writeLogLine ("-- LB_URL $LB_URL --this is standard connection", logFile)
         writeLogLine ("--------------------------------------------------------------------------------------------------------------", logFile)
 
         schemas.each{
@@ -98,14 +103,13 @@ class LiquibaseRunner{
                 File schemaDir = new File(resource, schema)
                 schemaDir.mkdirs()
                 File cmdFile= new File(resource, "cmd.sql")
-                def DB_PWD = System.getProperty("OCI_JODI_PWD")
                 if(lbCommand.toString().contains("diff")){
-                    lbCommand +=  """ -url $urlPrd -user $schema -password $DB_PWD -noreport"""
+                    lbCommand +=  """  -user $schema """
                 }
                 cmdFile.write("""lb $lbCommand\n""".toString())
                 cmdFile << "exit\n"
-                assert DB_PWD
-                def cmd = """cd $schemaDir.absolutePath;\nsql -cloudconfig $cloudConfigDev -S $schema/'$DB_PWD'@$urlDev @$cmdFile.absolutePath\n"""
+                assert LB_DB_PWD
+                def cmd = """cd $schemaDir.absolutePath;\nsql -cloudconfig $LB_CLOUDCONFIG -S $schema/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
                 File cmdBashFile = new File(resource,"cmd.sh")
                 cmdBashFile.write("#!/bin/sh\n")
                 cmdBashFile << cmd.toString()
@@ -142,7 +146,8 @@ class LiquibaseRunner{
         Collection<String> lines = sout.toString().split("\\n")
         lines.stream().each{it ->
             if(it.toString().startsWith("LoggingExecutor")
-            || it.toString().startsWith("Operation is successfully completed.")
+            || it.toString().startsWith("Operation is successfully completed")
+            || it.toString().startsWith("Action successfully completed")
             || it.toString().startsWith("Using temp directory:")) {
                 writeLogLine("-- " + it, logFile)
             }else if(it.toString().startsWith("Processing has failed")){
