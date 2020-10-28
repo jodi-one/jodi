@@ -109,7 +109,8 @@ class LiquibaseRunner{
                 cmdFile.write("""lb $lbCommand\n""".toString())
                 cmdFile << "exit\n"
                 assert LB_DB_PWD
-                def cmd = """cd $schemaDir.absolutePath;\nsql -cloudconfig $LB_CLOUDCONFIG -S $schema/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
+                def cloudConfig = LB_CLOUDCONFIG != null  && LB_CLOUDCONFIG.toString().length() > 2 ? """ -cloudconfig $LB_CLOUDCONFIG """ : ""
+                def cmd = """cd $schemaDir.absolutePath;\nsql $cloudConfig -S $schema/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
                 File cmdBashFile = new File(resource,"cmd.sh")
                 cmdBashFile.write("#!/bin/sh\n")
                 cmdBashFile << cmd.toString()
