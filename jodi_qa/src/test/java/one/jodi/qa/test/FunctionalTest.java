@@ -498,7 +498,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         if (!isIgnored(name)) {
             testName = name.substring(9, name.length());
         } else {
-            testName = null;
+            testName = name;
         }
         metadataDirectory = TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName;
     }
