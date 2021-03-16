@@ -119,8 +119,8 @@ group = "one.jodi"
 // common libraries that should exist in each projects independently
 dependencies {
 
-    implementation 'one.jodi:jodi_odi:12.2.1.4.0'
-    implementation project (':jodi_base')
+    implementation 'one.jodi:jodi_odi:12.2.1.4.0.0'
+    implementation project(':jodi_base')
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'com.sun.activation:javax.activation:1.2.0'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
@@ -128,7 +128,7 @@ dependencies {
     implementation 'javax.validation:validation-api:1.0.0.GA'
     compileOnly "com.oracle.database.jdbc:ojdbc8:19.3.0.0"
     implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
-    implementation  'org.apache.logging.log4j:log4j-core:2.9.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
 
     implementation("com.google.inject:guice:4.1.0") {
         exclude module: 'com.google.guava'
@@ -140,7 +140,7 @@ dependencies {
         exclude module: 'commons-logging'
         exclude module: 'commons-beanutils'
     }
-   // implementation project(':jodi_base')
+    // implementation project(':jodi_base')
 
     compileOnly fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
 
