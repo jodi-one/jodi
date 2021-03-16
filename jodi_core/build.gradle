@@ -126,8 +126,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.validation:validation-api:1.0.0.GA'
-    compileOnly     'com.oracle:ojdbc8:19.3'
-
+    compileOnly "com.oracle.database.jdbc:ojdbc8:19.3.0.0"
     implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
     implementation  'org.apache.logging.log4j:log4j-core:2.9.1'
 
