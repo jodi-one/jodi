@@ -74,10 +74,11 @@ allprojects {
     version = readVersionInfo(versionProperties)
     group = "one.jodi"
 
+
     // common libraries that should exist in each projects independently
     dependencies {
 
-        implementation 'one.jodi:jodi_odi:12.2.1.4.0.0'
+        implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
         implementation 'javax.xml.bind:jaxb-api:2.3.1'
         implementation 'com.sun.activation:javax.activation:1.2.0'
         implementation 'javax.xml.bind:jaxb-api:2.3.1'
