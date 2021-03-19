@@ -4,12 +4,14 @@ package one.jodi.qa.test;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.bootstrap.JodiController;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Ec {
 
@@ -23,7 +25,7 @@ public class Ec {
         final String odiSchemaPwd = new PasswordConfigImpl().getOdiMasterRepoPassword();
         final String odiUserPwd = new PasswordConfigImpl().getOdiUserPassword();
         final String dapwd = new PasswordConfigImpl().getDeploymentArchivePassword();
-        final List<String> argList = new ArrayList<String>();
+        final List<String> argList = new ArrayList<>();
         argList.add("-a");
         argList.add(action);
         argList.add("-c");
