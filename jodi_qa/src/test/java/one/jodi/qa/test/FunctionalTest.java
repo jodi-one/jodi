@@ -32,6 +32,7 @@ import one.jodi.odi.variables.OdiVariableAccessStrategy;
 import one.jodi.odi12.folder.Odi12FolderHelper;
 import one.jodi.odi12.procedure.Odi12ProcedureServiceProvider;
 import oracle.odi.core.OdiInstance;
+import oracle.odi.core.persistence.IOdiEntityManager;
 import oracle.odi.core.persistence.transaction.ITransactionManager;
 import oracle.odi.domain.IOdiEntity;
 import oracle.odi.domain.IRepositoryEntity;
@@ -519,6 +520,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // Annotation
         if (testName != null) {
             try {
+                OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+                ITransactionManager tm = odiInstance.getTransactionManager();
+                IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
+                IOdiPackageFinder mf = (IOdiPackageFinder) odiInstance.getFinder(OdiPackage.class);
+                Collection<OdiPackage> packages = mf.findAll();
+                for(OdiPackage p : packages) {
+                    tem.remove(p);
+                }
+                tm.commit(getWorkOdiInstance().getTransactionStatus());
                 deletePackageAndScenario(defaultProperties, testName, "BulkLoadORACLE_DWH_STG");
                 logger.debug("package " + testName + " deleted after execution test case.");
             } catch (RuntimeException ex) {

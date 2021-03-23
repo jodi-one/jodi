@@ -1,6 +1,6 @@
 # Created by https://www.gitignore.io/api/svn,java,pydev,maven,python,gradle,pycharm,eclipse,intellij
 # Edit at https://www.gitignore.io/?templates=svn,java,pydev,maven,python,gradle,pycharm,eclipse,intellij
-
+jodi_base/src/main/java/one/jodi/base/config/PasswordConfigImpl.java
 ### Eclipse ###
 .metadata
 bin/
