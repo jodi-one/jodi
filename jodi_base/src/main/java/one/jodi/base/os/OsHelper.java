@@ -1,11 +1,15 @@
 package one.jodi.base.os;
 
-public class OsHelper {
-    private static String OS;
+public final class OsHelper {
+    private static final String OS;
 
     static {
         String value = System.getProperty("os.name");
         OS = (value != null) ? value.toLowerCase() : "";
+    }
+
+    private OsHelper() {
+        // no util instances
     }
 
     public static boolean isWindows() {

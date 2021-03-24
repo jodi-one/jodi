@@ -1,13 +1,19 @@
 package one.jodi.base.error;
 
 import one.jodi.base.exception.UnRecoverableException;
-import one.jodi.base.util.Register;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -16,19 +22,20 @@ import java.util.stream.Collectors;
 public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 
     public final static int PackageSequenceGlobal = -1;
-    private final static Logger logger =
+
+    private final static Logger LOGGER =
             LogManager.getLogger(ErrorWarningMessageJodiImpl.class);
     private static final String FORMAT_HEADER = "[%05d] ";
     private static final String ERROR_MESSAGE_99996 =
             "Error in construction error message from string '%s'. Message code string " +
                     "contains %d parameters while %s parameters are entered.";
     private static ErrorWarningMessageJodi error = null;
-    Register register;
-    private int lastSequenceNumber;
-    private SortedMap<Integer, List<String>> errorMessages;
-    private SortedMap<Integer, List<String>> warningMessages;
-    private SortedMap<String, File> files = new TreeMap<>();
+
+    private final SortedMap<Integer, List<String>> errorMessages;
+    private final SortedMap<Integer, List<String>> warningMessages;
+    private final SortedMap<String, File> files = new TreeMap<>();
     //has state
+    private int lastSequenceNumber;
     private String metaDataDirectory;
 
     /**
@@ -43,16 +50,6 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
             throw new UnRecoverableException("Possible DoS Attack via method call " +
                     "System.getProperty(\"line.separator\")");
         }
-    }
-
-    private ErrorWarningMessageJodiImpl(final ErrorWarningMessageJodi original) {
-        super();
-        // clone operation! Not simply copy of Map as it may not be deleted
-        // but simply cleared
-        errorMessages =
-                new TreeMap<>(original.getErrorMessages());
-        warningMessages =
-                new TreeMap<>(original.getWarningMessages());
     }
 
     /**
@@ -109,63 +106,61 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
         if (messagesToSuppress.length == 0) {
             // default
             if (errorMessages.size() > 0 || warningMessages.size() > 0) {
-                report.append(messageHeader + EOL);
-                logger.warn(messageHeader);
+                report.append(messageHeader).append(EOL);
+                LOGGER.warn(messageHeader);
                 if (errorMessages.size() > 0) {
-                    report.append("----  ERRORS  ----------------------------" + EOL);
-                    logger.error("----  ERRORS  ----------------------------");
-                    report.append(printByMessageType(Level.ERROR, errorMessages, wString, true));
+                    report.append("----  ERRORS  ----------------------------").append(EOL);
+                    LOGGER.error("----  ERRORS  ----------------------------");
+                    report.append(printByMessageType(Level.ERROR, errorMessages, wString));
                 }
                 if (warningMessages.size() > 0) {
                     wString = "(warning)";
-                    report.append("----  WARNINGS  ----------------------------" + EOL);
-                    logger.warn("----  WARNINGS  ----------------------------");
-                    report.append(printByMessageType(Level.WARN, warningMessages, wString,
-                            false));
+                    report.append("----  WARNINGS  ----------------------------").append(EOL);
+                    LOGGER.warn("----  WARNINGS  ----------------------------");
+                    report.append(printByMessageType(Level.WARN, warningMessages, wString
+                    ));
                 }
-                logger.warn("-------------------------------------------------------" + EOL);
+                LOGGER.warn("-------------------------------------------------------" + EOL);
             }
-        } else if (messagesToSuppress.length > 0) {
-            if (!amessagesToSuppress.contains(MESSAGE_TYPE.ERRORS) || amessagesToSuppress.isEmpty()) {
+        } else {
+            if (!amessagesToSuppress.contains(MESSAGE_TYPE.ERRORS)) {
                 // suppress warnings and only print errors
                 if (errorMessages.size() > 0) {
-                    report.append(messageHeader + EOL);
-                    logger.error(messageHeader);
-                    report.append("----  ERRORS  ----------------------------" + EOL);
-                    logger.error("----  ERRORS  ----------------------------");
+                    report.append(messageHeader).append(EOL);
+                    LOGGER.error(messageHeader);
+                    report.append("----  ERRORS  ----------------------------").append(EOL);
+                    LOGGER.error("----  ERRORS  ----------------------------");
                     report.append(printByMessageType(Level.ERROR, getErrorMessages(),
-                            wString, true));
+                            wString));
                     if (warningMessages.size() == 0) {
-                        report.append("-------------------------------------------------------" + EOL);
-                        logger.error("-------------------------------------------------------" + EOL);
+                        report.append("-------------------------------------------------------").append(EOL);
+                        LOGGER.error("-------------------------------------------------------" + EOL);
                     }
                 }
             }
-            if (!amessagesToSuppress.contains(MESSAGE_TYPE.WARNINGS) || amessagesToSuppress.isEmpty()) {
+            if (!amessagesToSuppress.contains(MESSAGE_TYPE.WARNINGS)) {
                 // suppress errors and only print warnings
                 if (warningMessages.size() > 0) {
                     wString = "(warning)";
                     if (errorMessages.size() < 1) {
-                        report.append(messageHeader + EOL);
-                        logger.warn(messageHeader);
+                        report.append(messageHeader).append(EOL);
+                        LOGGER.warn(messageHeader);
                     }
-                    report.append("----  WARNINGS  ----------------------------" + EOL);
-                    logger.warn("----  WARNINGS  ----------------------------");
+                    report.append("----  WARNINGS  ----------------------------").append(EOL);
+                    LOGGER.warn("----  WARNINGS  ----------------------------");
                     report.append(printByMessageType(Level.WARN, getWarningMessages(),
-                            wString, false));
-                    logger.warn("-------------------------------------------------------" + EOL);
-                    report.append("-------------------------------------------------------" + EOL + EOL);
+                            wString));
+                    LOGGER.warn("-------------------------------------------------------" + EOL);
+                    report.append("-------------------------------------------------------").append(EOL).append(EOL);
                 }
             }
-
         }
         return report.toString();
     }
 
     private synchronized String printByMessageType(final Level level,
                                                    final Map<Integer, List<String>> map,
-                                                   final String warning,
-                                                   final boolean isError) {
+                                                   final String warning) {
         StringBuilder report = new StringBuilder();
         SortedMap<Integer, List<String>> updatedMap = new TreeMap<>();
         for (Integer packageSequence : map.keySet()) {
@@ -174,38 +169,35 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
                 String packageSequenceString = (packageSequence == PackageSequenceGlobal) ? ""
                         : packageSequence + " - ";
                 if (warning == null) {
+                    List<String> messages;
                     if (!updatedMap.containsKey(messageCode)) {
-                        List<String> messages = new ArrayList<>();
-                        messages.add(packageSequenceString.concat(message));
-                        updatedMap.put(messageCode, messages);
+                        messages = new ArrayList<>();
                     } else {
-                        List<String> messages = updatedMap.get(messageCode);
-                        messages.add(packageSequenceString.concat(message));
-                        updatedMap.put(messageCode, messages);
+                        messages = updatedMap.get(messageCode);
                     }
+                    messages.add(packageSequenceString.concat(message));
+                    updatedMap.put(messageCode, messages);
                 } else {
+                    List<String> messages;
                     if (!updatedMap.containsKey(messageCode)) {
-                        List<String> messages = new ArrayList<>();
-                        messages.add(packageSequenceString.concat(message)
-                                .concat(warning));
-                        updatedMap.put(messageCode, messages);
+                        messages = new ArrayList<>();
                     } else {
-                        List<String> messages = updatedMap.get(messageCode);
-                        messages.add(packageSequenceString.concat(message)
-                                .concat(warning));
-                        updatedMap.put(messageCode, messages);
+                        messages = updatedMap.get(messageCode);
                     }
+                    messages.add(packageSequenceString.concat(message)
+                            .concat(warning));
+                    updatedMap.put(messageCode, messages);
                 }
             }
         }
         for (List<String> messages : updatedMap.values()) {
             for (String message : messages) {
                 if (level.equals(Level.WARN)) {
-                    logger.warn(message);
+                    LOGGER.warn(message);
                 } else {
-                    logger.error(message);
+                    LOGGER.error(message);
                 }
-                report.append(message + EOL);
+                report.append(message).append(EOL);
             }
         }
         return report.toString();
@@ -236,16 +228,14 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 
     private boolean searchMessageMap(final SortedMap<Integer, List<String>> messageMap,
                                      final String errorMessage) {
-        boolean messageFound = false;
         for (List<String> messages : messageMap.values()) {
             for (String message : messages) {
                 if (message.equals(errorMessage)) {
-                    messageFound = true;
+                    return true;
                 }
             }
-
         }
-        return messageFound;
+        return false;
     }
 
     private int getMessageIdFromErrorMessage(final String errorMessage) {
@@ -280,11 +270,8 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
             initializeFiles(this.metaDataDirectory);
         }
         if (packageSequence > 0) {
-            List<File> matching = files.entrySet().stream().filter(f -> f.getValue().getName()
-                    .startsWith(
-                            packageSequence +
-                                    ""))
-                    .map(Map.Entry<String, File>::getValue)
+            List<File> matching = files.values().stream()
+                    .filter(file -> file.getName().startsWith(packageSequence + ""))
                     .collect(Collectors.toList());
             if (matching.size() == 1) {
                 errorMessage = errorMessage + "(" +
@@ -304,11 +291,7 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 
     private void addMessages(final SortedMap<Integer, List<String>> errorMessages,
                              final int packageSequence, final String errorMessage) {
-        List<String> list = errorMessages.get(packageSequence);
-        if (list == null) {
-            list = new ArrayList<>();
-            errorMessages.put(packageSequence, list);
-        }
+        List<String> list = errorMessages.computeIfAbsent(packageSequence, k -> new ArrayList<>());
         list.add(errorMessage);
     }
 
@@ -319,12 +302,12 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
             return String.format(FORMAT_HEADER, messageCode) +
                     String.format(messageFormatString, args);
         } else {
-            long countcountVariables = messageFormatString.chars()
+            long countVariables = messageFormatString.chars()
                     .filter(ch -> ch == '%')
                     .count();
             String cleanMessage = messageFormatString.replace("%", "");
             String msg = formatMessage(99996, ERROR_MESSAGE_99996, this.getClass(),
-                    cleanMessage, countcountVariables, args.length);
+                    cleanMessage, countVariables, args.length);
             addMessage(msg, MESSAGE_TYPE.ERRORS);
             return msg;
         }
@@ -332,49 +315,40 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 
     public boolean validate(final int messageCode, final String messageCodeString,
                             final Object[] args) {
-        boolean match = false;
-
-        // number of occurences of %
+        // number of occurrences of %
         long count = messageCodeString.chars().filter(ch -> ch == '%').count();
 
         // simple case the same number of parameters in args and message code string
-        //if(count == Long.valueOf(args.length+"")){
         if (count == args.length) {
-            match = true;
+            return true;
         } else {
-            // less simple case: parameters are used multiple times within
-            // message
+            // less simple case: parameters are used multiple times within message
             String[] parameters = messageCodeString.split("\"");
-            List<String> params = new ArrayList<String>();
-            for (String p : parameters) {
-                if (p.startsWith("%") &&
-                        !params.contains(p.substring(1, p.length()))) {
-                    params.add(p.substring(1, p.length()));
-                }
-            }
-            if (params.size() == args.length) {
-                match = true;
-            }
+            long hits = Arrays.stream(parameters)
+                    .filter(p -> p.startsWith("%"))
+                    .map(p -> p.substring(1))
+                    .distinct().count();
+
+            return hits == args.length;
         }
-        return match;
     }
 
     @Override
     public void clear() {
         setLastSequenceNumber(0);
         if (errorMessages.isEmpty()) {
-            logger.debug("No errors to be removed.");
+            LOGGER.debug("No errors to be removed.");
         } else {
             int size = errorMessages.size();
             errorMessages.clear();
-            logger.debug("Error messages removed. " + size);
+            LOGGER.debug("Error messages removed. " + size);
         }
         if (warningMessages.isEmpty()) {
-            logger.debug("No warnings to be removed.");
+            LOGGER.debug("No warnings to be removed.");
         } else {
             int size = warningMessages.size();
             warningMessages.clear();
-            logger.debug("Warning messages removed. " + size);
+            LOGGER.debug("Warning messages removed. " + size);
         }
     }
 
@@ -432,50 +406,4 @@ public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
     public void setMetaDataDirectory(final String metaDataDirectory) {
         this.metaDataDirectory = metaDataDirectory;
     }
-
-//	@Override
-//	public synchronized void logMessages() {
-//		// set log off and back on again for the console
-//		Logger logger = LogManager.getLogger();
-//		Map<String, Appender> appenderMap = 
-//		        ((org.apache.logging.log4j.core.Logger) logger).getAppenders();
-////		 Set<Appender> consoleAppenders = appenderMap.values().stream()
-////				.filter( e -> e.getClass().getName().equals("org.apache.logging.log4j.core.appender.ConsoleAppender"))
-////				.collect(Collectors.toSet());
-////		appenderMap.entrySet().stream()
-////		.peek( e -> logger.info("trying to stp : " +e.getValue().getClass().getName() + " -> "+ e.getValue().getHandler().getClass().getName()))
-////		.filter( e -> e.getValue().getClass().getName().equals("org.apache.logging.log4j.core.appender.ConsoleAppender"))
-////		.peek( e -> logger.info("Stopping : " +e.getValue().getName()))
-////		.forEach( a ->  ((org.apache.logging.log4j.core.Logger) logger).get a.getValue()));
-//
-//		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-//		Configuration config = ctx.getConfiguration();
-//		LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME); 
-//		loggerConfig.setLevel(level);
-//		
-//		
-//		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss - E");
-//		String date = String.format("ErrorReport as per %s.", dateFormat.format(new Date()));
-//		// default
-//		if (errorMessages.size() > 0 || warningMessages.size() > 0) {
-//			logger.info(date);
-//			if (errorMessages.size() > 0) {
-//				logger.info("----  ERRORS  ----------------------------");
-//				logByMessageType(errorMessages);
-//			}
-//			if (warningMessages.size() > 0) {
-//				logger.info("----  WARNINGS  ----------------------------");
-//				logByMessageType(warningMessages);
-//			}
-//			logger.info("-------------------------------------------------------" + EOL);
-//		}
-//		consoleAppenders.stream().forEach( a-> ((org.apache.logging.log4j.core.Logger) logger).addAppender(a));
-//		((org.apache.logging.log4j.core.Logger) logger).addAppender();
-//	}
-//	
-//	private  synchronized void logByMessageType(SortedMap<Integer, List<String>> errorMessages) {
-//		for(Entry<Integer, List<String>> entry :  errorMessages.entrySet()){ 
-//			logger.info(String.format("%d - %s",  entry.getKey(), entry.getValue()));
-//		}
-//	}
 }

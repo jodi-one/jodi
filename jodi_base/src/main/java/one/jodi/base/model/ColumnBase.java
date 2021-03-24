@@ -26,7 +26,7 @@ public class ColumnBase implements ModelNode {
 
     private final Optional<ColumnAnnotations> columnAnnotations;
 
-    private List<LevelBase> associatedLevel = new ArrayList<>();
+    private final List<LevelBase> associatedLevel = new ArrayList<>();
 
     protected ColumnBase(final ColumnMetaData columnData, final TableBase parent,
                          final Optional<ColumnAnnotations> columnAnnotations,
@@ -69,6 +69,7 @@ public class ColumnBase implements ModelNode {
                 getParent().getName() + "." + getName();
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -131,6 +132,7 @@ public class ColumnBase implements ModelNode {
     // Insert Additional Functionality Below This Section
     //
 
+    @Override
     public TableBase getParent() {
         return parent;
     }
@@ -138,25 +140,19 @@ public class ColumnBase implements ModelNode {
     public boolean isFkColumn() {
         return parent.getFks()
                 .stream()
-                .filter(fk -> fk.getFKColumns().contains(this))
-                .findFirst()
-                .isPresent();
+                .anyMatch(fk -> fk.getFKColumns().contains(this));
     }
 
     public List<? extends FkRelationshipBase> getAssociatedFks() {
-        List<FkRelationshipBase> found =
-                parent.getFks().stream()
-                        .filter(fk -> fk.getFKColumns().contains(this))
-                        .collect(Collectors.toList());
-        return found;
+        return parent.getFks().stream()
+                .filter(fk -> fk.getFKColumns().contains(this))
+                .collect(Collectors.toList());
     }
 
     public List<? extends FkRelationshipBase> getAssociatedFksUsingNamingColumn() {
-        List<FkRelationshipBase> found =
-                parent.getFks().stream()
-                        .filter(fk -> fk.getFKColumns().get(0) == this)
-                        .collect(Collectors.toList());
-        return found;
+        return parent.getFks().stream()
+                .filter(fk -> fk.getFKColumns().get(0) == this)
+                .collect(Collectors.toList());
     }
 
     public boolean belongsToPK() {

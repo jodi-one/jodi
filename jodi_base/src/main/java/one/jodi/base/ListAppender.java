@@ -17,7 +17,11 @@ package one.jodi.base;
  */
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LifeCycle;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
@@ -73,12 +77,14 @@ public class ListAppender extends AbstractAppender {
         }
     }
 
+    @SuppressWarnings("unused")
     public static ListAppender createAppender(final String name, final boolean newLine, final boolean raw,
                                               final Layout<? extends Serializable> layout, final Filter filter) {
         return new ListAppender(name, filter, layout, newLine, raw);
     }
 
     @PluginBuilderFactory
+    @SuppressWarnings("unused")
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -90,8 +96,9 @@ public class ListAppender extends AbstractAppender {
      * @return the named ListAppender or {@code null} if it does not exist
      * @see org.apache.logging.log4j.junit.LoggerContextRule#getListAppender(String)
      */
+    @SuppressWarnings("unused")
     public static ListAppender getListAppender(final String name) {
-        return ((ListAppender) (LoggerContext.getContext(false)).getConfiguration().getAppender(name));
+        return (LoggerContext.getContext(false)).getConfiguration().getAppender(name);
     }
 
     @Override
@@ -236,6 +243,7 @@ public class ListAppender extends AbstractAppender {
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder setEntryPerNewLine(final boolean entryPerNewLine) {
             this.entryPerNewLine = entryPerNewLine;
             return this;

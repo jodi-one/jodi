@@ -8,7 +8,7 @@ import java.util.SortedMap;
  */
 public interface ErrorWarningMessageJodi {
 
-    public final static String EOL = System.getProperty("line.separator");
+    String EOL = System.getProperty("line.separator");
     String messageHeader = "Messages are displayed in the following formats:" + EOL
             + "1) [message code] - body of the message." + EOL
             + "2) packageSequence - [message code] - body of the message." + EOL;

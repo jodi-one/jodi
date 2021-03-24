@@ -1,6 +1,3 @@
-/**
- *
- */
 package one.jodi.base.service.odb;
 
 class OdbDataStore {

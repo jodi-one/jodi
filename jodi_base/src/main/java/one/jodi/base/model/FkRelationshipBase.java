@@ -7,7 +7,13 @@ import one.jodi.base.service.metadata.ForeignReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FkRelationshipBase {
@@ -87,7 +93,9 @@ public class FkRelationshipBase {
     private boolean matchingColumns(final KeyBase key,
                                     final List<ColumnBase> fkColumns) {
         assert (fkColumns != null && key != null);
-        if (fkColumns.size() != key.getColumns().size()) return false;
+        if (fkColumns.size() != key.getColumns().size()) {
+            return false;
+        }
 
         Set<ColumnBase> columnSet = new HashSet<>(fkColumns);
         columnSet.removeAll(key.getColumns());
@@ -172,7 +180,7 @@ public class FkRelationshipBase {
         List<ColumnBase> columns = new ArrayList<>();
         for (ForeignReference.RefColumns columnRef : this.referenceColumns) {
             String columnName = columnRef.getForeignKeyColumnName();
-            ColumnBase column = (ColumnBase) getParent().getColumns().get(columnName);
+            ColumnBase column = getParent().getColumns().get(columnName);
             assert (column != null) : "Expected column " + columnName +
                     " was not found for " + this.name;
             columns.add(column);
@@ -185,9 +193,8 @@ public class FkRelationshipBase {
     }
 
     public List<String> getFkColumnNames() {
-        List<String> names = getFKColumns().stream().map(ColumnBase::getName)
+        return getFKColumns().stream().map(ColumnBase::getName)
                 .collect(Collectors.toList());
-        return names;
     }
 
     public boolean hasMatchingColumnNames(final FkRelationshipBase other) {

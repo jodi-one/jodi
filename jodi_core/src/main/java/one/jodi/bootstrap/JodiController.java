@@ -45,12 +45,11 @@ public class JodiController extends JodiControllerBase {
     protected Injector createInjector(Collection<? extends Module> applicationModules,
                                       boolean isDevMode, RunConfig config) {
         EtlRunConfig etlConfig = (EtlRunConfig) config;
-        Injector injector = Guice.createInjector(
+        return Guice.createInjector(
                 (isDevMode ? Stage.DEVELOPMENT : Stage.PRODUCTION),
                 Modules.override(new BootstrapModule(config),
                         new BaseModule(config, this),
                         new CoreETLModule(etlConfig)).with(applicationModules));
-        return injector;
     }
 
 }

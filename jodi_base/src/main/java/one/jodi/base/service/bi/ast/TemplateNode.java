@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface TemplateNode extends ExprNode {
 
-    public String getTemplate();
+    String getTemplate();
 
-    public List<ExprNode> getExpressions();
+    List<ExprNode> getExpressions();
 }

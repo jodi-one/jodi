@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface PropertyValueHolder {
-    abstract String getString();
+    String getString();
 
-    abstract String getKey();
+    String getKey();
 
-    abstract List<String> getList();
+    List<String> getList();
 
-    abstract Map<String, String> getMap();
+    Map<String, String> getMap();
 }

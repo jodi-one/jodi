@@ -6,7 +6,12 @@ import one.jodi.base.service.metadata.DataModelDescriptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ApplicationBase implements ModelNode {
 
@@ -26,10 +31,12 @@ public class ApplicationBase implements ModelNode {
         this.errorWarningMessages = errorWarningMessages;
     }
 
+    @Override
     public String getName() {
         return "root";
     }
 
+    @Override
     public ModelNode getParent() {
         return null;
     }
@@ -51,10 +58,6 @@ public class ApplicationBase implements ModelNode {
                 model.getDataBaseServicePort(),
                 model.getDataServerName());
     }
-
-    //
-    //
-    //
 
     public SchemaBase addSchema(final DataModelDescriptor model,
                                 final String initExpression)

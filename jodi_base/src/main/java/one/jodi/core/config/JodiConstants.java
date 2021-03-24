@@ -71,26 +71,17 @@ public abstract class JodiConstants {
     public final static String ODI12_GENERATE_SCENARIOS_FOR_PACKAGES =
             "odi12.generateScenariosForPackages";
 
-    public static final List<String> getEmbeddedXSDFileNames() {
-        return Arrays.asList(new String[]
-                {XSD_FILE_CONSTRAINTS, XSD_FILE_EXTENSIONS, XSD_FILE_LOADPLAN,
-                        XSD_FILE_PROCEDURE, XSD_FILE_SEQUENCES, XSD_FILE_VARIABLES});
+    public static List<String> getEmbeddedXSDFileNames() {
+        return Arrays.asList(XSD_FILE_CONSTRAINTS, XSD_FILE_EXTENSIONS, XSD_FILE_LOADPLAN,
+                XSD_FILE_PROCEDURE, XSD_FILE_SEQUENCES, XSD_FILE_VARIABLES);
     }
 
     public static String getScenarioNameFromObject(final String name, boolean isMapping) {
-        if (!isMapping) {
-            return name.replace("(", "_")
-                    .replace(")", "_")
-                    .replace(",", "_")
-                    .replace(" ", "_")
-                    .toUpperCase();
-        } else {
-            return name.replace("(", "_")
-                    .replace(")", "_")
-                    .replace(",", "_")
-                    .replace(" ", "_")
-                    .toUpperCase();
-        }
+        return name.replace("(", "_")
+                .replace(")", "_")
+                .replace(",", "_")
+                .replace(" ", "_")
+                .toUpperCase();
     }
 
     public String getReusableMappingPrefix(final String interfacePrefix) {
@@ -98,7 +89,7 @@ public abstract class JodiConstants {
         String result = "I_"; // default needed for package action runner
         if (interfacePrefix != null && interfacePrefix.trim().length() > 0) {
             result = interfacePrefix.toUpperCase().replace(" ", "").trim()
-                    .substring(0, 1) + "_";
+                    .charAt(0) + "_";
         }
         return result;
     }

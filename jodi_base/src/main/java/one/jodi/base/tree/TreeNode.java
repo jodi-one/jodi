@@ -3,21 +3,24 @@ package one.jodi.base.tree;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TreeNode<T> {
-    private final static Logger logger = LogManager.getLogger(TreeNode.class);
+    private final static Logger LOGGER = LogManager.getLogger(TreeNode.class);
 
     private final static String EXCEPTION_MSG =
             "Incorrect tree definition. A cycle was detected. ";
 
     // uses as  a default to get node names in error message
     // by default it is the object name unless the toString method is overwritten
-    private final static Function<Object, String> defaultPrintItemName =
-            it -> it.toString();
+    private final static Function<Object, String> defaultPrintItemName = Object::toString;
 
     private final static Predicate<Object> defaultFinalNode = it -> false;
 
@@ -25,7 +28,7 @@ public class TreeNode<T> {
     private final T item;
 
     private TreeNode<T> parent = null;
-    private List<TreeNode<T>> children = new ArrayList<>();
+    private final List<TreeNode<T>> children = new ArrayList<>();
 
     private boolean marked = false;
 
@@ -56,11 +59,6 @@ public class TreeNode<T> {
         child.parent = this;
     }
 
-    //
-    //
-    //
-
-    @SuppressWarnings("unchecked")
     private MalformedTreeException createException(final List<T> containsCycle,
                                                    final T duplicate) {
 
@@ -73,8 +71,7 @@ public class TreeNode<T> {
                 .map(this.printItemName)
                 .collect(Collectors.joining(", "));
         final String msg = EXCEPTION_MSG + path;
-        return new MalformedTreeException(msg, (List<Object>) (List<?>)
-                Collections.unmodifiableList(cycle));
+        return new MalformedTreeException(msg, Collections.unmodifiableList(cycle));
     }
 
     @SuppressWarnings("unchecked")
@@ -82,7 +79,7 @@ public class TreeNode<T> {
         try {
             getPaths();
         } catch (MalformedTreeException e) {
-            return (List<T>) (List<?>) e.getParticipateInCycle();
+            return (List<T>) e.getParticipateInCycle();
         }
         return Collections.emptyList();
     }
@@ -91,13 +88,12 @@ public class TreeNode<T> {
         return !getCycle().isEmpty();
     }
 
-    private void exceptionOnCycle(final ArrayList<T> currentPath,
-                                  final int depth) {
+    private void exceptionOnCycle(final ArrayList<T> currentPath, final int depth) {
         if (this.marked) {
             MalformedTreeException e =
                     createException(currentPath.subList(0, depth),
                             this.item);
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw e;
         }
     }
@@ -164,7 +160,7 @@ public class TreeNode<T> {
             currentPath.add(depth, getItem());
             if (getChildren().isEmpty() || lastToInclude.test(getItem())) {
                 // reached leaf or last node to include in path
-                paths.add(new ArrayList<T>(currentPath.subList(0, depth + 1)));
+                paths.add(new ArrayList<>(currentPath.subList(0, depth + 1)));
             } else {
                 // process each child leaf
                 for (final TreeNode<T> child : getChildren()) {
@@ -186,13 +182,12 @@ public class TreeNode<T> {
     public List<List<T>> getReversePaths() {
         List<List<T>> paths = getPaths();
         return Collections.unmodifiableList(paths.stream()
-                .peek(p -> Collections.reverse(p))
+                .peek(Collections::reverse)
                 .collect(Collectors.toList()));
     }
 
     public List<List<T>> getPaths(final T lastToInclude) {
-        final Predicate<Object> lastIncludeCond = it -> lastToInclude.equals(it);
-        return Collections.unmodifiableList(traverse(new ArrayList<>(), 0,
-                lastIncludeCond));
+        final Predicate<Object> lastIncludeCond = lastToInclude::equals;
+        return Collections.unmodifiableList(traverse(new ArrayList<>(), 0, lastIncludeCond));
     }
 }

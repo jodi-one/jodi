@@ -18,8 +18,6 @@ public interface ParseResult {
      */
     Optional<ExprNode> getAst();
 
-    ;
-
     List<String> getErrorMessages();
 
     Optional<ErrorType> getErrorType();

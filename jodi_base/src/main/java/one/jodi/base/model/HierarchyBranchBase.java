@@ -34,9 +34,15 @@ public class HierarchyBranchBase {
     }
 
     public boolean isSame(final HierarchyBranchBase that) {
-        if (this == that) return true;
-        if (that == null) return false;
-        if (this.levels.size() != that.getLevels().size()) return false;
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (this.levels.size() != that.getLevels().size()) {
+            return false;
+        }
 
         boolean isSame = true;
         for (int i = 0; i < this.levels.size(); i++) {
@@ -128,9 +134,8 @@ public class HierarchyBranchBase {
     }
 
     public LevelBase getLevel(final int index) {
-        LevelBase detail = null;
         assert (levels.size() >= index && index > 0) : "Incorrect Index " + index;
-        detail = levels.get(levels.size() - index);
+        LevelBase detail = levels.get(levels.size() - index);
         assert (detail != null);
         return detail;
     }
@@ -138,7 +143,7 @@ public class HierarchyBranchBase {
     //test and diagnosis purposes only
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String sep = "";
         for (LevelBase level : levels) {
             sb.append(sep)

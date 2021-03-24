@@ -5,7 +5,12 @@ import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,9 +93,9 @@ public abstract class ReferToHelper<T> {
 
         Optional<RefKey<T>> result;
         if (m.group(3) != null) {
-            result = Optional.of(new RefKey<T>(name, m.group(3), value));
+            result = Optional.of(new RefKey<>(name, m.group(3), value));
         } else {
-            result = Optional.of(new RefKey<T>(name, value));
+            result = Optional.of(new RefKey<>(name, value));
         }
         return result;
     }
@@ -98,8 +103,8 @@ public abstract class ReferToHelper<T> {
     private Optional<TableBase> findIncoming(final TableBase target, final String name) {
         return target.getIncomingFks()
                 .stream()
-                .filter(fk -> fk.getParent().getName().equalsIgnoreCase(name))
-                .map(fk -> fk.getParent())
+                .map(FkRelationshipBase::getParent)
+                .filter(parent -> parent.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
 
@@ -140,7 +145,7 @@ public abstract class ReferToHelper<T> {
                     msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             return Optional.empty();
-        } else if (targetColumn == null && targetBridge.isPresent()) {
+        } else if (targetColumn == null) {
             targetFk = findMultiValuedDimension(targetBridge.get(), primaryTable);
             if (!targetFk.isPresent()) {
                 String msg = errorWarningMessages.formatMessage(92255, ERROR_MESSAGE_92255,
@@ -154,8 +159,7 @@ public abstract class ReferToHelper<T> {
                 logger.error(msg);
                 return Optional.empty();
             }
-        } else if (targetColumn != null && !targetColumn.isFkColumn() ||
-                primaryTable.getFks(targetColumn).isEmpty()) {
+        } else if (!targetColumn.isFkColumn() || primaryTable.getFks(targetColumn).isEmpty()) {
             String msg = errorWarningMessages.formatMessage(92260, ERROR_MESSAGE_92260,
                     this.getClass(), columnName,
                     primaryTable.getName(),
@@ -180,7 +184,7 @@ public abstract class ReferToHelper<T> {
         }
 
         Optional<String> errorMessage = isValidDimensionReference(targetFk.get());
-        if (targetFk.isPresent() && errorMessage.isPresent()) {
+        if (errorMessage.isPresent()) {
             String msg = errorWarningMessages.formatMessage(92280, ERROR_MESSAGE_92280,
                     this.getClass(),
                     columnName,
@@ -293,29 +297,30 @@ public abstract class ReferToHelper<T> {
                 // expression contains errors
                 continue;
             }
-
+            RefKey<T> refKey = oRefKey.get();
             // special handling of "_All Other Dimensions_" case
-            if (ALL_OTHER_DIMENSIONS.equalsIgnoreCase(oRefKey.get().getColumnName())) {
+            if (ALL_OTHER_DIMENSIONS.equalsIgnoreCase(refKey.getColumnName())) {
                 @SuppressWarnings({"rawtypes", "unchecked"})
                 TargetDefinition<T> td =
-                        new TargetAllOtherDimensions(oRefKey.get().getValue());
+                        new TargetAllOtherDimensions(refKey.getValue());
                 levels.add(td);
                 continue;
             }
 
             Optional<FkRelationshipBase> fk =
-                    findDimension(columnName, primaryTable, oRefKey.get().getColumnName(), i);
+                    findDimension(columnName, primaryTable, refKey.getColumnName(), i);
             if (!fk.isPresent()) {
                 // dimension cannot be found
                 continue;
             }
 
             Optional<? extends FkRelationshipBase> outriggerFk = Optional.empty();
-            Optional<String> outriggerName = oRefKey.get().getTableName();
-            if (outriggerName.isPresent() && !outriggerName.get().equals("")) {
-                outriggerFk = determineOutrigger(columnName, primaryTable,
-                        outriggerName.get(), fk.get(), i);
-                if (!outriggerFk.isPresent()) continue; // outrigger table not found
+            Optional<String> outriggerName = Optional.ofNullable(refKey.getTableName());
+            if (outriggerName.filter(name -> !"".equals(name)).isPresent()) {
+                outriggerFk = determineOutrigger(columnName, primaryTable, outriggerName.get(), fk.get(), i);
+                if (!outriggerFk.isPresent()) {
+                    continue; // outrigger table not found
+                }
             }
 
             String key = getKey(fk.get(), outriggerFk);
@@ -329,12 +334,11 @@ public abstract class ReferToHelper<T> {
                 logger.error(msg);
                 continue;
             }
-            previouslyFound.put(key, oRefKey.get());
-
+            previouslyFound.put(key, refKey);
 
             @SuppressWarnings({"rawtypes", "unchecked"})
             TargetDefinition<T> td = new TargetDefinition(fk.get(), outriggerFk,
-                    oRefKey.get().getValue());
+                    refKey.getValue());
             levels.add(td);
         }
         return levels;
@@ -342,13 +346,13 @@ public abstract class ReferToHelper<T> {
 
     private static class RefKey<T> {
         private final String columnName;
-        private final Optional<String> tableName;
+        private final String tableName;
         private final T value;
 
         private RefKey(final String columnName, final String tableName, final T value) {
             super();
             this.columnName = columnName;
-            this.tableName = Optional.ofNullable(tableName);
+            this.tableName = tableName;
             this.value = value;
         }
 
@@ -360,7 +364,7 @@ public abstract class ReferToHelper<T> {
             return this.columnName;
         }
 
-        private Optional<String> getTableName() {
+        private String getTableName() {
             return this.tableName;
         }
 

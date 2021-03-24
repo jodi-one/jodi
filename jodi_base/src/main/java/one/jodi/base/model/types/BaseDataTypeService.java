@@ -24,6 +24,4 @@ public abstract class BaseDataTypeService {
         return this.dbToBiTypeMap.get(databaseType.toUpperCase());
     }
 
-    ;
-
 }

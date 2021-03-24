@@ -18,7 +18,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Named;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The bootstrap class that is used to run the Jodi functionality
@@ -28,12 +33,10 @@ public abstract class JodiControllerBase implements Register {
     private final static Logger logger = LogManager.getLogger(JodiControllerBase.class);
 
     private static final boolean ENABLE_TEST_BEHAVIOR_DEFAULT = false;
-    private final static String ERROR_MESSAGE_80000 = "Could not initialize, "
-            + "please check jodi.properties, DB connection and Repository. %s";
-    private final static String ERROR_MESSAGE_80010 = "Unable to instantiate "
-            + "ModuleProvider implementation %s";
-    private final static String ERROR_MESSAGE_80020 =
-            "Encoding %s is not supported.";
+    private final static String ERROR_MESSAGE_80000 = "Could not initialize, please check jodi.properties, " +
+            "DB connection and Repository. %s";
+    private final static String ERROR_MESSAGE_80010 = "Unable to instantiate ModuleProvider implementation %s";
+    private final static String ERROR_MESSAGE_80020 = "Encoding %s is not supported.";
     private final boolean enableTestBehavior;
     private Set<Resource> registered = new HashSet<>();
     private ErrorWarningMessageJodi errorWarningMessages =
@@ -136,7 +139,7 @@ public abstract class JodiControllerBase implements Register {
         registered = new HashSet<>();
     }
 
-    private synchronized void cleanCacheAndPrintErrors(final BaseCmdlineArgumentProcessor config) {
+    private synchronized void cleanCacheAndPrintErrors() {
         cleanup();
         cachedErrorWarningMessages = errorWarningMessages.printMessages();
         errorWarningMessages.clear();
@@ -151,7 +154,7 @@ public abstract class JodiControllerBase implements Register {
      */
     public synchronized int run(String[] args, String... fileName) {
         // remove cached error reports from previous run
-        int exitCode = 0;
+        int exitCode;
         String exceptionMessage = "";
         this.cachedErrorWarningMessages = null;
 
@@ -163,7 +166,7 @@ public abstract class JodiControllerBase implements Register {
         }
         args = Arrays.copyOf(argsList, argsList.length);
         BaseCmdlineArgumentProcessor config = createRunConfig(args);
-        Injector injector = null;
+        Injector injector;
         try {
             injector = init(config);
         } catch (Exception ex) {
@@ -185,7 +188,7 @@ public abstract class JodiControllerBase implements Register {
             }
             return 2;
         } finally {
-            cleanCacheAndPrintErrors(config);
+            cleanCacheAndPrintErrors();
         }
 
         ActionRunner handler = getActionRunner(config.getAction(args), injector);
@@ -201,7 +204,7 @@ public abstract class JodiControllerBase implements Register {
             }
             return 3;
         } finally {
-            cleanCacheAndPrintErrors(config);
+            cleanCacheAndPrintErrors();
         }
 
         try {
@@ -240,7 +243,7 @@ public abstract class JodiControllerBase implements Register {
                                 .values().iterator()
                                 .next().iterator().next();
             }
-            cleanCacheAndPrintErrors(config);
+            cleanCacheAndPrintErrors();
         }
 
         if (enableTestBehavior() && exitCode > 0) {
@@ -266,12 +269,10 @@ public abstract class JodiControllerBase implements Register {
      *
      * @param className ModulePRovider class name
      * @return Instantiated ModuleProvider instance
-     * @throws RuntimeException
      */
     @SuppressWarnings("unchecked")
     private ModuleProvider createModuleProvider(final String className) {
-        ModuleProvider module = null;
-
+        ModuleProvider module;
         try {
             Class<? extends ModuleProvider> moduleClass =
                     (Class<? extends ModuleProvider>) Class.forName(className);

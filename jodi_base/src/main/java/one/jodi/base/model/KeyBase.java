@@ -6,7 +6,11 @@ import one.jodi.base.service.metadata.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KeyBase implements ModelNode {
@@ -103,7 +107,7 @@ public class KeyBase implements ModelNode {
     private List<ColumnBase> mapColumns() {
         List<ColumnBase> columns = new ArrayList<>();
         for (String columnName : this.dataStoreKeyColumnNames) {
-            ColumnBase column = (ColumnBase) getParent().getColumns().get(columnName);
+            ColumnBase column = getParent().getColumns().get(columnName);
             assert (column != null) : "Expected column " + columnName + " in table " +
                     getParent().getName() + " was not found.";
             columns.add(column);
@@ -123,10 +127,9 @@ public class KeyBase implements ModelNode {
         if (this.columns == null) {
             return Collections.emptyList();
         }
-        List<String> names = this.columns.stream()
+        return this.columns.stream()
                 .map(ColumnBase::getName)
                 .collect(Collectors.toList());
-        return names;
     }
 
     public Set<? extends FkRelationshipBase> getIncomingFks() {

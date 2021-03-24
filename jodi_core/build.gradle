@@ -214,9 +214,8 @@ processResources {
     from(jaxbGenOutputDir) { include '**/jaxb.properties' }
 }
 
-
 task extensionsJar(type: Jar, dependsOn: compileXmlExtensionsJava) {
-    baseName 'jodi_core_extensions'
+    archiveBaseName.set('jodi_core_extensions')
     from sourceSets.xmlExtensions.output.classesDirs
 }
 

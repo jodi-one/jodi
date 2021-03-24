@@ -4,7 +4,13 @@ import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.error.ErrorWarningMessageJodiImpl;
 import one.jodi.base.util.Version;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,11 +44,11 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     protected String prefix;
     protected String action;
     protected String[] modules;
-    private ErrorWarningMessageJodi errorWarningMessages =
+    private final ErrorWarningMessageJodi errorWarningMessages =
             ErrorWarningMessageJodiImpl.getInstance();
     private String metadataDirectory;
     private String propertyFile;
-    private List<String> moduleProviderClass = new ArrayList<>();
+    private final List<String> moduleProviderClass = new ArrayList<>();
     private boolean devMode;
     private String packageItem;
     private String scenario;
@@ -115,14 +121,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
     protected abstract Options addOptions(final Options existing);
 
+    @Override
     public String getMetadataDirectory() {
         return metadataDirectory;
     }
 
+    @Override
     public List<String> getModuleClasses() {
         return moduleProviderClass;
     }
 
+    @Override
     public String getPropertyFile() {
         return propertyFile;
     }
@@ -135,14 +144,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return scenario;
     }
 
+    @Override
     public boolean isDevMode() {
         return devMode;
     }
 
+    @Override
     public String getSourceModel() {
         return sourceModel;
     }
 
+    @Override
     public String getTargetModel() {
         return targetModel;
     }
@@ -151,14 +163,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return packageSequence;
     }
 
+    @Override
     public String getModelCode() {
         return modelCode;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public String getMasterPassword() {
         return masterPassword;
     }
@@ -167,11 +182,10 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return generateIds;
     }
 
+    @Override
     public String getDeploymentArchiveType() {
         return da_type;
     }
-
-    ;
 
     /**
      * Returns <code>true</code> if the {@link #moduleProviderClass} property
@@ -181,7 +195,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
      * otherwise
      */
     public boolean hasModule() {
-        return ((moduleProviderClass != null) && (!moduleProviderClass.isEmpty()));
+        return !moduleProviderClass.isEmpty();
     }
 
     /**
@@ -193,17 +207,18 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
         Options opts = createOptions();
 
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
         CommandLine cmdLine = null;
-
         try {
             cmdLine = parser.parse(opts, args);
         } catch (ParseException e) {
             usage("Unexpected exception:" + e.getMessage(), opts, -1);
         }
-
         if (cmdLine == null || cmdLine.hasOption(OPTION_HELP)) {
             usage(null, opts, 1);
+        }
+        if (cmdLine == null) {
+            return;
         }
         metadataDirectory = cmdLine.getOptionValue(OPTION_METADATA, "");
 
@@ -223,12 +238,9 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         targetModel = cmdLine.getOptionValue(OPTION_TARGET_MODEL);
         packageSequence = cmdLine.getOptionValue(OPTION_PACKAGE_SEQUENCE);
         modelCode = cmdLine.getOptionValue(OPTION_MODEL);
-        generateIds = cmdLine.hasOption(OPTION_IDS) ? Boolean
-                .parseBoolean(cmdLine.getOptionValue(OPTION_IDS)) : true;
+        generateIds = !cmdLine.hasOption(OPTION_IDS) || Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_IDS));
         da_type = cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_TYPE);
     }
-
-    //protected abstract String getPrefix(String[] args);
 
     protected abstract String getAction(String[] args);
 
@@ -252,7 +264,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         } catch (RuntimeException r) {
             String msg = errorWarningMessages.formatMessage(80050,
                     ERROR_MESSAGE_80050,
-                    Class.class.getClass(), r.getMessage());
+                    Class.class, r.getMessage());
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(), msg,
                     MESSAGE_TYPE.ERRORS);

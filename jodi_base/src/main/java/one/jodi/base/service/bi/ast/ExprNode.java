@@ -11,7 +11,7 @@ public interface ExprNode {
 
     void accept(NodeVisitor visitor);
 
-    public Stream<ExprNode> flatten();
+    Stream<ExprNode> flatten();
 
     enum NodeType {
         NUMBER, INTEGER, STRING, DATE, TIME, DATETIME, COLUMN, OP,

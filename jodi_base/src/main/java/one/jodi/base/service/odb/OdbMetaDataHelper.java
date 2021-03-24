@@ -13,16 +13,42 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class retrieves the table meta-data from the Oracle Db data dictionary
  * tables.
  */
 class OdbMetaDataHelper {
-    protected final static String sqlTableQuery = " SELECT * FROM  ( SELECT uo.object_name AS TabName, NVL(umv.comments, utc.comments ) AS TabComments FROM  user_objects uo LEFT JOIN user_tab_comments utc ON uo.object_name = utc.table_name LEFT JOIN user_mview_comments umv ON uo.object_name = umv.mview_name WHERE uo.object_type IN ('TABLE','VIEW') UNION ALL SELECT uo.object_name AS TabName, utc.comments AS TabComments FROM  user_objects uo INNER JOIN user_synonyms us ON us.synonym_name = uo.object_name AND us.table_owner = USER LEFT JOIN user_tab_comments utc ON us.table_name = utc.table_name WHERE uo.object_type LIKE 'SYNONYM' ) ORDER BY TabName";
-    protected final static String colQuery = "SELECT "
+    private static final Logger LOGGER = LogManager.getLogger(OdbMetaDataHelper.class);
+    private static final String ERROR_MESSAGE_80840 = "Fatal error: %s";
+    private static final String ERROR_MESSAGE_82000 =
+            "Invalid Data type '%1$s' for column '%2$s' in table '%3$s'. " +
+                    "This column is not added to the derived table";
+    private static final String ERROR_MESSAGE_82010 = "Failed to retrieve foreign key meta-data. %s";
+    private static final String ERROR_MESSAGE_82020 = "Failed to retrieve index meta-data. %s";
+    private static final String ERROR_MESSAGE_82030 = "Failed to retrieve column information: %s";
+    private static final String ERROR_MESSAGE_82040 = "Failed to retrieve tables. %s";
+    private static final String ERROR_MESSAGE_82050 = "Failed to close the statement. %s";
+
+    protected static final String sqlTableQuery = " SELECT * FROM  ( SELECT uo.object_name AS TabName, " +
+            "NVL(umv.comments, utc.comments ) AS TabComments FROM  user_objects uo LEFT JOIN user_tab_comments utc " +
+            "ON uo.object_name = utc.table_name LEFT JOIN user_mview_comments umv ON uo.object_name = umv.mview_name " +
+            "WHERE uo.object_type IN ('TABLE','VIEW') UNION ALL SELECT uo.object_name AS TabName, utc.comments " +
+            "AS TabComments FROM  user_objects uo INNER JOIN user_synonyms us ON us.synonym_name = uo.object_name " +
+            "AND us.table_owner = USER LEFT JOIN user_tab_comments utc ON us.table_name = utc.table_name " +
+            "WHERE uo.object_type LIKE 'SYNONYM' ) ORDER BY TabName";
+    protected static final String colQuery = "SELECT "
             + "				  us.synonym_name," + "				  cols.table_name,"
             + "				  cols.column_name    AS ColumnName,"
             + "				  cols.data_type      AS DataType,"
@@ -38,7 +64,7 @@ class OdbMetaDataHelper {
             + "				  cols.table_name    = colcmnts.table_name"
             + "				AND cols.column_name = colcmnts.column_name "
             + "				order by 2,1";
-    protected final static String indexQuery = "SELECT"
+    protected static final String indexQuery = "SELECT"
             + "			  inds.table_name, "
             + "			  us.synonym_name,"
             + "			  uic.index_name  AS IndexName,"
@@ -53,7 +79,7 @@ class OdbMetaDataHelper {
             + "			    us.table_name = inds.table_name" + "			  )"
             + "			ORDER BY" + "			  inds.table_name," + "			  uic.index_name,"
             + "			  uic.column_name";
-    protected final static String keysQuery = "SELECT "
+    protected static final String keysQuery = "SELECT "
             + "			  ucc.table_name,"
             + "			  us.synonym_name,"
             + "			  ucc.owner Owner,"
@@ -72,29 +98,15 @@ class OdbMetaDataHelper {
             + "			  ucc.table_name," + "			  uc.constraint_type,"
             + "			  ucc.constraint_name," + "			  ucc.column_name";
     // 1 line sql since it needs to be cut and paste in editor anyway.
-    protected final static String fkeysQuery = " SELECT ucc.table_name, us.synonym_name synonym_name, ucc.owner owner, ucc.column_name AS fkcolumnname, ucc.constraint_name AS fkeyname, uc.status isenabled, NVL(refus.synonym_name, refcons.table_name) reftablename, CASE WHEN refcons.constraint_type = 'P' THEN refcons.constraint_name ELSE NULL END AS refconstraintname, refucc.column_name AS pkcolumnname, row_number() over( partition BY ucc.table_name, ucc.constraint_name order by ucc.position DESC) isafterlast_col, row_number() over( partition BY ucc.table_name order by ucc.constraint_name DESC) isafterlast_tab FROM  user_cons_columns ucc INNER JOIN user_constraints uc ON ( ucc.owner = uc.owner AND ucc.constraint_name = uc.constraint_name ) LEFT JOIN user_synonyms us ON ( uc.table_name = us.table_name ) INNER JOIN user_constraints refcons ON ( uc.r_owner = refcons.owner AND uc.r_constraint_name = refcons.constraint_name ) LEFT JOIN user_synonyms refus ON ( refus.table_name = refcons.table_name ) LEFT JOIN user_cons_columns refucc ON ( refcons.table_name = refucc.table_name AND refcons.constraint_name = refucc.constraint_name AND ucc.position = REFUCC.POSITION ) ORDER BY ucc.table_name, ucc.constraint_name, ucc.position";
-    protected final static String viewQuery = "	SELECT" + "	  view_name,"
+    protected static final String fkeysQuery = " SELECT ucc.table_name, us.synonym_name synonym_name, ucc.owner owner, ucc.column_name AS fkcolumnname, ucc.constraint_name AS fkeyname, uc.status isenabled, NVL(refus.synonym_name, refcons.table_name) reftablename, CASE WHEN refcons.constraint_type = 'P' THEN refcons.constraint_name ELSE NULL END AS refconstraintname, refucc.column_name AS pkcolumnname, row_number() over( partition BY ucc.table_name, ucc.constraint_name order by ucc.position DESC) isafterlast_col, row_number() over( partition BY ucc.table_name order by ucc.constraint_name DESC) isafterlast_tab FROM  user_cons_columns ucc INNER JOIN user_constraints uc ON ( ucc.owner = uc.owner AND ucc.constraint_name = uc.constraint_name ) LEFT JOIN user_synonyms us ON ( uc.table_name = us.table_name ) INNER JOIN user_constraints refcons ON ( uc.r_owner = refcons.owner AND uc.r_constraint_name = refcons.constraint_name ) LEFT JOIN user_synonyms refus ON ( refus.table_name = refcons.table_name ) LEFT JOIN user_cons_columns refucc ON ( refcons.table_name = refucc.table_name AND refcons.constraint_name = refucc.constraint_name AND ucc.position = REFUCC.POSITION ) ORDER BY ucc.table_name, ucc.constraint_name, ucc.position";
+    protected static final String viewQuery = "	SELECT" + "	  view_name,"
             + "	  CASE" + "	    WHEN text_length > 4000" + "	    THEN 'N'"
             + "	    ELSE 'Y'" + "	  END AS valid," + "	  text" + "	FROM"
             + "	  user_views order by 1";
-    private final static Logger logger = LogManager.getLogger(OdbMetaDataHelper.class);
-    private static final String ERROR_MESSAGE_80840 =
-            "Fatal error: %s";
-    private static final String ERROR_MESSAGE_82000 =
-            "Invalid Data type '%1$s' for column '%2$s' in table '%3$s'. " +
-                    "This column is not added to the derived table";
-    private static final String ERROR_MESSAGE_82010 =
-            "Failed to retrieve foreign key meta-data. %s";
-    private static final String ERROR_MESSAGE_82020 =
-            "Failed to retrieve index meta-data. %s";
-    private static final String ERROR_MESSAGE_82030 =
-            "Failed to retrieve column information: %s";
-    private static final String ERROR_MESSAGE_82040 =
-            "Failed to retrieve tables. %s";
-    private static final String ERROR_MESSAGE_82050 =
-            "Failed to close the statement. %s";
+
     private final DataTypeService dataTypeService;
     private final ErrorWarningMessageJodi errorWarningMessages;
+
     private Map<String, Collection<ColumnMetaData>> mapobdMetaColumnTypes =
             new LinkedHashMap<>();
     private Map<String, List<Key>> mapobdMetaKeyTypes =
@@ -123,15 +135,14 @@ class OdbMetaDataHelper {
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.fatal(msg, e);
+            LOGGER.fatal(msg, e);
             throw new UnRecoverableException(msg, e);
         }
-        logger.debug("tables size:" + tables.size());
+        LOGGER.debug("tables size:" + tables.size());
         return tables;
     }
 
-    private List<OdbDataStore> createCacheDataStoreList(Connection dbConn)
-            throws SQLException {
+    private void createCacheDataStoreList(Connection dbConn) throws SQLException {
         Statement stmt = null;
         try {
             stmt = dbConn.createStatement();
@@ -151,7 +162,7 @@ class OdbMetaDataHelper {
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
+            LOGGER.error(msg, e);
             throw (e);
         } finally {
             if (stmt != null) {
@@ -160,11 +171,10 @@ class OdbMetaDataHelper {
                 } catch (SQLException e) {
                     String msg = errorWarningMessages.formatMessage(82050,
                             ERROR_MESSAGE_82050, this.getClass(), e.getMessage());
-                    logger.error(msg, e);
+                    LOGGER.error(msg, e);
                 }
             }
         }
-        return tables;
     }
 
     public void createCache(Connection dbConn) throws SQLException, IOException {
@@ -190,8 +200,7 @@ class OdbMetaDataHelper {
                     String comments = rs.getString("ColCmnts");
                     String aDataStore = rs.getString("table_name");
                     String synonym_name = rs.getString("synonym_name");
-                    final boolean isNullable = rs.getString("IsNullable").equals("Y") ? true : false;
-
+                    final boolean isNullable = rs.getString("IsNullable").equals("Y");
 
                     // Handle types that contain parameters
                     if (type.contains("(")) {
@@ -206,7 +215,7 @@ class OdbMetaDataHelper {
 //                  errorWarningMessages.addMessage(
 //                                 errorWarningMessages.assignSequenceNumber(), 
 //                                 msg, MESSAGE_TYPE.WARNINGS);
-                        logger.warn(msg);
+                        LOGGER.warn(msg);
                         continue;
                     } else if (mappedType.equals("DOUBLE") &&
                             scale == 0 && length >= 1 && length <= 9) {
@@ -247,7 +256,7 @@ class OdbMetaDataHelper {
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
+            LOGGER.error(msg, e);
             throw (e);
         } finally {
             try {
@@ -255,7 +264,7 @@ class OdbMetaDataHelper {
                     rs.close();
                 }
             } catch (SQLException e) {
-                logger.error("Failed to clean up record set.", e);
+                LOGGER.error("Failed to clean up record set.", e);
             }
             try {
                 if (stmt != null) {
@@ -264,7 +273,7 @@ class OdbMetaDataHelper {
             } catch (SQLException e) {
                 String msg = errorWarningMessages.formatMessage(82050,
                         ERROR_MESSAGE_82050, this.getClass(), e.getMessage());
-                logger.error(msg, e);
+                LOGGER.error(msg, e);
             }
         }
         createCacheKeys(dbConn);
@@ -280,18 +289,13 @@ class OdbMetaDataHelper {
         List<Key> keys = new ArrayList<>();
         List<String> indexCols = new ArrayList<>();
         boolean indexEnabled = false;
-        int colCounter = 0; // to determine when to create the key object & add
-        // it to the key list
-        PreparedStatement stmt1 = dbConn.prepareStatement(indexQuery);
-        try (ResultSet rs = stmt1.executeQuery()) {
+        int colCounter = 0; // to determine when to create the key object & add it to the key list
+        try (PreparedStatement statement = dbConn.prepareStatement(indexQuery); ResultSet rs = statement.executeQuery()) {
             // Retrieve index
             if (rs != null) {
                 while (rs.next()) {
-                    if (indexName.equalsIgnoreCase(rs.getString("IndexName"))) {
-                        // found multiple constraint columns for the same
-                        // constraint
-                        indexCols.add(rs.getString("IndColName"));
-                    } else {
+                    // else found multiple constraint columns for the same constraint
+                    if (!indexName.equalsIgnoreCase(rs.getString("IndexName"))) {
                         if (colCounter != 0) {
                             // add previous constraint to the list
                             keys.add(createKey(rs.getString("table_name"),
@@ -307,11 +311,11 @@ class OdbMetaDataHelper {
                             colCounter = 0;
                         }
                         indexName = rs.getString("IndexName");
-                        logger.debug("Retrieving index meta-data: " + indexName);
-                        indexEnabled = (rs.getString("IsEnabled")
-                                .equals("VALID")) ? true : false;
-                        indexCols.add(rs.getString("IndColName"));
+                        LOGGER.debug("Retrieving index meta-data: " + indexName);
+                        indexEnabled = rs.getString("IsEnabled").equals("VALID");
                     }
+                    indexCols.add(rs.getString("IndColName"));
+
                     colCounter++;
                     if (rs.getInt("isafterlast_col") == 1) {
                         // add current constraint to the list if is the last
@@ -336,41 +340,27 @@ class OdbMetaDataHelper {
                         keys = new ArrayList<>();
                     }
                 }
-                if (!rs.isClosed()) {
-                    rs.close();
-                }
-            }
-            if (!rs.isClosed()) {
-                rs.close();
             }
             // Retrieve PK, UK, FK with ref columns
-            stmt1.close();
         } catch (SQLException e) {
             String msg = errorWarningMessages.formatMessage(82020,
                     ERROR_MESSAGE_82020, this.getClass(), e.getMessage());
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
-            if (stmt1 != null) {
-                stmt1.close();
-            }
+            LOGGER.error(msg, e);
             throw (e);
         }
-        PreparedStatement stmt2 = dbConn.prepareStatement(keysQuery);
-        try (ResultSet rs = stmt2.executeQuery()) {
-            String keyName = "";
-            Key.KeyType keyType = null;
-            boolean enabled = false;
+
+        try (PreparedStatement statement = dbConn.prepareStatement(keysQuery); ResultSet rs = statement.executeQuery()) {
             List<String> keyCols = new ArrayList<>();
             if (rs != null) {
                 while (rs.next()) {
                     // get next constraint.
-                    keyName = rs.getString("ConstraintName");
-                    logger.debug("Retrieving index meta-data: " + keyName);
-                    enabled = (rs.getString("IsEnabled").equals("ENABLED")) ? true
-                            : false;
-                    keyType = mapKeyType(rs.getString("ConstraintType"));
+                    String keyName = rs.getString("ConstraintName");
+                    LOGGER.debug("Retrieving index meta-data: " + keyName);
+                    boolean enabled = rs.getString("IsEnabled").equals("ENABLED");
+                    Key.KeyType keyType = mapKeyType(rs.getString("ConstraintType"));
                     keyCols.add(rs.getString("KeyColName"));
                     if (rs.getInt("isafterlast_col") == 1) {
                         // add current constraint to the list if itis the last
@@ -404,23 +394,14 @@ class OdbMetaDataHelper {
                     }
                 }
             }
-            if (!rs.isClosed()) {
-                rs.close();
-            }
         } catch (SQLException e) {
             String msg = errorWarningMessages.formatMessage(82020,
                     ERROR_MESSAGE_82020, this.getClass(), e.getMessage());
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
-            if (stmt2 != null) {
-                stmt2.close();
-            }
+            LOGGER.error(msg, e);
             throw (e);
-        }
-        if (stmt2 != null) {
-            stmt2.close();
         }
     }
 
@@ -439,23 +420,22 @@ class OdbMetaDataHelper {
             if (rs != null) {
                 while (rs.next()) {
                     String constraintName = rs.getString("FKeyName");
-                    logger.debug("Retrieving foregn key meta-data: " + constraintName);
-                    boolean enabled = (rs.getString("IsEnabled").equals("ENABLED"))
-                            ? true : false;
+                    LOGGER.debug("Retrieving foregn key meta-data: " + constraintName);
+                    boolean enabled = rs.getString("IsEnabled").equals("ENABLED");
                     refs.addAll(getReferenceColumns(rs.getString("FKColumnName"),
                             rs.getString("PKColumnName")));
                     if (rs.getInt("isafterlast_col") == 1) {
                         fkRefs.add(createFKReference(constraintName, enabled,
                                 rs.getString("Owner"),
                                 rs.getString("RefTableName"), refs));
-                        logger.debug("refs size: " + refs.size());
+                        LOGGER.debug("refs size: " + refs.size());
                         for (ForeignReference.RefColumns r : refs) {
-                            logger.debug(rs.getString("FKEYNAME") + " : " +
+                            LOGGER.debug(rs.getString("FKEYNAME") + " : " +
                                     rs.getString("REFTABLENAME") + ":" +
                                     r.getForeignKeyColumnName() + ":" +
                                     r.getPrimaryKeyColumnName());
                         }
-                        logger.debug("---------");
+                        LOGGER.debug("---------");
                         refs = new ArrayList<>();
                     }
                     if (rs.getInt("isafterlast_tab") == 1) {
@@ -472,7 +452,7 @@ class OdbMetaDataHelper {
                     this.getClass(), e);
             errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
+            LOGGER.error(msg, e);
             throw (e);
         } finally {
             try {
@@ -480,7 +460,7 @@ class OdbMetaDataHelper {
                     rs.close();
                 }
             } catch (SQLException e) {
-                logger.error("Failed to clean up record set.", e);
+                LOGGER.error("Failed to clean up record set.", e);
             }
             try {
                 if (stmt != null) {
@@ -490,15 +470,14 @@ class OdbMetaDataHelper {
                 String msg = errorWarningMessages.formatMessage(82050,
                         ERROR_MESSAGE_82050, this.getClass(),
                         e.getMessage());
-                logger.error(msg, e);
+                LOGGER.error(msg, e);
             }
         }
     }
 
-    public Collection<ColumnMetaData> getColumnMetaData(final String dataStore,
-                                                        final Connection dbConn)
+    public Collection<ColumnMetaData> getColumnMetaData(final String dataStore, final Connection dbConn)
             throws SQLException {
-        logger.debug("dataStore:" + dataStore);
+        LOGGER.debug("dataStore:" + dataStore);
         Collection<ColumnMetaData> cMetaData = Collections.emptyList();
         if (mapobdMetaColumnTypes.get(dataStore) != null) {
             cMetaData = mapobdMetaColumnTypes.get(dataStore);
@@ -511,7 +490,7 @@ class OdbMetaDataHelper {
                                                 final String colName, final int length,
                                                 final String comments, final String mappedType,
                                                 final boolean isNullable) {
-        ColumnMetaData colmetadata = new ColumnMetaData() {
+        return new ColumnMetaData() {
             @Override
             public boolean hasNotNullConstraint() {
                 return !isNullable;
@@ -562,7 +541,6 @@ class OdbMetaDataHelper {
                 return dataStoreName;
             }
         };
-        return colmetadata;
     }
 
     public List<Key> getKeyandIndexMetaData(String dataStore, Connection dbConn)
@@ -589,7 +567,7 @@ class OdbMetaDataHelper {
     private Key createKey(final String dataStoreName, final String name,
                           final boolean enabled, final List<String> cols,
                           final Key.KeyType constraintType) {
-        Key key = new Key() {
+        return new Key() {
             @Override
             public boolean isEnabledInDatabase() {
                 return enabled;
@@ -624,7 +602,6 @@ class OdbMetaDataHelper {
             public void setDataStoreName(String datastoreName) {
             }
         };
-        return key;
     }
 
     public List<ForeignReference> getFKRefs(String dataStore, Connection dbConn)
@@ -657,7 +634,7 @@ class OdbMetaDataHelper {
                                                final boolean enabled, final String schemaName,
                                                final String dataStoreName,
                                                final List<ForeignReference.RefColumns> refColumns) {
-        ForeignReference fkRef = new ForeignReference() {
+        return new ForeignReference() {
             @Override
             public boolean isEnabledInDatabase() {
                 return enabled;
@@ -683,7 +660,6 @@ class OdbMetaDataHelper {
                 return name;
             }
         };
-        return fkRef;
     }
 
     public void clearCache() {

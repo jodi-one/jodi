@@ -55,8 +55,9 @@ public class TableBusinessRulesImpl implements TableBusinessRules {
     private String extractExtendedMetadata(final String text) {
         String extendedMetadata = "";
 
-        if (text == null)
+        if (text == null) {
             return extendedMetadata;
+        }
 
         int index = text.indexOf(biProperties.getMetadataSeparator());
         if (index > 0) {
@@ -66,14 +67,13 @@ public class TableBusinessRulesImpl implements TableBusinessRules {
     }
 
     private String extractDescription(final String text) {
-        if (text == null)
+        if (text == null) {
             return "";
+        }
         String documentation;
         int index = text.indexOf(biProperties.getMetadataSeparator());
         if (index >= 0) {
-            documentation = text.substring(biProperties.getMetadataSeparator()
-                            .length() + index,
-                    text.length());
+            documentation = text.substring(biProperties.getMetadataSeparator().length() + index);
         } else {
             documentation = text;
         }
@@ -89,8 +89,9 @@ public class TableBusinessRulesImpl implements TableBusinessRules {
 
     private String extractAbbreviation(final String text) {
         String abbreviation = "";
-        if (text == null)
+        if (text == null) {
             return abbreviation;
+        }
 
         Matcher m = ABBREVIATION_PATTERN.matcher(text);
         if (m.find()) {

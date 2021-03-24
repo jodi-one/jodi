@@ -1,6 +1,3 @@
-/**
- *
- */
 package one.jodi.base.service.odb;
 
 import com.google.inject.Inject;
@@ -16,11 +13,10 @@ import java.sql.SQLException;
 
 /**
  * Establish a connection to the Oracle database.
- *
  */
 public class DbConnectionUtil {
 
-    private final static Logger logger = LogManager.getLogger(DbConnectionUtil.class);
+    private final static Logger LOGGER = LogManager.getLogger(DbConnectionUtil.class);
 
     private static final String ERROR_MESSAGE_80800 =
             "Database connection failed for '%s'. Verify the connection string. %s";
@@ -41,8 +37,8 @@ public class DbConnectionUtil {
     public Connection getDatabaseConnection(final String jdbcUrl,
                                             final String schemaName,
                                             final String password) {
-        Connection connection = null;
-        logger.debug("Getting db connection for jdbcUrl: " + jdbcUrl + " and schema: " + schemaName);
+        LOGGER.debug("Getting db connection for jdbcUrl: " + jdbcUrl + " and schema: " + schemaName);
+        Connection connection;
         try {
             connection = DriverManager.getConnection(jdbcUrl, schemaName, password);
         } catch (SQLException e) {
@@ -51,7 +47,7 @@ public class DbConnectionUtil {
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.fatal(msg, e);
+            LOGGER.fatal(msg, e);
             throw new UnRecoverableException(msg, e);
         }
         try {
@@ -62,20 +58,22 @@ public class DbConnectionUtil {
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(),
                         msg, MESSAGE_TYPE.ERRORS);
-                logger.fatal(msg);
+                LOGGER.fatal(msg);
                 throw new UnRecoverableException(msg);
             }
         } catch (SQLException e) {
             String msg = errorWarningMessages.formatMessage(80820,
                     ERROR_MESSAGE_80820, this.getClass(), jdbcUrl, e.getMessage());
-            logger.error(msg, e);
+            LOGGER.error(msg, e);
             try {
-                if (connection != null) connection.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException ec) {
                 String msg2 = errorWarningMessages.formatMessage(80820,
                         ERROR_MESSAGE_80820, this.getClass(), jdbcUrl,
                         ec.getMessage());
-                logger.error(msg2);
+                LOGGER.error(msg2);
             } finally {
                 connection = null;
             }
@@ -84,7 +82,7 @@ public class DbConnectionUtil {
         if (connection == null) {
             String msg = errorWarningMessages.formatMessage(80810,
                     ERROR_MESSAGE_80810, this.getClass(), jdbcUrl);
-            logger.fatal(msg);
+            LOGGER.fatal(msg);
             throw new UnRecoverableException(msg);
         }
         return connection;

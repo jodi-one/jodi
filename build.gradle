@@ -25,7 +25,7 @@ allprojects {
     //}
 
     task testJar(type: Jar) {
-        archiveBaseName = "${project.name}-test"
+        archiveBaseName.set("${project.name}-test")
         from sourceSets.test.output
     }
 
@@ -59,7 +59,7 @@ allprojects {
 
 //	pmd.ignoreFailures = true
     sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = sourceCompatibility
 
     compileJava.options.encoding = 'UTF-8'
     compileTestJava.options.encoding = "UTF-8"
@@ -81,8 +81,6 @@ allprojects {
         implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
         implementation 'javax.xml.bind:jaxb-api:2.3.1'
         implementation 'com.sun.activation:javax.activation:1.2.0'
-        implementation 'javax.xml.bind:jaxb-api:2.3.1'
-        implementation 'javax.xml.bind:jaxb-api:2.3.1'
         implementation 'javax.validation:validation-api:1.0.0.GA'
         provided group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: '19.3.0.0'
 
@@ -166,7 +164,9 @@ allprojects {
         }
     }
 
-    task release(group: 'versioning', description: 'A marker task that triggers updating of the build.isRelease property in the version.properties file to true', dependsOn: 'distZip') {
+    task release(group: 'versioning',
+            description: 'A marker task that triggers updating of the build.isRelease property in the version.properties file to true',
+            dependsOn: 'distZip') {
     }
 
     javadoc {
@@ -265,8 +265,8 @@ subprojects {
     }
 
     spotbugs {
-        ignoreFailures = false
-        excludeFilter = file('findbugs_exclusions.xml')
+        ignoreFailures.set(false)
+        excludeFilter.set(file('findbugs_exclusions.xml'))
     }
 
     spotbugsMain {
