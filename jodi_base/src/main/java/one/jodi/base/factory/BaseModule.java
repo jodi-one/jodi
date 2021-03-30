@@ -56,19 +56,14 @@ public class BaseModule extends AbstractModule {
         // Set globally relevant properties that are typically passed through
         // command line
         if (config.getPassword() == null) {
-            String msg = errorWarningMessages.formatMessage(80200,
-                    ERROR_MESSAGE_80200, this.getClass());
+            String msg = errorWarningMessages.formatMessage(80200, ERROR_MESSAGE_80200, this.getClass());
             errorWarningMessages.addMessage(msg, MESSAGE_TYPE.ERRORS);
         } else {
-            bind(String.class).annotatedWith(Password.class)
-                    .toInstance(config.getPassword());
+            bind(String.class).annotatedWith(Password.class).toInstance(config.getPassword());
         }
-        bind(Boolean.class).annotatedWith(DevMode.class)
-                .toInstance(config.isDevMode());
-        bind(String.class).annotatedWith(PropertyFileName.class)
-                .toInstance(config.getPropertyFile());
-        bind(String.class).annotatedWith(XmlFolderName.class)
-                .toProvider(Providers.of(config.getMetadataDirectory()));
+        bind(Boolean.class).annotatedWith(DevMode.class).toInstance(config.isDevMode());
+        bind(String.class).annotatedWith(PropertyFileName.class).toInstance(config.getPropertyFile());
+        bind(String.class).annotatedWith(XmlFolderName.class).toProvider(Providers.of(config.getMetadataDirectory()));
         bind(StringDistanceMeasure.class).to(DamerauLevenshteinDistanceImpl.class);
     }
 

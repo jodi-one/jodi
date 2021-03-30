@@ -16,13 +16,12 @@ import java.util.List;
 
 public class OdiModuleProvider implements ModuleProvider {
 
-    private static final Logger logger = LogManager.getLogger(OdiModuleProvider.class);
-    private static final String ERROR_MESSAGE_01001 =
-            "ODI 12.1.2 unsupported by Jodi";
-    private static final String ERROR_MESSAGE_01002 =
-            "Class %s was not found in classpath";
-    private final ErrorWarningMessageJodi errorWarningMessages =
-            ErrorWarningMessageJodiImpl.getInstance();
+    private static final Logger LOGGER = LogManager.getLogger(OdiModuleProvider.class);
+
+    private static final String ERROR_MESSAGE_01001 = "ODI 12.1.2 unsupported by Jodi";
+    private static final String ERROR_MESSAGE_01002 = "Class %s was not found in classpath";
+
+    private final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -40,32 +39,27 @@ public class OdiModuleProvider implements ModuleProvider {
             } else if (new OdiVersion().isVersion1212()) {
                 String msg = errorWarningMessages.formatMessage(1001,
                         ERROR_MESSAGE_01001, this.getClass());
-                logger.error(msg);
+                LOGGER.error(msg);
                 throw new UnRecoverableException(msg);
             } else {
                 String msg = "ODI provider not found. Please review and " +
                         "modify you classpath";
-                logger.error(msg);
+                LOGGER.error(msg);
                 throw new UnRecoverableException(msg);
             }
         } catch (Exception e) {
-            logger.info("Can't determine Odiversion defaulting to ODI12.");
+            LOGGER.info("Can't determine Odiversion defaulting to ODI12.");
         }
-        if (odiModuleClassName != null) {
-            Module odiImplModule;
-            try {
-                Class<? extends Module> moduleClass = (Class<? extends Module>) Class
-                        .forName(odiModuleClassName);
-                odiImplModule = moduleClass.getDeclaredConstructor()
-                        .newInstance();
-                modules.add(odiImplModule);
-            } catch (final Exception e) {
-                String msg = errorWarningMessages.formatMessage(1002,
-                        ERROR_MESSAGE_01002, this.getClass(),
-                        odiModuleClassName);
-                logger.error(msg, e);
-                throw new UnRecoverableException(msg, e);
-            }
+        Module odiImplModule;
+        try {
+            Class<? extends Module> moduleClass = (Class<? extends Module>) Class.forName(odiModuleClassName);
+            odiImplModule = moduleClass.getDeclaredConstructor().newInstance();
+            modules.add(odiImplModule);
+        } catch (final Exception e) {
+            String msg = errorWarningMessages.formatMessage(1002, ERROR_MESSAGE_01002, this.getClass(),
+                    odiModuleClassName);
+            LOGGER.error(msg, e);
+            throw new UnRecoverableException(msg, e);
         }
 
         return Collections.unmodifiableList(modules);

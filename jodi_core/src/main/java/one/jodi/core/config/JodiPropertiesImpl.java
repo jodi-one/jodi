@@ -18,7 +18,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,7 +34,9 @@ import java.util.*;
 public class JodiPropertiesImpl implements JodiProperties {
     public static final String XSD_INTERFACES = "xml.xsd.interfaces";
     public static final String XSD_PACKAGES = "xml.xsd.packages";
-    private final static Logger logger = LogManager.getLogger(JodiPropertiesImpl.class);
+
+    private final static Logger LOGGER = LogManager.getLogger(JodiPropertiesImpl.class);
+    
     private final static String ERROR_MESSAGE_01090 =
             "The Jodi ODI property file is not found.";
 
@@ -74,9 +81,7 @@ public class JodiPropertiesImpl implements JodiProperties {
      */
     @Override
     public String getInputSchemaLocation() {
-        String schemaLocation = getProperty(XSD_INTERFACES);
-
-        return schemaLocation;
+        return getProperty(XSD_INTERFACES);
     }
 
     /**
@@ -84,9 +89,7 @@ public class JodiPropertiesImpl implements JodiProperties {
      */
     @Override
     public String getPackageSchemaLocation() {
-        String schemaLocation = getProperty(XSD_PACKAGES);
-
-        return schemaLocation;
+        return getProperty(XSD_PACKAGES);
     }
 
     /**
@@ -100,6 +103,7 @@ public class JodiPropertiesImpl implements JodiProperties {
     /**
      * @see JodiProperties#getProperty(String)
      */
+    @Override
     public String getProperty(final String prop) {
         assert (!prop.equals(JodiConstants.DATA_MART_PREFIX)) :
                 errorWarningMessages.formatMessage(1100, ERROR_MESSAGE_01100,
@@ -110,7 +114,7 @@ public class JodiPropertiesImpl implements JodiProperties {
 
             String msg = errorWarningMessages.formatMessage(1240,
                     ERROR_MESSAGE_01240, this.getClass(), prop);
-            logger.error(msg);
+            LOGGER.error(msg);
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
@@ -133,7 +137,7 @@ public class JodiPropertiesImpl implements JodiProperties {
             if (keyValuePair.length != 2) {
                 String msg = errorWarningMessages.formatMessage(1110,
                         ERROR_MESSAGE_01110, this.getClass(), prop);
-                logger.error(msg);
+                LOGGER.error(msg);
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(),
                         msg, MESSAGE_TYPE.ERRORS);
@@ -152,11 +156,10 @@ public class JodiPropertiesImpl implements JodiProperties {
      */
     @Override
     public List<String> getPropertyKeys() {
-
         List<String> keys = new ArrayList<>();
         Iterator<String> iter = config.getKeys();
         while (iter.hasNext()) {
-            keys.add((String) iter.next());
+            keys.add(iter.next());
         }
         return keys;
     }
@@ -171,11 +174,11 @@ public class JodiPropertiesImpl implements JodiProperties {
      */
     private void init(final String fileName) {
         if ((new File(fileName)).exists()) {
-            logger.debug("Loading Jodi properties file " + fileName);
+            LOGGER.debug("Loading Jodi properties file " + fileName);
             Parameters params = new Parameters();
             File propertiesFile = new File(fileName);
             FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                    new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                    new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
                             .configure(params.fileBased()
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                     .setFile(propertiesFile));
@@ -185,7 +188,7 @@ public class JodiPropertiesImpl implements JodiProperties {
             } catch (ConfigurationException ce) {
                 String msg = errorWarningMessages.formatMessage(1120,
                         ERROR_MESSAGE_01120, this.getClass(), ce);
-                logger.error(msg);
+                LOGGER.error(msg);
 
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(),
@@ -195,7 +198,7 @@ public class JodiPropertiesImpl implements JodiProperties {
         } else {
             String msg = errorWarningMessages.formatMessage(1090,
                     ERROR_MESSAGE_01090, this.getClass());
-            logger.error(msg);
+            LOGGER.error(msg);
 
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
@@ -204,6 +207,7 @@ public class JodiPropertiesImpl implements JodiProperties {
         }
     }
 
+    @Override
     public boolean isUpdateable() {
         boolean isUpdate = false;
         try {
@@ -214,7 +218,7 @@ public class JodiPropertiesImpl implements JodiProperties {
         } catch (ConversionException ex) {
             String msg = errorWarningMessages.formatMessage(6010,
                     ERROR_MESSAGE_06010, this.getClass(), ex);
-            logger.error(msg, ex);
+            LOGGER.error(msg, ex);
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.WARNINGS);
@@ -230,7 +234,7 @@ public class JodiPropertiesImpl implements JodiProperties {
         } catch (ConversionException e) {
             test = null;
         }
-        return (test != null) ? true : false;
+        return test != null;
     }
 
     @Override
@@ -243,7 +247,7 @@ public class JodiPropertiesImpl implements JodiProperties {
         } catch (ConversionException ex) {
             String msg = errorWarningMessages.formatMessage(6020,
                     ERROR_MESSAGE_06020, this.getClass(), ex);
-            logger.error(msg, ex);
+            LOGGER.error(msg, ex);
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.WARNINGS);
@@ -257,7 +261,7 @@ public class JodiPropertiesImpl implements JodiProperties {
     }
 
     private String upCase(String target) {
-        return (target == null ? null : target);
+        return (target);
     }
 
     public Map<String, PropertyValueHolder> getAllProperties() {
@@ -271,11 +275,12 @@ public class JodiPropertiesImpl implements JodiProperties {
         return properties;
     }
 
+    @Override
     public PropertyValueHolder getPropertyValueHolder(String key) {
         if (!config.containsKey(key)) {
             String msg = errorWarningMessages.formatMessage(1240,
                     ERROR_MESSAGE_01240, this.getClass(), key);
-            logger.error(msg);
+            LOGGER.error(msg);
 
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
@@ -294,7 +299,7 @@ public class JodiPropertiesImpl implements JodiProperties {
             value.append(",");
         }
         assert (value.toString().contains(","));
-        return value.toString().substring(0, value.toString().length() - 1);
+        return value.substring(0, value.toString().length() - 1);
     }
 
     @Override

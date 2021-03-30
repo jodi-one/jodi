@@ -13,8 +13,14 @@ import one.jodi.base.util.XMLParserUtil;
 import one.jodi.bootstrap.EtlRunConfig;
 import one.jodi.bootstrap.JodiController;
 import one.jodi.core.config.JodiConstants;
+import one.jodi.core.etlmodel.ExecCommandType;
+import one.jodi.core.etlmodel.ExecPackageType;
+import one.jodi.core.etlmodel.ExecProcedureType;
 import one.jodi.core.etlmodel.Package;
-import one.jodi.core.etlmodel.*;
+import one.jodi.core.etlmodel.Packages;
+import one.jodi.core.etlmodel.StepType;
+import one.jodi.core.etlmodel.Steps;
+import one.jodi.core.etlmodel.VariableType;
 import one.jodi.core.service.TransformationService;
 import one.jodi.db.DBUnitHelper;
 import one.jodi.etl.internalmodel.procedure.ProcedureInternal;
@@ -39,27 +45,58 @@ import oracle.odi.domain.IRepositoryEntity;
 import oracle.odi.domain.adapter.project.IMapping;
 import oracle.odi.domain.mapping.IMapComponent;
 import oracle.odi.domain.mapping.MapRootContainer;
-import oracle.odi.domain.project.*;
+import oracle.odi.domain.project.OdiFolder;
+import oracle.odi.domain.project.OdiPackage;
+import oracle.odi.domain.project.Step;
+import oracle.odi.domain.project.StepOdiCommand;
+import oracle.odi.domain.project.StepProcedure;
+import oracle.odi.domain.project.StepVariable;
 import oracle.odi.domain.project.finder.IOdiPackageFinder;
 import oracle.odi.setup.TechnologyName;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @param <W>
@@ -105,11 +142,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private final OdiVariableAccessStrategy odi12VariableAccessStrategy;
     private final OdiConstraintAccessStrategy odi12ConstraintsAccessStrategy;
     private final Odi12ProcedureServiceProvider getOdiProcedureService;
-    private String stgUserJDBCDriver;
+    private final String stgUserJDBCDriver;
     private OdiExecuteScenario odiExecuteScenario;
     private String testName = null;
     private String metadataDirectory = null;
-    private String tempDir;
+    private final String tempDir;
 
     @SuppressWarnings("unchecked")
     public FunctionalTest() throws ConfigurationException {
@@ -314,7 +351,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         return listAppender;
     }
 
-    private void generationInterfaceAssertSuccess(String aTestName, String execeptionMessage,
+    private void generationInterfaceAssertSuccess(String aTestName, String exceptionMessage,
                                                   String properties) {
         ListAppender listAppender = getListAppender();
         String prefix = "Init ";
@@ -328,8 +365,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         removeAppender(listAppender);
     }
 
-    private void generationInterfaceAssertFailure(String aTestName, String execeptionMessage) {
-        generationInterfaceAssertFailure(aTestName, execeptionMessage, defaultProperties);
+    private void generationInterfaceAssertFailure(String aTestName, String exceptionMessage) {
+        generationInterfaceAssertFailure(aTestName, exceptionMessage, defaultProperties);
     }
 
     private void copyFile(File source, File dest) {
@@ -410,8 +447,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 || hostname.endsWith("linux") // OBI image
         ) {
             logger.info("file copied with scp");
-        } else
+        } else {
             assert (dest.exists()) : "Copy failed from : " + source.getAbsolutePath() + " to: " + dest.getAbsolutePath();
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -480,6 +518,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         close();
     }
 
+    @Override
     @After
     public void close() {
         super.close();
@@ -525,7 +564,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
                 IOdiPackageFinder mf = (IOdiPackageFinder) odiInstance.getFinder(OdiPackage.class);
                 Collection<OdiPackage> packages = mf.findAll();
-                for(OdiPackage p : packages) {
+                for (OdiPackage p : packages) {
                     tem.remove(p);
                 }
                 tm.commit(getWorkOdiInstance().getTransactionStatus());
@@ -547,6 +586,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
      *
      * @category Install
      */
+    @Override
     @Test
     public void test010Install() {
 
@@ -608,6 +648,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
      * <p>
      * Add the @Test annotation to run this test.
      */
+    @Override
     @Test
     // success
     public void test020Generation() {
@@ -635,6 +676,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
      * <p>
      * Add the @Test annotation to run this test.
      */
+    @Override
     @Test
     // success
     public void test030ing() {
@@ -649,7 +691,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         try {
             // Generate interfaces
-            List<String> argList = new ArrayList<String>();
+            List<String> argList = new ArrayList<>();
 
             argList.add("-a");
             argList.add("etls");
@@ -2180,8 +2222,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     regressionConfiguration.getProjectCode());
             assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM Oracle Control Append"));
         } catch (ResourceNotFoundException e) {
-            if (!new OdiVersion().isVersion11())
+            if (!new OdiVersion().isVersion11()) {
                 throw e;
+            }
         }
 
     }
@@ -2596,8 +2639,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             assertTrue(odiAccessStrategy.checkThatAllTargetsHaveLKMName(mapping, "LKM File to SQL"));
 
         } finally {
-            if (tempFile.exists())
+            if (tempFile.exists()) {
                 tempFile.delete();
+            }
         }
     }
 
@@ -2676,8 +2720,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11020Pivot_1S_Success() throws Exception {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String interfaceName = "Pivot_1S_Success";
         String prefix = "Init ";
@@ -2748,8 +2793,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     @Test
     public void test11030UnPivot_1S_Success() throws Exception {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String interfaceName = "UnPivot_1S_Success";
         String prefix = "Init ";
@@ -2857,8 +2903,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     public void testPivot(String interfaceName, String config) throws Exception {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String prefix = "Init ";
         interfaceName = prefix + interfaceName;
@@ -2886,8 +2933,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     @Test
     public void test11040PivotUnPivot_1S_Success() throws Exception {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String interfaceName = "PivotUnPivot_1S_Success";
         String prefix = "Init ";
@@ -3037,8 +3085,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 //	}
 
     private void testSubQuery(String interfaceName, String refTable, String table) throws ResourceNotFoundException, ResourceFoundAmbiguouslyException {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String prefix = "Init ";
         interfaceName = prefix + interfaceName;
@@ -3148,8 +3197,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11054SubQuery_1S_ExecLoc_Success() throws Exception {
-        if (new OdiVersion().isVersion11())
+        if (new OdiVersion().isVersion11()) {
             return;
+        }
 
         String prefix = "Init ";
         String interfaceName = prefix + "SubQuery_1S_ExecLoc_Success";
@@ -3502,12 +3552,14 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // InputStream is = new FileInputStream(metadata);
         JodiController controller = new JodiController(true);
         controller.init(new RunConfig() {
+            @Override
             public String getMetadataDirectory() {
                 return "";
             }
 
+            @Override
             public List<String> getModuleClasses() {
-                List<String> module = new ArrayList<String>();
+                List<String> module = new ArrayList<>();
                 module.add("one.jodi.odi.factory.OdiModuleProvider");
                 return module;
             }
@@ -3516,6 +3568,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 				return "Init ";
 			}
 */
+            @Override
             public String getPropertyFile() {
                 return defaultProperties;
             }
@@ -3528,6 +3581,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 				return null;
 			}
 */
+            @Override
             public boolean isDevMode() {
                 return true;
             }
@@ -3536,10 +3590,12 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 				return false;
 			}
 */
+            @Override
             public String getSourceModel() {
                 return null;
             }
 
+            @Override
             public String getTargetModel() {
                 return null;
             }
@@ -3548,6 +3604,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 				return packageSequence + "";
 			}*/
 
+            @Override
             public String getModelCode() {
                 return null;
             }
@@ -4074,7 +4131,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             fis = new FileInputStream(new File(defaultProperties));
             p.load(fis);
 
-            XMLParserUtil<Packages, one.jodi.core.etlmodel.ObjectFactory> etlParser = new XMLParserUtil<Packages, one.jodi.core.etlmodel.ObjectFactory>(
+            XMLParserUtil<Packages, one.jodi.core.etlmodel.ObjectFactory> etlParser = new XMLParserUtil<>(
                     one.jodi.core.etlmodel.ObjectFactory.class, JodiConstants.getEmbeddedXSDFileNames(), errorWarningMessages);
 
             File etlFile = new File(TEST_XML_BASE_DIRECTORY + "/xml/" + testName, "0.xml");
@@ -4509,11 +4566,12 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     private void mappingLookup_Common(String targetTable, boolean checkLogger, String properties) throws Exception {
 
-        if (checkLogger)
+        if (checkLogger) {
             generationInterfaceAssertSuccess(testName, "This test threw an exception which it should not.", properties);
-        else
+        } else {
             generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.",
                     properties);
+        }
 
         getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
@@ -4550,10 +4608,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     private void mapping_2S_Auto_Common(boolean checkLogger) throws Exception {
-        if (checkLogger)
+        if (checkLogger) {
             generationInterfaceAssertSuccess(testName, "This test did not report error.");
-        else
+        } else {
             generationInterfaceAssert(Level.WARN, testName, "This test did not report error.");
+        }
         getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
@@ -4584,10 +4643,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     private void source_2S_Common(boolean isDefault, boolean checkLogger) {
         deleteScenario(defaultProperties, testName);
-        if (!checkLogger)
+        if (!checkLogger) {
             generationInterfaceAssertSuccess(testName, "This test threw an exception it should not.");
-        else
+        } else {
             generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.");
+        }
         // export for some data
         getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
@@ -4700,10 +4760,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     private void mapping_2D_Common(boolean checkLog) throws Exception {
-        if (checkLog)
+        if (checkLog) {
             generationInterfaceAssertSuccess(testName, "This test did not report error.");
-        else
+        } else {
             generationInterfaceAssert(Level.WARN, testName, "This test did not report error.");
+        }
         getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),

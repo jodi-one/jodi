@@ -7,25 +7,59 @@ import one.jodi.base.config.JodiPropertyNotFoundException;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.exception.UnRecoverableException;
-import one.jodi.base.model.types.*;
+import one.jodi.base.model.types.DataModel;
+import one.jodi.base.model.types.DataStore;
+import one.jodi.base.model.types.DataStoreColumn;
+import one.jodi.base.model.types.DataStoreForeignReference;
+import one.jodi.base.model.types.DataStoreKey;
+import one.jodi.base.model.types.DataStoreType;
+import one.jodi.base.model.types.SCDType;
 import one.jodi.base.service.schema.DataStoreNotInModelException;
 import one.jodi.core.config.JodiConstants;
 import one.jodi.core.config.JodiProperties;
-import one.jodi.core.config.modelproperties.ModelProperties;
 import one.jodi.core.context.packages.PackageCache;
-import one.jodi.core.extensions.contexts.JournalizingExecutionContext;
-import one.jodi.core.extensions.strategies.*;
+import one.jodi.core.extensions.strategies.ExecutionLocationStrategy;
+import one.jodi.core.extensions.strategies.FolderNameStrategy;
+import one.jodi.core.extensions.strategies.KnowledgeModulePropertiesException;
+import one.jodi.core.extensions.strategies.KnowledgeModuleStrategy;
+import one.jodi.core.extensions.strategies.NoKnowledgeModuleFoundException;
+import one.jodi.core.extensions.strategies.NoModelFoundException;
 import one.jodi.core.journalizing.JournalizingContext;
 import one.jodi.core.metadata.DatabaseMetadataService;
 import one.jodi.core.metadata.ETLSubsystemService;
 import one.jodi.core.metadata.types.KnowledgeModule;
 import one.jodi.etl.common.EtlSubSystemVersion;
-import one.jodi.etl.internalmodel.*;
+import one.jodi.etl.internalmodel.Dataset;
+import one.jodi.etl.internalmodel.ExecutionLocationtypeEnum;
+import one.jodi.etl.internalmodel.Flow;
+import one.jodi.etl.internalmodel.JoinTypeEnum;
+import one.jodi.etl.internalmodel.KmType;
+import one.jodi.etl.internalmodel.Lookup;
+import one.jodi.etl.internalmodel.MappingCommand;
+import one.jodi.etl.internalmodel.Mappings;
+import one.jodi.etl.internalmodel.OutputAttribute;
+import one.jodi.etl.internalmodel.Pivot;
+import one.jodi.etl.internalmodel.RoleEnum;
+import one.jodi.etl.internalmodel.SetOperatorTypeEnum;
+import one.jodi.etl.internalmodel.Source;
+import one.jodi.etl.internalmodel.SubQuery;
+import one.jodi.etl.internalmodel.Targetcolumn;
+import one.jodi.etl.internalmodel.Transformation;
 import one.jodi.etl.journalizng.JournalizingConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,8 +67,13 @@ import java.util.stream.Collectors;
 @Singleton
 public class ETLValidatorImpl implements ETLValidator {
 
-    private final static Logger logger = LogManager.getLogger(ETLValidatorImpl.class);
-    private final static String newLine = System.getProperty("line.separator");
+    private final static Logger LOGGER = LogManager.getLogger(ETLValidatorImpl.class);
+    private final static String NEW_LINE = System.getProperty("line.separator");
+
+    private static final Pattern PATTERN_ALIAS_DOT_COLUMN_PREFIX_OR_VAR = Pattern.compile(JodiConstants.ALIAS_DOT_COLUMN_PREFIX_OR_VAR);
+    private static final Pattern PATTERN_ALIAS_DOT_COLUMN_PREFIX = Pattern.compile(JodiConstants.ALIAS_DOT_COLUMN_PREFIX);
+    private static final Pattern PATTERN_JOIN = Pattern.compile("([a-zA-Z_$#0-9\"]+)([.])([a-zA-Z_$#0-9\"]+)\\s*=\\s*([a-zA-Z_$#0-9\"]+)([.])([a-zA-Z_$#0-9\"]+)");
+    private static final Pattern PATTERN_SUBQUERY = Pattern.compile("([a-zA-Z_$#0-9\"]+)([.])([a-zA-Z_$#0-9\"]+)");
 
     private final static String ERROR_MESSAGE_02090 = "Dataset index not found";
     private final static String ERROR_MESSAGE_02100 = "Source index not found";
@@ -279,8 +318,8 @@ public class ETLValidatorImpl implements ETLValidator {
                         for (String s : packageAssociations) {
                             sb.append(s).append(" ");
                         }
-                        sb.append(newLine);
-                        logger.debug(sb.toString());
+                        sb.append(NEW_LINE);
+                        LOGGER.debug(sb.toString());
                         addErrorMessage(transformation
                                         .getPackageSequence(),
                                 errorWarningMessages
@@ -341,7 +380,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                       final FolderNameStrategy strategy) {
         boolean valid = true;
         String folderName = transformation.getFolderName();
-        if (folderName == null || folderName.trim() == null || folderName.trim().length() == 0) {
+        if (folderName == null || folderName.trim().length() == 0) {
             addErrorMessage(transformation.getPackageSequence(),
                     errorWarningMessages.formatMessage(10040,
                             ERROR_MESSAGE_10040, this.getClass(), strategy.getClass().getName()));
@@ -376,7 +415,7 @@ public class ETLValidatorImpl implements ETLValidator {
 
         boolean valid = true;
         if (datasets.size() > 0) {
-            Integer packageSequence = datasets.get(0).getParent().getPackageSequence();
+            int packageSequence = datasets.get(0).getParent().getPackageSequence();
 
             SetOperatorTypeEnum setOperator = datasets.get(0).getSetOperator() != null ? datasets
                     .get(0).getSetOperator() : SetOperatorTypeEnum.NOT_DEFINED;
@@ -427,8 +466,7 @@ public class ETLValidatorImpl implements ETLValidator {
 
         if (source.isSubSelect()
                 && metadataService.isTemporaryTransformation(source.getName())) {
-            Integer packageSequence = source.getParent().getParent()
-                    .getPackageSequence();
+            int packageSequence = source.getParent().getParent().getPackageSequence();
             addWarningMessage(
                     packageSequence,
                     errorWarningMessages.formatMessage(30000,
@@ -481,8 +519,7 @@ public class ETLValidatorImpl implements ETLValidator {
                 .findDataStoreInAllModels(source.getName());
 
         if (matchingDataStores.isEmpty() && !source.isTemporary()) {
-            Integer packageSequence = source.getParent().getParent()
-                    .getPackageSequence();
+            int packageSequence = source.getParent().getParent().getPackageSequence();
 
             addErrorMessage(
                     packageSequence,
@@ -548,29 +585,22 @@ public class ETLValidatorImpl implements ETLValidator {
         HashMap<String, String> invalidReferencesMap = new HashMap<>();
 
         int index = getDatasetIndex(source);
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX_OR_VAR;
 
-        // TODO - may want to extract this to not regenerate pattern each time.
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(source.getFilter());
-        boolean referencesParent = source.getFilter() != null
-                && source.getFilter().length() > 0 ? false : true;
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX_OR_VAR.matcher(source.getFilter());
+        boolean referencesParent = source.getFilter() == null || source.getFilter().length() <= 0;
         while (matcher.find()) {
             String columnName = matcher.group();
             String tableName = columnName.substring(0, columnName.indexOf("."));
-            if (tableName.startsWith("#") ||
-                    tableName.startsWith(":")
-            ) {
+            if (tableName.startsWith("#") || tableName.startsWith(":")) {
                 // this is not a table but a variable name
-                String variableName = columnName.substring(columnName.indexOf(".") + 1, columnName.length());
+                String variableName = columnName.substring(columnName.indexOf(".") + 1);
                 if (!metadataService.projectVariableExists(tableName.substring(1), variableName) && !tableName.toUpperCase().contains("#GLOBAL")) {
                     String msg = errorWarningMessages.formatMessage(30102, ERROR_MESSAGE_30102, this.getClass(), source.getFilter(), source.getAlias(), index, columnName);
                     invalidReferencesMap.put(tableName, msg);
                 }
                 continue;
             }
-            if (aliasesToNames.values().contains(tableName)
-                    && !aliasesToNames.keySet().contains(tableName)) {
+            if (aliasesToNames.containsValue(tableName) && !aliasesToNames.containsKey(tableName)) {
                 // "Filter condition %s of Source %s in Dataset[%s] refers to
                 // source %s by name even though it must be referenced by its alias. ";
                 invalidReferencesMap.put(
@@ -578,9 +608,8 @@ public class ETLValidatorImpl implements ETLValidator {
                         errorWarningMessages.formatMessage(30100,
                                 ERROR_MESSAGE_30100, this.getClass(), source.getFilter(),
                                 source.getAlias(), index, tableName));
-            } else if (!aliasesToNames.keySet().contains(tableName)) {
-                invalidReferencesMap.put(
-                        tableName,
+            } else if (!aliasesToNames.containsKey(tableName)) {
+                invalidReferencesMap.put(tableName,
                         errorWarningMessages.formatMessage(30103,
                                 ERROR_MESSAGE_30103, this.getClass(), source.getFilter(),
                                 source.getAlias(), index, tableName));
@@ -589,8 +618,7 @@ public class ETLValidatorImpl implements ETLValidator {
             // Make sure that
             referencesParent |= source.getAlias().equalsIgnoreCase(tableName);
         }
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
 
         if (!referencesParent) {
             addErrorMessage(
@@ -611,8 +639,7 @@ public class ETLValidatorImpl implements ETLValidator {
 
     @Override
     public boolean validateFilterExecutionLocation(Source source) {
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
         int index = getDatasetIndex(source);
 
         if (ExecutionLocationtypeEnum.TARGET.equals(source
@@ -631,12 +658,10 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateFilterExecutionLocation(Source source,
                                                    ExecutionLocationStrategy strategy) {
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
         int index = getDatasetIndex(source);
 
-        if (ExecutionLocationtypeEnum.TARGET.equals(source
-                .getFilterExecutionLocation())
+        if (ExecutionLocationtypeEnum.TARGET.equals(source.getFilterExecutionLocation())
                 || source.getFilterExecutionLocation() == null) {
             addErrorMessage(
                     packageSequence,
@@ -645,15 +670,15 @@ public class ETLValidatorImpl implements ETLValidator {
                             source.getFilterExecutionLocation(),
                             source.getAlias(), index));
             return false;
-        } else
+        } else {
             return true;
+        }
     }
-
 
     /**
      * Return the alias map for a given flow item.  This will either be the parent Source or the previous Flow item.
      *
-     * @param flow
+     * @param flow {@link Flow}
      * @return map of aliases to their names (order 1)
      */
     private HashMap<String, String> getAliases(Flow flow) {
@@ -662,9 +687,9 @@ public class ETLValidatorImpl implements ETLValidator {
         int flowIndex = source.getFlows().indexOf(flow);
         if (flow instanceof SubQuery) {
             String filterAlias = ((SubQuery) flow).getFilterSource();
-            aliases.put(filterAlias, ((SubQuery) flow).getParent().getName());
-            filterAlias = ((SubQuery) flow).getName();
-            aliases.put(filterAlias, ((SubQuery) flow).getParent().getName());
+            aliases.put(filterAlias, flow.getParent().getName());
+            filterAlias = flow.getName();
+            aliases.put(filterAlias, flow.getParent().getName());
         }
         if (flowIndex == 0) {
             aliases.put(source.getAlias(), source.getName());
@@ -672,9 +697,9 @@ public class ETLValidatorImpl implements ETLValidator {
             Flow previousFlow = source.getFlows().get(flowIndex - 1);
             if (previousFlow instanceof SubQuery) {
                 String filterAlias = ((SubQuery) previousFlow).getFilterSource();
-                aliases.put(filterAlias, ((SubQuery) previousFlow).getParent().getName());
-                filterAlias = ((SubQuery) previousFlow).getName();
-                aliases.put(filterAlias, ((SubQuery) previousFlow).getParent().getName());
+                aliases.put(filterAlias, previousFlow.getParent().getName());
+                filterAlias = previousFlow.getName();
+                aliases.put(filterAlias, previousFlow.getParent().getName());
             }
             aliases.put(previousFlow.getName(), previousFlow.getName());
         }
@@ -713,14 +738,12 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateJoin(Source source) {
         boolean valid = true;
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX_OR_VAR;
         HashMap<String, String> aliasesToNames = getAllAliases(source.getParent(), false);
         HashMap<String, String> invalidReferencesMap = new HashMap<>();
 
         int datasetIndex = getDatasetIndex(source);
 
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
 
         //@TODO
         // add validation for flows.
@@ -729,10 +752,7 @@ public class ETLValidatorImpl implements ETLValidator {
         }
 
         if (source.getJoin() != null && source.getJoin().length() > 0) {
-            // TODO - may want to extract this to not regenerate pattern each
-            // time.
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(source.getJoin());
+            Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX_OR_VAR.matcher(source.getJoin());
             boolean referencesParent = false;
             while (matcher.find()) {
                 String columnName = matcher.group();
@@ -743,15 +763,14 @@ public class ETLValidatorImpl implements ETLValidator {
                     // this is not a table but a variable.
                     continue;
                 }
-                if (aliasesToNames.values().contains(tableName)
-                        && !aliasesToNames.keySet().contains(tableName)) {
+                if (aliasesToNames.containsValue(tableName) && !aliasesToNames.containsKey(tableName)) {
                     invalidReferencesMap
                             .put(tableName,
                                     errorWarningMessages.formatMessage(30200,
                                             ERROR_MESSAGE_30200, this.getClass(), source.getJoin(),
                                             source.getAlias(), datasetIndex,
                                             tableName));
-                } else if (!aliasesToNames.keySet().contains(tableName)) {
+                } else if (!aliasesToNames.containsKey(tableName)) {
                     invalidReferencesMap
                             .put(tableName,
                                     errorWarningMessages.formatMessage(30204,
@@ -819,8 +838,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateJoinExecutionLocation(Source source) {
         boolean valid = true;
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
 
         if (ExecutionLocationtypeEnum.TARGET.equals(source
                 .getJoinExecutionLocation())) {
@@ -840,8 +858,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                  ExecutionLocationStrategy strategy) {
         boolean valid = true;
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
         if (ExecutionLocationtypeEnum.TARGET.equals(source
                 .getJoinExecutionLocation())
                 || source.getJoinExecutionLocation() == null) {
@@ -861,8 +878,7 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateLKM(Source source) {
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
 
         List<KMValidation> errors = validateKM(source.getLkm());
         for (KMValidation error : errors) {
@@ -905,8 +921,7 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateLKM(Source source, KnowledgeModuleStrategy strategy) {
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
 
         List<KMValidation> errors = validateKM(source.getLkm());
         for (KMValidation error : errors) {
@@ -951,13 +966,11 @@ public class ETLValidatorImpl implements ETLValidator {
     // PRE
     @Override
     public boolean validateLookup(Lookup lookup) {
-        boolean valid = true;
         int datasetIndex = getDatasetIndex(lookup);
 
         if (metadataService.isTemporaryTransformation(lookup
                 .getLookupDataStore()) && lookup.isSubSelect()) {
-            Integer packageSequence = lookup.getParent().getParent()
-                    .getParent().getPackageSequence();
+            int packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
 
             addWarningMessage(
                     packageSequence,
@@ -965,9 +978,7 @@ public class ETLValidatorImpl implements ETLValidator {
                             ERROR_MESSAGE_31000, this.getClass(), lookup.getAlias(), lookup.getParent()
                                     .getAlias(), datasetIndex));
         }
-        valid &= validateLookupType(lookup);
-
-        return valid;
+        return validateLookupType(lookup);
     }
 
     @Override
@@ -1015,7 +1026,7 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateIKM(Mappings mappings) {
         List<KMValidation> errors = validateKM(mappings.getIkm());
-        Integer packageSequence = mappings.getParent().getPackageSequence();
+        int packageSequence = mappings.getParent().getPackageSequence();
 
         for (KMValidation error : errors) {
             switch (error.error) {
@@ -1049,7 +1060,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateIKM(Mappings mappings,
                                KnowledgeModuleStrategy strategy) {
         List<KMValidation> errors = validateKM(mappings.getIkm());
-        Integer packageSequence = mappings.getParent().getPackageSequence();
+        int packageSequence = mappings.getParent().getPackageSequence();
 
         for (KMValidation error : errors) {
             switch (error.error) {
@@ -1082,7 +1093,7 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateCKM(Mappings mappings) {
         List<KMValidation> errors = validateKM(mappings.getCkm());
-        Integer packageSequence = mappings.getParent().getPackageSequence();
+        int packageSequence = mappings.getParent().getPackageSequence();
 
         for (KMValidation error : errors) {
             switch (error.error) {
@@ -1116,7 +1127,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateCKM(Mappings mappings,
                                KnowledgeModuleStrategy strategy) {
         List<KMValidation> errors = validateKM(mappings.getCkm());
-        Integer packageSequence = mappings.getParent().getPackageSequence();
+        int packageSequence = mappings.getParent().getPackageSequence();
 
         for (KMValidation error : errors) {
             switch (error.error) {
@@ -1172,16 +1183,14 @@ public class ETLValidatorImpl implements ETLValidator {
         KnowledgeModule referenceKm = getKnowledgeModule(name);
         if (referenceKm != null) {
             for (String option : options.keySet()) {
-                KnowledgeModule.KMOptionType referenceType = referenceKm.getOptions()
-                        .get(option);
+                KnowledgeModule.KMOptionType referenceType = referenceKm.getOptions().get(option);
                 String optionValue = options.get(option);
 
                 if (referenceType != null) {
                     switch (referenceType) {
                         case CHECKBOX:
-                            if (!optionValue.toUpperCase().equalsIgnoreCase("TRUE")
-                                    && !optionValue.toUpperCase().equalsIgnoreCase(
-                                    "FALSE")) {
+                            if (!optionValue.equalsIgnoreCase("TRUE")
+                                    && !optionValue.equalsIgnoreCase("FALSE")) {
                                 errors.add(new KMValidation(
                                         KMValidationEnum.INVALID_OPTION_VALUE,
                                         option, optionValue));
@@ -1195,13 +1204,11 @@ public class ETLValidatorImpl implements ETLValidator {
                             }
                             break;
                         case LONG_TEXT:
-                            break;
                         case CHOICE:
                             break;
                     }
                 } else {
-                    errors.add(new KMValidation(
-                            KMValidationEnum.INVALID_OPTION, option));
+                    errors.add(new KMValidation(KMValidationEnum.INVALID_OPTION, option));
                 }
             }
         } else {
@@ -1232,11 +1239,13 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateJoinEnriched(Source source) {
 
-        if (source.getFlows().size() > 0) return true;
+        if (source.getFlows().size() > 0) {
+            return true;
+        }
 
         Dataset dataset = source.getParent();
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = source.getParent().getParent().getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
         List<ExpressionError> errors = validateExpressionSources(source.getJoin(), source, null, false);
         errors.addAll(validateJoinTypes(source.getJoin(), dataset));
 
@@ -1274,7 +1283,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateFilterEnriched(Source source) {
         Dataset dataset = source.getParent();
         int datasetIndex = getDatasetIndex(source);
-        Integer packageSequence = dataset.getParent().getPackageSequence();
+        int packageSequence = dataset.getParent().getPackageSequence();
 
         List<ExpressionError> errors = validateExpressionSources(source.getFilter(), source, null, true);
 
@@ -1307,7 +1316,7 @@ public class ETLValidatorImpl implements ETLValidator {
         int datasetIndex = getDatasetIndex(lookup);
         Source source = lookup.getParent();
         Dataset dataset = source.getParent();
-        Integer packageSequence = dataset.getParent().getPackageSequence();
+        int packageSequence = dataset.getParent().getPackageSequence();
         List<ExpressionError> errors = validateExpressionSources(lookup.getJoin(), lookup.getParent(), lookup, false);
         errors.addAll(validateJoinTypes(lookup.getJoin(), dataset));
         for (ExpressionError error : errors) {
@@ -1347,10 +1356,7 @@ public class ETLValidatorImpl implements ETLValidator {
         Dataset dataset = source != null ? source.getParent() : lookup.getParent().getParent();
         HashMap<String, String> aliasMap = getAllAliases(dataset, isFilter);
 
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(expression + "");
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression + "");
         while (matcher.find()) {
             String alias = matcher.group(1);
             String column = matcher.group(3);
@@ -1361,13 +1367,11 @@ public class ETLValidatorImpl implements ETLValidator {
                     DataStore dataStore = findSourceDataStore(name, dataset);
 
                     if (!dataStore.isTemporary()) {
-                        findSourceDataStoreColumn(dataStore, column, dataset.getParent().getPackageSequence());
+                        findSourceDataStoreColumn(dataStore, column);
                     }
-                } catch (DataStoreNotInModelException de) {
-                    errors.add(new ExpressionError(ExpressionErrorEnum.DATASTORE, name));
                 } catch (ColumnNotInDataStoreException ce) {
                     errors.add(new ExpressionError(ExpressionErrorEnum.COLUMN, name, column));
-                } catch (RuntimeException re) {
+                } catch (RuntimeException de) {
                     errors.add(new ExpressionError(ExpressionErrorEnum.DATASTORE, name));
                 }
             }
@@ -1382,12 +1386,10 @@ public class ETLValidatorImpl implements ETLValidator {
         if (dataset.getSources().get(0).getFlows().size() > 0) {
             return errors;
         }
-        String regex = "([a-zA-Z_$#0-9\"]+)([.]{1,1})([a-zA-Z_$#0-9\"]+)\\s*=\\s*([a-zA-Z_$#0-9\"]+)([.]{1,1})([a-zA-Z_$#0-9\"]+)";
 
         HashMap<String, String> scopeAliases = getAllAliases(dataset, false);
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(join + "");
+        Matcher matcher = PATTERN_JOIN.matcher(join + "");
         while (matcher.find()) {
             String leftAlias = matcher.group(1);
             String leftColumn = matcher.group(3);
@@ -1402,21 +1404,18 @@ public class ETLValidatorImpl implements ETLValidator {
                 DataStore leftDataStore = findSourceDataStore(
                         scopeAliases.get(leftAlias), dataset);
 
-                DataStoreColumn leftDataStoreColumn = findSourceDataStoreColumn(
-                        leftDataStore, leftColumn, dataset.getParent().getPackageSequence());
+                DataStoreColumn leftDataStoreColumn = findSourceDataStoreColumn(leftDataStore, leftColumn);
 
-                DataStore rightDataStore = findSourceDataStore(
-                        scopeAliases.get(rightAlias), dataset);
+                DataStore rightDataStore = findSourceDataStore(scopeAliases.get(rightAlias), dataset);
 
-                DataStoreColumn rightDataStoreColumn = findSourceDataStoreColumn(
-                        rightDataStore, rightColumn, dataset.getParent().getPackageSequence());
+                DataStoreColumn rightDataStoreColumn = findSourceDataStoreColumn(rightDataStore, rightColumn);
 
                 if (leftDataStoreColumn != null && rightDataStoreColumn != null && !leftDataStoreColumn.getColumnDataType().equals(rightDataStoreColumn.getColumnDataType())) {
                     errors.add(new ExpressionError(ExpressionErrorEnum.JOIN_TYPE,
                             leftAlias + "." + leftColumn, rightAlias + "." + rightColumn));
                 }
             } catch (DataStoreNotInModelException | ColumnNotInDataStoreException de) {
-                // validation should have already been performed on datastore existance.
+                // validation should have already been performed on datastore existence.
             }
         }
 
@@ -1427,9 +1426,8 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateTargetColumn(Targetcolumn targetColumn) {
         Mappings mappings = targetColumn.getParent();
-        Integer packageSequence = mappings.getParent().getPackageSequence();
-        int errorCount = errors.get(packageSequence) != null ? errors.get(
-                packageSequence).size() : 0;
+        int packageSequence = mappings.getParent().getPackageSequence();
+        int errorCount = errors.get(packageSequence) != null ? errors.get(packageSequence).size() : 0;
         boolean temporary = mappings.getParent().isTemporary();
         DataStore targetDataStore = null;
         DataStoreColumn targetDataStoreColumn = null;
@@ -1521,17 +1519,12 @@ public class ETLValidatorImpl implements ETLValidator {
         int index = 0;
 
         for (String expression : targetColumn.getMappingExpressions()) {
-            if (mappings.getParent().getDatasets().size() <= index) continue;
+            if (mappings.getParent().getDatasets().size() <= index) {
+                continue;
+            }
 
-            String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
-            ;
-
-            // TODO - may want to extract this to not regenerate pattern each
-            // time.
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(expression);
-
-            if (expression == null || expression.length() < 1) {
+            Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression);
+            if (expression.length() < 1) {
                 addErrorMessage(
                         packageSequence,
                         errorWarningMessages.formatMessage(41013,
@@ -1544,18 +1537,15 @@ public class ETLValidatorImpl implements ETLValidator {
 
             while (matcher.find()) {
                 String aliasAndColumn = matcher.group();
-                String alias = aliasAndColumn.substring(0,
-                        aliasAndColumn.indexOf("."));
-                String column = aliasAndColumn.substring(aliasAndColumn
-                        .indexOf(".") + 1);
+                String alias = aliasAndColumn.substring(0, aliasAndColumn.indexOf("."));
+                String column = aliasAndColumn.substring(aliasAndColumn.indexOf(".") + 1);
                 HashMap<String, String> scopeAliases = getAllAliases(mappings.getParent().getDatasets().get(index), false);
                 if (alias.startsWith("#")
                         || aliasAndColumn.toLowerCase().contains("out.print")
                         || alias.toLowerCase().contains("odiref")
                         || (this.properties != null &&
                         this.properties.getProjectCode() != null &&
-                        alias != null &&
-                        alias.toLowerCase().equalsIgnoreCase(this.properties.getProjectCode().toLowerCase()))) {
+                        alias.equalsIgnoreCase(this.properties.getProjectCode()))) {
                     // alias is a variable or
                     // a workaround for analytical functions is implemented with out.print
                     // e.g. NVL(<?out.print("SUM");?>( S_INVOICELINE_I.INVL_AMOUNT ) OVER ( PARTITION BY S_INVOICELINE_I.INVL_CUST_CODE , SUBSTR( S_INVOICELINE_I.INVL_INVE_DATE_CODE , 0, 4) ORDER BY S_INVOICELINE_I.INVL_INVE_DATE_CODE, S_INVOICELINE_I.INVL_LINE_CODE ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING ) ,0)
@@ -1670,8 +1660,7 @@ public class ETLValidatorImpl implements ETLValidator {
             index++;
         }
 
-        return errors.get(packageSequence) != null ? errors
-                .get(packageSequence).size() == errorCount : true;
+        return errors.get(packageSequence) == null || errors.get(packageSequence).size() == errorCount;
     }
 
     @Override
@@ -1679,7 +1668,6 @@ public class ETLValidatorImpl implements ETLValidator {
         boolean valid = true;
         String sourceAlias = lookup.getParent().getAlias().toLowerCase();
         String sourceName = lookup.getParent().getName();
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
 
         HashMap<String, String> aliasesToNames = getAllAliases(lookup.getParent().getParent(), false);
 
@@ -1687,10 +1675,9 @@ public class ETLValidatorImpl implements ETLValidator {
 
         int datasetIndex = getDatasetIndex(lookup);
 
-        Integer packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
+        int packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(lookup.getJoin());
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(lookup.getJoin());
         boolean referencesParent = false;
         while (matcher.find()) {
             String columnName = matcher.group();
@@ -1698,15 +1685,15 @@ public class ETLValidatorImpl implements ETLValidator {
                     columnName.indexOf("."));
             referencesParent |= sourceAlias.equalsIgnoreCase(tableName.toLowerCase());
             if (!sourceAlias.equalsIgnoreCase(tableName.toLowerCase())
-                    && !lookup.getAlias().toLowerCase().equalsIgnoreCase(tableName.toLowerCase())) {
-                if (sourceName.toLowerCase().equalsIgnoreCase(tableName.toLowerCase())
-                        || lookup.getLookupDataStore().toLowerCase().equalsIgnoreCase(tableName.toLowerCase())) {
+                    && !lookup.getAlias().equalsIgnoreCase(tableName)) {
+                if (sourceName.equalsIgnoreCase(tableName)
+                        || lookup.getLookupDataStore().equalsIgnoreCase(tableName)) {
                     invalidReferencesMap.put(tableName.toLowerCase(),
                             errorWarningMessages.formatMessage(31200,
                                     ERROR_MESSAGE_31200, this.getClass(), lookup.getJoin(),
                                     lookup.getLookupDataStore(), sourceName,
                                     datasetIndex, tableName));
-                } else if (aliasesToNames.values().contains(tableName) && !aliasesToNames.keySet().contains(tableName)) {
+                } else if (aliasesToNames.containsValue(tableName) && !aliasesToNames.containsKey(tableName)) {
                     invalidReferencesMap.put(tableName.toLowerCase(),
                             errorWarningMessages.formatMessage(31203,
                                     ERROR_MESSAGE_31203, this.getClass(), lookup.getJoin(),
@@ -1741,7 +1728,7 @@ public class ETLValidatorImpl implements ETLValidator {
         return valid;
     }
 
-    private DataStoreColumn findSourceDataStoreColumn(DataStore dataStore, String name, int packageSequence) {
+    private DataStoreColumn findSourceDataStoreColumn(DataStore dataStore, String name) {
         for (String key : dataStore.getColumns().keySet()) {
             if (key.equalsIgnoreCase(name)) {
                 return dataStore.getColumns().get(key);
@@ -1749,7 +1736,6 @@ public class ETLValidatorImpl implements ETLValidator {
         }
         if (!dataStore.isTemporary()) {
             String msg = errorWarningMessages.formatMessage(2110, ERROR_MESSAGE_02110, this.getClass(), dataStore.getDataStoreName(), name);
-            //errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
             throw new ColumnNotInDataStoreException(msg);
         } else {
             return null;
@@ -1927,26 +1913,10 @@ public class ETLValidatorImpl implements ETLValidator {
                         ste != null ? ste.getClassName() : "unknown"));
     }
 
-
-//	private DataStore findFlowDataStore(String name, Transformation transformation) {
-//		for(Dataset dataset : transformation.getDatasets()) {
-//			for(Source source : dataset.getSources()) {
-//				for(Flow flow : source.getFlows()) {
-//					if(name.equalsIgnoreCase(flow.getName())) {
-//						return createDataStore(flow);
-//					}
-//				}
-//			}
-//		}
-//		return null;
-//	}
-//	
-
     @Override
     public void handleModelCode(Exception e, Source source) {
 
-        Integer packageSequence = source.getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = source.getParent().getParent().getPackageSequence();
         int datasetIndex = getDatasetIndex(source);
 
         if (e instanceof DataStoreNotInModelException) {
@@ -2038,13 +2008,12 @@ public class ETLValidatorImpl implements ETLValidator {
 
     @Override
     public void handleModelCode(Exception e, Lookup lookup) {
-        Integer packageSequence = lookup.getParent().getParent().getParent()
-                .getPackageSequence();
+        int packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
         int datasetIndex = getDatasetIndex(lookup);
 
-        if (e instanceof DataStoreNotInModelException) { // Explicitly set model
-            // code is not
-            // defined.
+        if (e instanceof DataStoreNotInModelException) {
+            // Explicitly set model
+            // code is not defined.
             if (lookup.getModel() == null || lookup.getModel().equals("")) {
                 addErrorMessage(packageSequence,
                         errorWarningMessages.formatMessage(31013,
@@ -2089,7 +2058,7 @@ public class ETLValidatorImpl implements ETLValidator {
 
     @Override
     public void handleModelCode(Exception e, Mappings mappings) {
-        Integer packageSequence = mappings.getParent().getPackageSequence();
+        int packageSequence = mappings.getParent().getPackageSequence();
 
         if (e instanceof DataStoreNotInModelException) {
             if (mappings.getModel() != null && mappings.getModel().length() > 0) {
@@ -2262,8 +2231,9 @@ public class ETLValidatorImpl implements ETLValidator {
         String[] packageListItems = packageListString.trim().toUpperCase().split("\\s*,\\s*");
 
         for (String packageListItem : packageListItems) {
-            if (packageListItem.trim().length() > 0)
+            if (packageListItem.trim().length() > 0) {
                 result.add(packageListItem);
+            }
         }
 
         return result;
@@ -2301,11 +2271,13 @@ public class ETLValidatorImpl implements ETLValidator {
         int journalizedCounter = 0;
         for (Dataset ds : transformation.getDatasets()) {
             for (Source source : ds.getSources()) {
-                if (source.isJournalized())
+                if (source.isJournalized()) {
                     journalizedCounter++;
+                }
                 for (Lookup lookup : source.getLookups()) {
-                    if (lookup.isJournalized())
+                    if (lookup.isJournalized()) {
                         journalizedCounter++;
+                    }
                 }
             }
         }
@@ -2482,48 +2454,39 @@ public class ETLValidatorImpl implements ETLValidator {
             }
         }
 
-
-        String regex = "([a-zA-Z_$#0-9\"]+)([.]{1,1})([a-zA-Z_$#0-9\"]+)";
-        Pattern pattern = Pattern.compile(regex);
         for (OutputAttribute attribute : flow.getOutputAttributes()) {
             for (Map.Entry<String, String> entry : attribute.getExpressions().entrySet()) {
                 String expression = entry.getValue();
-                Matcher matcher = pattern.matcher(expression + "");
+                Matcher matcher = PATTERN_SUBQUERY.matcher(expression + "");
                 while (matcher.find()) {
                     String alias = matcher.group(1);
-                    String column = matcher.group(3);
                     String columnName = matcher.group();
                     String tableName = columnName.substring(0, columnName.indexOf("."));
 
-                    if (columnName.toLowerCase().contains("out.print") || alias.toLowerCase().contains("odiref")) {
-                        continue;
-                    } else if (alias.startsWith("#")) {
-                        String variableName = columnName.substring(columnName.indexOf(".") + 1, columnName.length());
-                        if (!metadataService.projectVariableExists(tableName.substring(1), variableName) || (tableName.substring(1).contains("GLOABL") && !metadataService.globalVariableExists(variableName))) {
-                            String msg = errorWarningMessages.formatMessage(30146, ERROR_MESSAGE_30146, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, columnName);
-                            errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
-                            valid = false;
-                        }
-                    } else {
-
-                        HashMap<String, String> scopeAliases = getAliases(flow);
-                        if (scopeAliases.containsValue(alias) && !scopeAliases.containsKey(alias)) {
-                            String msg = errorWarningMessages.formatMessage(30147, ERROR_MESSAGE_30147, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, alias);
-                            errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
-                            valid = false;
-                        } else if (!scopeAliases.containsKey(alias)) {
-                            String msg = errorWarningMessages.formatMessage(30144, ERROR_MESSAGE_30144, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, alias);
-                            errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
-                            valid = false;
+                    if (!columnName.toLowerCase().contains("out.print") && !alias.toLowerCase().contains("odiref")) {
+                        if (alias.startsWith("#")) {
+                            String variableName = columnName.substring(columnName.indexOf(".") + 1);
+                            if (!metadataService.projectVariableExists(tableName.substring(1), variableName) || (tableName.substring(1).contains("GLOABL") && !metadataService.globalVariableExists(variableName))) {
+                                String msg = errorWarningMessages.formatMessage(30146, ERROR_MESSAGE_30146, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, columnName);
+                                errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
+                                valid = false;
+                            }
+                        } else {
+                            HashMap<String, String> scopeAliases = getAliases(flow);
+                            if (scopeAliases.containsValue(alias) && !scopeAliases.containsKey(alias)) {
+                                String msg = errorWarningMessages.formatMessage(30147, ERROR_MESSAGE_30147, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, alias);
+                                errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
+                                valid = false;
+                            } else if (!scopeAliases.containsKey(alias)) {
+                                String msg = errorWarningMessages.formatMessage(30144, ERROR_MESSAGE_30144, this.getClass(), flow.getName(), source.getAlias(), datasetIndex, alias);
+                                errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
+                                valid = false;
+                            }
                         }
                     }
-
                 }
             }
-
-
         }
-
         return valid;
     }
 
@@ -2531,29 +2494,26 @@ public class ETLValidatorImpl implements ETLValidator {
         Source source = pivot.getParent();
         int packageSequence = source.getParent().getParent().getPackageSequence();
         int datasetIndex = getDatasetIndex(source);
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
-        ;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(pivot.getRowLocator());
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(pivot.getRowLocator());
         boolean valid = true;
 
         for (OutputAttribute oa : pivot.getOutputAttributes()) {
 
             for (String k : oa.getExpressions().keySet()) {
-                if (k == null) continue;
+                if (k == null) {
+                    continue;
+                }
                 String expression = oa.getExpressions().get(k);
-                Matcher m = pattern.matcher(expression);
-                while (m.find()) {
+                Matcher m = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression);
+                if (m.find()) {
                     String column = m.group(3);
                     if (column.length() + pivot.getRowLocator().length() > 27) {
                         String msg = errorWarningMessages.formatMessage(30150, ERROR_MESSAGE_30150, this.getClass(), oa.getName(), pivot.getName(), source.getAlias(), datasetIndex);
                         errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.WARNINGS);
                     }
-                    break;
                 }
             }
         }
-
 
         while (matcher.find()) {
 
@@ -2578,11 +2538,6 @@ public class ETLValidatorImpl implements ETLValidator {
                 String tableName = scopeAliases.get(alias);
                 if (tableName != null) {
                     DataStore dataStore = findSourceDataStore(tableName, source.getParent());
-					/*
-					DataStore dataStore = source.getFlows().indexOf(pivot) > 0 ?
-							findFlowDataStore(tableName, source.getParent().getParent()) :
-							findSourceDataStore(tableName,	source.getParent());
-							*/
                     if (dataStore != null) {
                         DataStoreColumn dataStoreColumn = dataStore.getColumns().get(column);
                         if (dataStoreColumn == null) {
@@ -2594,7 +2549,6 @@ public class ETLValidatorImpl implements ETLValidator {
                 }
             }
         }
-
         return valid;
     }
 
@@ -2602,17 +2556,14 @@ public class ETLValidatorImpl implements ETLValidator {
         Source source = subquery.getParent();
         int packageSequence = source.getParent().getParent().getPackageSequence();
         int datasetIndex = getDatasetIndex(source);
-        String regex = "([a-zA-Z_$#0-9\"]+)([.]{1,1})([a-zA-Z_$#0-9\"]+)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(subquery.getCondition());
+        Matcher matcher = PATTERN_SUBQUERY.matcher(subquery.getCondition());
         boolean valid = true;
         boolean referencesParent = false;
 
-        String driverAlias = "";
+        String driverAlias;
         int index = source.getFlows().indexOf(subquery);
         if (index > 0) {
             driverAlias = source.getFlows().get(index - 1).getName();
-            ;
         } else {
             driverAlias = source.getAlias();
         }
@@ -2620,10 +2571,8 @@ public class ETLValidatorImpl implements ETLValidator {
         while (matcher.find()) {
 
             String aliasAndColumn = matcher.group();
-            String alias = aliasAndColumn.substring(0,
-                    aliasAndColumn.indexOf("."));
-            String column = aliasAndColumn.substring(aliasAndColumn
-                    .indexOf(".") + 1);
+            String alias = aliasAndColumn.substring(0, aliasAndColumn.indexOf("."));
+            String column = aliasAndColumn.substring(aliasAndColumn.indexOf(".") + 1);
 
             referencesParent |= driverAlias.equals(alias);
 
@@ -2639,7 +2588,7 @@ public class ETLValidatorImpl implements ETLValidator {
                 valid = false;
             } else {
                 // translate from alias if needed.
-                DataStore datastore = null;
+                DataStore datastore;
                 if (alias.equals(subquery.getFilterSource())) {
                     datastore = metadataService.getSourceDataStoreInModel(subquery.getFilterSource(),
                             subquery.getFilterSourceModel());
@@ -2671,8 +2620,7 @@ public class ETLValidatorImpl implements ETLValidator {
     }
 
     public boolean validateSubQuery(SubQuery subquery) {
-        boolean valid = true;
-        valid &= validateSubQueryCondition(subquery);
+        boolean valid = validateSubQueryCondition(subquery);
 
         if (subquery.getCondition().trim().isEmpty() && (RoleEnum.EXISTS.equals(subquery.getRole()) || RoleEnum.NOT_EXISTS.equals(subquery.getRole()))) {
             Source source = subquery.getParent();
@@ -2683,21 +2631,7 @@ public class ETLValidatorImpl implements ETLValidator {
             errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
             valid = false;
         }
-
-		/*
-		// determine that correct number of expressions are used
-		subquery.getOutputAttributes().forEach(f -> {
-				if(f.getExpressions().keySet().stream().filter(k -> k == ExpressionSource.DRIVER.name()). > 1) {
-
-				}
-			}
-		);
-			*/
-
-
         return valid;
-
-
     }
 
     @Override
@@ -2721,7 +2655,7 @@ public class ETLValidatorImpl implements ETLValidator {
                 errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 result = false;
             }
-            if (beginMappingCommand.getText().trim().endsWith("/") && beginMappingCommand.getTechnology().toUpperCase().equalsIgnoreCase("ORACLE")) {
+            if (beginMappingCommand.getText().trim().endsWith("/") && beginMappingCommand.getTechnology().equalsIgnoreCase("ORACLE")) {
                 String msg = errorWarningMessages.formatMessage(71010, ERROR_MESSAGE_71010, this.getClass(), transformation.getPackageSequence() + "", type, "the mapping command shouldn't end with a '/'.");
                 errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 result = false;
@@ -2731,7 +2665,7 @@ public class ETLValidatorImpl implements ETLValidator {
                 errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 result = false;
             }
-            if (beginMappingCommand.getModel().trim().length() < 1 && beginMappingCommand.getTechnology().toLowerCase().equalsIgnoreCase("oracle")) {
+            if (beginMappingCommand.getModel().trim().length() < 1 && beginMappingCommand.getTechnology().equalsIgnoreCase("oracle")) {
                 String msg = errorWarningMessages.formatMessage(71010, ERROR_MESSAGE_71010, this.getClass(), transformation.getPackageSequence() + "", type, "the mapping command model / location is not specified.");
                 errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 result = false;
@@ -2773,12 +2707,13 @@ public class ETLValidatorImpl implements ETLValidator {
 
     @Override
     public boolean validateNoMatchRows(Lookup lookup) {
-        List<Boolean> valids = new ArrayList<Boolean>();
+        List<Boolean> valids = new ArrayList<>();
         int datasetIndex = getDatasetIndex(lookup);
         int packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
 
-        if (lookup.getDefaultRowColumns().isEmpty())
+        if (lookup.getDefaultRowColumns().isEmpty()) {
             return true;
+        }
 
         DataStore ds = metadataService.getSourceDataStoreInModel(
                 lookup.getLookupDataStore(), lookup.getModel());
@@ -2819,17 +2754,15 @@ public class ETLValidatorImpl implements ETLValidator {
 
         String sourceNameOrAlias = lookup.getParent().getAlias() != null ? lookup.getParent().getAlias().toLowerCase() : lookup.getParent().getName().toLowerCase();
         String lookupNameOrAlias = lookup.getAlias() != null ? lookup.getAlias().toLowerCase() : lookup.getLookupDataStore().toLowerCase();
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
         int datasetIndex = getDatasetIndex(lookup);
-        Integer packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
+        int packageSequence = lookup.getParent().getParent().getParent().getPackageSequence();
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(expression);
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression);
         while (matcher.find()) {
             String columnName = matcher.group();
             String tableName = columnName.substring(0, columnName.indexOf("."));
 
-            if (!sourceNameOrAlias.toLowerCase().equalsIgnoreCase(tableName.toLowerCase()) &&
+            if (!sourceNameOrAlias.equalsIgnoreCase(tableName) &&
                     !lookupNameOrAlias.equalsIgnoreCase(tableName.toLowerCase())) {
                 String msg = errorWarningMessages.formatMessage(31300,
                         ERROR_MESSAGE_31300, this.getClass(), expression, column,
@@ -2839,14 +2772,6 @@ public class ETLValidatorImpl implements ETLValidator {
                 valid = false;
             }
             // aliases are ok.
-//			else {
-//				String msg = errorWarningMessages.formatMessage(31302,
-//					ERROR_MESSAGE_31302, this.getClass(), expression, column,
-//					lookup.getLookupDataStore(), sourceName,
-//					datasetIndex, tableName);
-//				addErrorMessage(packageSequence, msg);
-//				valid = false;
-//			}
         }
 
         Source source = lookup.getParent();
@@ -2881,33 +2806,20 @@ public class ETLValidatorImpl implements ETLValidator {
 
     @Override
     public boolean validateJKMOptions(String modelCode, String jkm, Map<String, Object> options) {
-        HashMap<String, String> map = new HashMap<>();
-        for (String key : options.keySet()) {
-            map.put(key, options.get(key).toString());
-        }
-
-        return validateJournalizingOptions(modelCode, jkm, map);
+        Map<String, String> collect = options.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toString()));
+        return validateJournalizingOptions(modelCode, jkm, collect);
     }
 
     @Override
     public boolean validateJournalizing() {
         boolean valid = true;
-//		JournalizingExecutionContext exc = getJournalizingExecutionContext();
-//		List<String> defaultModelsForCDC = defaultStrategy
-//				.getModelCodesEnabledForCDC(null, exc);
-//		List<String> finalModelsForCDC = .;
-//		if (customStrategy != null) {
-//			finalModelsForCDC = customStrategy.getModelCodesEnabledForCDC(
-//						defaultModelsForCDC, exc);
-//		}
-//		assert finalModelsForCDC != null ;
         for (JournalizingConfiguration jconfig : this.journalizingContext.getJournalizingConfiguration()) {
             String modelCode = jconfig.getModelCode();
             if (validateJKMOptions(modelCode, jconfig.getName(), jconfig.getJkmOptions())) {
                 Map<String, Object> defaultJKMOptions = jconfig.getJkmOptions();
                 if (validateJKMOptions(modelCode, jconfig.getName(), defaultJKMOptions)) {
-                    Map<String, Object> finalJKMOptions = defaultJKMOptions;
-                    valid &= validateJKMOptions(modelCode, jconfig.getName(), finalJKMOptions);
+                    valid &= validateJKMOptions(modelCode, jconfig.getName(), defaultJKMOptions);
                 } else {
                     valid = false;
                 }
@@ -2916,114 +2828,6 @@ public class ETLValidatorImpl implements ETLValidator {
             }
         }
         return valid;
-    }
-
-    private JournalizingExecutionContext getJournalizingExecutionContext() {
-        try {
-            JournalizingExecutionContext exc = new JournalizingExecutionContext() {
-
-                public Map<String, DataStore> getDatastores() {
-                    Map<String, DataStore> cdc = new TreeMap<>();
-                    for (ModelProperties modelCode : metadataService.getConfiguredModels()) {
-                        cdc.putAll(metadataService
-                                .getAllDataStoresInModel(modelCode.getCode()));
-                    }
-                    return Collections.unmodifiableMap(cdc);
-                }
-
-                @Override
-                public Map<String, Object> getJKMOptions(String modelCode) {
-                    for (ModelProperties modelProperties : metadataService
-                            .getConfiguredModels()) {
-                        if (modelProperties.getCode().equals(modelCode)
-                                && modelProperties.isJournalized())
-                            return Collections.unmodifiableMap(parseMap(modelProperties.getJkmoptions()));
-                    }
-                    return Collections.unmodifiableMap(new HashMap<>());
-                }
-
-                @Override
-                public List<String> getModelCodesEnabledForCDC() {
-                    List<String> cdcModels = metadataService
-                            .getConfiguredModels().stream()
-                            .filter(ModelProperties::isJournalized).map(ModelProperties::getCode)
-                            .collect(Collectors.toList());
-                    return Collections.unmodifiableList(cdcModels);
-                }
-
-                @Override
-                public List<String> getSubscribers(String modelCode) {
-                    List<String> subscribers = new ArrayList<>();
-                    for (ModelProperties modelProperties : metadataService
-                            .getConfiguredModels()) {
-                        if (modelProperties.isJournalized() && modelCode.equals(modelProperties.getCode())) {
-                            subscribers = modelProperties.getSubscribers();
-                        }
-                    }
-                    if (subscribers == null || subscribers.size() == 0) {
-                        subscribers = new ArrayList<>();
-                        subscribers.add("SUNOPSIS");
-                    }
-                    return Collections.unmodifiableList(subscribers);
-                }
-
-                @Override
-                public String getName(String modelCode) {
-                    String name = null;
-                    for (ModelProperties modelProperties : metadataService
-                            .getConfiguredModels()) {
-                        if (modelProperties.isJournalized() && modelCode.equals(modelProperties.getCode())) {
-                            name = modelProperties.getJkm();
-                            break;
-                        }
-                    }
-                    return name;
-                }
-
-            };
-            return exc;
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : "";
-            String msg = errorWarningMessages.formatMessage(2040,
-                    ERROR_MESSAGE_02040, this.getClass(), message);
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
-            logger.error(msg);
-            throw new UnRecoverableException(msg, e);
-        }
-    }
-
-    private Map<String, Object> parseMap(List<String> options) {
-        HashMap<String, Object> map = new HashMap<>();
-        for (String option : options) {
-            String[] list = option.split(",");
-            for (String s : list) {
-                String[] keyValuePair = s.split(":", 2);
-                if (keyValuePair.length != 2) {
-                    String msg = errorWarningMessages.formatMessage(2050,
-                            ERROR_MESSAGE_02050, this.getClass());
-                    errorWarningMessages.addMessage(
-                            errorWarningMessages.assignSequenceNumber(), msg,
-                            MESSAGE_TYPE.ERRORS);
-                    throw new UnRecoverableException(msg);
-                } else {
-                    try {
-                        map.put(keyValuePair[0].trim(),
-                                Integer.valueOf(keyValuePair[1].trim()));
-                    } catch (NumberFormatException nfe) {
-                        if ("true".equalsIgnoreCase(keyValuePair[1].trim())
-                                || "false".equalsIgnoreCase(keyValuePair[1].trim())) {
-                            map.put(keyValuePair[0].trim(),
-                                    Boolean.valueOf(keyValuePair[1].trim()));
-                        } else {
-                            map.put(keyValuePair[0].trim(), keyValuePair[1].trim());
-                        }
-                    }
-                }
-            }
-        }
-        return map;
     }
 
     @Override
@@ -3070,7 +2874,7 @@ public class ETLValidatorImpl implements ETLValidator {
         }
     }
 
-    private class KMValidation {
+    private static class KMValidation {
         KMValidationEnum error;
         String[] values;
 

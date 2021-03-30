@@ -1,15 +1,21 @@
 package one.jodi.core.extensions.strategies;
 
-import one.jodi.core.extensions.contexts.*;
+import one.jodi.core.extensions.contexts.ExecutionLocationDataStoreExecutionContext;
+import one.jodi.core.extensions.contexts.ExecutionLocationFilterExecutionContext;
+import one.jodi.core.extensions.contexts.ExecutionLocationJoinExecutionContext;
+import one.jodi.core.extensions.contexts.ExecutionLocationLookupExecutionContext;
+import one.jodi.core.extensions.contexts.ExecutionLocationSubQueryExecutionContext;
+import one.jodi.core.extensions.contexts.ExecutionLocationTargetColumnExecutionContext;
 import one.jodi.core.extensions.types.ExecutionLocationType;
 import one.jodi.model.extensions.TargetColumnExtension;
 
 @Deprecated
-public class GenericExecutionLocationStrategy
-        implements ExecutionLocationStrategy {
+public class GenericExecutionLocationStrategy implements ExecutionLocationStrategy {
 
     /* (non-Javadoc)
-     * @see one.jodi.core.extensions.strategies.ExecutionLocationStrategy#getExecutionLocation(one.jodi.core.extensions.contexts.ExecutionLocationExecutionContext, one.jodi.core.executionlocation.ExecutionLocationType)
+     * @see one.jodi.core.extensions.strategies.ExecutionLocationStrategy#getExecutionLocation(
+     * one.jodi.core.extensions.contexts.ExecutionLocationExecutionContext,
+     * one.jodi.core.executionlocation.ExecutionLocationType)
      */
     @Override
     public ExecutionLocationType getTargetColumnExecutionLocation(

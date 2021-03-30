@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,11 +35,10 @@ public class ColumnMappingExecutionContextImpl
     private final Dataset dataset;
     private final Transformation transformation;
 
-    private final BinaryOperator<List<String>> merge =
-            (old, current) -> {
-                old.addAll(current);
-                return old;
-            };
+    private final BinaryOperator<List<String>> merge = (old, current) -> {
+        old.addAll(current);
+        return old;
+    };
     Map<String, List<String>> allColumnMapping = null;
 
     public ColumnMappingExecutionContextImpl(final Dataset dataset,
@@ -136,8 +136,7 @@ public class ColumnMappingExecutionContextImpl
 
     @Override
     public TransformationExtension getTransformationExtension() {
-        ClonerUtil<TransformationExtension> cloner =
-                new ClonerUtil<>(errorWarningMessages);
+        ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
         return cloner.clone(transformation.getExtension());
     }
 
@@ -147,35 +146,19 @@ public class ColumnMappingExecutionContextImpl
     }
 
     private Map<String, String> getColumns(final Source source) {
-        DataStore ds = databaseMetadataService
-                .getSourceDataStoreInModel(source.getName(),
-                        source.getModel());
-        Map<String, String> result = Collections.emptyMap();
-        if (ds != null) {
-            result = ds.getColumns()
-                    .values()
-                    .stream()
-                    .collect(Collectors.toMap(DataStoreColumn::getName,
-                            c -> source.getAlias() + "." +
-                                    c.getName()));
-        }
-        return result;
+        return Optional.ofNullable(
+                databaseMetadataService.getSourceDataStoreInModel(source.getName(), source.getModel()))
+                .map(ds -> ds.getColumns().values().stream()
+                        .collect(Collectors.toMap(DataStoreColumn::getName, c -> source.getAlias() + '.' + c.getName())))
+                .orElse(Collections.emptyMap());
     }
 
     private Map<String, String> getColumns(final Lookup lookup) {
-        DataStore ds = databaseMetadataService
-                .getSourceDataStoreInModel(lookup.getLookupDataStore(),
-                        lookup.getModel());
-        Map<String, String> result = Collections.emptyMap();
-        if (ds != null) {
-            result = ds.getColumns()
-                    .values()
-                    .stream()
-                    .collect(Collectors.toMap(DataStoreColumn::getName,
-                            c -> lookup.getAlias() + "." +
-                                    c.getName()));
-        }
-        return result;
+        return Optional.ofNullable(
+                databaseMetadataService.getSourceDataStoreInModel(lookup.getLookupDataStore(), lookup.getModel()))
+                .map(ds -> ds.getColumns().values().stream()
+                        .collect(Collectors.toMap(DataStoreColumn::getName, c -> lookup.getAlias() + '.' + c.getName())))
+                .orElse(Collections.emptyMap());
     }
 
     private Map<String, List<String>> getSourceColumnToAlias() {
@@ -184,11 +167,7 @@ public class ColumnMappingExecutionContextImpl
                 .stream()
                 .flatMap(s -> getColumns(s).entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey,
-                        e -> {
-                            List<String> l = new ArrayList<>();
-                            l.add(e.getValue());
-                            return l;
-                        },
+                        e -> new ArrayList<>(Collections.singletonList(e.getValue())),
                         this.merge));
     }
 
@@ -199,24 +178,22 @@ public class ColumnMappingExecutionContextImpl
                 .flatMap(s -> s.getLookups().stream())
                 .flatMap(s -> getColumns(s).entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey,
-                        e -> {
-                            List<String> l = new ArrayList<>();
-                            l.add(e.getValue());
-                            return l;
-                        },
+                        e -> new ArrayList<>(Collections.singletonList(e.getValue())),
                         this.merge));
     }
 
-    // collect all column names and map to alias column names in scope
+    /**
+     * collect all column names and map to alias column names in scope
+     *
+     * @return Map<String, List < String>>
+     */
     @Override
     public Map<String, List<String>> getAllColumnToAlias() {
         // calculate once and store for better performance
         if (this.allColumnMapping == null) {
-            this.allColumnMapping =
-                    Stream.of(getSourceColumnToAlias(), getLookupColumnToAlias())
-                            .flatMap(map -> map.entrySet().stream())
-                            .collect(Collectors.toMap(Entry::getKey, Entry::getValue,
-                                    this.merge));
+            this.allColumnMapping = Stream.of(getSourceColumnToAlias(), getLookupColumnToAlias())
+                    .flatMap(map -> map.entrySet().stream())
+                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue, this.merge));
         }
 
         return this.allColumnMapping;

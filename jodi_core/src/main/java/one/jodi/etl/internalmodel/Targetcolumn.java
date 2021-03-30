@@ -85,22 +85,22 @@ public interface Targetcolumn {
      *
      * @return user defined flag value
      */
-    //Map<String, Boolean> getFlags();
     Set<UserDefinedFlag> getUserDefinedFlags();
 
     Set<UserDefinedFlag> getExplicitUserDefinedFlags();
 
     /**
-     * Execution location for where target column mapping expressions {@link #getMappingExpressions()} should be executed.  This may be either {@link one.jodi.core.internalmodel.FilterExecutionLocationtypeEnum.SOURCE} or
-     * {@link one.jodi.core.model.ExecutionLocationtypeEnum.ExecutionLocationtypeEnum.SOURCE}.  This may be optionally specified using either the
-     * by higher level specifications, or directly via  <code>Transformation/Mappings/TargetColumn/ExecutionLocation</code>.  When not specified the property is
-     * derived by Jodi; this behavior can be extended through the use of {@link ExecutionLocationStrategy}
+     * Execution location for where target column mapping expressions {@link #getMappingExpressions()} should be
+     * executed. This may be either {@link one.jodi.core.internalmodel.FilterExecutionLocationtypeEnum#SOURCE} or
+     * {@link one.jodi.etl.internalmodel.ExecutionLocationtypeEnum#SOURCE}.  This may be optionally
+     * specified using either by higher level specifications, or directly via
+     * <code>Transformation/Mappings/TargetColumn/ExecutionLocation</code>. When not specified the property is derived
+     * by Jodi; this behavior can be extended through the use of {@link ExecutionLocationStrategy}.
      * <p>
      * The list should be of same cardinality as {@link #getMappingExpressions()}
      *
      * @return execution location for target column expression
      */
-    //ExecutionLocationtypeEnum getExecutionLocation();
     List<ExecutionLocationtypeEnum> getExecutionLocations();
 
     /**
@@ -139,7 +139,7 @@ public interface Targetcolumn {
     TargetColumnExtension getExtension();
 
     /**
-     * @param datasetNumber (NOT INDEX)
+     * @param dataset (NOT INDEX)
      * @return Indicating that all mapping expressions is an aggregate or not.
      */
     boolean isAggregateColumn(int dataset);

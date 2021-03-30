@@ -3,7 +3,14 @@ package one.jodi.core.validation.etl;
 import one.jodi.core.extensions.strategies.ExecutionLocationStrategy;
 import one.jodi.core.extensions.strategies.FolderNameStrategy;
 import one.jodi.core.extensions.strategies.KnowledgeModuleStrategy;
-import one.jodi.etl.internalmodel.*;
+import one.jodi.etl.internalmodel.Dataset;
+import one.jodi.etl.internalmodel.Flow;
+import one.jodi.etl.internalmodel.Lookup;
+import one.jodi.etl.internalmodel.Mappings;
+import one.jodi.etl.internalmodel.Source;
+import one.jodi.etl.internalmodel.SubQuery;
+import one.jodi.etl.internalmodel.Targetcolumn;
+import one.jodi.etl.internalmodel.Transformation;
 
 import java.util.List;
 import java.util.Map;
@@ -16,308 +23,306 @@ import java.util.Map;
  */
 public interface ETLValidator {
 
-
     /**
      * Clear all errors and warnings.  This should also clear out history used for validating transformation name uniqueness.
      */
-    public void reset();
-
+    void reset();
 
     /**
      * Validate package association is correctly specified.
      *
-     * @param transformation
+     * @param transformation {@link Transformation}
      * @return true if valid
      */
-    public boolean validatePackageAssociations(Transformation transformation);
+    boolean validatePackageAssociations(Transformation transformation);
 
     /**
      * Ensure that transformation name is unique.  Results are dumped to the ETLValidationResult instance consumed.
      * <p>
-     * Note that successive calls to this method will fail; call {@link ETLValidator#clearTransformationSet()}.
+     * Note that successive calls to this method will fail; call ETLValidator#clearTransformationSet().
      *
-     * @param transformation
+     * @param transformation {@link Transformation}
      */
-    public boolean validateTransformationName(Transformation transformation);
+    boolean validateTransformationName(Transformation transformation);
 
 
     /**
      * Ensure that folder name is correct - non-empty.
      *
-     * @param transformation
+     * @param transformation {@link Transformation}
+     * @param strategy       {@link FolderNameStrategy}
      * @return indicating valid or not
      */
-    public boolean validateFolderName(Transformation transformation, FolderNameStrategy strategy);
+    boolean validateFolderName(Transformation transformation, FolderNameStrategy strategy);
 
     /**
-     * @param packageSequence
-     * @param fileName
+     * @param packageSequence as int
+     * @param fileName        is what is says it is
      */
-    public boolean validatePackageSequence(int packageSequence, String fileName);
+    boolean validatePackageSequence(int packageSequence, String fileName);
 
     /**
      * Ensure the first dataset has no set operator defined.
      *
      * @param datasets of transformation
-     * @param result
+     * @return true if valid else false
      */
-    public boolean validateDataset(List<Dataset> datasets);
+    boolean validateDataset(List<Dataset> datasets);
 
     /**
-     * @param source
-     * @param result
+     * @param source {@link Source}
+     * @return true if valid else false
      */
-    public boolean validateSubselect(Source source);
+    boolean validateSubselect(Source source);
 
 
     /**
-     * @param source
-     * @param result
+     * @param source {@link Source}
      * @return indicating valid or not
      */
-    public boolean validateSourceDataStore(Source source);
+    boolean validateSourceDataStore(Source source);
 
 
     /**
      * Ensure that filter uses appropriate names and aliases  and
      * that filter conditions.
      *
-     * @param source
-     * @param result
+     * @param source {@link Source}
+     * @return true if valid else false
      */
-    public boolean validateFilter(Source source);
+    boolean validateFilter(Source source);
 
     /**
      * Ensure that filter uses DataStores and DataStoreColumns defined in ODI.
      *
-     * @param source
+     * @param source {@link Source}
      * @return indicating valid or not
      */
-    public boolean validateFilterEnriched(Source source);
+    boolean validateFilterEnriched(Source source);
 
 
     /**
      * Validate explicit filter execution location values.
      *
-     * @param source
+     * @param source {@link Source}
      * @return true if valid
      */
-    public boolean validateFilterExecutionLocation(Source source);
+    boolean validateFilterExecutionLocation(Source source);
 
     /**
      * Validate enriched value of filter execution location.
      *
-     * @param source
+     * @param source   {@link Source}
      * @param strategy strategy used to compute value
      * @return true if valid
      */
-    public boolean validateFilterExecutionLocation(Source source, ExecutionLocationStrategy strategy);
+    boolean validateFilterExecutionLocation(Source source, ExecutionLocationStrategy strategy);
 
     /**
      * Validate Join execution location.
      *
-     * @param source
+     * @param source {@link Source}
      * @return true if valid
      */
-    public boolean validateJoinExecutionLocation(Source source);
+    boolean validateJoinExecutionLocation(Source source);
 
     /**
      * Validate enriched value of filter execution location
      *
-     * @param source
+     * @param source   {@link Source}
      * @param strategy plugin used
      * @return true if valid
      */
-    public boolean validateJoinExecutionLocation(Source source, ExecutionLocationStrategy strategy);
+    boolean validateJoinExecutionLocation(Source source, ExecutionLocationStrategy strategy);
 
 
     /**
      * Validate basic source name, alias and join type information.
      *
-     * @param source
-     * @param result
+     * @param source {@link Source}
+     * @return true if valid else false
      */
-    public boolean validateJoin(Source source);
+    boolean validateJoin(Source source);
 
     /**
      * Validate the join to ensure that each DataSource and DataSourceColumn exists in Jodi and
      * ensure that joins are performed across same types.
      *
-     * @param source
+     * @param source {@link Source}
      * @return indicating valid or not
      */
-    public boolean validateJoinEnriched(Source source);
+    boolean validateJoinEnriched(Source source);
 
 
     /**
      * Validate explicit LKM information
      *
-     * @param source
+     * @param source {@link Source}
      * @return valid
      */
-    public boolean validateLKM(Source source);
+    boolean validateLKM(Source source);
 
     /**
      * POST validate LKM specific information
      *
-     * @param source
+     * @param source   {@link Source}
      * @param strategy the plugin used to compute LKM name option and values
      * @return valid
      */
-    public boolean validateLKM(Source source, KnowledgeModuleStrategy strategy);
+    boolean validateLKM(Source source, KnowledgeModuleStrategy strategy);
 
 
     /**
-     * @param lookup
-     * @param result
+     * @param lookup {@link Lookup}
+     * @return true if valid else false
      */
-    public boolean validateLookup(Lookup lookup);
+    boolean validateLookup(Lookup lookup);
 
 
-    public boolean validateJoinEnriched(Lookup lookup);
+    boolean validateJoinEnriched(Lookup lookup);
 
     /**
      * Validate the join condition of lookup.  Independent of enrichment.
      *
-     * @param lookup
+     * @param lookup {@link Lookup}
      * @return indicating valid or not
      */
-    public boolean validateLookupJoin(Lookup lookup);
+    boolean validateLookupJoin(Lookup lookup);
 
     /**
-     * @param mappings
-     * @param result
+     * @param mappings {@link Mappings}
+     * @return true if valid else false
      */
-    public boolean validateIKM(Mappings mappings);
+    boolean validateIKM(Mappings mappings);
 
     /**
      * Perform post-enrichment validation of IKM settings.
      *
-     * @param mappings
+     * @param mappings {@link Mappings}
      * @param strategy custom strategy used to compute KM information
      * @return true, if errors encountered
      */
-    public boolean validateIKM(Mappings mappings, KnowledgeModuleStrategy strategy);
+    boolean validateIKM(Mappings mappings, KnowledgeModuleStrategy strategy);
 
     /**
      * Validate Staging Model
      *
-     * @param mappings
+     * @param mappings {@link Mappings}
      */
-    public boolean validateStagingModel(Mappings mappings);
+    boolean validateStagingModel(Mappings mappings);
 
     /**
      * Perform pre-enrichment of CKM settings
      *
-     * @param mappings
-     * @param result
+     * @param mappings {@link Mappings}
+     * @return true if valid else false
      */
-    public boolean validateCKM(Mappings mappings);
+    boolean validateCKM(Mappings mappings);
 
     /**
      * Post enrichment validation of CKM settings.
      *
-     * @param mappings
-     * @param strategy
+     * @param mappings {@link Mappings}
+     * @param strategy {@link KnowledgeModuleStrategy}
      * @return indicating valid or not
      */
-    public boolean validateCKM(Mappings mappings, KnowledgeModuleStrategy strategy);
+    boolean validateCKM(Mappings mappings, KnowledgeModuleStrategy strategy);
 
     /**
-     * @param targetColumn
-     * @param result
+     * @param targetColumn {@link Targetcolumn}
+     * @return true if valid else false
      */
-    public boolean validateTargetColumn(Targetcolumn targetColumn);
+    boolean validateTargetColumn(Targetcolumn targetColumn);
 
     /**
      * Validate explicitly set join execution location.
      *
-     * @param lookup
+     * @param lookup {@link Lookup}
      * @return indicating valid or not
      */
-    public boolean validateExecutionLocation(Lookup lookup);
+    boolean validateExecutionLocation(Lookup lookup);
 
     /**
      * Validate explicitly set subquery execution location.
      *
-     * @param lookup
+     * @param subquery {@link SubQuery}
      * @return indicating valid or not
      */
-    public boolean validateExecutionLocation(SubQuery subquery);
+    boolean validateExecutionLocation(SubQuery subquery);
 
     /**
      * Validate change to {@link Lookup#getJoinExecutionLocation()} from referenced strategy
      *
-     * @param lookup
-     * @param strategy
+     * @param lookup   {@link Lookup}
+     * @param strategy {@link ExecutionLocationStrategy}
      * @return indicating valid or not
      */
-    public boolean validateExecutionLocation(Lookup lookup, ExecutionLocationStrategy strategy);
+    boolean validateExecutionLocation(Lookup lookup, ExecutionLocationStrategy strategy);
 
 
-    public boolean validateJournalized(Transformation transformation);
+    boolean validateJournalized(Transformation transformation);
 
     /**
      * Validate JKM options specified by model properties.  When strategy is non-null validation is assumed to
      * be for strategy-derived data.
      *
-     * @param options
+     * @param options A Map containing the options
      * @return indicating valid or not
      */
-    public boolean validateJournalizingOptions(String modelCode, String jkm, Map<String, String> options);
+    boolean validateJournalizingOptions(String modelCode, String jkm, Map<String, String> options);
 
-    public boolean validateJournalizingOptions(String modelCode, String jkm, Map<String, String> options, String strategyClassName);
+    boolean validateJournalizingOptions(String modelCode, String jkm, Map<String, String> options, String strategyClassName);
 
-    public boolean validateFlow(Flow flow);
+    boolean validateFlow(Flow flow);
 
     /*
      * Methods used to transform exceptions generated from plugin-in use to user-formatted messages.
      */
-    public void handleTransformationName(Exception e, Transformation transformation);
+    void handleTransformationName(Exception e, Transformation transformation);
 
-    public void handleFolderName(Exception e, Transformation transformation);
+    void handleFolderName(Exception e, Transformation transformation);
 
-    public void handleExecutionLocation(Exception e, Mappings mapping);
+    void handleExecutionLocation(Exception e, Mappings mapping);
 
-    public void handleModelCode(Exception e, Source source);
+    void handleModelCode(Exception e, Source source);
 
-    public void handleFilterExecutionLocation(Exception e, Source source);
+    void handleFilterExecutionLocation(Exception e, Source source);
 
-    public void handleJoinExecutionLocation(Exception e, Source source);
+    void handleJoinExecutionLocation(Exception e, Source source);
 
-    public void handleLKM(Exception e, Source source);
+    void handleLKM(Exception e, Source source);
 
-    public void handleModelCode(Exception e, Lookup lookup);
+    void handleModelCode(Exception e, Lookup lookup);
 
-    public void handleModelCode(Exception e, Mappings mappings);
+    void handleModelCode(Exception e, Mappings mappings);
 
-    public void handleIKM(Exception e, Mappings mappings);
+    void handleIKM(Exception e, Mappings mappings);
 
-    public void handleStagingModel(Exception e, Mappings mappings);
+    void handleStagingModel(Exception e, Mappings mappings);
 
-    public void handleCKM(Exception e, Mappings mappings);
+    void handleCKM(Exception e, Mappings mappings);
 
-    public void handleColumnMapping(Exception e, Transformation transformation, String column);
+    void handleColumnMapping(Exception e, Transformation transformation, String column);
 
-    public void handleExecutionLocation(Exception e, Targetcolumn targetColumn);
+    void handleExecutionLocation(Exception e, Targetcolumn targetColumn);
 
-    public void handleTargetColumnFlags(Exception e, Targetcolumn targetColumn);
+    void handleTargetColumnFlags(Exception e, Targetcolumn targetColumn);
 
-    public void handleJournalizingDatastores(Exception e);
+    void handleJournalizingDatastores(Exception e);
 
-    public void handleJournalizingOptions(Exception e);
+    void handleJournalizingOptions(Exception e);
 
-    public void handleJournalizingSubscribers(Exception e);
+    void handleJournalizingSubscribers(Exception e);
 
-    public boolean validateLookupName(Lookup lookup);
+    boolean validateLookupName(Lookup lookup);
 
-    public boolean validateSourceDataStoreName(Source source);
+    boolean validateSourceDataStoreName(Source source);
 
-    public boolean validateBeginAndEndMapping(Transformation transformation);
+    boolean validateBeginAndEndMapping(Transformation transformation);
 
-    public boolean validateLookupType(Lookup lookup);
+    boolean validateLookupType(Lookup lookup);
 
-    public boolean validateNoMatchRows(Lookup lookup);
+    boolean validateNoMatchRows(Lookup lookup);
 
     boolean validateJournalizing();
 

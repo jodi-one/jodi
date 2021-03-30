@@ -30,7 +30,7 @@ import java.util.Set;
  * from the command line.
  */
 public abstract class JodiControllerBase implements Register {
-    private final static Logger logger = LogManager.getLogger(JodiControllerBase.class);
+    private final static Logger LOGGER = LogManager.getLogger(JodiControllerBase.class);
 
     private static final boolean ENABLE_TEST_BEHAVIOR_DEFAULT = false;
     private final static String ERROR_MESSAGE_80000 = "Could not initialize, please check jodi.properties, " +
@@ -115,8 +115,7 @@ public abstract class JodiControllerBase implements Register {
         for (ModuleProvider mp : mps) {
             if (mp.getOverrideModules(config) != null
                     && !mp.getOverrideModules(config).isEmpty()) {
-                modules.add(Modules.override(mp.getModules(config)).with(
-                        mp.getOverrideModules(config)));
+                modules.add(Modules.override(mp.getModules(config)).with(mp.getOverrideModules(config)));
             } else {
                 modules.addAll(mp.getModules(config));
             }
@@ -178,7 +177,7 @@ public abstract class JodiControllerBase implements Register {
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(), msg,
                         MESSAGE_TYPE.WARNINGS);
-                logger.fatal(msg, ex);
+                LOGGER.fatal(msg, ex);
             }
             if (enableTestBehavior()) {
                 if (config.isDevMode()) {
@@ -223,7 +222,7 @@ public abstract class JodiControllerBase implements Register {
             return 4;
         } catch (Exception e) {
             String msg = "[00001] Unexpected exception: " + e.getMessage();
-            logger.fatal(msg, e);
+            LOGGER.fatal(msg, e);
             errorWarningMessages.addMessage(msg, MESSAGE_TYPE.ERRORS);
             if (enableTestBehavior()) {
                 if (config.isDevMode()) {
@@ -274,8 +273,7 @@ public abstract class JodiControllerBase implements Register {
     private ModuleProvider createModuleProvider(final String className) {
         ModuleProvider module;
         try {
-            Class<? extends ModuleProvider> moduleClass =
-                    (Class<? extends ModuleProvider>) Class.forName(className);
+            Class<? extends ModuleProvider> moduleClass = (Class<? extends ModuleProvider>) Class.forName(className);
             module = moduleClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             String msg;
@@ -285,7 +283,7 @@ public abstract class JodiControllerBase implements Register {
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(), msg,
                         MESSAGE_TYPE.ERRORS);
-                logger.fatal(msg, e);
+                LOGGER.fatal(msg, e);
             }
             throw new UnRecoverableException(msg, e);
         }
@@ -336,7 +334,7 @@ public abstract class JodiControllerBase implements Register {
                     nameAnnotation);
             runner = injector.getInstance(actionRunner);
         } catch (ConfigurationException e) {
-            logger.error("No ActionRunner registered for name " + action, e);
+            LOGGER.error("No ActionRunner registered for name " + action, e);
             throw e;
         }
 

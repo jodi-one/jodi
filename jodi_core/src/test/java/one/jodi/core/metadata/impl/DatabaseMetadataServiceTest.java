@@ -5,7 +5,13 @@ import one.jodi.base.context.Context;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodiHelper;
 import one.jodi.base.model.MockDatastoreHelper;
-import one.jodi.base.model.types.*;
+import one.jodi.base.model.types.DataStore;
+import one.jodi.base.model.types.DataStoreColumn;
+import one.jodi.base.model.types.DataStoreForeignReference;
+import one.jodi.base.model.types.DataStoreKey;
+import one.jodi.base.model.types.DataStoreType;
+import one.jodi.base.model.types.ModelSolutionLayerType;
+import one.jodi.base.model.types.SCDType;
 import one.jodi.base.service.metadata.DataModelDescriptor;
 import one.jodi.base.service.metadata.DataStoreDescriptor;
 import one.jodi.base.service.metadata.SchemaMetaDataProvider;
@@ -22,17 +28,33 @@ import one.jodi.etl.service.SubsystemServiceProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(JUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
 public class DatabaseMetadataServiceTest {
     // Specification model
     @Mock
@@ -47,14 +69,13 @@ public class DatabaseMetadataServiceTest {
     ModelPropertiesProvider modelPropertiesProvider;
     @Mock
     SubsystemServiceProvider subsystemServiceProvider;
+
     DatabaseMetadataServiceImpl fixture;
-    private ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
+    private final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        List<String> exclude = Arrays.asList(new String[]{"odi.master.repo.url",
-                "odi.repo.db.driver", "odi.login.username"});
+        List<String> exclude = Arrays.asList("odi.master.repo.url", "odi.repo.db.driver", "odi.login.username");
         when(subsystemServiceProvider.getPropertyNameExclusionList()).thenReturn(exclude);
         when(mockWfProperties.getTemporaryInterfacesRegex()).thenReturn("(_S)[0-9]{2,2}$");
         fixture = new DatabaseMetadataServiceImpl(mockEtlProvider,
@@ -64,9 +85,8 @@ public class DatabaseMetadataServiceTest {
 
     @Test
     public void getCoreProperties_Success() {
-        when(mockWfProperties.getPropertyKeys()).thenReturn(
-                Arrays.asList(new String[]{"a", "b", "odi.master.repo.url",
-                        "odi.repo.db.driver", "odi.master.repos.password", "odi.login.username"}));
+        when(mockWfProperties.getPropertyKeys()).thenReturn(Arrays.asList("a", "b", "odi.master.repo.url",
+                "odi.repo.db.driver", "odi.master.repos.password", "odi.login.username"));
         PropertyValueHolder pvhMock = mock(PropertyValueHolder.class);
 
         when(pvhMock.getString()).thenReturn("Some_Value");
@@ -79,9 +99,8 @@ public class DatabaseMetadataServiceTest {
         assertEquals("Some_Value", props.get("a").getString());
         assertEquals("Some_Value", props.get("b").getString());
         assertEquals("Some_Value", props.get("odi.master.repos.password").getString());
-        assertEquals(null, props.get("odi.repo.db.driver"));
+        assertNull(props.get("odi.repo.db.driver"));
     }
-
 
     @Test
     public void testGetConfiguredModels() {
@@ -128,7 +147,7 @@ public class DatabaseMetadataServiceTest {
             result.add(MockDatastoreHelper.createMockDataStore(dataStore, "m", false));
             fail("collection must be unmodifiable");
         } catch (Throwable e) {
-            assertTrue(UnsupportedOperationException.class.isInstance(e));
+            assertTrue(e instanceof UnsupportedOperationException);
         }
 
         // cover base meta data
@@ -170,7 +189,7 @@ public class DatabaseMetadataServiceTest {
 
         setupModelProperties(new String[]{targetModel});
 
-        List<DataModelDescriptor> modelDescriptors = new ArrayList<DataModelDescriptor>();
+        List<DataModelDescriptor> modelDescriptors = new ArrayList<>();
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor(targetModel));
         when(mockEtlProvider.getDataModelDescriptors()).thenReturn(modelDescriptors);
 
@@ -213,7 +232,7 @@ public class DatabaseMetadataServiceTest {
 
         setupModelProperties(new String[]{targetModel});
 
-        List<DataModelDescriptor> modelDescriptors = new ArrayList<DataModelDescriptor>();
+        List<DataModelDescriptor> modelDescriptors = new ArrayList<>();
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor(targetModel));
         when(mockEtlProvider.getDataModelDescriptors()).thenReturn(modelDescriptors);
 
@@ -258,7 +277,7 @@ public class DatabaseMetadataServiceTest {
 
         setupModelProperties(new String[]{targetModel});
 
-        List<DataModelDescriptor> modelDescriptors = new ArrayList<DataModelDescriptor>();
+        List<DataModelDescriptor> modelDescriptors = new ArrayList<>();
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor("other"));
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor(targetModel));
         when(mockEtlProvider.getDataModelDescriptors()).thenReturn(modelDescriptors);
@@ -353,7 +372,7 @@ public class DatabaseMetadataServiceTest {
             assertEquals(columnName, columns.get(columnName).getName());
             assertEquals(columnName + "_DataType", columns.get(columnName).getColumnDataType());
             assertEquals(SCDType.ADD_ROW_ON_CHANGE, columns.get(columnName).getColumnSCDType());
-            assertEquals((count % 2) == 0 ? true : false, columns.get(columnName).hasNotNullConstraint());
+            assertEquals((count % 2) == 0, columns.get(columnName).hasNotNullConstraint());
             assertEquals(position++, columns.get(columnName).getPosition());
         }
 //		verify(mockEtlProvider, times(1)).isTemporaryTransformation(targetDataStore);
@@ -373,7 +392,7 @@ public class DatabaseMetadataServiceTest {
         when(mappings.getTargetDataStore()).thenReturn(targetDataStore);
         when(mappings.getModel()).thenReturn(targetModel);
 
-        List<DataModelDescriptor> modelDescriptors = new ArrayList<DataModelDescriptor>();
+        List<DataModelDescriptor> modelDescriptors = new ArrayList<>();
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor(targetModel));
         when(mockEtlProvider.getDataModelDescriptors()).thenReturn(modelDescriptors);
 
@@ -387,15 +406,7 @@ public class DatabaseMetadataServiceTest {
         int position = 1;
         for (String columnName : columnList) {
             int count = Integer.parseInt(columnName.substring(columnName.length() - 1));
-            Boolean b;
-            switch (count % 2) {
-                case 0:
-                    b = true;
-                    break;
-                default:
-                    b = false;
-                    break;
-            }
+            boolean b = count % 2 == 0;
 
             assertEquals(columnName, columns.get(columnName).getName());
             assertEquals("TYPE", columns.get(columnName).getColumnDataType());
@@ -449,7 +460,7 @@ public class DatabaseMetadataServiceTest {
 
         when(mappings.getTargetDataStore()).thenReturn(targetDataStore);
         when(fixtureSpy.isTemporaryTransformation(targetDataStore)).thenReturn(true);
-        List<DataModelDescriptor> modelDescriptors = new ArrayList<DataModelDescriptor>();
+        List<DataModelDescriptor> modelDescriptors = new ArrayList<>();
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor("other"));
         modelDescriptors.add(MockDatastoreHelper.createMockDataModelDescriptor(targetModel));
         when(mockEtlProvider.getDataModelDescriptors()).thenReturn(modelDescriptors);
@@ -576,7 +587,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsDimensionFalse() throws Exception {
+    public void testIsDimensionFalse() {
 
         //when(mockWfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)).thenReturn("foo");
         DataStoreType result = fixture.getDataStoreType("W_TARGETDATASTORE_D");
@@ -586,8 +597,8 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsDimensionTrue() throws Exception {
-        List<String> prefix = new ArrayList<String>();
+    public void testIsDimensionTrue() {
+        List<String> prefix = new ArrayList<>();
         prefix.add("W_");
         when(mockWfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)).thenReturn(prefix);
         when(mockWfProperties.getProperty(JodiConstants.DIMENSION_SUFFIX)).thenReturn("_D");
@@ -597,7 +608,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsFactFalse() throws Exception {
+    public void testIsFactFalse() {
 //		when(mockWfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)).thenReturn("foo");
         DataStoreType result = fixture.getDataStoreType("W_TARGETDATASTORE_F");
 
@@ -606,23 +617,20 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsFactTrue() throws Exception {
-        List<String> prefix = new ArrayList<String>();
+    public void testIsFactTrue() {
+        List<String> prefix = new ArrayList<>();
         prefix.add("W_");
-        //
-        //       wfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)
         when(mockWfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)).thenReturn(prefix);
-        List list = new ArrayList();
+        List<String> list = new ArrayList<>();
         list.add("_F");
         when(mockWfProperties.getPropertyList(JodiConstants.FACT_SUFFIX)).thenReturn(list);
         DataStoreType result = fixture.getDataStoreType("W_TARGETDATASTORE_F");
 
         assertEquals(DataStoreType.FACT, result);
-
     }
 
     @Test
-    public void testIsHelperFalse() throws Exception {
+    public void testIsHelperFalse() {
         when(mockWfProperties.getProperty(JodiConstants.DATA_MART_PREFIX)).thenReturn("foo");
         DataStoreType result = fixture.getDataStoreType("W_TARGETDATASTORE_H");
 
@@ -631,8 +639,8 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsHelperTrue() throws Exception {
-        List<String> prefix = new ArrayList<String>();
+    public void testIsHelperTrue() {
+        List<String> prefix = new ArrayList<>();
         prefix.add("W_");
         when(mockWfProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)).thenReturn(prefix);
         when(mockWfProperties.getProperty(JodiConstants.HELPER_SUFFIX)).thenReturn("_H");
@@ -643,7 +651,7 @@ public class DatabaseMetadataServiceTest {
 
 
     @Test
-    public void testIsTemporaryTransformationTrue() throws Exception {
+    public void testIsTemporaryTransformationTrue() {
         String tableName = "test_S04";
 
         boolean result = fixture.isTemporaryTransformation(tableName);
@@ -652,7 +660,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsTemporaryTransformationFalse_1() throws Exception {
+    public void testIsTemporaryTransformationFalse_1() {
         String tableName = "test";
 
         boolean result = fixture.isTemporaryTransformation(tableName);
@@ -661,7 +669,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsTemporaryTransformationFalse_2() throws Exception {
+    public void testIsTemporaryTransformationFalse_2() {
         String tableName = "test_S04_test";
         when(mockWfProperties.getTemporaryInterfacesRegex()).thenReturn("(_S)[0-9]{2,2}$");
         boolean result = fixture.isTemporaryTransformation(tableName);
@@ -670,7 +678,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsTemporaryTransformationFalse_3() throws Exception {
+    public void testIsTemporaryTransformationFalse_3() {
         String tableName = "test_X04";
 
         boolean result = fixture.isTemporaryTransformation(tableName);
@@ -679,7 +687,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsTemporaryTransformationException() throws Exception {
+    public void testIsTemporaryTransformationException() {
         String tableName = "_S04";
         when(mockWfProperties.getTemporaryInterfacesRegex()).thenReturn("(_S)([0-9]{1,}){1,1}");
         assertTrue(fixture.isTemporaryTransformation(tableName));
@@ -687,7 +695,7 @@ public class DatabaseMetadataServiceTest {
 
 
     @Test
-    public void testIsConnectorModel() throws Exception {
+    public void testIsConnectorModel() {
         String modelCode = "test";
 
         ModelProperties modelProperties = mock(ModelProperties.class);
@@ -701,7 +709,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsConnectorModelFalse() throws Exception {
+    public void testIsConnectorModelFalse() {
         String modelCode = "test";
 
         ModelProperties modelProperties = mock(ModelProperties.class);
@@ -715,7 +723,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsSourceModel() throws Exception {
+    public void testIsSourceModel() {
         String modelCode = "test";
         ModelProperties modelProperties = mock(ModelProperties.class);
         when(modelPropertiesProvider.getConfiguredModels()).thenReturn(Collections.singletonList(modelProperties));
@@ -728,7 +736,7 @@ public class DatabaseMetadataServiceTest {
     }
 
     @Test
-    public void testIsSourceModelFalse() throws Exception {
+    public void testIsSourceModelFalse() {
         String modelCode = "test";
 
         ModelProperties modelProperties = mock(ModelProperties.class);
@@ -746,7 +754,7 @@ public class DatabaseMetadataServiceTest {
 
     @SuppressWarnings("deprecation")
     private List<ModelProperties> setupModelProperties(String[] models) {
-        List<ModelProperties> modelPropList = new ArrayList<ModelProperties>();
+        List<ModelProperties> modelPropList = new ArrayList<>();
         boolean ignore = true;
         for (String model : models) {
             ModelProperties modelProp = mock(ModelProperties.class);

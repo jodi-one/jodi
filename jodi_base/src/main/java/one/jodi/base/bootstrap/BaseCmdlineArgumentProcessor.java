@@ -24,8 +24,9 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
     protected static final String OPTION_ACTION = "action";
     protected static final String OPTION_MODULE = "module";
-    private final static Logger logger = LogManager.getLogger(
-            BaseCmdlineArgumentProcessor.class);
+
+    private final static Logger LOGGER = LogManager.getLogger(BaseCmdlineArgumentProcessor.class);
+
     private final static String ERROR_MESSAGE_80050 = "Usage failure %s";
     private static final String OPTION_CONFIG = "config";
     private static final String OPTION_METADATA = "metadata";
@@ -41,6 +42,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     private static final String OPTION_WORKREP_PASSWORD = "masterpassword";
     private static final String OPTION_IDS = "ids";
     private static final String OPTION_DEPLOYMENT_ARCHIVE_TYPE = "da_type";
+
     protected String prefix;
     protected String action;
     protected String[] modules;
@@ -253,13 +255,11 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
      * @param opts     options
      * @param exitCode the return / exit code
      */
-    protected void usage(final String header, final Options opts,
-                         final int exitCode) {
+    protected void usage(final String header, final Options opts, final int exitCode) {
         try {
             HelpFormatter formatter = new HelpFormatter();
             Version.init();
-            System.out.println("Jodi.one Version "
-                    + Version.getProductVersion());
+            System.out.println("Jodi.one Version " + Version.getProductVersion());
             formatter.printHelp(" ", header, opts, null);
         } catch (RuntimeException r) {
             String msg = errorWarningMessages.formatMessage(80050,
@@ -268,7 +268,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(), msg,
                     MESSAGE_TYPE.ERRORS);
-            logger.error(msg, r);
+            LOGGER.error(msg, r);
         }
     }
 

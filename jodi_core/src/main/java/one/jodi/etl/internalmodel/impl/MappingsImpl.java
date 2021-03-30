@@ -6,7 +6,7 @@ import one.jodi.etl.internalmodel.Targetcolumn;
 import one.jodi.etl.internalmodel.Transformation;
 import one.jodi.model.extensions.MappingsExtension;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class MappingsImpl implements Mappings {
         this.targetDataStore = targetDataStore;
         this.ikm = ikm;
         this.ckm = ckm;
-        targetcolumns = new LinkedList<>();
+        this.targetcolumns = new LinkedList<>();
         //this.temporaryDataStore = temporaryDataStore;
     }
 
@@ -96,8 +96,8 @@ public class MappingsImpl implements Mappings {
 
     @Override
     public List<Targetcolumn> getTargetColumns() {
-        Collections.sort(targetcolumns,
-                (a, b) -> Integer.compare(a.getPosition(), b.getPosition()));
+        // TODO we expose the list itself, opening it for changes by calling logic - is that what we want?
+        targetcolumns.sort(Comparator.comparingInt(Targetcolumn::getPosition));
         return targetcolumns;
     }
 
@@ -113,6 +113,7 @@ public class MappingsImpl implements Mappings {
         targetcolumns.removeAll(removes);
     }
 
+    @Override
     public KmType getIkm() {
         return ikm;
     }
@@ -121,6 +122,7 @@ public class MappingsImpl implements Mappings {
         this.ikm = ikm;
     }
 
+    @Override
     public KmType getCkm() {
         return ckm;
     }
@@ -138,33 +140,13 @@ public class MappingsImpl implements Mappings {
         this.extension = extension;
     }
 
-    /*
-     * @Override public String getTemporaryDataStore() { return
-     * temporaryDataStore; }
-     *
-     * public void setTemporaryDataStore(String temporaryDataStore) {
-     * this.temporaryDataStore = temporaryDataStore; }
-     */
-
-
     @Override
     public boolean hasUpdateKeys() {
-        for (Targetcolumn tc : this.getTargetColumns()) {
-            if (tc.isUpdateKey()) {
-                return true;
-            }
-        }
-        return false;
+        return this.targetcolumns.stream().anyMatch(Targetcolumn::isUpdateKey);
     }
 
     @Override
     public boolean isAggregateTransformation(int dataSetNumber) {
-        boolean found = false;
-        for (Targetcolumn tc : this.getTargetColumns()) {
-            if (tc.isAggregateColumn(dataSetNumber)) {
-                found = true;
-            }
-        }
-        return found;
+        return this.targetcolumns.stream().anyMatch(tc -> tc.isAggregateColumn(dataSetNumber));
     }
 }

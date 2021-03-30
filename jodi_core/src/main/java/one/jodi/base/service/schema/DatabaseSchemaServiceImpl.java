@@ -4,7 +4,11 @@ import com.google.inject.Inject;
 import one.jodi.base.context.Context;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
-import one.jodi.base.model.types.*;
+import one.jodi.base.model.types.DataModel;
+import one.jodi.base.model.types.DataStore;
+import one.jodi.base.model.types.DataStoreForeignReference;
+import one.jodi.base.model.types.DataStoreType;
+import one.jodi.base.model.types.LazyCreation;
 import one.jodi.base.model.types.impl.DataModelImpl;
 import one.jodi.base.model.types.impl.DataStoreForeignReferenceImpl;
 import one.jodi.base.model.types.impl.DataStoreImpl;
@@ -15,13 +19,15 @@ import one.jodi.base.service.metadata.SchemaMetaDataProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 
-public class DatabaseSchemaServiceImpl
-        implements DatabaseSchemaService, LazyCreation {
-
-    private final static Logger logger =
-            LogManager.getLogger(DatabaseSchemaServiceImpl.class);
+public class DatabaseSchemaServiceImpl implements DatabaseSchemaService, LazyCreation {
+    private final static Logger LOGGER = LogManager.getLogger(DatabaseSchemaServiceImpl.class);
 
     private final static String ERROR_MESSAGE_80900 =
             "Unable to find data store '%1$s' in  model '%2$s'. Check name of" +
@@ -59,15 +65,11 @@ public class DatabaseSchemaServiceImpl
     }
 
     protected DataModel findOrCreateDataModel(final DataModelDescriptor descriptor) {
-        DataModel model = context.getDataModel(descriptor.getModelCode());
-        if (model == null) {
-            model = createDataModel(descriptor);
-        }
-        return model;
+        return Optional.ofNullable(context.getDataModel(descriptor.getModelCode()))
+                .orElse(createDataModel(descriptor));
     }
 
     private DataStore createDataStore(final DataStoreDescriptor desc) {
-
         DataStoreType dsType = getDataStoreType(desc.getDataStoreName());
         //logger.info(String.format("createDataStore %s with type %s ", desc.getDataStoreName() , (dsType != null ?  dsType.name() : "null") ));
         DataModel dataModel = findOrCreateDataModel(desc.getDataModelDescriptor());
@@ -75,18 +77,14 @@ public class DatabaseSchemaServiceImpl
     }
 
     protected DataStore findOrCreateDataStore(DataStoreDescriptor desc) {
-        DataStore foundDataStore;
-        DataStore cachedDataStore = context.getDataStore(desc.getDataStoreName(),
-                desc.getDataModelDescriptor()
-                        .getModelCode());
-        if (cachedDataStore != null) {
+        Optional<DataStore> cachedDataStore = Optional.ofNullable(context.getDataStore(desc.getDataStoreName(), desc.getDataModelDescriptor().getModelCode()));
+        if (cachedDataStore.isPresent()) {
             // data store was previously created and can be returned
-            foundDataStore = cachedDataStore;
-        } else {
-            // was not previously cached and needs to be constructed
-            foundDataStore = createDataStore(desc);
-            context.addDataStore(foundDataStore);
+            return cachedDataStore.get();
         }
+        // was not previously cached and needs to be constructed
+        DataStore foundDataStore = createDataStore(desc);
+        context.addDataStore(foundDataStore);
         return foundDataStore;
     }
 
@@ -94,27 +92,19 @@ public class DatabaseSchemaServiceImpl
     public Map<String, DataStore> getAllDataStoresInModel(final String modelCode) {
         TreeMap<String, DataStore> allDataStores = new TreeMap<>();
         Map<String, DataStoreDescriptor> dataStoresInModel = etlProvider.getDataStoreDescriptorsInModel(modelCode);
-        if (dataStoresInModel == null ||
-                dataStoresInModel.values() == null) {
+        if (dataStoresInModel == null || dataStoresInModel.values().isEmpty()) {
             String msg = "Couldn't retrieve datastores. Verify your connection details.";
-            logger.error(msg);
+            LOGGER.error(msg);
             throw new RuntimeException(msg);
         }
-        for (DataStoreDescriptor desc : etlProvider
-                .getDataStoreDescriptorsInModel(modelCode).values()) {
-            assert (desc != null && desc.getDataStoreName() != null && !desc
-                    .getDataStoreName().equals(""));
+        for (DataStoreDescriptor desc : etlProvider.getDataStoreDescriptorsInModel(modelCode).values()) {
+            assert (desc != null && desc.getDataStoreName() != null && !desc.getDataStoreName().equals(""));
             // create a unique key <model_code>.<datastore_name>
-            allDataStores.put(desc.getDataModelDescriptor().getModelCode()
-                            + "." + desc.getDataStoreName(),
+            allDataStores.put(desc.getDataModelDescriptor().getModelCode() + "." + desc.getDataStoreName(),
                     findOrCreateDataStore(desc));
         }
-
         return allDataStores;
     }
-
-    //
-    //
 
     public DataStore getDataStoreInModel(final String dataStoreName,
                                          final String modelCode) {
@@ -131,7 +121,7 @@ public class DatabaseSchemaServiceImpl
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(),
                     msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg);
+            LOGGER.error(msg);
         }
 
         return foundDataStore;

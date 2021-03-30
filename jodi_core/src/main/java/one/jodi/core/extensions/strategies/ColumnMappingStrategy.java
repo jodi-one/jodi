@@ -16,14 +16,13 @@ public interface ColumnMappingStrategy {
      * set a new expression for the Dataset's mappings expression.  (Note that each <code>Dataset</code> needs to generate its own
      * mapping expression.)
      *
-     * @param currentMappingExpression
-     * @param columnMappingExecutionContext
-     * @param targetColumnExecutionContext
+     * @param currentMappingExpression      As a {@link String}
+     * @param columnMappingExecutionContext {@link ColumnMappingExecutionContext}
+     * @param targetColumnExecutionContext  {@link TargetColumnExecutionContext}
      * @return mapping expression or null if indeterminate
      */
-    String getMappingExpression(
-            String currentMappingExpression,
-            ColumnMappingExecutionContext columnMappingExecutionContext,
-            TargetColumnExecutionContext targetColumnExecutionContext);
+    String getMappingExpression(String currentMappingExpression,
+                                ColumnMappingExecutionContext columnMappingExecutionContext,
+                                TargetColumnExecutionContext targetColumnExecutionContext);
 
 }
