@@ -50,6 +50,12 @@ public class GenericColumnMappingStrategy implements ColumnMappingStrategy {
                                        final ColumnMappingExecutionContext cmContext,
                                        final TargetColumnExecutionContext targetColumnExecutionContext) {
 
+        if (currentMappingExpression == null || cmContext == null || targetColumnExecutionContext == null) {
+            throw new IllegalArgumentException("Input is mandatory, no null values allowed: currentMappingExpression="
+                    + currentMappingExpression + "; cmContext=" + cmContext + "; targetColumnExecutionContext="
+                    + targetColumnExecutionContext);
+        }
+
         // there could be an overriding automapping set for this column, check property ext.automapping.<target_col>
         String targetColumn = targetColumnExecutionContext.getTargetColumnName();
         PropertyValueHolder propAutomap = cmContext.getCoreProperties().get(String.format(PROPERTY_COLUMN_AUTOMAP_FMT, targetColumn));
@@ -63,7 +69,7 @@ public class GenericColumnMappingStrategy implements ColumnMappingStrategy {
             return getMappingOhi(MatchTypes.findMatchType(propColumnMatchType.getString()),
                     currentMappingExpression, cmContext, targetColumnExecutionContext);
         }
-        
+
         // no special handling
         return currentMappingExpression;
     }
