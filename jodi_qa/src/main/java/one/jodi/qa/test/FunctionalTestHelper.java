@@ -51,8 +51,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FunctionalTestHelper {
 
-    private final static Logger logger =
-            LogManager.getLogger(CreateScenariosActionRunner.class);
+    private final static Logger LOGGER = LogManager.getLogger(CreateScenariosActionRunner.class);
 
     static OdiSequenceAccessStrategy odiSequenceAccessStrategy;
     static OdiVariableAccessStrategy odiVariableAccessStrategy;
@@ -74,7 +73,7 @@ public class FunctionalTestHelper {
     }
 
     public static String getDefaultAgent(String properties) {
-        logger.info(properties);
+        LOGGER.info(properties);
         String hostName;
         try {
             hostName = Files.lines(Paths.get(properties)).anyMatch(l -> l.contains("jodi:1521")) ? "jodi" : "localhost";
@@ -245,7 +244,7 @@ public class FunctionalTestHelper {
             }
         }
         for (String m : messages) {
-            logger.info(m);
+            LOGGER.info(m);
         }
     }
 
