@@ -4,46 +4,46 @@ import org.apache.commons.configuration2.Configuration;
 
 public interface RegressionConfiguration {
 
-    public String getSysdbaUser();
+    String getSysdbaUser();
 
-    public String getSysdbaPassword();
+    String getSysdbaPassword();
 
-    public String getJdbcUrlMasterRepository();
+    String getJdbcUrlMasterRepository();
 
-    public String getMasterRepositoryJdbcUser();
+    String getMasterRepositoryJdbcUser();
 
-    public String getMasterRepositoryJdbcPassword();
+    String getMasterRepositoryJdbcPassword();
 
-    public String getWorkRepositoryJdbcPassword();
+    String getWorkRepositoryJdbcPassword();
 
-    public String getOdiSupervisorUser();
+    String getOdiSupervisorUser();
 
-    public String getOdiSupervisorPassword();
+    String getOdiSupervisorPassword();
 
-    public String getMasterRepositoryJdbcUrl();
+    String getMasterRepositoryJdbcUrl();
 
-    public String getMasterRepositoryJdbcDriver();
+    String getMasterRepositoryJdbcDriver();
 
-    public String getWorkRepositoryJdbcUrl();
+    String getWorkRepositoryJdbcUrl();
 
-    public String getWorkRepositoryJdbcDriver();
+    String getWorkRepositoryJdbcDriver();
 
-    public int getWorkRepositoryId();
+    int getWorkRepositoryId();
 
-    public String getMasterRepositoryTechnology();
+    String getMasterRepositoryTechnology();
 
-    public Configuration getConfig();
+    Configuration getConfig();
 
-    public String getOdiContext();
+    String getOdiContext();
 
-    public String getOdiWorkRepositoryName();
+    String getOdiWorkRepositoryName();
 
-    public boolean isInstall();
+    boolean isInstall();
 
-    public String getSmartExport();
+    String getSmartExport();
 
-    public String getWorkRepositoryJdbcUsername();
+    String getWorkRepositoryJdbcUsername();
 
-    public String getProjectCode();
+    String getProjectCode();
 
 }

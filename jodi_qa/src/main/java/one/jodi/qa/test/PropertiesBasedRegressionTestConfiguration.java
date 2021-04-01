@@ -9,7 +9,8 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.junit.Assert;
+
+import static org.junit.Assert.assertNotNull;
 
 public class PropertiesBasedRegressionTestConfiguration implements RegressionConfiguration {
     private final String sysdbaUser;
@@ -36,13 +37,14 @@ public class PropertiesBasedRegressionTestConfiguration implements RegressionCon
 
     public PropertiesBasedRegressionTestConfiguration(final String propertiesFile,
                                                       final String password, final String masterPassword) {
-        if (propertiesFile == null || propertiesFile.startsWith("null"))
+        if (propertiesFile == null || propertiesFile.startsWith("null")) {
             throw new RuntimeException("Please set TEST_PROPERTIES_BASE_DIRECTORY system property.");
+        }
 
         //	this.config = new PropertiesConfiguration(propertiesFile).interpolatedConfiguration();
         Parameters params = new Parameters();//mock(Parameters.class);
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
                         .configure(params.fileBased()
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                 .setFileName(propertiesFile));
@@ -51,7 +53,7 @@ public class PropertiesBasedRegressionTestConfiguration implements RegressionCon
         try {
             pConfig = builder.getConfiguration();
         } catch (ConfigurationException e) {
-// update!
+            // update!
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -74,27 +76,27 @@ public class PropertiesBasedRegressionTestConfiguration implements RegressionCon
         this.workRepositoryJdbcDriver = config.getString("odi.repo.db.driver");
         this.workRepositoryId = Integer.parseInt(config.getString("odi.repository.index"));
         this.masterRepositoryTechnology = config.getString("odi.repo.db.technology");
-        this.install = Boolean.valueOf(config.getString("rt.install"));
+        this.install = Boolean.parseBoolean(config.getString("rt.install"));
         this.odiContext = config.getString("odi.context");
         this.odiWorkRepositoryName = config.getString("odi.work.repo");
         this.smartExport = config.getString("rt.file.smartexport");
         this.projectCode = config.getString("odi.project.code");
-        Assert.assertNotNull(this.sysdbaUser);
-        Assert.assertNotNull(this.sysdbaPassword);
-        Assert.assertNotNull(this.jdbcUrlMasterRepository);
-        Assert.assertNotNull(this.masterRepositoryJdbcUser);
-        Assert.assertNotNull(this.masterRepositoryJdbcPassword);
-        Assert.assertNotNull(this.workRepositoryJdbcUsername);
-        Assert.assertNotNull(this.workRepositoryJdbcPassword);
-        Assert.assertNotNull(this.odiSupervisorUser);
-        Assert.assertNotNull(this.odiSupervisorPassword);
-        Assert.assertNotNull(this.masterRepositoryJdbcUrl);
-        Assert.assertNotNull(this.masterRepositoryJdbcDriver);
-        Assert.assertNotNull(this.odiContext);
-        Assert.assertNotNull(this.odiWorkRepositoryName);
-        Assert.assertNotNull(this.masterRepositoryTechnology);
-        Assert.assertNotNull(this.smartExport);
-        Assert.assertNotNull(this.projectCode);
+        assertNotNull(this.sysdbaUser);
+        assertNotNull(this.sysdbaPassword);
+        assertNotNull(this.jdbcUrlMasterRepository);
+        assertNotNull(this.masterRepositoryJdbcUser);
+        assertNotNull(this.masterRepositoryJdbcPassword);
+        assertNotNull(this.workRepositoryJdbcUsername);
+        assertNotNull(this.workRepositoryJdbcPassword);
+        assertNotNull(this.odiSupervisorUser);
+        assertNotNull(this.odiSupervisorPassword);
+        assertNotNull(this.masterRepositoryJdbcUrl);
+        assertNotNull(this.masterRepositoryJdbcDriver);
+        assertNotNull(this.odiContext);
+        assertNotNull(this.odiWorkRepositoryName);
+        assertNotNull(this.masterRepositoryTechnology);
+        assertNotNull(this.smartExport);
+        assertNotNull(this.projectCode);
     }
 
     /* (non-Javadoc)
@@ -137,6 +139,7 @@ public class PropertiesBasedRegressionTestConfiguration implements RegressionCon
         return masterRepositoryJdbcPassword;
     }
 
+    @Override
     public String getWorkRepositoryJdbcUsername() {
         return workRepositoryJdbcUsername;
     }

@@ -109,11 +109,14 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     private static final String[] IGNORED_METHODS = {"Test010Install", "Test020Generation", "Test030ing",
             "Test99999Destructor"};
-    private final static String ODI_USER_PASSWORD = FunctionalTestHelper.getOdiPass();
-    private final static String FUNCTIONAL_TEST_DIR = "FunctionalTest";
-    private final static String PROPERTIES_DIR = FunctionalTestHelper.getPropertiesDir();
+    private static final String ODI_USER_PASSWORD = FunctionalTestHelper.getOdiPass();
+    private static final String FUNCTIONAL_TEST_DIR = "FunctionalTest";
+    private static final String PROPERTIES_DIR = FunctionalTestHelper.getPropertiesDir();
+    private static final String TEST_PROPERTIES_BASE_DIRECTORY = "src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR;
+    private static final String TEST_XML_BASE_DIRECTORY = "src/test/resources/" + FUNCTIONAL_TEST_DIR;
 
-    private final static String DEFAULT_AGENT = FunctionalTestHelper.getDefaultAgent("src/test/resources/FunctionalTest/" + FunctionalTestHelper.getPropertiesDir() + "/FunctionalTest.properties");
+    private static final String DEFAULT_PROPERTIES = TEST_PROPERTIES_BASE_DIRECTORY + "/FunctionalTest.properties";
+    private static final String DEFAULT_AGENT = FunctionalTestHelper.getDefaultAgent("src/test/resources/FunctionalTest/" + FunctionalTestHelper.getPropertiesDir() + "/FunctionalTest.properties");
 
     @Rule
     public final TestName testMethodName = new TestName();
@@ -134,10 +137,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private final String refUserJDBC;
     private final String refUserJDBCDriver;
     //
-    private final String testPropertiesBaseDirectory;
-    private final String testXmlBaseDirectory;
     private final String tempDir;
-    private final String defaultProperties;
 
     private final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
     private final OdiTransformationAccessStrategy<T, U, V, W, X, Y, Z> odiAccessStrategy;
@@ -152,29 +152,26 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private String testName = null;
     private String metadataDirectory = null;
 
-    @SuppressWarnings("unchecked")
     public FunctionalTest() throws ConfigurationException {
         // ODI 12
-        super("src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR + "/FunctionalTest.properties", new PasswordConfigImpl().getOdiUserPassword(),
+        super("src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR + "/FunctionalTest.properties",
+                new PasswordConfigImpl().getOdiUserPassword(),
                 new PasswordConfigImpl().getOdiMasterRepoPassword());
-        testPropertiesBaseDirectory = "src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR;
-        testXmlBaseDirectory = "src/test/resources/" + FUNCTIONAL_TEST_DIR;
-        defaultProperties = testPropertiesBaseDirectory + "/FunctionalTest.properties";
-        refUser = regressionConfiguration.getConfig().getString("rt.custom.refUser");
-        refUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.refUserJDBC");
-        refUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.refUserJDBCDriver");
+        refUser = getRegressionConfiguration().getConfig().getString("rt.custom.refUser");
+        refUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.refUserJDBC");
+        refUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.refUserJDBCDriver");
         //
-        srcUser = regressionConfiguration.getConfig().getString("rt.custom.srcUser");
-        srcUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.srcUserJDBC");
-        srcUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.srcUserJDBCDriver");
+        srcUser = getRegressionConfiguration().getConfig().getString("rt.custom.srcUser");
+        srcUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.srcUserJDBC");
+        srcUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.srcUserJDBCDriver");
         //
-        stgUser = regressionConfiguration.getConfig().getString("rt.custom.stgUser");
-        stgUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.stgUserJDBC");
-        stgUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.stgUserJDBCDriver");
+        stgUser = getRegressionConfiguration().getConfig().getString("rt.custom.stgUser");
+        stgUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.stgUserJDBC");
+        stgUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.stgUserJDBCDriver");
         //
-        dmtUser = regressionConfiguration.getConfig().getString("rt.custom.dmtUser");
-        dmtUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.dmtUserJDBC");
-        dmtUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.dmtUserJDBCDriver");
+        dmtUser = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUser");
+        dmtUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUserJDBC");
+        dmtUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUserJDBCDriver");
 
         //
         Assert.assertNotNull(refUser);
@@ -206,19 +203,16 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getTargetModel() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getSourceModel() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getScenario() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
@@ -239,41 +233,37 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getPassword() {
-                return regressionConfiguration.getOdiSupervisorPassword();
+                return getRegressionConfiguration().getOdiSupervisorPassword();
             }
 
             @Override
             public String getPackageSequence() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getPackage() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public List<String> getModuleClasses() {
-                // TODO Auto-generated method stub
                 return Collections.emptyList();
             }
 
             @Override
             public String getModelCode() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getMetadataDirectory() {
-                return testXmlBaseDirectory + File.separator + "xml" + File.separator + testName;
+                return TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName;
             }
 
             @Override
             public String getMasterPassword() {
-                return regressionConfiguration.getMasterRepositoryJdbcPassword();
+                return getRegressionConfiguration().getMasterRepositoryJdbcPassword();
             }
 
             @Override
@@ -288,20 +278,17 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getFolder() {
-                // TODO Auto-generated method stub
                 LOGGER.info("RETURNING NULL FOR FOLDER");
                 return null;
             }
 
             @Override
             public boolean isExportingDBConstraints() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public boolean isIncludingConstraints() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
@@ -317,19 +304,18 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             tempDir = System.getProperty("java.io.tmpdir");
         }
 
+        //noinspection unchecked
         this.odiAccessStrategy = (OdiTransformationAccessStrategy<T, U, V, W, X, Y, Z>)
                 FunctionalTestHelper.getOdiAccessStrategy(runConfig, getController());
+        //noinspection unchecked
         this.odiPackageAccessStrategy = (OdiPackageAccessStrategy<T, A>)
                 FunctionalTestHelper.getOdiPackageAccessStrategy(runConfig, getController());
         this.odi12SequenceAccessStrategy =
-                FunctionalTestHelper.getOdiSequenceAccessStrategy(runConfig,
-                        getController());
+                FunctionalTestHelper.getOdiSequenceAccessStrategy(runConfig, getController());
         this.odi12VariableAccessStrategy =
-                FunctionalTestHelper.getOdiVariableAccessStrategy(runConfig,
-                        getController());
+                FunctionalTestHelper.getOdiVariableAccessStrategy(runConfig, getController());
         this.odi12ConstraintsAccessStrategy =
-                FunctionalTestHelper.getOdiConstraintsAccessStrategy(runConfig,
-                        getController());
+                FunctionalTestHelper.getOdiConstraintsAccessStrategy(runConfig, getController());
         this.getOdiProcedureService =
                 FunctionalTestHelper.getOdiProcedureService(runConfig, getController());
     }
@@ -339,7 +325,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     private void generationInterfaceAssertSuccess() {
-        generationInterfaceAssertSuccess(defaultProperties);
+        generationInterfaceAssertSuccess(DEFAULT_PROPERTIES);
     }
 
     private void removeAppender(ListAppender listAppender) {
@@ -369,7 +355,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     private void generationInterfaceAssertFailure() {
-        generationInterfaceAssertFailure(defaultProperties);
+        generationInterfaceAssertFailure(DEFAULT_PROPERTIES);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -401,7 +387,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 try {
                     dest.createNewFile();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -416,14 +401,12 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     out.write(buf, 0, len);
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } finally {
                 if (in != null) {
                     try {
                         in.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -431,7 +414,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     try {
                         out.close();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -503,10 +485,10 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     && (!isIgnored(m.getName()))) {
                 String packageName = m.getName().substring(9);
                 try {
-                    deletePackageAndScenario(defaultProperties, packageName, "BulkLoadORACLE_DWH_STG");
+                    deletePackageAndScenario(DEFAULT_PROPERTIES, packageName, "BulkLoadORACLE_DWH_STG");
                 } catch (Exception ex) {
                     try {
-                        deletePackageAndScenario(defaultProperties, packageName, "BulkLoadORACLE_DWH_DMT");
+                        deletePackageAndScenario(DEFAULT_PROPERTIES, packageName, "BulkLoadORACLE_DWH_DMT");
                     } catch (Exception ex1) {
                         LOGGER.debug(ex1.getMessage());
                     }
@@ -540,7 +522,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         } else {
             testName = name;
         }
-        metadataDirectory = testXmlBaseDirectory + File.separator + "xml" + File.separator + testName;
+        metadataDirectory = TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName;
     }
 
     @Before
@@ -567,7 +549,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     tem.remove(p);
                 }
                 tm.commit(getWorkOdiInstance().getTransactionStatus());
-                deletePackageAndScenario(defaultProperties, testName, "BulkLoadORACLE_DWH_STG");
+                deletePackageAndScenario(DEFAULT_PROPERTIES, testName, "BulkLoadORACLE_DWH_STG");
                 LOGGER.debug("package " + testName + " deleted after execution test case.");
             } catch (RuntimeException ex) {
                 LOGGER.info(ex.getMessage());
@@ -653,7 +635,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test020Generation() {
         // Generate interfaces
         try {
-            runController("ct", defaultProperties, "-p", "Inf", "-m", testXmlBaseDirectory + "/xml/Generation");
+            runController("ct", DEFAULT_PROPERTIES, "-p", "Inf", "-m", TEST_XML_BASE_DIRECTORY + "/xml/Generation");
             // an exception was not thrown up the stack
             Assert.fail("An incorrect xml file definition did not raise an error, it should.");
         } catch (AssertionError | Exception ae) {
@@ -693,9 +675,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             argList.add("missing"); // should cause an ErrorReport and hence throw exception.
             // add default passwords in here - may need to be externalized
             argList.add("-pw");
-            argList.add(regressionConfiguration.getOdiSupervisorPassword());
+            argList.add(getRegressionConfiguration().getOdiSupervisorPassword());
             argList.add("-mpw");
-            argList.add(regressionConfiguration.getMasterRepositoryJdbcPassword());
+            argList.add(getRegressionConfiguration().getMasterRepositoryJdbcPassword());
             argList.add("-devmode");
             getController().run(argList.toArray(new String[0]));
             Assert.fail("This test should have an error report and hance throw exception; it did not.");
@@ -794,17 +776,17 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test11003Set_2D_Default_Union_All_Success() {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/Set_2D_Default_Union_All_Success.xml";
-        String jdbcDBPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/Set_2D_Default_Union_All_Success.xml";
+        String jdbcDBPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, stgUser,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser, jdbcDBPassword);
 
@@ -815,7 +797,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
     }
@@ -826,7 +808,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11004Set_2D_Explicit_UNION_ALL_SUCCESS() {
-        set_2D_Explicit_Common(testXmlBaseDirectory + "/Set_2D_Default_Union_All_Success.xml");
+        set_2D_Explicit_Common(TEST_XML_BASE_DIRECTORY + "/Set_2D_Default_Union_All_Success.xml");
     }
 
     /**
@@ -835,7 +817,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11005Set_2D_Explicit_UNION_SUCCESS() {
-        set_2D_Explicit_Common(testXmlBaseDirectory + "/Set_2D_Explicit_Union_Success.xml");
+        set_2D_Explicit_Common(TEST_XML_BASE_DIRECTORY + "/Set_2D_Explicit_Union_Success.xml");
     }
 
     /**
@@ -844,7 +826,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11006Set_2D_Explicit_MINUS_SUCCESS() {
-        set_2D_Explicit_Common(testXmlBaseDirectory + "/Set_2D_Explicit_Minus_Success.xml");
+        set_2D_Explicit_Common(TEST_XML_BASE_DIRECTORY + "/Set_2D_Explicit_Minus_Success.xml");
     }
 
     /**
@@ -853,7 +835,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11007Set_2D_Explicit_INTERSECT_SUCCESS() {
-        set_2D_Explicit_Common(testXmlBaseDirectory + "/Set_2D_Explicit_intersect_Success.xml");
+        set_2D_Explicit_Common(TEST_XML_BASE_DIRECTORY + "/Set_2D_Explicit_intersect_Success.xml");
     }
 
     /**
@@ -862,7 +844,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test11008Set_3D_MinusAndUnion_SUCCESS() {
-        set_2D_Explicit_Common(testXmlBaseDirectory + "/Set_3D_MinusAndUnion_SUCCESS.xml");
+        set_2D_Explicit_Common(TEST_XML_BASE_DIRECTORY + "/Set_3D_MinusAndUnion_SUCCESS.xml");
     }
 
     /**
@@ -893,19 +875,19 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // testName
         // to reflect context of called test case.
         testName = "Source_2S_OneIntf_Success";
-        metadataDirectory = testXmlBaseDirectory + File.separator + "xml" + File.separator + testName;
+        metadataDirectory = TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName;
         if (new OdiVersion().isVersion1213()) {
             // test if the folder exist meaning that the 11g and 12c xml files
             // are different. Update to the new filename with "_12c" suffix.
             File testDirectory = new File(
-                    testXmlBaseDirectory + File.separator + "xml" + File.separator + testName);
+                    TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName);
             if (testDirectory.exists()) {
-                metadataDirectory = testXmlBaseDirectory + File.separator + "xml" + File.separator + testName;
+                metadataDirectory = TEST_XML_BASE_DIRECTORY + File.separator + "xml" + File.separator + testName;
             }
         }
         try {
-            deletePackageAndScenario(defaultProperties, testName, "BulkLoadORACLE_DWH_STG");
-            getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            deletePackageAndScenario(DEFAULT_PROPERTIES, testName, "BulkLoadORACLE_DWH_STG");
+            getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     stgUserJDBC, "truncate table DWH_STG.S_SOURCE_2S_ONEINTF_I");
 
         } catch (RuntimeException ex) {
@@ -913,13 +895,13 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         test11010Source_2S_OneIntf_Success();
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/Source_2S_Default_success.xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/Source_2S_Default_success.xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             assertTrue(dbUnit.areEqual(new File(dumpFile), "REF.S_DA_O", "DWH_STG.S_SOURCE_2S_ONEINTF_I"));
         } catch (Exception e) {
@@ -937,35 +919,35 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test11012Source_2S_SubSelectTempIntf_Success() throws Exception {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.");
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         try {
-            getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     stgUserJDBC, "drop table DWH_STG.I_S_SOURCE_2S_SUBSELECT_I_S01");
         } catch (Exception ex) {
             LOGGER.debug("Temp table I_S_SOURCE_2S_SUBSELECT_I_S01 not dropped.");
         }
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
 
@@ -985,40 +967,40 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test11017Source_2S_SubSelectLookup() throws Exception {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.");
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         try {
-            getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     stgUserJDBC, "drop table DWH_STG.I_S_11017_I_S01");
         } catch (Exception ex) {
             LOGGER.debug("Temp table DWH_STG.I_S_11017_I_S01 not dropped.");
         }
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
 
         T odiInterface = this.odiAccessStrategy.findMappingsByName("Init SOURCE_2S_SUBSELECTLOOKUP",
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         boolean result = false;
         try {
             result = this.odiAccessStrategy.isOneOfTheSourcesDerived(odiInterface);
@@ -1072,25 +1054,25 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test11120Model_2S_Model2_Success() {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -1098,8 +1080,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         //
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -1107,11 +1089,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, stgUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
         // "The data
         // is not
@@ -1120,15 +1102,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
         //
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
     }
 
@@ -1140,23 +1122,23 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test11130Model_2S_OverrideS2_Model2_Success() {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = dmtUserJDBCDriver;
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -1164,8 +1146,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, stgUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -1173,7 +1155,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
         // "The data
@@ -1182,15 +1164,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // with
         // reference
         // data.";
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
     }
 
@@ -1413,7 +1395,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // explicitly delete package since not automatically handled
         testName = "Filter_2D_OneFilterIncorrectAliasReference_Failure";
         try {
-            deletePackageAndScenario(defaultProperties, testName, "BulkLoadORACLE_DWH_STG");
+            deletePackageAndScenario(DEFAULT_PROPERTIES, testName, "BulkLoadORACLE_DWH_STG");
         } catch (RuntimeException ex) {
             LOGGER.info(ex.getMessage());
         }
@@ -1671,7 +1653,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test14050Lookup_1S_2L_Default_Success() throws Exception {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
         T mapping = odiAccessStrategy.findMappingsByName("Init LOOKUP_1S_2L_DEFAULT_SUCCESS",
                 "BulkLoadORACLE_DWH_STG",
                 getRegressionConfiguration().getProjectCode());
@@ -1712,7 +1694,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
      */
     @Test
     public void test14070Lookup_2S_1L_Default_Success() {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -1731,29 +1713,29 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test14090Lookup_2D_1L_Default_Success() {
         generationInterfaceAssertSuccess();
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
         // "The data
@@ -1763,15 +1745,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
 
     }
@@ -1795,7 +1777,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test15010Mapping_1S_FullAuto_Success() {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -1823,7 +1805,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test15040Mapping_1S_Distinct_Success() throws Exception {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
         T m = odiAccessStrategy.findMappingsByName("Init MAPPING_1S_DISTINCT_SUCCESS",
                 getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.isDistinctMapping(m));
@@ -1836,28 +1818,28 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test15050Mapping_1S_AutoLargerTypeLength_Success() {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DC_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DC_I");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         LOGGER.info(dumpFile);
         assertTrue(dbUnit.areEqual("REF.S_DA_I", "DWH_STG.S_DA_I"));// :
@@ -1868,13 +1850,13 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DC_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DC_I");
     }
 
@@ -1904,7 +1886,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test15080Mapping_1S_AutoAndManual_Success() {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -1912,7 +1894,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
      */
     @Test
     public void test15081Mapping_1S_Temp_Success() {
-        mappingLookup_Common("DWH_STG.S_MAPPING_1S_TEMP_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_MAPPING_1S_TEMP_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -1930,35 +1912,35 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test15083Mapping_1S_Magic_Success() {
-        generationInterfaceAssertSuccess(testPropertiesBaseDirectory + "/15083_FunctionalTest.properties");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        generationInterfaceAssertSuccess(TEST_PROPERTIES_BASE_DIRECTORY + "/15083_FunctionalTest.properties");
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DC_D");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_DMT.W_DC_D");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
 
         assertTrue(dbUnit.areEqual("REF.W_DC_D", "DWH_DMT.W_DC_D"));
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DC_D");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_DMT.W_DC_D");
     }
 
@@ -2010,7 +1992,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test15089Mapping_1S_TempNum_Success() {
         // generationInterfaceAssertSuccess(testName, "Mapping failed");
         // deleteTemporaryInterface("I_S_MAPPING_1S_TEMP_O_S03");
-        mappingLookup_Common("DWH_STG.S_MAPPING_1S_TEMP_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_MAPPING_1S_TEMP_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -2019,7 +2001,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test15090Mapping_2D_Manual_Success() {
-        mappingLookup_Common("DWH_STG.S_DA_O", true, defaultProperties);
+        mappingLookup_Common("DWH_STG.S_DA_O", true, DEFAULT_PROPERTIES);
     }
 
     /**
@@ -2084,7 +2066,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             LOGGER.info("KEY = " + flags.get(OdiTransformationAccessStrategy.KEY));
             assertTrue(flags.get(OdiTransformationAccessStrategy.KEY));
         }
+    }
 
+    @Test
+    public void test15091Mapping_1S_GbuModule_Automapping_Success() {
+        // TODO fill 'er up
     }
 
     // ///////////////////////////////////////////////////////////////////
@@ -2104,22 +2090,22 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test16010IKM_1S_Default_Success() throws Exception {
         generationInterfaceAssertSuccess();
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2127,8 +2113,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -2136,7 +2122,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.W_FA_F", "DWH_DMT.W_FA_F"));// :
         // "The data
@@ -2146,19 +2132,19 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
 
         try {
             LOGGER.info(testName);
             T mapping = odiAccessStrategy.findMappingsByName("Init " + (testName.toUpperCase()),
-                    regressionConfiguration.getProjectCode());
+                    getRegressionConfiguration().getProjectCode());
             assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM Oracle Control Append"));
         } catch (ResourceNotFoundException e) {
             if (!new OdiVersion().isVersion11()) {
@@ -2174,7 +2160,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success - bad properties value
     public void test16020IKM_1S_UnknownDefault_Failure() {
-        generationInterfaceAssertFailure(testPropertiesBaseDirectory + "/16020_FunctionalTest.properties");
+        generationInterfaceAssertFailure(TEST_PROPERTIES_BASE_DIRECTORY + "/16020_FunctionalTest.properties");
     }
 
     /**
@@ -2195,7 +2181,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test16040IKM_1S_ExplicitWithDefault_Parameters_Success() throws Exception {
         iKM_1S_Common(false);
         T mapping = odiAccessStrategy.findMappingsByName("Init " + (testName.toUpperCase()),
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM SQL Incremental Update"));
 
     }
@@ -2206,7 +2192,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16050IKM_1S_ExplicitUnknown_Failure() {
-        generationInterfaceAssertFailure(testPropertiesBaseDirectory + "/16020_FunctionalTest.properties");
+        generationInterfaceAssertFailure(TEST_PROPERTIES_BASE_DIRECTORY + "/16020_FunctionalTest.properties");
     }
 
     /**
@@ -2218,7 +2204,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test16060IKM_1S_ExplicitWithExplicitParameters_Success() throws Exception {
         iKM_1S_Common(true);
         T mapping = odiAccessStrategy.findMappingsByName("Init " + (testName.toUpperCase()),
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM Oracle Incremental Update"));
     }
 
@@ -2244,15 +2230,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test16085IKM_SQL_TO_FILE_APPEND_1S() throws Exception {
         updateFileDataServer();
         generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
-                testPropertiesBaseDirectory + "/16086_FunctionalTest.properties");
+                TEST_PROPERTIES_BASE_DIRECTORY + "/16086_FunctionalTest.properties");
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2261,7 +2247,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
 
         LOGGER.info("Starting scenario");
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         LOGGER.info("Starting dbunit");
         // assertTrue(dbUnit.areEqual("DWH_STG.S_DA_I", "DWH_SRC.S_DA"));
@@ -2270,19 +2256,19 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference data.";
 
         T odiInterface = this.odiAccessStrategy.findMappingsByName("Init IKM_SQL_TO_FILE_APPEND_1S",
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         if (new OdiVersion().isVersion11()) {
             assertEquals("ORACLE_DWH.DWH_STG", this.odiAccessStrategy
-                    .findStagingAreas(odiInterface, regressionConfiguration.getOdiContext()).iterator().next());
+                    .findStagingAreas(odiInterface, getRegressionConfiguration().getOdiContext()).iterator().next());
         } else {
             assertEquals("FILE_SRC_DWH_UNIT", this.odiAccessStrategy
-                    .findStagingAreas(odiInterface, regressionConfiguration.getOdiContext()).iterator().next());
+                    .findStagingAreas(odiInterface, getRegressionConfiguration().getOdiContext()).iterator().next());
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, regressionConfiguration.getProjectCode());
+        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM SQL to File Append"));
     }
 
@@ -2291,15 +2277,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test16086IKM_SQL_TO_FILE_APPEND_2S() throws Exception {
         updateFileDataServer();
         generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
-                testPropertiesBaseDirectory + "/16086_FunctionalTest.properties");
+                TEST_PROPERTIES_BASE_DIRECTORY + "/16086_FunctionalTest.properties");
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2308,7 +2294,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
 
         LOGGER.info("Starting scenario");
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         LOGGER.info("Starting dbunit");
         // assertTrue(dbUnit.areEqual("DWH_STG.S_DA_I", "DWH_SRC.S_DA"));
@@ -2316,19 +2302,19 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference data.";
 
         T odiInterface = this.odiAccessStrategy.findMappingsByName("Init IKM_SQL_TO_FILE_APPEND_2S",
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         if (new OdiVersion().isVersion11()) {
             assertEquals("ORACLE_DWH.DWH_STG", this.odiAccessStrategy
-                    .findStagingAreas(odiInterface, regressionConfiguration.getOdiContext()).iterator().next());
+                    .findStagingAreas(odiInterface, getRegressionConfiguration().getOdiContext()).iterator().next());
         } else {
             assertEquals("ORACLE_DWH_STG_UNIT", this.odiAccessStrategy
-                    .findStagingAreas(odiInterface, regressionConfiguration.getOdiContext()).iterator().next());
+                    .findStagingAreas(odiInterface, getRegressionConfiguration().getOdiContext()).iterator().next());
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, regressionConfiguration.getProjectCode());
+        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM SQL to File Append"));
     }
 
@@ -2337,12 +2323,12 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     public void test16087IKM_SQL_TO_FILE_APPEND_2S_Explicit() throws Exception {
         updateFileDataServer();
         generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
-                testPropertiesBaseDirectory + "/16087_FunctionalTest.properties");
+                TEST_PROPERTIES_BASE_DIRECTORY + "/16087_FunctionalTest.properties");
 
         T odiInterface = this.odiAccessStrategy.findMappingsByName("Init IKM_SQL_TO_FILE_APPEND_2S_Explicit",
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         Set<String> stagingAreaNames = this.odiAccessStrategy.findStagingAreas(odiInterface,
-                regressionConfiguration.getOdiContext());
+                getRegressionConfiguration().getOdiContext());
         if (new OdiVersion().isVersion11()) {
             assertEquals("ORACLE_DWH_SRC.DWH_SRC", stagingAreaNames.iterator().next());
         } else {
@@ -2350,13 +2336,13 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
 
         LOGGER.info("Starting scenario");
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         LOGGER.info("Starting dbunit");
         // TODO 12
         // assertTrue(dbUnit.areEqual("DWH_STG.S_DA_I", "DWH_SRC.S_DA"));
         LOGGER.info("Starting truncate");
-        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, regressionConfiguration.getProjectCode());
+        T mapping = odiAccessStrategy.findMappingsByName("Init " + testName, getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveIKMName(mapping, "IKM SQL to File Append"));
     }
 
@@ -2369,23 +2355,23 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore
     public void test16085IKM_AUTOCOMPLEX_TOPOLOGY() {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.",
-                testPropertiesBaseDirectory + "/16087_FunctionalTest.properties");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+                TEST_PROPERTIES_BASE_DIRECTORY + "/16087_FunctionalTest.properties");
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2393,52 +2379,52 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail(ex.getMessage());
         }
-        String pUser = regressionConfiguration.getOdiSupervisorUser();
-        String pPassword = regressionConfiguration.getOdiSupervisorPassword();
-        String pContextCode = regressionConfiguration.getOdiContext();
+        String pUser = getRegressionConfiguration().getOdiSupervisorUser();
+        String pPassword = getRegressionConfiguration().getOdiSupervisorPassword();
+        String pContextCode = getRegressionConfiguration().getOdiContext();
         String pLogLevel = "5";
-        String pWorkRepName = regressionConfiguration.getOdiWorkRepositoryName();
+        String pWorkRepName = getRegressionConfiguration().getOdiWorkRepositoryName();
         String pScenarioName = testName;
         odiExecuteScenario.startScenario(DEFAULT_AGENT, pUser, pPassword, pContextCode, pLogLevel, pWorkRepName, pScenarioName);
 
         assertTrue(dbUnit.areEqual("REF.W_FA_F", "DWH_DMT.W_FA_F"));// :
         // "The data is not equal with reference data.";
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
     }
 
     private void updateFileDataServer() {
-        if (RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology())
+        if (RegressionTestUtilities.getTechnologyNameFromString(getRegressionConfiguration().getMasterRepositoryTechnology())
                 .equals(TechnologyName.ORACLE)) {
             // If we are on oracle master repository
             // set the dataserver to be that of the master repository.
             OdiUpdateSchema updateSchema = new OdiUpdateSchema();
             String pDataServerName = "FILE_SRC_DWH";
-            String pPassword = regressionConfiguration.getWorkRepositoryJdbcPassword();
+            String pPassword = getRegressionConfiguration().getWorkRepositoryJdbcPassword();
 
-            String pOdiMasterRepoUrl = regressionConfiguration.getJdbcUrlMasterRepository();
-            String odiMasterRepoUser = regressionConfiguration.getMasterRepositoryJdbcUser();
-            String pOdiMasterRepoPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
-            String odiWorkRepo = regressionConfiguration.getWorkRepositoryJdbcUsername();
-            String odiLoginUsername = regressionConfiguration.getOdiSupervisorUser();
-            String odiLoginPassword = regressionConfiguration.getOdiSupervisorPassword();
+            String pOdiMasterRepoUrl = getRegressionConfiguration().getJdbcUrlMasterRepository();
+            String odiMasterRepoUser = getRegressionConfiguration().getMasterRepositoryJdbcUser();
+            String pOdiMasterRepoPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
+            String odiWorkRepo = getRegressionConfiguration().getWorkRepositoryJdbcUsername();
+            String odiLoginUsername = getRegressionConfiguration().getOdiSupervisorUser();
+            String odiLoginPassword = getRegressionConfiguration().getOdiSupervisorPassword();
             String pServerInstanceName = null;
-            String jdbcDriverRepository = regressionConfiguration.getMasterRepositoryJdbcDriver();
+            String jdbcDriverRepository = getRegressionConfiguration().getMasterRepositoryJdbcDriver();
 
             updateSchema.updateSchema(pOdiMasterRepoUrl, odiMasterRepoUser, pOdiMasterRepoPassword,
                     odiWorkRepo, odiLoginUsername, odiLoginPassword, pDataServerName, tempDir, pPassword, pServerInstanceName,
@@ -2453,7 +2439,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16090CKM_1S_Default_Success() throws Exception {
-        cKM_1S_Common(testPropertiesBaseDirectory + "/16090_FunctionalTest.properties");
+        cKM_1S_Common(TEST_PROPERTIES_BASE_DIRECTORY + "/16090_FunctionalTest.properties");
 
     }
 
@@ -2464,7 +2450,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16100CKM_1S_NotActive_Success() throws Exception {
-        cKM_1S_Common(testPropertiesBaseDirectory + "/16100_FunctionalTest.properties");
+        cKM_1S_Common(TEST_PROPERTIES_BASE_DIRECTORY + "/16100_FunctionalTest.properties");
     }
 
     /**
@@ -2483,7 +2469,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16130CKM_1S_ManualAndIKM_Success() throws Exception {
-        cKM_1S_Common(testPropertiesBaseDirectory + "/16130_FunctionalTest.properties");
+        cKM_1S_Common(TEST_PROPERTIES_BASE_DIRECTORY + "/16130_FunctionalTest.properties");
     }
 
     /**
@@ -2492,7 +2478,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16140CKM_1S_Undefined_Failure() {
-        generationInterfaceAssertFailure(testPropertiesBaseDirectory + "/16140_FunctionalTest.properties");
+        generationInterfaceAssertFailure(TEST_PROPERTIES_BASE_DIRECTORY + "/16140_FunctionalTest.properties");
     }
 
     /**
@@ -2501,7 +2487,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test16150CKM_1S_Unknown_Failure() {
-        generationInterfaceAssertFailure(testPropertiesBaseDirectory + "/16150_FunctionalTest.properties");
+        generationInterfaceAssertFailure(TEST_PROPERTIES_BASE_DIRECTORY + "/16150_FunctionalTest.properties");
     }
 
     /**
@@ -2519,34 +2505,34 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         try {
             updateFileDataServer();
             LOGGER.info("tempdir is :" + tempDir);
-            copyFile(new File(testXmlBaseDirectory + "/countrylist.csv"), tempFile);
+            copyFile(new File(TEST_XML_BASE_DIRECTORY + "/countrylist.csv"), tempFile);
             generationInterfaceAssert(Level.WARN, testName, "This test did not throw error fatal or warning messages.",
-                    testPropertiesBaseDirectory + "/16160_FunctionalTest.properties");
-            getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+                    TEST_PROPERTIES_BASE_DIRECTORY + "/16160_FunctionalTest.properties");
+            getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     refUserJDBC, "truncate table REF.S_DA_O");
-            getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     stgUserJDBC, "truncate table DWH_STG.S_DA_O");
             String dir = ".";
-            String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-            String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-            String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+            String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+            String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+            String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
             DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                     jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                    regressionConfiguration.getMasterRepositoryJdbcPassword());
+                    getRegressionConfiguration().getMasterRepositoryJdbcPassword());
             dbUnit.fullDatabaseImport();
             LOGGER.info("Starting s");
-            RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+            RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
             LOGGER.info("Starting dbunit");
             assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
             LOGGER.info("Starting truncate"); // "The data is not equal with
             // reference data.";
-            getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     refUserJDBC, "truncate table REF.S_DA_O");
-            getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+            getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                     stgUserJDBC, "truncate table DWH_STG.S_DA_O");
 
             T mapping = odiAccessStrategy.findMappingsByName("Init " + (testName.toUpperCase()),
-                    regressionConfiguration.getProjectCode());
+                    getRegressionConfiguration().getProjectCode());
             assertTrue(odiAccessStrategy.checkThatAllTargetsHaveLKMName(mapping, "LKM File to SQL"));
 
         } finally {
@@ -2576,37 +2562,37 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     //
     public void test17000Dirs_2D_PartialAuto_Success() {
         generationInterfaceAssert(Level.WARN, testName, "This test did not report error.");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
     }
 
@@ -2621,7 +2607,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         try {
             result = odiAccessStrategy.validateDataSetRelation(odiInterface);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         assertTrue(result);
@@ -2639,10 +2624,10 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         interfaceName = prefix + interfaceName;
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create PIVOT");
         ListAppender listAppender = getListAppender();
-        runController("etls", defaultProperties, "-p", prefix, "-m", metadataDirectory);
+        runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
             throw new RuntimeException("Creation of interface logged errors.");
@@ -2658,23 +2643,23 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         Assert.assertTrue(found);
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_VP_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_VP_O");
 
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2682,17 +2667,17 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_VP_O", "DWH_STG.S_VP_O"));
 /*
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_O");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 
 */
@@ -2709,10 +2694,10 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         interfaceName = prefix + interfaceName;
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create UNPIVOT");
         ListAppender listAppender = getListAppender();
-        runController("etls", defaultProperties, "-p", prefix, "-m", metadataDirectory);
+        runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
             Assert.fail(msg);
@@ -2729,23 +2714,23 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         Assert.assertTrue(found);
 
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_VP_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_VP_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2753,18 +2738,18 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_PV_O", "DWH_STG.S_PV_O"));
 		/*
 
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_O");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 				*/
 
@@ -2772,38 +2757,38 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     @Test
     public void test11022Pivot_2S_Success() throws Exception {
-        this.testPivot("Pivot_2S_Success", defaultProperties);
+        this.testPivot("Pivot_2S_Success", DEFAULT_PROPERTIES);
     }
 
     @Test
     // Ensure that pivot is connected to TargetExpression when configured.
     public void test11023Pivot_1S_TgtExp_Success() throws Exception {
-        this.testPivot("Pivot_1S_TgtExp_Success", testPropertiesBaseDirectory + "/11023.properties");
+        this.testPivot("Pivot_1S_TgtExp_Success", TEST_PROPERTIES_BASE_DIRECTORY + "/11023.properties");
     }
 
     @Test
     public void test11024Pivot_1S_Filter_Success() throws Exception {
-        this.testPivot("Pivot_1S_Filter_Success", defaultProperties);
+        this.testPivot("Pivot_1S_Filter_Success", DEFAULT_PROPERTIES);
     }
 
     @Test
     public void test11025Pivot_1S_1L_Success() throws Exception {
-        this.testPivot("Pivot_1S_1L_Success", defaultProperties);
+        this.testPivot("Pivot_1S_1L_Success", DEFAULT_PROPERTIES);
     }
 
     @Test
     public void test11026Pivot_1S_Distinct_Success() throws Exception {
-        this.testPivot("Pivot_1S_Distinct_Success", defaultProperties);
+        this.testPivot("Pivot_1S_Distinct_Success", DEFAULT_PROPERTIES);
     }
 
     @Test
     public void test11027Pivot_1S_Aggregate_Success() throws Exception {
-        this.testPivot("Pivot_1S_Aggregate_Success", defaultProperties);
+        this.testPivot("Pivot_1S_Aggregate_Success", DEFAULT_PROPERTIES);
     }
 
     @Test
     public void test11021Pivot_2S_2D_Success() throws Exception {
-        this.testPivot("Pivot_2S_2D_Success", defaultProperties);
+        this.testPivot("Pivot_2S_2D_Success", DEFAULT_PROPERTIES);
     }
 
     public void testPivot(String interfaceName, String config) throws Exception {
@@ -2815,7 +2800,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         interfaceName = prefix + interfaceName;
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create PIVOT");
         ListAppender listAppender = getListAppender();
         runController("etls", config, "-p", prefix, "-m", metadataDirectory);
@@ -2846,10 +2831,10 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         interfaceName = prefix + interfaceName;
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create UNPIVOT");
         ListAppender listAppender = getListAppender();
-        runController("etls", defaultProperties, "-p", prefix, "-m", metadataDirectory);
+        runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
             throw new RuntimeException("Creation of interface logged errors.");
@@ -2865,23 +2850,23 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         Assert.assertTrue(found);
 
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2889,17 +2874,17 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_PV_O", "DWH_STG.S_PV_O"));
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 
     }
@@ -2913,9 +2898,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         interfaceName = prefix + interfaceName;
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         ListAppender listAppender = getListAppender();
-        runController("etls", defaultProperties, "-p", prefix, "-m", metadataDirectory);
+        runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
             Assert.fail(msg);
@@ -2931,31 +2916,31 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         Assert.assertTrue(found);
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_PV_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_VP_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_VP_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_PV_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_VP_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_VP_O");
 
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -2963,17 +2948,17 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual(refTable, table));
 /*
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_I");
-		getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				refUserJDBC, "truncate table REF.S_PV_O");
-		getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+		getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
 				stgUserJDBC, "truncate table DWH_STG.S_PV_O");
 
 */
@@ -3022,9 +3007,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String interfaceName = prefix + "SubQuery_1S_ExecLoc_Success";
 
         // Generate interfaces
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         ListAppender listAppender = getListAppender();
-        runController("etls", defaultProperties, "-p", prefix, "-m", metadataDirectory);
+        runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
             throw new RuntimeException("Creation of interface logged errors.");
@@ -3052,7 +3037,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String interfaceName = "Keys_1S_Default_Success";
         String prefix = "Init ";
         interfaceName = prefix + interfaceName;
-        String config = defaultProperties;
+        String config = DEFAULT_PROPERTIES;
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
         ListAppender listAppender = getListAppender();
@@ -3076,7 +3061,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test30010FlowStrategy_TargetComponent() {
         String prefix = "Init ";
-        String config = testPropertiesBaseDirectory + "/30010.properties";
+        String config = TEST_PROPERTIES_BASE_DIRECTORY + "/30010.properties";
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
         ListAppender listAppender = getListAppender();
@@ -3091,7 +3076,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test30020FlowStrategy_1S_Distinct_Success() throws Exception {
-        String properties = testPropertiesBaseDirectory + "/30020.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30020.properties";
         mappingLookup_Common("DWH_STG.S_DA_O", true, properties);
         T m = odiAccessStrategy.findMappingsByName("Init FLOWSTRATEGY_1S_DISTINCT_SUCCESS",
                 getRegressionConfiguration().getProjectCode());
@@ -3101,7 +3086,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test30030FlowStrategy_use_expressions() throws Exception {
-        String properties = testPropertiesBaseDirectory + "/30030.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30030.properties";
         mappingLookup_Common("DWH_STG.S_DA_O", true, properties);
         T m = odiAccessStrategy.findMappingsByName("Init FLOWSTRATEGY_USE_EXPRESSIONS",
                 getRegressionConfiguration().getProjectCode());
@@ -3115,66 +3100,66 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String targetTable = "DWH_STG.S_DA_I";
         //, boolean checkLogger, String properties;
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
-        generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.", defaultProperties);
+        generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.", DEFAULT_PROPERTIES);
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_34567890123456789012345678_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table " + targetTable);
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         // Reusable mappings can't be executed.
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
         assertTrue(dbUnit.areEqual("REF.S_DA_I", targetTable));
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_34567890123456789012345678_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table " + targetTable);
     }
 
     @Test
     // success
     public void test30040FlowStrategy_2D_LEFT_OUTER_Success() {
-        filterJoinLookupTestCommon(true, defaultProperties);
+        filterJoinLookupTestCommon(true, DEFAULT_PROPERTIES);
     }
 
     @Test
     // success
     public void test30050FlowStrategy_no_expressions() {
-        String properties = testPropertiesBaseDirectory + "/30050.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30050.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
     @Test
     // success
     public void test30060FlowStrategy_aggregate() {
-        String properties = testPropertiesBaseDirectory + "/30050.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30050.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
     @Test
     // success
     public void test30070FlowStrategy_filter_set() {
-        String properties = testPropertiesBaseDirectory + "/30050.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30050.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
@@ -3182,7 +3167,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test30080FlowStrategy_TargetExpressions() {
         String prefix = "Init ";
-        String config = testPropertiesBaseDirectory + "/30080.properties";
+        String config = TEST_PROPERTIES_BASE_DIRECTORY + "/30080.properties";
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
         ListAppender listAppender = getListAppender();
@@ -3198,7 +3183,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test30090FlowStrategy_aggregate_expression() {
-        String properties = testPropertiesBaseDirectory + "/30090.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30090.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
@@ -3207,7 +3192,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test30100FlowStrategy_aggregate_set_expression() {
         if (!new OdiVersion().isVersion11()) {
-            String properties = testPropertiesBaseDirectory + "/30090.properties";
+            String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30090.properties";
             filterJoinLookupTestCommon(true, properties);
         }
     }
@@ -3215,7 +3200,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test30110FlowStrategy_aggregate_set_expression_single_source() {
-        String properties = testPropertiesBaseDirectory + "/30090.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30090.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
@@ -3223,7 +3208,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test30120FlowStrategy_aggregate_set_expression_ne() {
         if (!new OdiVersion().isVersion11()) {
-            String properties = testPropertiesBaseDirectory + "/30120.properties";
+            String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30120.properties";
             filterJoinLookupTestCommon(true, properties);
         }
     }
@@ -3231,7 +3216,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     // success
     public void test30130FlowStrategy_aggregate_set_expression_single_source_ne() {
-        String properties = testPropertiesBaseDirectory + "/30120.properties";
+        String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30120.properties";
         filterJoinLookupTestCommon(true, properties);
     }
 
@@ -3239,7 +3224,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     // success
     public void test30140FlowStrategy_double_aggregate_set_expression() {
         if (!new OdiVersion().isVersion11()) {
-            String properties = testPropertiesBaseDirectory + "/30090.properties";
+            String properties = TEST_PROPERTIES_BASE_DIRECTORY + "/30090.properties";
             filterJoinLookupTestCommon(true, properties);
             // in odi 11 the filter is pushed outside the left outer,
             // which essentialy makes it an inner join.
@@ -3249,15 +3234,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void test40010VariableTestAll() {
-        String xmlDir = testXmlBaseDirectory + "/xml/variables";
+        String xmlDir = TEST_XML_BASE_DIRECTORY + "/xml/variables";
         File file = new File(xmlDir + "/expvar", "Variables.xml");
         file.delete();
-        runControllerExcpectError("delvar", defaultProperties, "-p", "Init ", "-m", xmlDir);
-        runController("crtvar", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runControllerExpectError("delvar", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
+        runController("crtvar", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
         assertEquals(17, odi12VariableAccessStrategy.findAllVariables().size());
-        runControllerExcpectError("expvar", defaultProperties, "-p", "Init ", "-m", xmlDir + "/expvar");
+        runControllerExpectError("expvar", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir + "/expvar");
         file.delete();
-        runController("delvar", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runController("delvar", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
         LOGGER.info(odi12VariableAccessStrategy.findAllVariables().size());
         assertEquals(4, odi12VariableAccessStrategy.findAllVariables().size());
     }
@@ -3265,39 +3250,39 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void test50010SequencesTestAll() {
-        String xmlDir = testXmlBaseDirectory + "/xml/sequences";
-        runController("delseq", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        String xmlDir = TEST_XML_BASE_DIRECTORY + "/xml/sequences";
+        runController("delseq", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
 
-        runController("crtseq", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runController("crtseq", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
         assertEquals(4, odi12SequenceAccessStrategy.findAll().size());
 
-        runController("expseq", defaultProperties, "-p", "Init ", "-m", xmlDir + "/exp");
+        runController("expseq", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir + "/exp");
         File file = new File(xmlDir + "/exp", "Sequences.xml");
         System.err.println(file.getAbsolutePath());
         assertTrue(file.exists());
         file.delete();
 
-        runController("delseq", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runController("delseq", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
         assertEquals(0, odi12SequenceAccessStrategy.findAll().size());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void test60010ConstraintsAll() {
-        String xmlDir = testXmlBaseDirectory + "/xml/Constraints";
-        runController("delcon", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        String xmlDir = TEST_XML_BASE_DIRECTORY + "/xml/Constraints";
+        runController("delcon", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
 
-        runController("crtcon", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runController("crtcon", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
 
         assertEquals(10, this.odi12ConstraintsAccessStrategy.findAllConditions().size());
         assertEquals(12, this.odi12ConstraintsAccessStrategy.findAllKeys().size());
         assertEquals(13, this.odi12ConstraintsAccessStrategy.findAllReferences().size());
 
-        runController("expcon", defaultProperties, "-p", "Init ", "-m", xmlDir + "/exp");
+        runController("expcon", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir + "/exp");
 
         File file = new File(xmlDir + "/exp", "Constraints.xml");
         file.delete();
-        runController("delcon", defaultProperties, "-p", "Init ", "-m", xmlDir);
+        runController("delcon", DEFAULT_PROPERTIES, "-p", "Init ", "-m", xmlDir);
 
         LOGGER.info(this.odi12ConstraintsAccessStrategy.findAllConditions().size());
         LOGGER.info(this.odi12ConstraintsAccessStrategy.findAllKeys().size());
@@ -3311,7 +3296,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Test
     public void test70010Asynchronous() {
         generationInterfaceAssert(Level.WARN, testName, "This test shouldn't throw an exception.");
-        OdiPackage asynchronouspck = this.odiPackageAccessStrategy.findPackage("ASYNCHRONOUS", "BulkLoadORACLE_DWH_DMT", regressionConfiguration.getProjectCode());
+        OdiPackage asynchronouspck = this.odiPackageAccessStrategy.findPackage("ASYNCHRONOUS", "BulkLoadORACLE_DWH_DMT", getRegressionConfiguration().getProjectCode());
         int asynchronouspckCount = 0;
         for (Step s : asynchronouspck.getSteps()) {
             if (s instanceof StepOdiCommand) {
@@ -3328,7 +3313,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore("Disabled this test because it interferes with function calls that are not parsed at all but must be supported")
     public void test80000Validation_Error() {
         try {
-            runController("vldt", defaultProperties, "-p", "Init ", "-m", testXmlBaseDirectory + "/xml/Validation_Error");
+            runController("vldt", DEFAULT_PROPERTIES, "-p", "Init ", "-m", TEST_XML_BASE_DIRECTORY + "/xml/Validation_Error");
         } catch (UnRecoverableException e) {
             // it should throw UnRecoverableException
             return;
@@ -3341,7 +3326,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore
     public void test20010Stream() {
 
-        File[] metadatas = new File(testXmlBaseDirectory + "/xml/" + testName).listFiles(f -> !f.getName().equals("0.xml"));
+        File[] metadatas = new File(TEST_XML_BASE_DIRECTORY + "/xml/" + testName).listFiles(f -> !f.getName().equals("0.xml"));
 
         if (metadatas == null || metadatas.length < 1) {
             throw new RuntimeException("Test metadata files not configured properly");
@@ -3372,7 +3357,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getPropertyFile() {
-                return defaultProperties;
+                return DEFAULT_PROPERTIES;
             }
 
             @Override
@@ -3426,7 +3411,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 try {
                     fos1.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -3434,7 +3418,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 try {
                     fos2.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -3525,20 +3508,20 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         } else {
             generationInterfaceAssertSuccess();
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -3547,8 +3530,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -3556,7 +3539,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.W_FA_F", "DWH_DMT.W_FA_F"));// :
         // "The data
@@ -3565,11 +3548,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // with
         // reference
         // data.";
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
         if (testName.equals("CKM_1S_Default_Success")
                 || testName.equals("CKM_1S_NotActive_Success")
@@ -3579,42 +3562,42 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             testName = testName.toUpperCase();
         }
         T mapping = odiAccessStrategy.findMappingsByName("Init " + testName,
-                regressionConfiguration.getProjectCode());
+                getRegressionConfiguration().getProjectCode());
         assertTrue(odiAccessStrategy.checkThatAllTargetsHaveCKMName(mapping, "CKM Oracle"));
     }
 
     private void model_2D_Common() {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.");
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -3622,8 +3605,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         //
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -3631,11 +3614,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
 
         assertTrue(dbUnit.areEqual("REF.W_DA_D", "DWH_DMT.W_DA_D"));// :
         // "The data
@@ -3646,55 +3629,55 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // data.";
         //
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
     }
 
     private void filterJoinLookupTestCommon(boolean joinLookup) {
-        filterJoinLookupTestCommon(joinLookup, defaultProperties);
+        filterJoinLookupTestCommon(joinLookup, DEFAULT_PROPERTIES);
     }
 
     private void filterJoinLookupTestCommon(boolean joinLookup, String properties) {
         generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.", properties);
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
 
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName.toUpperCase(), regressionConfiguration,
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName.toUpperCase(), getRegressionConfiguration(),
                 DEFAULT_AGENT);
 
         if (joinLookup) {
@@ -3711,11 +3694,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 Assert.fail(e.getMessage());
             }
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
     }
 
@@ -3730,7 +3713,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadExplicit/TargetFolder");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadExplicit/TargetFolder");
         }
 
         ProcedureInternal procedure =
@@ -3762,7 +3745,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 .getTargetCommand()
                 .isPresent());
 
-        deleteProcedures(defaultProperties);
+        deleteProcedures(DEFAULT_PROPERTIES);
         Optional<ProcedureInternal> delProcedure =
                 this.getOdiProcedureService
                         .extractProcedures(getRegressionConfiguration().getProjectCode())
@@ -3782,7 +3765,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
@@ -3796,7 +3779,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
@@ -3810,7 +3793,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
@@ -3824,7 +3807,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
@@ -3838,21 +3821,21 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
     @Test
     public void test89987PackageCreation_WrongFolder() {
         deleteAllPackagesAndScenarios();
-        deletePackage(defaultProperties, "PACKAGE_CREATION_TEST1_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
-        deletePackage(defaultProperties, "PACKAGE_CREATION_TEST2_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
-        deletePackage(defaultProperties, "PACKAGE_CREATION_TEST3_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
+        deletePackage(DEFAULT_PROPERTIES, "PACKAGE_CREATION_TEST1_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
+        deletePackage(DEFAULT_PROPERTIES, "PACKAGE_CREATION_TEST2_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
+        deletePackage(DEFAULT_PROPERTIES, "PACKAGE_CREATION_TEST3_WRONG_FOLDER", "BulkLoadORACLE_DWH_STG");
 
         T mapping = null;
         try {
             mapping = odiAccessStrategy.findMappingsByName("PC_Interface3_wrong_folder",
-                    regressionConfiguration.getProjectCode());
+                    getRegressionConfiguration().getProjectCode());
         } catch (Exception e) {
             // no-op
         }
@@ -3867,7 +3850,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String wrongFolder = "BulkLoadORACLE_DWH_STG";
         String packageName = "PACKAGE_CREATION_TEST1_WRONG_FOLDER";
         OdiPackage odiPackage = odiPackageAccessStrategy.findPackage(packageName,
-                wrongFolder, regressionConfiguration.getProjectCode());
+                wrongFolder, getRegressionConfiguration().getProjectCode());
         Collection<Step> steps = null;
         if (odiPackage != null && odiPackage.getSteps() != null) {
             steps = odiPackage.getSteps();
@@ -3897,7 +3880,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         for (Package p : packages.getPackage()) {
             validatePackage(p);
-            deletePackage(defaultProperties, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
+            deletePackage(DEFAULT_PROPERTIES, p.getPackageName(), "BulkLoadORACLE_DWH_STG");
         }
     }
 
@@ -3907,13 +3890,13 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         InputStream is = null;
         Packages packages;
         try {
-            fis = new FileInputStream(defaultProperties);
+            fis = new FileInputStream(DEFAULT_PROPERTIES);
             p.load(fis);
 
             XMLParserUtil<Packages, one.jodi.core.etlmodel.ObjectFactory> etlParser = new XMLParserUtil<>(
                     one.jodi.core.etlmodel.ObjectFactory.class, JodiConstants.getEmbeddedXSDFileNames(), errorWarningMessages);
 
-            File etlFile = new File(testXmlBaseDirectory + "/xml/" + testName, "0.xml");
+            File etlFile = new File(TEST_XML_BASE_DIRECTORY + "/xml/" + testName, "0.xml");
 
             is = new FileInputStream(etlFile);
             packages = etlParser.loadObjectFromXMLAndValidate(is, p.getProperty("xml.xsd.packages"), etlFile.getPath());
@@ -3954,7 +3937,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String[] folderPath = jodiPackage.getFolderCode().split("/");
         String containingFolder = folderPath[folderPath.length - 1];
         Collection<OdiPackage> pList =
-                finder.findByName(packageName, regressionConfiguration.getProjectCode(),
+                finder.findByName(packageName, getRegressionConfiguration().getProjectCode(),
                         containingFolder);
 
         assertNotNull("No ODI Package found with name " + packageName + " in folder " +
@@ -4084,55 +4067,55 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private void set_2D_Explicit_Common(String dumpFile) {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
         // String dumpFile = TEST_DATA_BASE_DIRECTORY +
         // "/Set_2D_Explicit_Union_Success.xml";
-        String jdbcDBPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
+        String jdbcDBPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, stgUser,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         Assert.assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O")); // :
     }
 
     private void iKM_1S_Common(boolean is16060) {
         if (is16060) {
-            generationInterfaceAssertSuccess(testPropertiesBaseDirectory + "/16060_FunctionalTest.properties");
+            generationInterfaceAssertSuccess(TEST_PROPERTIES_BASE_DIRECTORY + "/16060_FunctionalTest.properties");
         } else {
             generationInterfaceAssertSuccess();
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -4140,11 +4123,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         assertTrue(dbUnit.areEqual("REF.W_FA_F", "DWH_DMT.W_FA_F"));// :
         // "The data
         // is not
@@ -4153,49 +4136,49 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_FA_F");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_FA_I");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_FA_F");
     }
 
     private void model_1S_Override_Common(boolean lookup) {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
         String jdbcDBConnection = stgUserJDBC;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, jdbcDBConnection, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -4203,8 +4186,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         //
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -4212,11 +4195,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         if (lookup) {
             dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, jdbcDBConnection, jdbcDBUsername, jdbcDBPassword,
-                    refUserJDBCDriver, refUserJDBC, refUser, regressionConfiguration.getMasterRepositoryJdbcPassword());
+                    refUserJDBCDriver, refUserJDBC, refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword());
             assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
             // "The
             // data
@@ -4231,25 +4214,25 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             // Target
             assertTrue(dbUnit.areEqual("REF.W_DA_D", "DWH_DMT.W_DA_D"));// :
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
 
     }
@@ -4257,7 +4240,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private void trans_1S_Common(final boolean checkLogger, final String interfaceName,
                                  final String folderPath) throws Exception {
         String prefix = "Init ";
-        String config = defaultProperties;
+        String config = DEFAULT_PROPERTIES;
 
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
@@ -4320,7 +4303,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     }
 
     private void generationInterfaceAssert(Level level, String testName, String execeptionMessage) {
-        generationInterfaceAssert(level, testName, execeptionMessage, defaultProperties);
+        generationInterfaceAssert(level, testName, execeptionMessage, DEFAULT_PROPERTIES);
     }
 
     private void mappingLookup_Common(String targetTable, boolean checkLogger, String properties) {
@@ -4332,35 +4315,35 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                     properties);
         }
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         // Reusable mappings can't be executed.
         LOGGER.info("Comparing " + targetTable + " from testname: " + testName);
         assertTrue(dbUnit.areEqual("REF.S_DA_O", targetTable));
 
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
     }
 
@@ -4370,57 +4353,57 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         } else {
             generationInterfaceAssert(Level.WARN, testName, "This test did not report error.");
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
     }
 
     private void source_2S_Common(boolean isDefault, boolean checkLogger) {
-        deleteScenario(defaultProperties, testName);
+        deleteScenario(DEFAULT_PROPERTIES, testName);
         if (!checkLogger) {
             generationInterfaceAssertSuccess();
         } else {
             generationInterfaceAssert(Level.WARN, testName, "This test threw an exception it should not.");
         }
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/Source_2S_Default_success.xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/Source_2S_Default_success.xml";
         String jdbcDBConnection = stgUserJDBC;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, jdbcDBConnection, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
 
         try {
             dbUnit.fullDatabaseImport();
@@ -4430,7 +4413,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         getSqlHelper().executedSQLSuccesfully(jdbcDBUsername, jdbcDBPassword,
                 jdbcDBConnection, "truncate table DWH_STG.S_SOURCE_2S_ONEINTF_I");
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         if (isDefault) {
             assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
@@ -4449,26 +4432,26 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private void model_2S_Common(String jdbcUser, String jdbcUrl, String dbSchema) {
         generationInterfaceAssertSuccess();
         // export for some data
-        getSqlHelper().executedSQLSuccesfully(jdbcUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(jdbcUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 jdbcUrl, String.format("truncate table %s.S_DA_I", dbSchema));
-        getSqlHelper().executedSQLSuccesfully(jdbcUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(jdbcUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 jdbcUrl, String.format("truncate table %s.S_DB_I", dbSchema));
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
         String driverDBClass = stgUserJDBCDriver;
         String jdbcDBConnection = stgUserJDBC;
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         //
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, jdbcDBConnection, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
@@ -4476,8 +4459,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         //
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, dmtUserJDBC, dmtUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword(), refUserJDBCDriver, refUserJDBC, refUser,
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDMTDatabaseImport();
         } catch (Exception ex) {
@@ -4486,10 +4469,10 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         }
         //
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         dbUnit = new DBUnitHelper(dir, dumpFile, driverDBClass, jdbcDBConnection, jdbcDBUsername, jdbcDBPassword,
-                refUserJDBCDriver, refUserJDBC, refUser, regressionConfiguration.getMasterRepositoryJdbcPassword());
+                refUserJDBCDriver, refUserJDBC, refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword());
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));// :
         // "The data
@@ -4499,15 +4482,15 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // reference
         // data.";
         //
-        getSqlHelper().executedSQLSuccesfully(jdbcUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(jdbcUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 jdbcUrl, String.format("truncate table %s.S_DA_I", dbSchema));
-        getSqlHelper().executedSQLSuccesfully(jdbcUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(jdbcUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 jdbcUrl, String.format("truncate table %s.S_DB_I", dbSchema));
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DA_D");
-        getSqlHelper().executedSQLSuccesfully(dmtUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(dmtUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 dmtUserJDBC, "truncate table DWH_DMT.W_DB_D");
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
     }
 
@@ -4517,37 +4500,37 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         } else {
             generationInterfaceAssert(Level.WARN, testName, "This test did not report error.");
         }
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
         String dir = ".";
-        String dumpFile = testXmlBaseDirectory + "/" + testName + ".xml";
-        String jdbcDBUsername = regressionConfiguration.getSysdbaUser();
-        String jdbcDBPassword = regressionConfiguration.getSysdbaPassword();
+        String dumpFile = TEST_XML_BASE_DIRECTORY + "/" + testName + ".xml";
+        String jdbcDBUsername = getRegressionConfiguration().getSysdbaUser();
+        String jdbcDBPassword = getRegressionConfiguration().getSysdbaPassword();
         DBUnitHelper dbUnit = new DBUnitHelper(dir, dumpFile, stgUserJDBCDriver, stgUserJDBC, jdbcDBUsername,
                 jdbcDBPassword, refUserJDBCDriver, refUserJDBC, refUser,
-                regressionConfiguration.getMasterRepositoryJdbcPassword());
+                getRegressionConfiguration().getMasterRepositoryJdbcPassword());
         try {
             dbUnit.fullDatabaseImport();
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
 
-        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, regressionConfiguration, DEFAULT_AGENT);
+        RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.S_DA_O", "DWH_STG.S_DA_O"));
-        getSqlHelper().executedSQLSuccesfully(refUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_DA_O");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DB_I");
-        getSqlHelper().executedSQLSuccesfully(stgUser, regressionConfiguration.getMasterRepositoryJdbcPassword(),
+        getSqlHelper().executedSQLSuccesfully(stgUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 stgUserJDBC, "truncate table DWH_STG.S_DA_O");
 
     }
@@ -4580,7 +4563,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -4588,7 +4570,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -4600,14 +4581,14 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore
     public void test40000UpdateAgent() {
         OdiUpdateAgent updateAgent = new OdiUpdateAgent();
-        String odiMasterRepoUrl = regressionConfiguration.getMasterRepositoryJdbcUrl();
-        String odiMasterRepoUser = regressionConfiguration.getMasterRepositoryJdbcUser();
-        String odiMasterRepoPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
-        String odiWorkRepo = regressionConfiguration.getOdiWorkRepositoryName();
-        String odiLoginUsername = regressionConfiguration.getOdiSupervisorUser();
-        String odiLoginPassword = regressionConfiguration.getOdiSupervisorPassword();
+        String odiMasterRepoUrl = getRegressionConfiguration().getMasterRepositoryJdbcUrl();
+        String odiMasterRepoUser = getRegressionConfiguration().getMasterRepositoryJdbcUser();
+        String odiMasterRepoPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
+        String odiWorkRepo = getRegressionConfiguration().getOdiWorkRepositoryName();
+        String odiLoginUsername = getRegressionConfiguration().getOdiSupervisorUser();
+        String odiLoginPassword = getRegressionConfiguration().getOdiSupervisorPassword();
         String agentUrl = "http://test:20910/test";
-        String jdbcDriver = regressionConfiguration.getMasterRepositoryJdbcDriver();
+        String jdbcDriver = getRegressionConfiguration().getMasterRepositoryJdbcDriver();
         String agentName = "TEST";
         updateAgent.updateAgent(odiMasterRepoUrl, odiMasterRepoUser, odiMasterRepoPassword, odiWorkRepo, odiLoginUsername, odiLoginPassword, agentUrl, jdbcDriver, agentName);
     }
@@ -4616,19 +4597,19 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore
     public void test40010UpdateDataServer() {
         OdiUpdateDataserver updateDataServer = new OdiUpdateDataserver();
-        String odiMasterRepoUrl = regressionConfiguration.getMasterRepositoryJdbcUrl();
-        String odiMasterRepoUser = regressionConfiguration.getMasterRepositoryJdbcUser();
-        String odiMasterRepoPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
-        String odiWorkRepo = regressionConfiguration.getOdiWorkRepositoryName();
-        String odiLoginUsername = regressionConfiguration.getOdiSupervisorUser();
-        String odiLoginPassword = regressionConfiguration.getOdiSupervisorPassword();
+        String odiMasterRepoUrl = getRegressionConfiguration().getMasterRepositoryJdbcUrl();
+        String odiMasterRepoUser = getRegressionConfiguration().getMasterRepositoryJdbcUser();
+        String odiMasterRepoPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
+        String odiWorkRepo = getRegressionConfiguration().getOdiWorkRepositoryName();
+        String odiLoginUsername = getRegressionConfiguration().getOdiSupervisorUser();
+        String odiLoginPassword = getRegressionConfiguration().getOdiSupervisorPassword();
         String dataServerName = "";
         String jdbcString = "";
         String username = "";
         String password = "";
         String serverInstanceName = "";
-        String jdbcDriverRepository = regressionConfiguration.getMasterRepositoryJdbcDriver();
-        String jdbcDriverServer = regressionConfiguration.getMasterRepositoryJdbcDriver();
+        String jdbcDriverRepository = getRegressionConfiguration().getMasterRepositoryJdbcDriver();
+        String jdbcDriverServer = getRegressionConfiguration().getMasterRepositoryJdbcDriver();
         updateDataServer.updateDataServer(odiMasterRepoUrl, odiMasterRepoUser, odiMasterRepoPassword, odiWorkRepo, odiLoginUsername, odiLoginPassword, dataServerName, jdbcString, username, password, serverInstanceName, jdbcDriverRepository, jdbcDriverServer);
     }
 
@@ -4636,14 +4617,14 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     @Ignore
     public void test4020UpdateUser() {
         OdiUpdateUser updateUser = new OdiUpdateUser();
-        String odiMasterRepoUrl = regressionConfiguration.getMasterRepositoryJdbcUrl();
-        String odiMasterRepoUser = regressionConfiguration.getMasterRepositoryJdbcUser();
-        String odiMasterRepoPassword = regressionConfiguration.getMasterRepositoryJdbcPassword();
-        String odiWorkRepo = regressionConfiguration.getOdiWorkRepositoryName();
-        String odiLoginUsername = regressionConfiguration.getOdiSupervisorUser();
-        String odiLoginPassword = regressionConfiguration.getOdiSupervisorPassword();
+        String odiMasterRepoUrl = getRegressionConfiguration().getMasterRepositoryJdbcUrl();
+        String odiMasterRepoUser = getRegressionConfiguration().getMasterRepositoryJdbcUser();
+        String odiMasterRepoPassword = getRegressionConfiguration().getMasterRepositoryJdbcPassword();
+        String odiWorkRepo = getRegressionConfiguration().getOdiWorkRepositoryName();
+        String odiLoginUsername = getRegressionConfiguration().getOdiSupervisorUser();
+        String odiLoginPassword = getRegressionConfiguration().getOdiSupervisorPassword();
         String password = "test";
-        String jdbcDriverMasterRepo = regressionConfiguration.getMasterRepositoryJdbcDriver();
+        String jdbcDriverMasterRepo = getRegressionConfiguration().getMasterRepositoryJdbcDriver();
         updateUser.updateUser(odiMasterRepoUrl, odiMasterRepoUser, odiMasterRepoPassword, odiWorkRepo, odiLoginUsername, odiLoginPassword, password, jdbcDriverMasterRepo);
     }
 }

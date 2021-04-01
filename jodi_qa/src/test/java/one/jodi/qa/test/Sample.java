@@ -8,7 +8,6 @@ import one.jodi.base.util.StringUtils;
 import one.jodi.bootstrap.EtlRunConfig;
 import one.jodi.core.lpmodel.Loadplan;
 import one.jodi.core.lpmodel.impl.ObjectFactory;
-import one.jodi.etl.service.ResourceFoundAmbiguouslyException;
 import one.jodi.odi.common.OdiVersion;
 import one.jodi.odi.interfaces.OdiTransformationAccessStrategy;
 import one.jodi.odi.loadplan.OdiLoadPlanAccessStrategy;
@@ -21,15 +20,22 @@ import oracle.odi.core.persistence.transaction.ITransactionStatus;
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition;
 import oracle.odi.domain.IOdiEntity;
 import oracle.odi.domain.IRepositoryEntity;
-import oracle.odi.domain.model.*;
+import oracle.odi.domain.model.OdiColumn;
 import oracle.odi.domain.model.OdiColumn.ScdType;
+import oracle.odi.domain.model.OdiDataStore;
 import oracle.odi.domain.model.OdiDataStore.CdcDescriptor;
 import oracle.odi.domain.model.OdiDataStore.OlapType;
+import oracle.odi.domain.model.OdiKey;
 import oracle.odi.domain.model.OdiKey.KeyType;
+import oracle.odi.domain.model.OdiModel;
+import oracle.odi.domain.model.OdiReference;
 import oracle.odi.domain.model.OdiReference.ReferenceType;
 import oracle.odi.domain.model.finder.IOdiDataStoreFinder;
 import oracle.odi.domain.model.finder.IOdiModelFinder;
-import oracle.odi.domain.project.*;
+import oracle.odi.domain.project.IOptionValue;
+import oracle.odi.domain.project.OdiProcedureLineCmd;
+import oracle.odi.domain.project.OdiUserProcedure;
+import oracle.odi.domain.project.ProcedureOption;
 import oracle.odi.domain.project.ProcedureOption.OptionType;
 import oracle.odi.domain.project.finder.IOdiUserProcedureFinder;
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan;
@@ -41,95 +47,109 @@ import org.apache.logging.log4j.core.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("deprecation")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends IRepositoryEntity, W extends Object, X extends Object, A extends Step, Y extends Object, Z extends Object, B extends IOdiEntity>
+public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends IRepositoryEntity, W, X, Y, Z, B extends IOdiEntity>
         extends RegressionTestImpl {
     //
-    private final static String defaultProperties = "SampleC.properties";
-    private final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Sample.class);
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(Sample.class);
+    private static final String DEFAULT_PROPERTIES = "SampleC.properties";
+
     private final OdiTransformationAccessStrategy<T, U, V, W, X, Y, Z> odiAccessStrategy;
     private final OdiLoadPlanAccessStrategy<OdiLoadPlan, B> odiLoadPlanAccessStrategy;
     private final String TEST_XML_BASE_DIRECTORY;
     // Chinook SRC DB
-    private String srcUser;
-    private String srcUserJDBC;
-    private String srcUserJDBCDriver;
+    private final String srcUser;
+    private final String srcUserJDBC;
+    private final String srcUserJDBCDriver;
     // DWH_CON_CHINOOK
-    private String stgUser;
-    private String stgUserJDBC;
-    private String stgUserJDBCDriver;
+    private final String stgUser;
+    private final String stgUserJDBC;
+    private final String stgUserJDBCDriver;
     // DWH_CON
-    private String conUser;
-    private String conUserJDBC;
-    private String conUserJDBCDriver;
+    private final String conUser;
+    private final String conUserJDBC;
+    private final String conUserJDBCDriver;
     // DWH_OIL
-    private String oilUser;
-    private String oilUserJDBC;
-    private String oilUserJDBCDriver;
+    private final String oilUser;
+    private final String oilUserJDBC;
+    private final String oilUserJDBCDriver;
     // DWH_STI
-    private String stiUser;
-    private String stiUserJDBC;
-    private String stiUserJDBCDriver;
+    private final String stiUser;
+    private final String stiUserJDBC;
+    private final String stiUserJDBCDriver;
     // DWH_STO
-    private String stoUser;
-    private String stoUserJDBC;
-    private String stoUserJDBCDriver;
+    private final String stoUser;
+    private final String stoUserJDBC;
+    private final String stoUserJDBCDriver;
     // DWH_DMT
-    private String dmtUser;
-    private String dmtUserJDBC;
-    private String dmtUserJDBCDriver;
-    private String smartExport;
+    private final String dmtUser;
+    private final String dmtUserJDBC;
+    private final String dmtUserJDBCDriver;
+    private final String smartExport;
 
     // private  ListAppender listAppender;
 
-    @SuppressWarnings("unchecked")
     public Sample() throws ConfigurationException {
-        super("src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        super("src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 new PasswordConfigImpl().getOdiUserPassword(), new PasswordConfigImpl().getOdiMasterRepoPassword());
         // Chinook DB
-        srcUser = regressionConfiguration.getConfig().getString("rt.custom.srcUser");
-        srcUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.srcUserJDBC");
-        srcUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.srcUserJDBCDriver");
+        srcUser = getRegressionConfiguration().getConfig().getString("rt.custom.srcUser");
+        srcUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.srcUserJDBC");
+        srcUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.srcUserJDBCDriver");
         //
-        stgUser = regressionConfiguration.getConfig().getString("rt.custom.stgUser");
-        stgUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.stgUserJDBC");
-        stgUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.stgUserJDBCDriver");
+        stgUser = getRegressionConfiguration().getConfig().getString("rt.custom.stgUser");
+        stgUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.stgUserJDBC");
+        stgUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.stgUserJDBCDriver");
         //
-        conUser = regressionConfiguration.getConfig().getString("rt.custom.conUser");
-        conUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.conUserJDBC");
-        conUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.conUserJDBCDriver");
+        conUser = getRegressionConfiguration().getConfig().getString("rt.custom.conUser");
+        conUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.conUserJDBC");
+        conUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.conUserJDBCDriver");
         //
-        oilUser = regressionConfiguration.getConfig().getString("rt.custom.oilUser");
-        oilUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.oilUserJDBC");
-        oilUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.oilUserJDBCDriver");
+        oilUser = getRegressionConfiguration().getConfig().getString("rt.custom.oilUser");
+        oilUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.oilUserJDBC");
+        oilUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.oilUserJDBCDriver");
         //
-        stiUser = regressionConfiguration.getConfig().getString("rt.custom.stiUser");
-        stiUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.stiUserJDBC");
-        stiUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.stiUserJDBCDriver");
+        stiUser = getRegressionConfiguration().getConfig().getString("rt.custom.stiUser");
+        stiUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.stiUserJDBC");
+        stiUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.stiUserJDBCDriver");
         //
-        stoUser = regressionConfiguration.getConfig().getString("rt.custom.stoUser");
-        stoUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.stoUserJDBC");
-        stoUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.stoUserJDBCDriver");
+        stoUser = getRegressionConfiguration().getConfig().getString("rt.custom.stoUser");
+        stoUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.stoUserJDBC");
+        stoUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.stoUserJDBCDriver");
         //
-        dmtUser = regressionConfiguration.getConfig().getString("rt.custom.dmtUser");
-        dmtUserJDBC = regressionConfiguration.getConfig().getString("rt.custom.dmtUserJDBC");
-        dmtUserJDBCDriver = regressionConfiguration.getConfig().getString("rt.custom.dmtUserJDBCDriver");
+        dmtUser = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUser");
+        dmtUserJDBC = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUserJDBC");
+        dmtUserJDBCDriver = getRegressionConfiguration().getConfig().getString("rt.custom.dmtUserJDBCDriver");
 
-        smartExport = regressionConfiguration.getConfig().getString("rt.file.smartexport");
+        smartExport = getRegressionConfiguration().getConfig().getString("rt.file.smartexport");
         Assert.assertNotNull(smartExport);
         //
         Assert.assertNotNull(srcUser);
@@ -174,25 +194,22 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
             @Override
             public String getTargetModel() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getSourceModel() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getScenario() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getPropertyFile() {
-                return "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties;
+                return "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES;
             }
 
             @Override
@@ -207,30 +224,26 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
             @Override
             public String getPassword() {
-                return regressionConfiguration.getOdiSupervisorPassword();
+                return getRegressionConfiguration().getOdiSupervisorPassword();
             }
 
             @Override
             public String getPackageSequence() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public String getPackage() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public List<String> getModuleClasses() {
-                // TODO Auto-generated method stub
                 return Collections.emptyList();
             }
 
             @Override
             public String getModelCode() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
@@ -241,7 +254,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
             @Override
             public String getMasterPassword() {
-                return regressionConfiguration.getMasterRepositoryJdbcPassword();
+                return getRegressionConfiguration().getMasterRepositoryJdbcPassword();
             }
 
             @Override
@@ -261,13 +274,11 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
             @Override
             public boolean isExportingDBConstraints() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public boolean isIncludingConstraints() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
@@ -277,8 +288,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             }
 
         };
+        //noinspection unchecked
         this.odiAccessStrategy = (OdiTransformationAccessStrategy<T, U, V, W, X, Y, Z>) FunctionalTestHelper
                 .getOdiAccessStrategy(runConfig, getController());
+        //noinspection unchecked
         this.odiLoadPlanAccessStrategy = (OdiLoadPlanAccessStrategy<OdiLoadPlan, B>) FunctionalTestHelper
                 .getOdiLoadPlanAccessStrategy(runConfig, getController());
     }
@@ -308,11 +321,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 //	}
 
 
+    @Override
     @After
     public void close() {
         super.close();
     }
 
+    @Override
     @Test
     public void test010Install() {
 
@@ -336,7 +351,6 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     // this test fails for java 8, it should be testing with unit tests that;
     // JKM options are set to their values in the propoperties files,
     // other than default.
-    @SuppressWarnings("unchecked")
     public void test011Install() {
         //
         // Remove the CDC descriptor on the datastores.
@@ -347,15 +361,14 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         // Set the JKMOptions to their default value
         IOdiModelFinder finder1 = ((IOdiModelFinder) odiInstance.getTransactionalEntityManager()
                 .getFinder(OdiModel.class));
-        Collection<OdiModel> models = finder1.findAll();
-        Iterator<OdiModel> iter = (Iterator<OdiModel>) models.iterator();
-        while (iter.hasNext()) {
-            OdiModel cdcModel = (OdiModel) iter.next();
+        @SuppressWarnings("unchecked") Collection<OdiModel> models = finder1.findAll();
+        for (OdiModel cdcModel : models) {
             if (cdcModel.getName().equalsIgnoreCase("ORACLE_CHINOOK")) {
-                if (cdcModel != null && cdcModel.getJKMOptions() != null) {
+                if (cdcModel.getJKMOptions() != null) {
                     for (int i = 0; i < cdcModel.getJKMOptions().size(); i++) {
                         IOptionValue jkmpoption = cdcModel.getJKMOptions().get(i);
-                        logger.info(jkmpoption.getName() + ":" + jkmpoption.getValue());
+                        //noinspection deprecation
+                        LOGGER.info(jkmpoption.getName() + ":" + jkmpoption.getValue());
                         jkmpoption.setValue(jkmpoption.getDefaultOptionValue());
                     }
                 }
@@ -373,24 +386,23 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
     @Test
     public void test015Sequences() {
-        logger.info("Create etls started");
+        LOGGER.info("Create etls started");
         runController("crtseq",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-p",
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
                 "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
 
     }
 
     /**
      * Create the interfaces non journalized and check for that
-     *
-     * @throws ResourceFoundAmbiguouslyException
      */
+    @Override
     @Test
     public void test020Generation() {
-        logger.info("Cleanup packages if necessary");
+        LOGGER.info("Cleanup packages if necessary");
         ListAppender listAppender = getListAppender();
         runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() +
-                        "/conf/" + defaultProperties,
+                        "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
 
@@ -398,15 +410,15 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             Assert.fail("Sample threw errors.");
         }
 
-        logger.info("Create etls started");
+        LOGGER.info("Create etls started");
         runController("ct",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-p",
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
                 "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
         }
 
-        for (T interf : this.odiAccessStrategy.findMappingsByFolder(regressionConfiguration.getProjectCode(), "InitialORACLE_DWH_CON_CHINOOK")) {
+        for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(), "InitialORACLE_DWH_CON_CHINOOK")) {
             if (!this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
                 throw new RuntimeException(String.format(
                         "A Sourcedatastore is journalized in interface '%s' it should not be, since the -journalized flag was not used in generation with odiversion '%s'.",
@@ -416,9 +428,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         }
         T mapping;
         try {
-            mapping = this.odiAccessStrategy.findMappingsByName("Init W_ALBUM_D", "InitialORACLE_DWH_DMT", regressionConfiguration.getProjectCode());
+            mapping = this.odiAccessStrategy.findMappingsByName("Init W_ALBUM_D", "InitialORACLE_DWH_DMT", getRegressionConfiguration().getProjectCode());
         } catch (Exception e) {
-            logger.error(e);
+            LOGGER.error(e);
             throw new RuntimeException(e);
         }
         if (mapping == null) {
@@ -446,7 +458,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         }
 
         try {
-            mapping = this.odiAccessStrategy.findMappingsByName("Init W_INVOICELINE_F", regressionConfiguration.getProjectCode());
+            mapping = this.odiAccessStrategy.findMappingsByName("Init W_INVOICELINE_F", getRegressionConfiguration().getProjectCode());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -479,24 +491,23 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
      */
     @Test
     public void test025Generation() {
-        logger.info("Create etls started");
+        LOGGER.info("Create etls started");
         ListAppender listAppender = getListAppender();
         runController("etls",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-p",
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
                 "Real Time ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml",
                 "-journalized");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
         }
 
-        for (T interf : this.odiAccessStrategy.findMappingsByFolder(regressionConfiguration.getProjectCode(), "RealTimeORACLE_DWH_CON_CHINOOK")) {
+        for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(), "RealTimeORACLE_DWH_CON_CHINOOK")) {
             if (interf.getName().toLowerCase().contains("invoiceline")) {
-                if (!this.odiAccessStrategy.areAllSourcesJournalised(interf)
-                        && !this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
-                    // we are ok it needs to be "some" journalized.
-                } else {
+                if (this.odiAccessStrategy.areAllSourcesJournalised(interf)
+                        || this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
                     throw new RuntimeException();
                 }
+                // we are ok it needs to be "some" journalized.
                 continue;
             }
             if (!this.odiAccessStrategy.areAllSourcesJournalised(interf)) {
@@ -515,24 +526,24 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     @Override
     public void test030ing() {
-        Properties properties = null;
+        Properties properties;
         FileReader reader = null;
         try {
             reader = new FileReader(
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties);
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES);
             properties = new Properties();
             properties.load(reader);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot check if this test runs in update mode.");
         } finally {
-            if (reader != null)
+            if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            }
         }
         String update = properties.getProperty("jodi.update");
         if (!update.equals("true")) {
@@ -552,15 +563,17 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         Collection<OdiDataStore> cdcDataStores = finder.findByModel("ORACLE_CHINOOK");
         for (OdiDataStore cdcDataStore : cdcDataStores) {
             CdcDescriptor descriptor = cdcDataStore.getCdcDescriptor();
-            if (!descriptor.isCdcEnabled())
+            if (!descriptor.isCdcEnabled()) {
                 throw new RuntimeException(
                         String.format("Datastore '%1$s' is not CDC enabled.", cdcDataStore.getName()));
+            }
         }
     }
 
     /**
      * This test test whether JKM options are set to a non default value.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test050setJKMOptions() {
         OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
@@ -570,10 +583,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         if (cdcModel != null && cdcModel.getJKMOptions() != null) {
             for (IOptionValue jkmpoption : cdcModel.getJKMOptions()) {
                 if (jkmpoption.getName().equals("COMPATIBLE") && !jkmpoption.getValue().equals("12")) {
-                    throw new RuntimeException(String.format("JKMOption not set correctly."));
+                    throw new RuntimeException("JKMOption not set correctly.");
                 }
                 if (jkmpoption.getName().equals("VALIDATE") && !jkmpoption.getValue().equals(true)) {
-                    throw new RuntimeException(String.format("JKMOption not set correctly."));
+                    throw new RuntimeException("JKMOption not set correctly.");
                 }
             }
         }
@@ -584,14 +597,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
      */
     @Test
     public void test060ing() {
-        for (T interf : this.odiAccessStrategy.findMappingsByFolder(regressionConfiguration.getProjectCode(), "RealTimeORACLE_DWH_CON_CHINOOK")) {
+        for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(), "RealTimeORACLE_DWH_CON_CHINOOK")) {
             if (interf.getName().toLowerCase().contains("invoiceline")) {
-                if (!this.odiAccessStrategy.areAllSourcesJournalised(interf)
-                        && !this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
-                    // we are ok it needs to be "some" journalized.
-                } else {
+                if (this.odiAccessStrategy.areAllSourcesJournalised(interf)
+                        || this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
                     throw new RuntimeException();
                 }
+                // we are ok it needs to be "some" journalized.
                 continue;
             }
             if (!this.odiAccessStrategy.areAllSourcesJournalised(interf)) {
@@ -624,7 +636,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test070CreatePackages() {
         ListAppender listAppender = getListAppender();
-        runController("cp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("cp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Real Time ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml",
                 "-journalized");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -636,7 +648,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test080DeletePackages() {
         ListAppender listAppender = getListAppender();
-        runController("dp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Real Time ", "-pkg", "INITIALDWH_STI", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml", "-f", "InitialORACLE_DWH_STI");
 
@@ -649,7 +661,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test085DeleteAllPackages() {
         ListAppender listAppender = getListAppender();
-        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Real Time ",
                 "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
 
@@ -662,13 +674,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
     @Test
     public void test090CreateTransformations() {
-        logger.info("Delete All Packages started");
+        LOGGER.info("Delete All Packages started");
         ListAppender listAppender = getListAppender();
-        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Real Time ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml",
                 "-journalized");
-        logger.info("Truncate and reccreate Transformations started");
-        runController("ct", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        LOGGER.info("Truncate and reccreate Transformations started");
+        runController("ct", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Real Time ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml",
                 "-journalized");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -679,9 +691,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
     @Test
     public void test090DeleteTransformations() {
-        logger.info("Delete Transfromations started");
+        LOGGER.info("Delete Transfromations started");
         ListAppender listAppender = getListAppender();
-        runController("dt", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dt", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml/400_DWH_STI");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -693,7 +705,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test110DeleteScenario() {
         ListAppender listAppender = getListAppender();
-        runController("ds", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("ds", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml", "-scenario",
                 "INITIALDWH_CON");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -721,26 +733,15 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         odiInstance.getTransactionManager().commit(getWorkOdiInstance().getTransactionStatus());
     }
 
-    private void validateColumnSettings(OdiDataStore ds, boolean isStatic) {
+    private void validateColumnSettings(OdiDataStore ds) {
         for (OdiColumn column : ds.getColumns()) {
             String msg = "incorrect in column " + column.getName();
             assertFalse(msg, column.isMandatory());
             assertFalse(msg, column.isFlowCheckEnabled());
             assertTrue(msg, column.isDataServiceAllowInsert());
-            if (column.getName().equals("ROW_WID")) {
-                if (isStatic) {
-                    assertTrue(msg, column.isStaticCheckEnabled());
-                } else {
-                    assertFalse(msg, column.isStaticCheckEnabled());
-                }
-                assertTrue(msg, column.isDataServiceAllowUpdate());
-                assertTrue(msg, column.isDataServiceAllowSelect());
-            } else {
-                assertFalse(msg, column.isStaticCheckEnabled());
-                // implies that it was not updated
-                assertTrue(msg, column.isDataServiceAllowUpdate());
-                assertTrue(msg, column.isDataServiceAllowSelect());
-            }
+            assertFalse(msg, column.isStaticCheckEnabled());
+            assertTrue(msg, column.isDataServiceAllowUpdate());
+            assertTrue(msg, column.isDataServiceAllowSelect());
         }
     }
 
@@ -781,47 +782,57 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                     assertFalse(column.isFlowCheckEnabled());
                     assertTrue(column.isDataServiceAllowInsert());
 
-                    if (column.getName().equals("ROW_WID")) {
-                        assertEquals(msg, ScdType.SURROGATE_KEY, column.getScdType());
-                        assertFalse(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else if (column.getName().equals("EFFECTIVE_DATE")) {
-                        assertEquals(msg, ScdType.START_TIMESTAMP, column.getScdType());
-                        assertTrue(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else if (column.getName().equals("EXPIRATION_DATE")) {
-                        assertEquals(msg, ScdType.END_TIMESTAMP, column.getScdType());
-                        assertTrue(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else if (column.getName().equals("CURRENT_FLG")) {
-                        assertEquals(msg, ScdType.CURRENT_RECORD_FLAG, column.getScdType());
-                        assertFalse(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else if (column.getName().equals("ETL_PROC_WID") || column.getName().equals("W_UPDATE_DT")
-                            || column.getName().equals("W_INSERT_DT")) {
-                        assertEquals(msg, ScdType.OVERWRITE_ON_CHANGE, column.getScdType());
-                        assertFalse(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else if (column.getName().equals("CUST_CODE") || column.getName().equals("EMPL_CODE")) {
-                        assertEquals(msg, ScdType.NATURAL_KEY, column.getScdType());
-                        assertFalse(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
-                    } else {
-                        assertEquals(msg, ScdType.ADD_ROW_ON_CHANGE, column.getScdType());
-                        assertFalse(msg, column.isStaticCheckEnabled());
-                        assertTrue(column.isDataServiceAllowUpdate());
-                        assertTrue(column.isDataServiceAllowSelect());
+                    switch (column.getName()) {
+                        case "ROW_WID":
+                            assertEquals(msg, ScdType.SURROGATE_KEY, column.getScdType());
+                            assertFalse(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        case "EFFECTIVE_DATE":
+                            assertEquals(msg, ScdType.START_TIMESTAMP, column.getScdType());
+                            assertTrue(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        case "EXPIRATION_DATE":
+                            assertEquals(msg, ScdType.END_TIMESTAMP, column.getScdType());
+                            assertTrue(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        case "CURRENT_FLG":
+                            assertEquals(msg, ScdType.CURRENT_RECORD_FLAG, column.getScdType());
+                            assertFalse(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        case "ETL_PROC_WID":
+                        case "W_UPDATE_DT":
+                        case "W_INSERT_DT":
+                            assertEquals(msg, ScdType.OVERWRITE_ON_CHANGE, column.getScdType());
+                            assertFalse(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        case "CUST_CODE":
+                        case "EMPL_CODE":
+                            assertEquals(msg, ScdType.NATURAL_KEY, column.getScdType());
+                            assertFalse(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
+                        default:
+                            assertEquals(msg, ScdType.ADD_ROW_ON_CHANGE, column.getScdType());
+                            assertFalse(msg, column.isStaticCheckEnabled());
+                            assertTrue(column.isDataServiceAllowUpdate());
+                            assertTrue(column.isDataServiceAllowSelect());
+                            break;
                     }
                 }
             } else {
-                assertEquals(null, ds.getOlapType());
-                validateColumnSettings(ds, false);
+                assertNull(ds.getOlapType());
+                validateColumnSettings(ds);
             }
         }
     }
@@ -846,7 +857,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                 assertEquals(OlapType.DIMENSION, ds.getOlapType());
                 validateColumnSettingsAlterTable(ds, false);
             } else {
-                assertEquals(null, ds.getOlapType());
+                assertNull(ds.getOlapType());
             }
         }
     }
@@ -855,9 +866,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     public void test120AlterSCDTables() {
         cleanModel();
         ListAppender listAppender = getListAppender();
-        logger.info("Create etls started");
+        LOGGER.info("Create etls started");
         runController("atbs",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
@@ -867,8 +878,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     }
 
     // destroys model
-    //@Test
-    public void test121AlterSCDTables_NullOdiKeyColumn() throws Exception {
+    @Test
+    @Ignore
+    public void test121AlterSCDTables_NullOdiKeyColumn() {
 
         OdiColumn c1 = null, c2 = null, c3 = null, c4 = null, c5 = null;
         ListAppender listAppender = getListAppender();
@@ -879,10 +891,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             c4 = removeOdiKeyColumn("W_INVOICELINE_F", "INVL_LINE_CODE");
             c5 = removeOdiKeyColumn("W_TRACK_D", "TRCK_CODE");
             runController("atbs",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            LOGGER.info(e.getMessage());
 
         } finally {
             returnOdiKeyColumn("W_ALBUM_D", c1);
@@ -908,14 +920,14 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             if (ds.getName().equalsIgnoreCase(dataStore)) {
                 for (OdiKey key : ds.getKeys()) {
                     key.addColumn(column);
-                    logger.info(column + " added back to " + ds.getName());
+                    LOGGER.info(column + " added back to " + ds.getName());
                 }
             }
         }
         odiInstance.getTransactionManager().commit(getWorkOdiInstance().getTransactionStatus());
     }
 
-    private OdiColumn removeOdiKeyColumn(String dataStore, String column) throws Exception {
+    private OdiColumn removeOdiKeyColumn(String dataStore, String column) {
         OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
         new DefaultTransactionDefinition();
         odiInstance.getTransactionManager();
@@ -927,18 +939,18 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         @SuppressWarnings("unchecked")
         Collection<OdiDataStore> dataStores = finder.findAll();
         for (OdiDataStore ds : dataStores) {
-            OdiColumn t = null;
+            OdiColumn t;
             if (ds.getName().equalsIgnoreCase(dataStore)) {
                 t = ds.getColumn(column);
-                logger.info("t: " + t);
+                LOGGER.info("t: " + t);
                 for (OdiKey key : ds.getKeys()) {
                     for (OdiColumn o : key.getColumns()) {
-                        logger.info("column: " + column);
-                        logger.info("o: " + o.getName());
+                        LOGGER.info("column: " + column);
+                        LOGGER.info("o: " + o.getName());
                         if (o.getName().equals(column)) {
                             removedOdiColumn = o;
                             key.removeColumn(o);
-                            logger.info(t + " removed from " + ds.getName());
+                            LOGGER.info(t + " removed from " + ds.getName());
                         }
                     }
 
@@ -953,7 +965,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     public void test130AlterTables() {
         cleanModel();
         ListAppender listAppender = getListAppender();
-        runController("atb", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("atb", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
@@ -962,25 +974,26 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         validateDataMartForAlterTable();
     }
 
-    // @Test
-    public void test131AlterTables_ColumnNotUpdated() throws Exception {
+    @Test
+    @Ignore
+    public void test131AlterTables_ColumnNotUpdated() {
         ListAppender listAppender = getListAppender();
         try {
-            forcedChange("W_CUSTOMER_D", "CUST_EMAIL",
-                    "oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D");
-            forcedChange("W_EMPLOYEE_D", "EMPL_EMAIL",
-                    "oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_EMPLOYEE_D");
+            forcedChange("W_CUSTOMER_D"
+            );
+            forcedChange("W_EMPLOYEE_D"
+            );
 
             runController("atb",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            LOGGER.info(e.getMessage());
         } finally {
-            reverseChange("W_CUSTOMER_D", "CUST_EMAIL",
-                    "oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D");
-            reverseChange("W_EMPLOYEE_D", "EMPL_EMAIL",
-                    "oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_EMPLOYEE_D");
+            reverseChange("W_CUSTOMER_D"
+            );
+            reverseChange("W_EMPLOYEE_D"
+            );
         }
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
@@ -989,23 +1002,21 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     }
 
     @SuppressWarnings({"unchecked"})
-    private void forcedChange(String dataStoreName, String col, String odiReferenceString)
-            throws Exception {
+    private void forcedChange(String dataStoreName) {
         OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
         ITransactionManager tm = odiInstance.getTransactionManager();
         IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
                 .getFinder(OdiDataStore.class));
         Collection<OdiDataStore> dataStores = finder.findAll();
         for (OdiDataStore ds : dataStores) {
-            OdiColumn t = null;
             if (ds.getName().equalsIgnoreCase(dataStoreName)) {
-                t = ds.getColumn("EFFECTIVE_DATE");
-                logger.info(t);
+                OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
+                LOGGER.info(t);
                 for (OdiKey key : ds.getKeys()) {
                     if (key.getColumns().contains(t)) {
                         key.removeColumn(t);
                         odiInstance.getTransactionalEntityManager().merge(ds);
-                        logger.info(t + " removed from " + ds.getName());
+                        LOGGER.info(t + " removed from " + ds.getName());
                     }
                 }
             }
@@ -1013,22 +1024,19 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         tm.commit(getWorkOdiInstance().getTransactionStatus());
     }
 
-    @SuppressWarnings({"unchecked"})
-    private void reverseChange(String dataStoreName, String col, String odiReferenceString)
-            throws Exception {
+    private void reverseChange(String dataStoreName) {
         OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
         ITransactionManager tm = odiInstance.getTransactionManager();
         IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
                 .getFinder(OdiDataStore.class));
-        Collection<OdiDataStore> dataStores = finder.findAll();
+        @SuppressWarnings("unchecked") Collection<OdiDataStore> dataStores = finder.findAll();
         for (OdiDataStore ds : dataStores) {
-            OdiColumn t = null;
             if (ds.getName().equalsIgnoreCase(dataStoreName)) {
-                t = ds.getColumn("EFFECTIVE_DATE");
+                OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
                 for (OdiKey key : ds.getKeys()) {
                     key.addColumn(t);
                     odiInstance.getTransactionalEntityManager().merge(ds);
-                    logger.info(t + " added back " + ds.getName());
+                    LOGGER.info(t + " added back " + ds.getName());
                 }
             }
         }
@@ -1039,7 +1047,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     public void test140CheckTables() {
         ListAppender listAppender = getListAppender();
         runController("cktb",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
@@ -1063,10 +1071,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                     "oracle.odi.domain.model.OdiColumn INVL_SUPPORTREP_WID");
 
             runController("cktb",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            LOGGER.info(e.getMessage());
         } finally {
             reverseForcedChangesForCheckTables("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D",
                     "oracle.odi.domain.model.OdiColumn INVL_CUST_WID");
@@ -1097,10 +1105,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             changeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_REPRESENTATIVE_D");
 
             runController("cktb",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            LOGGER.info(e.getMessage());
         } finally {
             reverseChangeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D");
             reverseChangeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_ALBUM_D");
@@ -1135,7 +1143,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             if (StringUtils.equalsIgnoreCase(testOdiReference, // +"_U1",
                     odiReference.toString())) {
                 odiReference.setReferenceType(ReferenceType.DB_REFERENCE);
-                logger.info("ReferenceType changed back to: " + odiReference.getReferenceType());
+                LOGGER.info("ReferenceType changed back to: " + odiReference.getReferenceType());
             }
         }
         tem.merge(temp);
@@ -1163,7 +1171,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                     odiReference.toString())) {
                 String tempValue = odiReference.getReferenceType().toString();
                 odiReference.setReferenceType(ReferenceType.ODI_REFERENCE);
-                logger.info("ReferenceType changed from " + tempValue + " to " + odiReference.getReferenceType());
+                LOGGER.info("ReferenceType changed from " + tempValue + " to " + odiReference.getReferenceType());
             }
         }
         odiInstance.getTransactionalEntityManager().merge(temp);
@@ -1239,7 +1247,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test150ExtractTables() {
         ListAppender listAppender = getListAppender();
-        runController("etb", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("etb", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-ps", "10", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/jodi_dist", "-srcmdl",
                 "ORACLE_CHINOOK");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -1250,9 +1258,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
     @Test
     public void test160DeleteReferences() {
-        logger.info("Create etls started");
+        LOGGER.info("Create etls started");
         ListAppender listAppender = getListAppender();
-        runController("dr", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dr", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-model", "ORACLE_CHINOOK", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml", "-journalized");
         if (listAppender.contains(Level.ERROR, false)) {
@@ -1264,7 +1272,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     @Test
     public void test170DeleteAllPackages() {
         ListAppender listAppender = getListAppender();
-        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
@@ -1279,7 +1287,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     public void test180PropertyFileFound() {
         try {
             runController("etls",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-p",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
                     "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
             Assert.fail("Sample threw unexpected exception.");
@@ -1304,9 +1312,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     }
 
     @Test
-    public void test200printColumnsDetails() throws Exception {
+    public void test200printColumnsDetails() {
         runController("prnt",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml", "-folder", "InitialORACLE_CHINOOK");
     }
 
@@ -1314,7 +1322,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     public void test200AlterTables() {
         try {
             runController("atb",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-m",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-m",
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         } catch (Exception e) {
             Assert.fail("Sample threw unexpected exception.");
@@ -1343,15 +1351,15 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
      * Test 300 and above are tests for loadplans. Import a loadplan, test that
      * file exists, and it can be unmarshalled.
      *
-     * @throws JAXBException
-     * @throws IOException
+     * @throws JAXBException On XML marshalling issues
+     * @throws IOException   On issues with any file
      */
 
     @Test
     public void test300LoadPlanTestAll() throws JAXBException, IOException {
         deleteCreatedLoadPlans();
         if (!new OdiVersion().isVersion11()) {
-            logger.info("testing;");
+            LOGGER.info("testing;");
             // import loadplans
             File generatedFile = new File(
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml/loadPlans/ETL.xml");
@@ -1368,7 +1376,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                 }
             }
             runController("lpe",
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties, "-p",
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
                     "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
             if (!generatedFile.exists()) {
                 throw new RuntimeException("Loadplan import did not import loadplan into xml file.");
@@ -1380,10 +1388,10 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
             Unmarshaller u = jc.createUnmarshaller();
             Loadplan loadplan = (Loadplan) u.unmarshal(generatedFile);
-            logger.info("Successfully unmarshalled from file loadplan : " + loadplan.getName());
+            LOGGER.info("Successfully unmarshalled from file loadplan : " + loadplan.getName());
 //
             Scanner generatedScanner = new Scanner(generatedFile);
-            StringBuffer generatedContent = new StringBuffer("");
+            StringBuilder generatedContent = new StringBuilder();
             while (generatedScanner.hasNext()) {
                 generatedContent.append(generatedScanner.next());
             }
@@ -1392,7 +1400,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             File controlFile = new File(
                     "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/controlETL.xml");
             Scanner controlScanner = new Scanner(controlFile);
-            StringBuffer controlContent = new StringBuffer("");
+            StringBuilder controlContent = new StringBuilder();
             while (controlScanner.hasNext()) {
                 controlContent.append(controlScanner.next());
             }
@@ -1405,25 +1413,25 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         // So 2 loadplans will get created;
         // CREATED_FROM_FILE ( full specs ) & CREATED_TEST_ETL (nullpointer test)
         // print
-        runController("lpp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        runController("lpp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         // build loadplans
         File previousCreation = new File("src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml/loadPlans",
                 "CREATED_FROM_FILE.xml");
         if (previousCreation.exists() && !previousCreation.delete()) {
-            logger.error("Couldn't deleted CREATED_FROM_FILE");
+            LOGGER.error("Couldn't deleted CREATED_FROM_FILE");
         }
         File file = new File("src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml/loadPlans", "ETL.xml");
-        StringBuffer content = new StringBuffer("");
+        StringBuffer content = new StringBuffer();
         Scanner scanner = new Scanner(file);
         scanner.useDelimiter("\n");
         while (scanner.hasNext()) {
-            content.append(scanner.next() + "\n");
+            content.append(scanner.next()).append("\n");
         }
         scanner.close();
         content = new StringBuffer(content.toString().replace("ETL", "CREATED_FROM_FILE"));
-        write(file, "UTF-8", content.toString());
-        runController("lp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+        write(file, content.toString());
+        runController("lp", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
         OdiLoadPlan odiLoadplan = odiLoadPlanAccessStrategy.findLoadPlanByName("CREATED_FROM_FILE");
         odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplan, "/Start/DROP_TEMP_INTERFACE_DATASTORES");
@@ -1459,19 +1467,18 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     }
 
     @Test
-    public void test400CreateScenarios() throws Exception {
+    public void test400CreateScenarios() {
         runController("cs",
-                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties,
+                "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES,
                 "-p", "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
     }
 
     //@After
-    @SuppressWarnings("unchecked")
     public void deleteCreatedLoadPlans() {
-        ;
         ITransactionManager tm = getWorkOdiInstance().getOdiInstance().getTransactionManager();
         IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) getWorkOdiInstance().getOdiInstance().getTransactionalEntityManager()
                 .getFinder(OdiLoadPlan.class);
+        //noinspection unchecked
         for (OdiLoadPlan loadPlan : (Collection<OdiLoadPlan>) loadPlanFinder.findAll()) {
             if (loadPlan.getName().toLowerCase().startsWith("created")) {
                 getWorkOdiInstance().getOdiInstance().getTransactionalEntityManager().remove(loadPlan);
@@ -1491,51 +1498,50 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                 new PasswordConfigImpl().getDeploymentArchivePassword(), "-da_type", "DA_PATCH_EXEC_REPOS");
     }
 
-    //@Test
-    public void test602CreateConstraints() throws JAXBException, IOException {
+    @Test
+    @Ignore
+    public void test602CreateConstraints() {
         runController("expcon",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
-                        + "/conf/" + defaultProperties, "-p", "Init ", "-m",
+                        + "/conf/" + DEFAULT_PROPERTIES, "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
                         + "/xml", "-exportDBConstraints", "true");
     }
 
     @Test
-    public void test700Procedures() throws JAXBException, IOException {
+    public void test700Procedures() {
         runController("delproc",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
-                        + "/conf/" + defaultProperties, "-p", "Init ", "-m",
+                        + "/conf/" + DEFAULT_PROPERTIES, "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
                         + "/xml", "-exportDBConstraints", "true");
 
         runController("crtproc",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
-                        + "/conf/" + defaultProperties, "-p", "Init ", "-m",
+                        + "/conf/" + DEFAULT_PROPERTIES, "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
                         + "/xml", "-exportDBConstraints", "true");
 
 
-        Properties properties = null;
+        Properties properties;
         FileReader reader = null;
         try {
             reader = new FileReader(
-                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + defaultProperties);
+                    "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES);
             properties = new Properties();
             properties.load(reader);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot check if this test runs in update mode.");
         } finally {
-            if (reader != null)
+            if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            }
         }
-        String update = properties.getProperty("jodi.update");
-
         OdiConnection odiConnection = OdiConnectionFactory.getOdiConnection(
                 properties.getProperty("odi.master.repo.url"),
                 properties.getProperty("odi.master.repo.username"),
@@ -1580,66 +1586,61 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     }
 
     @Test
-    public void test800validate() throws JAXBException, IOException {
+    public void test800validate() {
         runController("vldt",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
-                        + "/conf/" + defaultProperties, "-p", "Init ", "-m",
+                        + "/conf/" + DEFAULT_PROPERTIES, "-p", "Init ", "-m",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir()
                         + "/xml");
     }
 
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private void testOption(Optional<ProcedureOption> option, OptionType type, Object defaultValue, String condition,
                             String description, String help) {
         if (!option.isPresent()) {
             throw new RuntimeException("There should be an option set.");
         }
-        if (option.isPresent() && !option.get().getOptionType().equals(type)) {
+        if (!option.get().getOptionType().equals(type)) {
             throw new RuntimeException(String.format("There should be an option of type %s set.", option.get().getOptionType().name()));
         }
-        if (option.isPresent() && !option.get().getDefaultValue().equals(defaultValue)) {
+        //noinspection deprecation
+        if (!option.get().getDefaultValue().equals(defaultValue)) {
+            //noinspection deprecation
             throw new RuntimeException(String.format("There should be an option with defaultvalue %s set.", option.get().getDefaultValue()));
         }
-        if (option.isPresent() && !option.get().getConditionExpression().equalsIgnoreCase(condition)) {
+        if (!option.get().getConditionExpression().equalsIgnoreCase(condition)) {
             throw new RuntimeException(String.format("There should be an option with condition %s set.", option.get().getConditionExpression()));
         }
-        if (option.isPresent() && !option.get().getDescription().equalsIgnoreCase(description)) {
+        if (!option.get().getDescription().equalsIgnoreCase(description)) {
             throw new RuntimeException(String.format("There should be an option with description %s set.", option.get().getDescription()));
         }
-        if (option.isPresent() && !option.get().getHelp().equalsIgnoreCase(help)) {
+        if (!option.get().getHelp().equalsIgnoreCase(help)) {
             throw new RuntimeException(String.format("There should be an option with description %s set.", option.get().getHelp()));
         }
     }
 
-    private void write(File file, String encoding, String input) {
+    private void write(File file, String input) {
         FileOutputStream fos = null;
         Writer out = null;
         try {
             fos = new FileOutputStream(file.getAbsolutePath());
-            out = new OutputStreamWriter(fos, encoding);
+            out = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             out.write(input);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             try {
-                if (out != null)
+                if (out != null) {
                     out.close();
+                }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             if (fos != null) {
                 try {
                     fos.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

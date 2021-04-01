@@ -21,37 +21,37 @@ import oracle.odi.setup.IWorkRepositorySetup;
 import oracle.odi.setup.RepositorySetupException;
 import oracle.odi.setup.support.MasterRepositorySetupImpl;
 import oracle.odi.setup.support.WorkRepositorySetupImpl;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.junit.Assert;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
+import java.util.stream.IntStream;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class RegressionTestImpl implements RegressionTest {
-    protected final RegressionConfiguration regressionConfiguration;
-    private final org.apache.logging.log4j.Logger logger = LogManager.getLogger(RegressionTestImpl.class);
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(RegressionTestImpl.class);
+
     private final File smartExport;
     private final SQLHelper sqlHelper = new SQLHelper();
-    private final ErrorWarningMessageJodi errorWarningMessages =
-            ErrorWarningMessageJodiImpl.getInstance();
+    private final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
     private final String propertiesFile;
     private final JodiController controller = new JodiController(true);
+
     private OdiInstance masterOdiInstance;
     private OdiConnection workOdiConnection;
 
-    public RegressionTestImpl(final String propertiesFile,
-                              final String password, final String masterPassword)
-            throws ConfigurationException {
-        regressionConfiguration = new PropertiesBasedRegressionTestConfiguration(
-                propertiesFile, password, masterPassword);
+    private final RegressionConfiguration regressionConfiguration;
+
+    public RegressionTestImpl(final String propertiesFile, final String password, final String masterPassword) {
+        regressionConfiguration = new PropertiesBasedRegressionTestConfiguration(propertiesFile, password, masterPassword);
 
         smartExport = new File(regressionConfiguration.getSmartExport());
         Logger rootLogger = (Logger) LogManager.getRootLogger();
@@ -123,7 +123,7 @@ public abstract class RegressionTestImpl implements RegressionTest {
      * The original scripts may be found in the ODI Companion CD:
      * sdk/oracledi.sdk/lib/scripts/xml/
      *
-     * @throws RepositorySetupException
+     * @throws RepositorySetupException When setting up the repository fails
      */
 
     @Override
@@ -131,28 +131,27 @@ public abstract class RegressionTestImpl implements RegressionTest {
     public boolean repositoryIsSetup() throws RepositorySetupException {
         String workRepositoryName = RegressionTestUtilities.getWorkReposName(regressionConfiguration.getWorkRepositoryJdbcUsername());
         int masterRepositoryId = RegressionTestUtilities.getWorkReposId(regressionConfiguration.getWorkRepositoryJdbcUsername());
-        logger.info("Workrepid:" + workRepositoryName + " Id:"
-                + masterRepositoryId);
+        LOGGER.info("Workrepid:" + workRepositoryName + " Id:" + masterRepositoryId);
 
-        int[] forbiddenIds = new int[]{0, 353, 366, 500, 541, 542, 651, 1,
-                36, 74, 91, 129, 268, 353, 366, 452, 541, 542, 600, 651, 656,
-                667, 720, 789, 801, 888};
-        for (int forbiddenId : forbiddenIds) {
-            if (forbiddenId == regressionConfiguration.getWorkRepositoryId()) {
-                throw new RuntimeException(
-                        "Unsupported workRepositoryId: "
-                                + regressionConfiguration.getWorkRepositoryId()
-                                + " change the masterRepositoryJdbcUser ( "
-                                + regressionConfiguration
-                                .getMasterRepositoryJdbcUser()
-                                + " is not supported.). See support.oracle.com: 1504665.1");
-            }
-        }
+        int[] forbiddenIds = new int[]{
+                0, 353, 366, 500, 541, 542, 651, 1, 36, 74,
+                91, 129, 268, 353, 366, 452, 541, 542, 600, 651,
+                656, 667, 720, 789, 801, 888};
 
-        logger.info("======================================================");
-        logger.info("Repository Creation Started....");
-        logger.info("======================================================");
-        logger.info("Master Repository Creation Started....");
+        IntStream.of(forbiddenIds)
+                .filter(id -> id == regressionConfiguration.getWorkRepositoryId())
+                .findAny()
+                .ifPresent(id -> {
+                    throw new RuntimeException(
+                            "Unsupported workRepositoryId: " + id + " change the masterRepositoryJdbcUser ( "
+                                    + regressionConfiguration.getMasterRepositoryJdbcUser()
+                                    + " is not supported.). See support.oracle.com: 1504665.1");
+                });
+
+        LOGGER.info("======================================================");
+        LOGGER.info("Repository Creation Started....");
+        LOGGER.info("======================================================");
+        LOGGER.info("Master Repository Creation Started....");
         IMasterRepositorySetup masterRepositorySetup = new MasterRepositorySetupImpl();
         AuthenticationConfiguration authConf = AuthenticationConfiguration
                 .createStandaloneAuthenticationConfiguration(regressionConfiguration.getOdiSupervisorPassword()
@@ -164,10 +163,10 @@ public abstract class RegressionTestImpl implements RegressionTest {
                     RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), true, authConf, null, null);
         } catch (Exception e) {
             String message = "ODI_LIB_PATH not found, please run from gradlew.";
-            logger.fatal(message);
+            LOGGER.fatal(message);
             throw new RuntimeException(message, e);
         }
-        logger.info("Master Repository Creation Completed.");
+        LOGGER.info("Master Repository Creation Completed.");
         MasterRepositoryDbInfo masterInfo = new MasterRepositoryDbInfo(
                 regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getMasterRepositoryJdbcDriver(),
                 regressionConfiguration.getMasterRepositoryJdbcUser(),
@@ -176,12 +175,12 @@ public abstract class RegressionTestImpl implements RegressionTest {
         OdiInstance odiInstance = OdiInstance
                 .createInstance(new OdiInstanceConfig(masterInfo, null));
         // odiSupervisorUser = "SUPERVISOR";
-        logger.info("Logging in with: " + regressionConfiguration.getOdiSupervisorUser());
+        LOGGER.info("Logging in with: " + regressionConfiguration.getOdiSupervisorUser());
         Authentication auth = odiInstance.getSecurityManager()
                 .createAuthentication(regressionConfiguration.getOdiSupervisorUser(),
                         regressionConfiguration.getOdiSupervisorPassword().toCharArray());
         odiInstance.getSecurityManager().setCurrentThreadAuthentication(auth);
-        logger.info("Work Repository Creation Started.");
+        LOGGER.info("Work Repository Creation Started.");
         // AuthenticationConfiguration authConf2 = AuthenticationConfiguration
         // .createStandaloneAuthenticationConfiguration(odiSupervisorPassword
         // .toCharArray());
@@ -191,10 +190,10 @@ public abstract class RegressionTestImpl implements RegressionTest {
                 regressionConfiguration.getWorkRepositoryJdbcDriver(), regressionConfiguration.getWorkRepositoryJdbcUsername(),
                 regressionConfiguration.getWorkRepositoryJdbcPassword(), regressionConfiguration.getWorkRepositoryId(),
                 workRepositoryName, RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), true);
-        logger.info("Work Repository Creation Completed.");
-        logger.info("======================================================");
-        logger.info("Repository Creation Completed Successfully");
-        logger.info("======================================================");
+        LOGGER.info("Work Repository Creation Completed.");
+        LOGGER.info("======================================================");
+        LOGGER.info("Repository Creation Completed Successfully");
+        LOGGER.info("======================================================");
         createMasterOdiInstance(
                 regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getMasterRepositoryJdbcDriver(),
                 regressionConfiguration.getMasterRepositoryJdbcUser(), regressionConfiguration.getMasterRepositoryJdbcPassword(),
@@ -204,37 +203,26 @@ public abstract class RegressionTestImpl implements RegressionTest {
                 regressionConfiguration.getMasterRepositoryJdbcPassword(), regressionConfiguration.getOdiSupervisorUser(),
                 regressionConfiguration.getOdiSupervisorPassword(), workRepositoryName);
         odiInstance.close();
-        odiInstance = null;
         return true;
     }
 
     @SuppressWarnings("deprecation")
-    private boolean smartImport(File xmlFile) throws MalformedURLException, ClassNotFoundException {
-        Properties p = new Properties();
-        String key = "javax.xml.parsers.SAXParserFactory";
-        String value = "oracle.xml.jaxp.JXSAXParserFactory";
-        p.setProperty(key, value);
-
-        ITransactionManager tm1;
-        tm1 = getWorkOdiInstance().getOdiInstance().getTransactionManager();
+    private boolean smartImport(File xmlFile) {
+        ITransactionManager tm1 = getWorkOdiInstance().getOdiInstance().getTransactionManager();
         ISmartImportService importService = new SmartImportServiceImpl(getWorkOdiInstance().getOdiInstance());
         boolean result = false;
         if (xmlFile.exists()) {
             try {
-                logger.info("Smart import of: " + xmlFile.getAbsolutePath());
+                LOGGER.info("Smart import of: " + xmlFile.getAbsolutePath());
                 importService.importFromXml(xmlFile.getAbsolutePath());
                 result = true;
-            } catch (OdiImportException e) {
-                logger.fatal(e.getMessage());
-                e.printStackTrace();
-                result = false;
-            } catch (IOException e) {
-                logger.fatal(e.getMessage());
+            } catch (OdiImportException | IOException e) {
+                LOGGER.fatal(e.getMessage());
                 e.printStackTrace();
                 result = false;
             }
         } else {
-            logger.info("File: " + xmlFile.getAbsolutePath() + " does not exist.");
+            LOGGER.info("File: " + xmlFile.getAbsolutePath() + " does not exist.");
         }
         tm1.commit(getWorkOdiInstance().getTransactionStatus());
         return result;
@@ -249,7 +237,7 @@ public abstract class RegressionTestImpl implements RegressionTest {
                     pJdbcPassword.toCharArray(), new PoolingAttributes());
             masterOdiInstance = OdiInstance
                     .createInstance(new OdiInstanceConfig(masterInfo, null));
-            logger.debug("created ODI instance " + masterOdiInstance);
+            LOGGER.debug("created ODI instance " + masterOdiInstance);
             Authentication auth = masterOdiInstance.getSecurityManager()
                     .createAuthentication(pOdiUser, pOdiPassword.toCharArray());
             masterOdiInstance.getSecurityManager().setCurrentThreadAuthentication(auth);
@@ -260,8 +248,9 @@ public abstract class RegressionTestImpl implements RegressionTest {
                                        String odiRepoDbDriver, String pJdbcUsername, String pJdbcPassword,
                                        String pOdiUser, String pOdiPassword, String odiWorkRepo) {
         int positionOf_ = odiWorkRepo.indexOf("_");
-        if (positionOf_ != -1)
+        if (positionOf_ != -1) {
             odiWorkRepo = odiWorkRepo.substring(0, positionOf_);
+        }
         if (workOdiConnection.getOdiInstance() == null || workOdiConnection.getOdiInstance().isClosed()) {
             workOdiConnection = OdiConnectionFactory
                     .getOdiConnection(odiRepoUrl, pJdbcUsername, pJdbcPassword, pOdiUser, pOdiPassword, odiRepoDbDriver, odiWorkRepo);
@@ -273,29 +262,29 @@ public abstract class RegressionTestImpl implements RegressionTest {
     public boolean createEnvironment() {
 
         int masterRepositoryId;
-        logger.info("--->" + regressionConfiguration.getWorkRepositoryJdbcUsername());
+        LOGGER.info("--->" + regressionConfiguration.getWorkRepositoryJdbcUsername());
         String workRepositoryName = RegressionTestUtilities.getWorkReposName(regressionConfiguration.getWorkRepositoryJdbcUsername());
         masterRepositoryId = RegressionTestUtilities.getWorkReposId(regressionConfiguration.getWorkRepositoryJdbcUsername());
-        logger.info("Workrepid:" + workRepositoryName + " Id:"
+        LOGGER.info("Workrepid:" + workRepositoryName + " Id:"
                 + masterRepositoryId);
 
-        Assert.assertTrue(sqlHelper.deleteUser(RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(),
+        assertTrue(sqlHelper.deleteUser(RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(),
                 regressionConfiguration.getSysdbaPassword(), regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getMasterRepositoryJdbcUser()));
-        Assert.assertTrue(sqlHelper.deleteUser(RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(),
+        assertTrue(sqlHelper.deleteUser(RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(),
                 regressionConfiguration.getSysdbaPassword(), regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getWorkRepositoryJdbcUsername()));
-        Assert.assertTrue(sqlHelper.masterRepostitoryUserIsCreated(
+        assertTrue(sqlHelper.masterRepostitoryUserIsCreated(
                 RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(), regressionConfiguration.getSysdbaPassword(),
                 regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getMasterRepositoryJdbcUser(), regressionConfiguration.getMasterRepositoryJdbcPassword()));
-        logger.info("Master Repository user is created.");
-        Assert.assertTrue(sqlHelper.workRepostitoryUserIsCreated(
+        LOGGER.info("Master Repository user is created.");
+        assertTrue(sqlHelper.workRepostitoryUserIsCreated(
                 RegressionTestUtilities.getTechnologyNameFromString(regressionConfiguration.getMasterRepositoryTechnology()), regressionConfiguration.getSysdbaUser(), regressionConfiguration.getSysdbaPassword(),
                 regressionConfiguration.getMasterRepositoryJdbcUrl(), regressionConfiguration.getWorkRepositoryJdbcUsername(),
                 regressionConfiguration.getWorkRepositoryJdbcPassword()));
-        logger.info("Work Repository user is created.");
+        LOGGER.info("Work Repository user is created.");
 
         //
         try {
-            Assert.assertTrue(repositoryIsSetup());
+            assertTrue(repositoryIsSetup());
         } catch (RepositorySetupException e) {
             if (System.getProperty("ODI_ORACLE_HOME") == null) {
                 String path = System.getProperty("ODI_ORACLE_HOME") + ".."
@@ -305,18 +294,18 @@ public abstract class RegressionTestImpl implements RegressionTest {
                         + "oracledi.common"
                         + System.getProperty("file.separator") + "odi"
                         + System.getProperty("file.separator") + "scripts";
-                logger.fatal("Define a vm Argument ODI_ORACLE_HOME (-DODI_ORACLE_HOME=value.).");
-                logger.fatal("The path:" + path + " should exist.");
-                logger.fatal(e.getMessage());
+                LOGGER.fatal("Define a vm Argument ODI_ORACLE_HOME (-DODI_ORACLE_HOME=value.).");
+                LOGGER.fatal("The path:" + path + " should exist.");
+                LOGGER.fatal(e.getMessage());
                 e.printStackTrace();
-                Assert.assertTrue(false);
+                fail();
             } else if (e.getMessage().contains("UNIQUE")) {
-                logger.warn("Repository exists.");
-                Assert.assertTrue(true);
+                LOGGER.warn("Repository exists.");
+                assertTrue(true);
             } else {
                 e.printStackTrace();
-                logger.fatal(e.getMessage());
-                Assert.assertTrue(false);
+                LOGGER.fatal(e.getMessage());
+                fail();
             }
         }
         createMasterOdiInstance(
@@ -327,15 +316,15 @@ public abstract class RegressionTestImpl implements RegressionTest {
                 regressionConfiguration.getMasterRepositoryJdbcDriver(), regressionConfiguration.getMasterRepositoryJdbcUser(),
                 regressionConfiguration.getMasterRepositoryJdbcPassword(), regressionConfiguration.getOdiSupervisorUser(),
                 regressionConfiguration.getOdiSupervisorPassword(), workRepositoryName);
-        logger.info("Master and work repository are created");
+        LOGGER.info("Master and work repository are created");
 
         boolean result = false;
         try {
             result = smartImport(smartExport);
         } catch (Exception e) {
-            logger.fatal(e);
+            LOGGER.fatal(e);
         }
-        Assert.assertTrue(result);
+        assertTrue(result);
         return true;
     }
 
@@ -363,23 +352,23 @@ public abstract class RegressionTestImpl implements RegressionTest {
             String odiLoginPassword = regressionConfiguration.getOdiSupervisorPassword();
             String odiRepoDbDriver = regressionConfiguration.getMasterRepositoryJdbcDriver();
             String odiWorkRepo = regressionConfiguration.getOdiWorkRepositoryName();
-            workOdiConnection = OdiConnectionFactory
-                    .getOdiConnection(
-                            odiMasterRepoUrl, odiMasterUser, odiMasterRepoPassword,
-                            odiLoginUsername, odiLoginPassword, odiRepoDbDriver,
-                            odiWorkRepo);
+            workOdiConnection = OdiConnectionFactory.getOdiConnection(
+                    odiMasterRepoUrl, odiMasterUser, odiMasterRepoPassword,
+                    odiLoginUsername, odiLoginPassword, odiRepoDbDriver,
+                    odiWorkRepo);
         }
         return workOdiConnection;
     }
 
 
+    @Override
     public String runController(final String action, final String configFile,
                                 final String... additionalConfig) {
 
         assert regressionConfiguration.getOdiSupervisorPassword() != null;
         assert regressionConfiguration.getMasterRepositoryJdbcPassword() != null;
 
-        List<String> argList = new ArrayList<String>();
+        List<String> argList = new ArrayList<>();
 
         argList.add("-a");
         argList.add(action);
@@ -392,17 +381,15 @@ public abstract class RegressionTestImpl implements RegressionTest {
         argList.add("-mpw");
         argList.add(regressionConfiguration.getMasterRepositoryJdbcPassword());
         argList.add("-devmode");
-        for (String item : additionalConfig) {
-            argList.add(item);
-        }
+        Collections.addAll(argList, additionalConfig);
 
         controller.run(argList.toArray(new String[0]));
         return controller.getErrorReport();
     }
 
-    public String runControllerExcpectError(final String action, final String configFile,
-                                            final String... additionalConfig) {
-        List<String> argList = new ArrayList<String>();
+    public String runControllerExpectError(final String action, final String configFile,
+                                           final String... additionalConfig) {
+        List<String> argList = new ArrayList<>();
         JodiController controllerError = new JodiController();
         argList.add("-a");
         argList.add(action);
@@ -415,9 +402,7 @@ public abstract class RegressionTestImpl implements RegressionTest {
         argList.add("-mpw");
         argList.add(regressionConfiguration.getMasterRepositoryJdbcPassword());
         argList.add("-devmode");
-        for (String item : additionalConfig) {
-            argList.add(item);
-        }
+        Collections.addAll(argList, additionalConfig);
 
         controllerError.run(argList.toArray(new String[0]));
         return controllerError.getErrorReport();
@@ -425,10 +410,13 @@ public abstract class RegressionTestImpl implements RegressionTest {
 
     @Override
     public void close() {
-        if (getMasterOdiInstance() != null && !getMasterOdiInstance().isClosed())
+        if (getMasterOdiInstance() != null && !getMasterOdiInstance().isClosed()) {
             getMasterOdiInstance().close();
-        if (getWorkOdiInstance() != null && getWorkOdiInstance().getOdiInstance() != null && !getWorkOdiInstance().getOdiInstance().isClosed())
+        }
+        if (getWorkOdiInstance() != null && getWorkOdiInstance().getOdiInstance() != null
+                && !getWorkOdiInstance().getOdiInstance().isClosed()) {
             getWorkOdiInstance().getOdiInstance().close();
+        }
     }
 
 
@@ -446,9 +434,7 @@ public abstract class RegressionTestImpl implements RegressionTest {
         return propertiesFile;
     }
 
-
     public JodiController getController() {
         return controller;
     }
-
 }
