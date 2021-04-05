@@ -1,6 +1,6 @@
 set URL="jodi:1521/sample21"
-set LB_DB_PWD="DB_PASSWORD_MR"
-set ORCL_SYS_USER_PWD="Ct2556ct"
+set LB_DB_PWD=""
+set ORCL_SYS_USER_PWD=""
 set ORCL_SYS_USER="SYS"
 
 sql.exe %ORCL_SYS_USER%/%ORCL_SYS_USER_PWD%@%URL% as sysdba @create_user.sql EXN1 %LB_DB_PWD% EXN TEMP
