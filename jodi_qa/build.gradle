@@ -20,6 +20,10 @@ repositories {
     jcenter()
 }
 
+ext{
+    version = '20_3_6'
+}
+
 test {
     systemProperty 'ODI_REPO_PWD', System.getProperty("ODI_REPO_PWD")
     systemProperty 'ODI_USER_PWD', System.getProperty("ODI_USER_PWD")
@@ -79,51 +83,35 @@ dependencies {
 task lbGenschema(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase gen schema"
-    // genschema -context LEGACY -debug > genschema_log_LEGACY.txt
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'genschema', '-context', 'legacy', '-debug'
+    description = "liquibase gen schema"                                                                                                      // genschema -context LEGACY -debug > genschema_log_LEGACY.txt
+    commandLine "java", "-DLB_DB_PWD="+System.getProperty("LB_DB_PWD", "DB_PASSWORD_MR"), "-DLB_URL=jodi:1521/SAMPLE21", "-DLB_CLOUDCONFIG=\"\"",  "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'genschema','-context', '-debug', '-emit_schema'
 }
-
 task lbValidate(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase validate"
-    // validate -changelog controller.xml > validation_log.tx
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'validate', '-changelog', 'controller.xml'
+    description = "liquibase validate"                                                                                                      // validate -changelog controller.xml > validation_log.tx
+    commandLine "java", "-DLB_DB_PWD="+System.getProperty("LB_DB_PWD","DB_PASSWORD_MR"), "-DLB_URL=jodi:1521/SAMPLE21", "-DLB_CLOUDCONFIG=\"\"", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'validate','-changelog', 'controller.xml'
 }
 
 task lbChangelogsync(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase changelogsync"
-    // changelogsync -changelog controller.xml > legacy_changelogsync.log
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'changelogsync', '-changelog', 'controller.xml'
+    description = "liquibase changelogsync"                                                                                                // changelogsync -changelog controller.xml > legacy_changelogsync.log
+    commandLine "java", "-DLB_DB_PWD="+System.getProperty("LB_DB_PWD","DB_PASSWORD_MR"), "-DLB_URL=jodi:1521/SAMPLE21", "-DLB_CLOUDCONFIG=\"\"",  "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'changelogsync','-changelog', 'controller.xml'
 }
 
-task lbUpdatesql(type: Exec) {
+task lbUpdatesqlVbox(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase updatesql"
-    // updatesql -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'updatesql', '-changelog', 'controller.xml', '-context', 'legacy', '-noreport'
+    description = "liquibase updatesql"                                                                                                      // updatesql -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
+    commandLine "java", "-DLB_DB_PWD="+System.getProperty("LB_DB_PWD","DB_PASSWORD_MR"), "-DLB_URL=jodi:1521/SAMPLE21", "-DLB_CLOUDCONFIG=\"\"", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'updatesql','-changelog', 'controller.xml',  '-noreport', '-emit_schema'
 }
 
-task lbUpdate(type: Exec) {
+task lbUpdateVbox(type: Exec) {
     dependsOn build
     group = "Execution"
-    description = "liquibase updatesql"
-    // update -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update', '-changelog', 'controller.xml'
-}
-
-task lbDiff(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase diff between dev and alpha6"
-    //  diff -url x -user INF -password  -noreport
-    // while connected to urlDev  //  diff -url $urlPrd -user $schema -password system.getProperties('x')  -noreport
-    // connected to beta6a with diff on prd over time
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'diff', '-url', 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp', '-password', (System.getProperty("OCI_JODI_PWD") != null ? System.getProperty("OCI_JODI_PWD") : ""), '-noreport'
+    description = "liquibase updatesql"                                                                                                      // update -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
+    commandLine "java", "-DLB_DB_PWD="+System.getProperty("LB_DB_PWD","DB_PASSWORD_MR"), "-DLB_URL=jodi:1521/SAMPLE21", "-DLB_CLOUDCONFIG=\"\"",  "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update','-changelog', 'controller.xml', '-emit_schema'
 }
 
 // not needed and remains empty

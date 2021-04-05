@@ -1,4 +1,3 @@
-
 import java.text.SimpleDateFormat
 
 /**
@@ -69,7 +68,7 @@ class LiquibaseRunner{
         def LB_DB_PWD = System.getProperty("LB_DB_PWD")
 
         for(String arg : args){
-                lbCommand += " " + arg
+            lbCommand += " " +arg
         }
         def firstCommand = args[0]
 
@@ -82,43 +81,80 @@ class LiquibaseRunner{
     }
 
     def schemas = [
-            "CHINOOK",
-            "DWH_CON_CHINOOK","DWH_CON","DWH_DMT", "DWH_SRC","DWH_STG", "DWH_STI","DWH_STO"
+            "ODITMP","EXN1","EXN2","EXN6","EXN15", "EXN23","EXN12", "EXN10","EXN11","EXN13","EXN14","EXN16","EXN17","EXN18","EXN19","EXN20",
+            "EXN21","EXN22","EXN24","EXN25","EXN26","EXN27","EXN28","EXN29","EXN3","EXN30","EXN4","EXN5",
+            "EXN7","EXN8","EXN9","MCM","MTM","STG1","STG10","STG11","STG12","STG13","STG14",
+            "STG15","STG16","STG17","STG18","STG19","STG2","STG20","STG21","STG22","STG23","STG24","STG25","STG26",
+            "STG27","STG28","STG29","STG3","STG30","STG4","STG5","STG6","STG7","STG8","STG9", "EDW",
+            "ERM",
+            "INF" //TODO find out why this fails, INF doesn't fail if -debug flag is set and
+            // when no left over DATABASE tables present
     ]
 
     def processLb(lbCommand, firstCommand, LB_URL, LB_DB_PWD, LB_CLOUDCONFIG){
-        def logFile = new File(resource, firstCommand + "_log.txt")
-        logFile.write("")
-        def date = new Date()
-        def sdf = new SimpleDateFormat("yyyy/MM/dd/H:m:s")
-        writeLogLine ("--------------------------------------------------------------------------------------------------------------", logFile)
-        writeLogLine ("-- Generated with LiquibaseRunner.groovy at "+sdf.format(date), logFile)
-        writeLogLine ("-- groovy LiquibaseRunner.groovy $lbCommand", logFile)
-        writeLogLine ("-- logFile written to $logFile.absolutePath", logFile)
-        writeLogLine ("-- LB_URL $LB_URL --this is standard connection", logFile)
-        writeLogLine ("--------------------------------------------------------------------------------------------------------------", logFile)
+
+
+
 
         schemas.each{
             schema ->
+
+
+
+                def logFile = new File(resource, firstCommand+"_"+schema +"_log.txt")
+                logFile.write("")
+                def date = new Date()
+                def sdf = new SimpleDateFormat("yyyy/MM/dd/H:m:s")
+                writeLogLine ("--------------------------------------------------------------------------------------------------------------", logFile)
+                writeLogLine ("-- Generated with LiquibaseRunner.groovy at "+sdf.format(date), logFile)
+                writeLogLine ("-- groovy LiquibaseRunner.groovy $lbCommand", logFile)
+                writeLogLine ("-- logFile written to $logFile.absolutePath", logFile)
+                writeLogLine ("-- LB_URL $LB_URL --this is standard connection", logFile)
+                writeLogLine ("--------------------------------------------------------------------------------------------------------------", logFile)
+
+                def tablespaceOdiTMP= "ODITMP"
+
                 File schemaDir = new File(resource, schema)
                 schemaDir.mkdirs()
-                File cmdFile= new File(resource, "cmd.sql")
                 if(lbCommand.toString().contains("diff")){
                     lbCommand +=  """  -user $schema """
                 }
-                cmdFile.write("""lb $lbCommand\n""".toString())
+
+                File cmdFile= new File(resource, "cmd.sql")
+                cmdFile.write("set ddl storage off\n" +
+                        "set ddl tablespace off\n")
+                cmdFile.append("execute odi_grants();\n")
+                cmdFile.append("""lb $lbCommand\n""".toString())
                 cmdFile << "exit\n"
                 assert LB_DB_PWD
                 def cloudConfig = LB_CLOUDCONFIG != null  && LB_CLOUDCONFIG.toString().length() > 2 ? """ -cloudconfig $LB_CLOUDCONFIG """ : ""
-                def cmd = """cd $schemaDir.absolutePath;\nsql $cloudConfig -S $schema/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
+                def cmd = "";
+//                if(lbCommand.toString().toLowerCase().contains(" update ")){
+//                    cmd = """cd $schemaDir.absolutePath;\nsql $cloudConfig -S ODITMP/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
+//                }else{
+                cmd =  """cd $schemaDir.absolutePath;\nsql $cloudConfig -S $schema/'$LB_DB_PWD'@$LB_URL @$cmdFile.absolutePath\n"""
+//                }
                 File cmdBashFile = new File(resource,"cmd.sh")
                 cmdBashFile.write("#!/bin/sh\n")
                 cmdBashFile << cmd.toString()
-                writeLogLine("""\n\nconnect $schema/LETMEIN@localhost:1521/ORCL\n\n""", logFile)
+
                 executeLb("""sh $cmdBashFile.absolutePath""", schemaDir, schema, cmdFile, cmd, logFile)
                 //somehow liquibase doesn't commit.
                 writeLogLine("commit;", logFile)
+                cleanupController("""$schemaDir.absolutePath/controller.xml""")
         }
+    }
+
+    void cleanupController(file){
+        File clean = new File(file+".new");
+        clean.write("")
+        new File(file).eachLine { line ->
+            if(!line.contains("\$") && !line.contains("_bad_")) {
+                clean << line +"\n"
+            }
+        }
+        new File(file).delete();
+        clean.renameTo(new File(file));
     }
 
 
@@ -138,28 +174,45 @@ class LiquibaseRunner{
                 && l.toString().size() > 4 )}.findFirst()
         if(firstError.isPresent()){
             println("--[ERROR][ORA-] Found errors!")
-            lines.stream().filter{ l -> !((String)l).startsWith("[INFO]")}.each { erLine -> println("--[ERROR]"+erLine)}
+            lines.stream().each { erLine -> println("--[ERROR]"+erLine)}
             System.exit(1)
         }
     }
 
-    def handleOutput(sout, schemaDir, schema, cmdFile, cmd, logFile){
+    def handleOutput(sout, schemaDir, schema, cmdFile, cmd, logFile) {
         Collection<String> lines = sout.toString().split("\\n")
-        lines.stream().each{it ->
-            if(it.toString().startsWith("LoggingExecutor")
-            || it.toString().startsWith("Operation is successfully completed")
-            || it.toString().startsWith("Action successfully completed")
-            || it.toString().startsWith("Using temp directory:")) {
+        lines.stream().each { it ->
+            if (it.toString().startsWith("LoggingExecutor")
+                    || it.toString().startsWith("Operation is successfully completed")
+                    || it.toString().startsWith("Action successfully completed")
+                    || it.toString().startsWith("######## ERROR SUMMARY ##################")
+                    || it.toString().startsWith("Errors encountered:0")
+                    || it.toString().startsWith("Using temp directory:")
+                    || it.toString().startsWith("ScriptRunner Executing:")
+                    || it.toString().startsWith("ScriptRunner")
+            ) {
                 writeLogLine("-- " + it, logFile)
-            }else if(it.toString().startsWith("Processing has failed")){
-                writeLogLine("--[ERROR] " + it , logFile)
+            } else if (it.toString().startsWith("Processing has failed")) {
+                writeLogLine("--[ERROR] " + it, logFile)
                 /// System.exit(1)
-            }else if(it.toString().contains("_bad_") && it.toString().trim().endsWith(".xml")){
+            } else if (it.toString().contains("_bad_") && it.toString().trim().endsWith(".xml")) {
                 // bad objects are materialized views or other views,
                 // that are not generated appropiately and need to be used with genobject
-                handleBadObjects(it.toString(), schemaDir, schema, cmdFile, cmd, logFile)
+                //TODO MVs go manual.
+                //handleBadObjects(it, schemaDir, schema, cmdFile, cmd, logFile)
+            } else if (it.toString().contains("DELETE FROM ${schema}.DATABASECHANGELOGLOCK;")) {
+//                writeLogLine("grant delete,insert, update on ${schema}.DATABASECHANGELOG to oditmp;", logFile)
+//                writeLogLine("grant delete,insert, update on ${schema}.DATABASECHANGELOG_ACTIONS to oditmp;", logFile)
+//                writeLogLine("grant delete,insert, update on ${schema}.DATABASECHANGELOGLOCK to oditmp;", logFile)
+                writeLogLine(it.toString(), logFile)
+            } else if (it.toString().startsWith("CREATE MATERIALIZED VIEW")) {
+                writeLogLine(it.toString().replace("CREATE", "DROP").substring(0, it.indexOf("(") - 2) + ";\n", logFile)
+                writeLogLine(it.toString(), logFile)
+            } else if (it.toString().startsWith("END;")) {
+                writeLogLine(it.toString(), logFile)
+                writeLogLine("/", logFile)
             }else{
-                writeLogLine(it, logFile)
+                writeLogLine(it.toString(), logFile)
             }
         }
     }
@@ -178,11 +231,27 @@ class LiquibaseRunner{
         }
         String fileContent = badFile.text.replace("<BUILD>IMMEDIATE</BUILD>","<BUILD>DEFERRED</BUILD>")
         badFile.write(fileContent)
-        writeLogLine("<include file=\"${xmlFileName}\"/><!-- [ERROR_NEEDS_SORTING][$schema][$name][Build is now deferred was $buildType]" + xmlFileName  + " add this to $schemaDir.absolutePath/controller.xml -->", logFile)
+        writeLogLine("<!-- <include file=\"${xmlFileName}\"/> --><!-- [ERROR_NEEDS_SORTING][$schema][$name][Build is now deferred was $buildType]" + xmlFileName  + " add this to $schemaDir.absolutePath/controller.xml -->", logFile)
     }
 
     def writeLogLine(content, logFile){
         logFile << """$content\n"""
         println(content)
+    }
+
+    def removeGeoSpatial(File controller){
+        StringBuilder fixed = new StringBuilder()
+        controller.withReader('UTF-8') { reader ->
+            def line
+            while ((line = reader.readLine()) != null) {
+                if(line.contains("<include file") && line.contains("\$")){
+                    // skipping geospatial stuff
+                }else{
+                    fixed.append(line +"\n");
+                }
+            }
+        }
+        controller.write("")
+        controller << fixed
     }
 }
