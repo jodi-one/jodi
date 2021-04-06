@@ -56,10 +56,8 @@ import oracle.odi.domain.project.StepProcedure;
 import oracle.odi.domain.project.StepVariable;
 import oracle.odi.domain.project.finder.IOdiPackageFinder;
 import oracle.odi.setup.TechnologyName;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -93,6 +91,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static one.jodi.qa.test.FunctionalTestHelper.getListAppender;
+import static one.jodi.qa.test.FunctionalTestHelper.removeAppender;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -109,14 +109,12 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
     private static final String[] IGNORED_METHODS = {"Test010Install", "Test020Generation", "Test030ing",
             "Test99999Destructor"};
-    private static final String ODI_USER_PASSWORD = FunctionalTestHelper.getOdiPass();
-    private static final String FUNCTIONAL_TEST_DIR = "FunctionalTest";
-    private static final String PROPERTIES_DIR = FunctionalTestHelper.getPropertiesDir();
-    private static final String TEST_PROPERTIES_BASE_DIRECTORY = "src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR;
-    private static final String TEST_XML_BASE_DIRECTORY = "src/test/resources/" + FUNCTIONAL_TEST_DIR;
+
+    private static final String TEST_XML_BASE_DIRECTORY = "src/test/resources/FunctionalTest";
+    private static final String TEST_PROPERTIES_BASE_DIRECTORY = TEST_XML_BASE_DIRECTORY + "/" + FunctionalTestHelper.getPropertiesDir();
 
     private static final String DEFAULT_PROPERTIES = TEST_PROPERTIES_BASE_DIRECTORY + "/FunctionalTest.properties";
-    private static final String DEFAULT_AGENT = FunctionalTestHelper.getDefaultAgent("src/test/resources/FunctionalTest/" + FunctionalTestHelper.getPropertiesDir() + "/FunctionalTest.properties");
+    private static final String DEFAULT_AGENT = FunctionalTestHelper.getDefaultAgent(DEFAULT_PROPERTIES);
 
     @Rule
     public final TestName testMethodName = new TestName();
@@ -152,9 +150,9 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
     private String testName = null;
     private String metadataDirectory = null;
 
-    public FunctionalTest() throws ConfigurationException {
+    public FunctionalTest() {
         // ODI 12
-        super("src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR + "/FunctionalTest.properties",
+        super(DEFAULT_PROPERTIES,
                 new PasswordConfigImpl().getOdiUserPassword(),
                 new PasswordConfigImpl().getOdiMasterRepoPassword());
         refUser = getRegressionConfiguration().getConfig().getString("rt.custom.refUser");
@@ -218,7 +216,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
             @Override
             public String getPropertyFile() {
-                return "src/test/resources/" + FUNCTIONAL_TEST_DIR + "/" + PROPERTIES_DIR + "/FunctionalTest.properties";
+                return DEFAULT_PROPERTIES;
             }
 
             @Override
@@ -328,21 +326,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         generationInterfaceAssertSuccess(DEFAULT_PROPERTIES);
     }
 
-    private void removeAppender(ListAppender listAppender) {
-        Logger rootLogger = (Logger) LogManager.getRootLogger();
-        rootLogger.removeAppender(listAppender);
-    }
-
-    private ListAppender getListAppender() {
-        ListAppender listAppender = new ListAppender(testName);
-        Logger rootLogger = (Logger) LogManager.getRootLogger();
-        rootLogger.addAppender(listAppender);
-        rootLogger.setLevel(org.apache.logging.log4j.Level.INFO);
-        return listAppender;
-    }
-
     private void generationInterfaceAssertSuccess(String properties) {
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         String prefix = "Init ";
         runController("etls", properties, "-p", prefix, "-m", metadataDirectory);
         LOGGER.info(String.format("Listappender size: %d.", listAppender.getEvents().size()));
@@ -2056,8 +2041,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             // Needs to be failure due to error setting update key for IKM as
             // key isnt defined on datstore.
             generationInterfaceAssertFailure();
-            // T m =
-            // odiAccessStrategy.findMappingsByName(getRegressionConfiguration().getProjectCode(),
+            // T m = odiAccessStrategy.findMappingsByName(getRegressionConfiguration().getProjectCode(),
             // "Init MAPPING_1S_EXPLICITKEY_SUCCESS", new HashMap<String, T>());
             // assertTrue(odiAccessStrategy.isKey(m, "KEY"));
 
@@ -2066,11 +2050,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
             LOGGER.info("KEY = " + flags.get(OdiTransformationAccessStrategy.KEY));
             assertTrue(flags.get(OdiTransformationAccessStrategy.KEY));
         }
-    }
-
-    @Test
-    public void test15091Mapping_1S_GbuModule_Automapping_Success() {
-        // TODO fill 'er up
     }
 
     // ///////////////////////////////////////////////////////////////////
@@ -2125,12 +2104,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         RegressionTestUtilities.startScenario(odiExecuteScenario, "5", testName, getRegressionConfiguration(), DEFAULT_AGENT);
 
         assertTrue(dbUnit.areEqual("REF.W_FA_F", "DWH_DMT.W_FA_F"));// :
-        // "The data
-        // is not
-        // equal
-        // with
-        // reference
-        // data.";
+        // "The data is not equal with reference data.";
 
         getSqlHelper().executedSQLSuccesfully(refUser, getRegressionConfiguration().getMasterRepositoryJdbcPassword(),
                 refUserJDBC, "truncate table REF.S_FA_I");
@@ -2626,7 +2600,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create PIVOT");
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
@@ -2696,7 +2670,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create UNPIVOT");
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
@@ -2802,7 +2776,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create PIVOT");
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", config, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
@@ -2833,7 +2807,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
         LOGGER.info("Starting to create UNPIVOT");
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
@@ -2899,7 +2873,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
@@ -3008,7 +2982,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         // Generate interfaces
         deleteScenario(DEFAULT_PROPERTIES, testName);
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("etls", DEFAULT_PROPERTIES, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
@@ -3040,7 +3014,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String config = DEFAULT_PROPERTIES;
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("ct", config, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
@@ -3064,7 +3038,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String config = TEST_PROPERTIES_BASE_DIRECTORY + "/30010.properties";
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("ct", config, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Creation of interface logged errors.");
@@ -3170,7 +3144,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String config = TEST_PROPERTIES_BASE_DIRECTORY + "/30080.properties";
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("ct", config, "-p", prefix, "-m", metadataDirectory);
         if (listAppender.contains(Level.ERROR, false)) {
             String msg = "Creation of interface logged errors.";
@@ -4244,7 +4218,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
 
         runController("dt", config, "-p", prefix, "-m", metadataDirectory);
         // Generate interfaces
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         runController("ct", config, "-p", prefix, "-m", metadataDirectory);
         if (checkLogger) {
             if (listAppender.contains(Level.WARN, false)) {
@@ -4286,7 +4260,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity,
         String levelStr = level == Level.ERROR ? "error" : "warning";
         String prefix = "Init ";
         String report = null;
-        ListAppender listAppender = getListAppender();
+        ListAppender listAppender = getListAppender(testName);
         try {
             report = runController("etls", properties, "-p", prefix, "-m", metadataDirectory);
         } catch (Exception ex) {

@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import one.jodi.action.CreateScenariosActionRunner;
+import one.jodi.base.ListAppender;
 import one.jodi.base.bootstrap.RunConfig;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.base.factory.BaseModule;
@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Set;
@@ -51,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FunctionalTestHelper {
 
-    private final static Logger LOGGER = LogManager.getLogger(CreateScenariosActionRunner.class);
+    private final static Logger LOGGER = LogManager.getLogger(FunctionalTestHelper.class);
 
     static OdiSequenceAccessStrategy odiSequenceAccessStrategy;
     static OdiVariableAccessStrategy odiVariableAccessStrategy;
@@ -73,10 +74,14 @@ public class FunctionalTestHelper {
     }
 
     public static String getDefaultAgent(String properties) {
+        return getDefaultAgent(Paths.get(properties));
+    }
+
+    public static String getDefaultAgent(Path properties) {
         LOGGER.info(properties);
         String hostName;
         try {
-            hostName = Files.lines(Paths.get(properties)).anyMatch(l -> l.contains("jodi:1521")) ? "jodi" : "localhost";
+            hostName = Files.lines(properties).anyMatch(l -> l.contains("jodi:1521")) ? "jodi" : "localhost";
         } catch (IOException e) {
             hostName = "localhost";
         }
@@ -259,4 +264,16 @@ public class FunctionalTestHelper {
         return activeStep;
     }
 
+    public static ListAppender getListAppender(String testName) {
+        ListAppender listAppender = new ListAppender(testName);
+        org.apache.logging.log4j.core.Logger rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        rootLogger.addAppender(listAppender);
+        rootLogger.setLevel(org.apache.logging.log4j.Level.INFO);
+        return listAppender;
+    }
+
+    public static void removeAppender(ListAppender listAppender) {
+        org.apache.logging.log4j.core.Logger rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        rootLogger.removeAppender(listAppender);
+    }
 }
