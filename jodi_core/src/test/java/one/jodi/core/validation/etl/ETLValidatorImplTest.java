@@ -12,25 +12,57 @@ import one.jodi.base.service.schema.DataStoreNotInModelException;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.context.packages.PackageCache;
 import one.jodi.core.executionlocation.impl.ExecutionLocationIDStrategy;
-import one.jodi.core.extensions.contexts.FolderNameExecutionContext;
-import one.jodi.core.extensions.strategies.*;
+import one.jodi.core.extensions.strategies.FolderNameStrategy;
+import one.jodi.core.extensions.strategies.JournalizingStrategy;
+import one.jodi.core.extensions.strategies.KnowledgeModulePropertiesException;
+import one.jodi.core.extensions.strategies.KnowledgeModuleStrategy;
+import one.jodi.core.extensions.strategies.NoKnowledgeModuleFoundException;
+import one.jodi.core.extensions.strategies.NoModelFoundException;
 import one.jodi.core.km.impl.KnowledgeModuleIDStrategy;
 import one.jodi.core.metadata.DatabaseMetadataService;
 import one.jodi.core.metadata.ETLSubsystemService;
 import one.jodi.core.metadata.types.KnowledgeModule;
 import one.jodi.etl.common.EtlSubSystemVersion;
-import one.jodi.etl.internalmodel.*;
+import one.jodi.etl.internalmodel.Dataset;
+import one.jodi.etl.internalmodel.ETLPackage;
+import one.jodi.etl.internalmodel.ExecutionLocationtypeEnum;
+import one.jodi.etl.internalmodel.Flow;
+import one.jodi.etl.internalmodel.GroupComparisonEnum;
+import one.jodi.etl.internalmodel.JoinTypeEnum;
+import one.jodi.etl.internalmodel.KmType;
+import one.jodi.etl.internalmodel.Lookup;
+import one.jodi.etl.internalmodel.Mappings;
+import one.jodi.etl.internalmodel.Pivot;
+import one.jodi.etl.internalmodel.RoleEnum;
+import one.jodi.etl.internalmodel.SetOperatorTypeEnum;
+import one.jodi.etl.internalmodel.Source;
+import one.jodi.etl.internalmodel.SubQuery;
+import one.jodi.etl.internalmodel.Targetcolumn;
+import one.jodi.etl.internalmodel.Transformation;
 import one.jodi.etl.service.packages.PackageServiceProvider;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,36 +83,38 @@ public class ETLValidatorImplTest {
     PackageServiceProvider packageService;
     @Mock
     EtlSubSystemVersion etlSubSystemVersion;
-    ErrorWarningMessageJodi errorWarningMessages =
-            ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
+    ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
     ETLValidatorImpl fixture;
     int packageSequence = 11;
     Expected expected;
 
     @Before
-    public void setUp()
-            throws Exception {
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        fixture = new ETLValidatorImpl(metadataService, etlSubsystemService, properties, packageCache, errorWarningMessages, true, etlSubSystemVersion, null);
+        fixture = new ETLValidatorImpl(metadataService, etlSubsystemService, properties, packageCache,
+                                       errorWarningMessages, true, etlSubSystemVersion, null);
     }
 
     @Before
     public void setContextBeforeTestCase() throws NoSuchMethodException, SecurityException {
-        Method method = this.getClass().getMethod(testMethodName.getMethodName());
-        Annotation annotation = method.getAnnotation(Expected.class);
-        expected = (Expected) annotation;
-
-        if (expected == null)
-            throw new RuntimeException("All test methods for " + getClass().getName() + " must be annotated with Expected class");
+        Method method = this.getClass()
+                            .getMethod(testMethodName.getMethodName());
+        expected = method.getAnnotation(Expected.class);
+        if (expected == null) {
+            throw new RuntimeException(
+                    "All test methods for " + getClass().getName() + " must be annotated with Expected class");
+        }
     }
 
 
     @After
     public void verifyErrorCode() {
         int ps = expected.packageSequences().length > 0 ? expected.packageSequences()[0] : packageSequence;
-        List<Integer> missingErrors = findMissingCodes(fixture.errorWarningMessages.getErrorMessages().get(ps), expected.errors());
+        List<Integer> missingErrors = findMissingCodes(fixture.errorWarningMessages.getErrorMessages()
+                                                                                   .get(ps), expected.errors());
         for (int i : missingErrors) {
-            System.err.println("Test " + testMethodName.getMethodName() + " expected error " + i + " but was not received.");
+            System.err.println(
+                    "Test " + testMethodName.getMethodName() + " expected error " + i + " but was not received.");
         }
         assert (missingErrors.isEmpty());
     }
@@ -95,9 +129,11 @@ public class ETLValidatorImplTest {
     public void verifyWarningCode() {
         int ps = expected.packageSequences().length > 0 ? expected.packageSequences()[0] : packageSequence;
 
-        List<Integer> missingWarnings = findMissingCodes(fixture.errorWarningMessages.getWarningMessages().get(ps), expected.warnings());
+        List<Integer> missingWarnings = findMissingCodes(fixture.errorWarningMessages.getWarningMessages()
+                                                                                     .get(ps), expected.warnings());
         for (int i : missingWarnings) {
-            System.err.println("Test " + testMethodName.getMethodName() + " expected warning " + i + " but was not received.");
+            System.err.println(
+                    "Test " + testMethodName.getMethodName() + " expected warning " + i + " but was not received.");
         }
 
         assert (missingWarnings.isEmpty());
@@ -106,10 +142,12 @@ public class ETLValidatorImplTest {
 
     // Make sure that expected codes are found in messages
     private List<Integer> findMissingCodes(List<String> messages, int[] expectedCodes) {
-        List<Integer> missingCodes = new ArrayList<Integer>();
+        List<Integer> missingCodes = new ArrayList<>();
 
         if (expectedCodes.length > 0) {
-            if (messages == null) throw new RuntimeException("Error and/or warning messages not set");
+            if (messages == null) {
+                throw new RuntimeException("Error and/or warning messages not set");
+            }
             for (int expectedCode : expectedCodes) {
                 boolean found = false;
                 for (String message : messages) {
@@ -120,7 +158,9 @@ public class ETLValidatorImplTest {
                     }
                 }
 
-                if (!found) missingCodes.add(expectedCode);
+                if (!found) {
+                    missingCodes.add(expectedCode);
+                }
             }
         }
 
@@ -155,28 +195,12 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {10040})
     public void testValidate_10040() {
-        FolderNameStrategy strategy = new FolderNameStrategy() {
-            public String getFolderName(String defaultFolderName, FolderNameExecutionContext execContext, boolean isJournalizedData) {
-                return "";
-            }
-        };
+        FolderNameStrategy strategy = (defaultFolderName, execContext, isJournalizedData) -> "";
 
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
 
         fixture.validateFolderName(transformation, strategy);
-    }
-
-    @Test
-    @Expected(errors = {10050})
-    public void testValidate_10050() {
-        Transformation transformation = mock(Transformation.class);
-        when(transformation.getPackageSequence()).thenReturn(packageSequence);
-        when(transformation.getName()).thenReturn("TransformationName");
-        Mappings mappings = mock(Mappings.class);
-        when(transformation.getMappings()).thenReturn(mappings);
-        when(mappings.getTargetDataStore()).thenReturn("TargetDataStoreExceedsMaxLength");
-        fixture.validateTransformationName(transformation);
     }
 
     @Test
@@ -196,8 +220,8 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getPackageList()).thenReturn(association + "_1");
         ETLPackage etlPackage = mock(ETLPackage.class);
-        when(etlPackage.getTargetPackageList()).thenReturn(Arrays.asList(association));
-        Set<String> nonEmptySet = new HashSet<String>();
+        when(etlPackage.getTargetPackageList()).thenReturn(singletonList(association));
+        Set<String> nonEmptySet = new HashSet<>();
         nonEmptySet.add("PCK");
         when(packageCache.getPackageAssociations()).thenReturn(nonEmptySet);
         //when(packageCache.getPackagesInCreationOrder()).thenReturn(Arrays.asList(etlPackage));
@@ -205,14 +229,14 @@ public class ETLValidatorImplTest {
     }
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_10061_success() {
         String association = "COMMON";
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getPackageList()).thenReturn(association);
         ETLPackage etlPackage = mock(ETLPackage.class);
-        when(etlPackage.getTargetPackageList()).thenReturn(Arrays.asList(association));
+        when(etlPackage.getTargetPackageList()).thenReturn(singletonList(association));
         //when(packageCache.getPackagesInCreationOrder()).thenReturn(Arrays.asList(etlPackage));
         fixture.validatePackageAssociations(transformation);
     }
@@ -224,15 +248,15 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         Source source = mock(Source.class);
         when(source.isJournalized()).thenReturn(true);
         when(source.getParent()).thenReturn(dataset);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         Lookup lookup = mock(Lookup.class);
         when(lookup.getParent()).thenReturn(source);
         when(lookup.isJournalized()).thenReturn(true);
-        when(source.getLookups()).thenReturn(Arrays.asList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
 
         fixture.validateJournalized(transformation);
     }
@@ -245,7 +269,7 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getSetOperator()).thenReturn(SetOperatorTypeEnum.INTERSECT);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
         when(transformation.getDatasets()).thenReturn(datasets);
@@ -257,24 +281,39 @@ public class ETLValidatorImplTest {
     public void testValidate_30000() {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"alias1", "alias2"}, new String[]{"name1", "name2"}, new String[]{"model1", "model2"});
+        List<Dataset> datasets =
+                InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"alias1", "alias2"},
+                                                           new String[]{"name1", "name2"},
+                                                           new String[]{"model1", "model2"});
         when(transformation.getDatasets()).thenReturn(datasets);
-        when(datasets.get(0).getSources().get(0).isSubSelect()).thenReturn(true);
+        when(datasets.get(0)
+                     .getSources()
+                     .get(0)
+                     .isSubSelect()).thenReturn(true);
         when(metadataService.isTemporaryTransformation("name1")).thenReturn(true);
 
-        fixture.validateSubselect(transformation.getDatasets().get(0).getSources().get(0));
+        fixture.validateSubselect(transformation.getDatasets()
+                                                .get(0)
+                                                .getSources()
+                                                .get(0));
     }
 
 
     @Test
     @Expected(errors = {30010})
     public void testValidate_30010() {
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"}, new String[]{"name1", "name2"}, new String[]{"model1", "model2"});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"},
+                                                                 new String[]{"name1", "name2"},
+                                                                 new String[]{"model1", "model2"});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         DataStore dataStore = mock(DataStore.class);
-        when(this.metadataService.findDataStoreInAllModels("other")).thenReturn(Arrays.asList(dataStore));
+        when(this.metadataService.findDataStoreInAllModels("other")).thenReturn(singletonList(dataStore));
 
-        fixture.validateSourceDataStore(transformation.getDatasets().get(0).getSources().get(0));
+        fixture.validateSourceDataStore(transformation.getDatasets()
+                                                      .get(0)
+                                                      .getSources()
+                                                      .get(0));
     }
 
     @Test
@@ -282,11 +321,20 @@ public class ETLValidatorImplTest {
     public void testValidate_30012() {
         String modelWithoutSource = "validModel";
         String invalidModel = "invalidModel";
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"}, new String[]{"name1", "name2"}, new String[]{modelWithoutSource, invalidModel});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"},
+                                                                 new String[]{"name1", "name2"},
+                                                                 new String[]{modelWithoutSource, invalidModel});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
 
-        Source source0 = transformation.getDatasets().get(1).getSources().get(0);
-        Source source1 = transformation.getDatasets().get(1).getSources().get(0);
+        Source source0 = transformation.getDatasets()
+                                       .get(1)
+                                       .getSources()
+                                       .get(0);
+        Source source1 = transformation.getDatasets()
+                                       .get(1)
+                                       .getSources()
+                                       .get(0);
 
         DataStore dataStore = mock(DataStore.class);
         when(metadataService.getSourceDataStoreInModel(source0.getName(), modelWithoutSource)).thenReturn(dataStore);
@@ -298,11 +346,17 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30013})
     public void testValidate_30013() {
         String modelWithoutSource = "validModel";
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"}, new String[]{"name1", "name2"}, new String[]{modelWithoutSource, modelWithoutSource});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1", "alias2"},
+                                                                 new String[]{"name1", "name2"},
+                                                                 new String[]{modelWithoutSource, modelWithoutSource});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
 
         when(properties.getProperty(modelWithoutSource)).thenReturn(modelWithoutSource);
-        Source source0 = transformation.getDatasets().get(1).getSources().get(0);
+        Source source0 = transformation.getDatasets()
+                                       .get(1)
+                                       .getSources()
+                                       .get(0);
         when(source0.getModel()).thenReturn("MODEL");
 
         fixture.handleModelCode(new DataStoreNotInModelException(""), source0);
@@ -316,7 +370,7 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source1 = InputModelMockHelper.createMockETLSource("alias", "name", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias", "name", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -324,7 +378,7 @@ public class ETLValidatorImplTest {
         when(source1.getParent()).thenReturn(dataset);
         when(source2.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        List<Dataset> datasets = Arrays.asList(dataset);
+        List<Dataset> datasets = singletonList(dataset);
         when(transformation.getDatasets()).thenReturn(datasets);
         when(dataset.getParent()).thenReturn(transformation);
 
@@ -339,7 +393,7 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source1 = InputModelMockHelper.createMockETLSource("alias", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias", "name2", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -347,7 +401,7 @@ public class ETLValidatorImplTest {
         when(source1.getParent()).thenReturn(dataset);
         when(source2.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        List<Dataset> datasets = Arrays.asList(dataset);
+        List<Dataset> datasets = singletonList(dataset);
         when(transformation.getDatasets()).thenReturn(datasets);
         when(dataset.getParent()).thenReturn(transformation);
 
@@ -381,9 +435,14 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30121})
     public void testValidate_30121() {
         //testValidateSourceFilter("alias1.c1 = alias2.c1", ExecutionLocationtypeEnum.TARGET);
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"}, new String[]{"model"});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"},
+                                                                 new String[]{"model"});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
-        Source source = transformation.getDatasets().get(0).getSources().get(0);
+        Source source = transformation.getDatasets()
+                                      .get(0)
+                                      .getSources()
+                                      .get(0);
         when(source.getFilterExecutionLocation()).thenReturn(ExecutionLocationtypeEnum.TARGET);
         fixture.validateFilterExecutionLocation(source);
     }
@@ -396,12 +455,13 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias", "source", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         when(source.getFilter()).thenReturn("alias.column = 1");
-        when(metadataService.getSourceDataStoreInModel("source", "model")).thenThrow(new DataStoreNotInModelException(""));
+        when(metadataService.getSourceDataStoreInModel("source", "model")).thenThrow(
+                new DataStoreNotInModelException(""));
         fixture.validateFilterEnriched(source);
     }
 
@@ -413,14 +473,14 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias", "source", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         when(source.getFilter()).thenReturn("alias.column = 1");
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("name");
-        when(dataStore.getColumns()).thenReturn(new HashMap<String, DataStoreColumn>());
+        when(dataStore.getColumns()).thenReturn(new HashMap<>());
         when(metadataService.getSourceDataStoreInModel("source", "model")).thenReturn(dataStore);
         fixture.validateFilterEnriched(source);
     }
@@ -432,7 +492,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -441,7 +501,7 @@ public class ETLValidatorImplTest {
         when(source2.getParent()).thenReturn(dataset);
         when(source2.getFilterExecutionLocation()).thenReturn(el);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
@@ -458,7 +518,7 @@ public class ETLValidatorImplTest {
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
         when(source2.getJoinType()).thenReturn(joinType);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -467,7 +527,7 @@ public class ETLValidatorImplTest {
         when(source2.getParent()).thenReturn(dataset);
         when(source2.getJoinExecutionLocation()).thenReturn(el);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
@@ -488,14 +548,14 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
         when(source2.getJoinType()).thenReturn(null);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getSources()).thenReturn(sources);
         when(source2.getParent()).thenReturn(dataset);
         when(source2.getJoinExecutionLocation()).thenReturn(ExecutionLocationtypeEnum.TARGET);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
@@ -513,12 +573,13 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias", "source", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         when(source.getJoin()).thenReturn("alias.column = 1");
-        when(metadataService.getSourceDataStoreInModel("source", "model")).thenThrow(new DataStoreNotInModelException(""));
+        when(metadataService.getSourceDataStoreInModel("source", "model")).thenThrow(
+                new DataStoreNotInModelException(""));
         fixture.validateJoinEnriched(source);
     }
 
@@ -530,14 +591,14 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias", "source", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         when(source.getJoin()).thenReturn("alias.column = 1");
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("name");
-        when(dataStore.getColumns()).thenReturn(new HashMap<String, DataStoreColumn>());
+        when(dataStore.getColumns()).thenReturn(new HashMap<>());
         when(metadataService.getSourceDataStoreInModel("source", "model")).thenReturn(dataStore);
         fixture.validateJoinEnriched(source);
     }
@@ -550,10 +611,10 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias", "source", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("alias");
         DataStoreColumn col1 = mock(DataStoreColumn.class);
@@ -562,7 +623,7 @@ public class ETLValidatorImplTest {
         DataStoreColumn col2 = mock(DataStoreColumn.class);
         when(col2.getName()).thenReturn("col2");
         when(col2.getColumnDataType()).thenReturn("NUMERIC");
-        HashMap<String, DataStoreColumn> map = new HashMap<String, DataStoreColumn>();
+        HashMap<String, DataStoreColumn> map = new HashMap<>();
         map.put("col1", col1);
         map.put("col2", col2);
         when(dataStore.getColumns()).thenReturn(map);
@@ -581,14 +642,14 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
         when(source2.getJoinType()).thenReturn(null);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getSources()).thenReturn(sources);
         when(source2.getParent()).thenReturn(dataset);
         when(source2.getJoinExecutionLocation()).thenReturn(ExecutionLocationtypeEnum.TARGET);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
@@ -654,7 +715,7 @@ public class ETLValidatorImplTest {
     public void testValidate_30301() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
@@ -668,7 +729,7 @@ public class ETLValidatorImplTest {
     public void testValidate_30302_checkbox() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
@@ -682,12 +743,12 @@ public class ETLValidatorImplTest {
     public void testValidate_30302_shorttext() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
 
-        StringBuffer outputBuffer = new StringBuffer(255);
+        StringBuilder outputBuffer = new StringBuilder(255);
         for (int i = 0; i < 255; i++) {
             outputBuffer.append("X");
         }
@@ -700,7 +761,7 @@ public class ETLValidatorImplTest {
     public void testValidate_30305() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
         testValidateLKM("KM Name", new String[]{}, new String[]{});
@@ -710,7 +771,8 @@ public class ETLValidatorImplTest {
     @Expected(errors = {40240})
     public void testValidate_40240() {
         String kmName = "KM Name";
-        when(properties.getProperty(kmName)).thenThrow(new JodiPropertyNotFoundException("no property defined", kmName));
+        when(properties.getProperty(kmName)).thenThrow(
+                new JodiPropertyNotFoundException("no property defined", kmName));
         KnowledgeModuleStrategy customStrategy = new KnowledgeModuleIDStrategy();
 
         testValidateKM("ckm", kmName, new String[]{}, new String[]{}, customStrategy);
@@ -721,12 +783,13 @@ public class ETLValidatorImplTest {
     public void testValidate_40241() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
 
-        testValidateKM("ckm", kmName, new String[]{"UNKNOWN"}, new String[]{"UNKNOWN"}, new KnowledgeModuleIDStrategy());
+        testValidateKM("ckm", kmName, new String[]{"UNKNOWN"}, new String[]{"UNKNOWN"},
+                       new KnowledgeModuleIDStrategy());
     }
 
     @Test
@@ -734,12 +797,13 @@ public class ETLValidatorImplTest {
     public void testValidate_40242() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
 
-        testValidateKM("ckm", kmName, new String[]{"CHECKBOX"}, new String[]{"INVALID"}, new KnowledgeModuleIDStrategy());
+        testValidateKM("ckm", kmName, new String[]{"CHECKBOX"}, new String[]{"INVALID"},
+                       new KnowledgeModuleIDStrategy());
     }
 
 
@@ -747,7 +811,8 @@ public class ETLValidatorImplTest {
     @Expected(errors = {40140})
     public void testValidate_40140() {
         String kmName = "KM Name";
-        when(properties.getProperty(kmName)).thenThrow(new JodiPropertyNotFoundException("no property defined", kmName));
+        when(properties.getProperty(kmName)).thenThrow(
+                new JodiPropertyNotFoundException("no property defined", kmName));
         KnowledgeModuleStrategy customStrategy = new KnowledgeModuleIDStrategy();
 
         testValidateKM("ikm", kmName, new String[]{}, new String[]{}, customStrategy);
@@ -758,12 +823,13 @@ public class ETLValidatorImplTest {
     public void testValidate_40141() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
 
-        testValidateKM("ikm", kmName, new String[]{"UNKNOWN"}, new String[]{"UNKNOWN"}, new KnowledgeModuleIDStrategy());
+        testValidateKM("ikm", kmName, new String[]{"UNKNOWN"}, new String[]{"UNKNOWN"},
+                       new KnowledgeModuleIDStrategy());
     }
 
     @Test
@@ -771,12 +837,13 @@ public class ETLValidatorImplTest {
     public void testValidate_40142() {
         String kmName = "KM Name";
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
         KnowledgeModule odiKm = mockKnowledgeModule(kmName);
         kms.add(odiKm);
 
-        testValidateKM("ikm", kmName, new String[]{"CHECKBOX"}, new String[]{"INVALID"}, new KnowledgeModuleIDStrategy());
+        testValidateKM("ikm", kmName, new String[]{"CHECKBOX"}, new String[]{"INVALID"},
+                       new KnowledgeModuleIDStrategy());
     }
 
     @Test
@@ -787,7 +854,7 @@ public class ETLValidatorImplTest {
         KnowledgeModule odiKm = mock(KnowledgeModule.class);
         when(odiKm.getName()).thenReturn(kmName);
         when(odiKm.isMultiTechnology()).thenReturn(true);
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(odiKm));
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(odiKm));
         KmType ikm = mock(KmType.class);
         when(ikm.getName()).thenReturn(kmName);
         Mappings mappings = mock(Mappings.class);
@@ -823,7 +890,7 @@ public class ETLValidatorImplTest {
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
         when(source2.getJoinType()).thenReturn(JoinTypeEnum.INNER);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -832,14 +899,14 @@ public class ETLValidatorImplTest {
         when(source2.getParent()).thenReturn(dataset);
         when(source2.getJoinExecutionLocation()).thenReturn(ExecutionLocationtypeEnum.SOURCE);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
 
         when(source2.getJoin()).thenReturn("alias1.c1 = alias2.c1");
 
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         for (int i = 0; i < keys.length; i++) {
             map.put(keys[i], values[i]);
         }
@@ -862,14 +929,19 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {31011})
     public void testValidate_31011() {
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"}, new String[]{"model"});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"},
+                                                                 new String[]{"model"});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
-        Source source = transformation.getDatasets().get(0).getSources().get(0);
+        Source source = transformation.getDatasets()
+                                      .get(0)
+                                      .getSources()
+                                      .get(0);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("LookupDataStore");
         when(lookup.getModel()).thenReturn("model"); //explicit
         when(lookup.getAlias()).thenReturn("LookupAlias");
-        when(source.getLookups()).thenReturn(Collections.singletonList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
         when(lookup.getParent()).thenReturn(source);
 
         fixture.handleModelCode(new DataStoreNotInModelException(""), lookup);
@@ -891,13 +963,18 @@ public class ETLValidatorImplTest {
 
 
     private void testHandleModelCodeException(RuntimeException e) {
-        Transformation transformation = InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"}, new String[]{"model"});
+        Transformation transformation =
+                InputModelMockHelper.createMockETLTransformation(new String[]{"alias1"}, new String[]{"name1"},
+                                                                 new String[]{"model"});
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
-        Source source = transformation.getDatasets().get(0).getSources().get(0);
+        Source source = transformation.getDatasets()
+                                      .get(0)
+                                      .getSources()
+                                      .get(0);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("LookupDataStore");
         when(lookup.getAlias()).thenReturn("LookupAlias");
-        when(source.getLookups()).thenReturn(Collections.singletonList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
         when(lookup.getParent()).thenReturn(source);
 
         fixture.handleModelCode(e, lookup);
@@ -915,7 +992,7 @@ public class ETLValidatorImplTest {
         when(metadataService.getSourceDataStoreInModel(lookupDataStore, modelCode)).thenReturn(null);
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(true);
 
-        testValidateLookup(lookupDataStore, alias, modelCode, true, new LinkedHashMap<String, String>());
+        testValidateLookup(lookupDataStore, alias, modelCode, true, new LinkedHashMap<>());
     }
 
     @Test
@@ -927,7 +1004,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(modelCode)).thenReturn(modelCode);
 
         DataStore lookupDS = mock(DataStore.class);
-        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<String, DataStoreColumn>();
+        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<>();
         when(lookupDS.getColumns()).thenReturn(columns);
         for (int i = 0; i < 2; i++) {
             DataStoreColumn column = mock(DataStoreColumn.class);
@@ -938,7 +1015,7 @@ public class ETLValidatorImplTest {
         when(metadataService.getSourceDataStoreInModel(lookupDataStore, modelCode)).thenReturn(lookupDS);
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(true);
 
-        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<>();
         defaultColumns.put("UKNOWN", "7");
         defaultColumns.put("C2", "8");
         testValidateLookup(lookupDataStore, alias, modelCode, false, defaultColumns);
@@ -953,7 +1030,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(modelCode)).thenReturn(modelCode);
 
         DataStore lookupDS = mock(DataStore.class);
-        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<String, DataStoreColumn>();
+        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<>();
         when(lookupDS.getColumns()).thenReturn(columns);
         for (int i = 0; i < 2; i++) {
             DataStoreColumn column = mock(DataStoreColumn.class);
@@ -964,7 +1041,7 @@ public class ETLValidatorImplTest {
         when(metadataService.getSourceDataStoreInModel(lookupDataStore, modelCode)).thenReturn(lookupDS);
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(true);
 
-        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<>();
         defaultColumns.put("C2", "8");
         testValidateLookup(lookupDataStore, alias, modelCode, false, defaultColumns);
     }
@@ -978,7 +1055,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(modelCode)).thenReturn(modelCode);
 
         DataStore lookupDS = mock(DataStore.class);
-        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<String, DataStoreColumn>();
+        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<>();
         when(lookupDS.getColumns()).thenReturn(columns);
         for (int i = 0; i < 2; i++) {
             DataStoreColumn column = mock(DataStoreColumn.class);
@@ -993,8 +1070,7 @@ public class ETLValidatorImplTest {
 
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(false);
 
-        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<String, String>();
-        defaultColumns.put("C2", "8");
+        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<>();
         defaultColumns.put("C2", "SOURCE.C2");
         testValidateLookup(lookupDataStore, alias, modelCode, false, defaultColumns);
     }
@@ -1008,7 +1084,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(modelCode)).thenReturn(modelCode);
 
         DataStore lookupDS = mock(DataStore.class);
-        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<String, DataStoreColumn>();
+        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<>();
         when(lookupDS.getColumns()).thenReturn(columns);
         for (int i = 0; i < 2; i++) {
             DataStoreColumn column = mock(DataStoreColumn.class);
@@ -1022,8 +1098,7 @@ public class ETLValidatorImplTest {
 
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(false);
 
-        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<String, String>();
-        defaultColumns.put("C2", "8");
+        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<>();
         defaultColumns.put("C2", "UNKNOWN.C2");
         testValidateLookup(lookupDataStore, alias, modelCode, false, defaultColumns);
     }
@@ -1037,7 +1112,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(modelCode)).thenReturn(modelCode);
 
         DataStore lookupDS = mock(DataStore.class);
-        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<String, DataStoreColumn>();
+        LinkedHashMap<String, DataStoreColumn> columns = new LinkedHashMap<>();
         when(lookupDS.getColumns()).thenReturn(columns);
         for (int i = 0; i < 2; i++) {
             DataStoreColumn column = mock(DataStoreColumn.class);
@@ -1051,33 +1126,32 @@ public class ETLValidatorImplTest {
 
         when(metadataService.isTemporaryTransformation(lookupDataStore)).thenReturn(false);
 
-        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, String> defaultColumns = new LinkedHashMap<>();
         defaultColumns.put("C1", "8");
         defaultColumns.put("C2", "SOURCEALIAS.U1 + ALIAS.U2");
         testValidateLookup(lookupDataStore, alias, modelCode, false, defaultColumns);
     }
 
 
-    private void testValidateLookup(String lookupDataStore, String alias,
-                                    String modelCode, boolean subselect, Map<String, String> defaultColumns) {
+    private void testValidateLookup(String lookupDataStore, String alias, String modelCode, boolean subselect, Map<String, String> defaultColumns) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source = InputModelMockHelper.createMockETLSource("SOURCEALIAS", "SOURCE", "MODELCODE");
         when(source.getJoinType()).thenReturn(JoinTypeEnum.INNER);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getSources()).thenReturn(sources);
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getParent()).thenReturn(source);
-        ArrayList<Lookup> lookups = new ArrayList<Lookup>();
+        ArrayList<Lookup> lookups = new ArrayList<>();
         lookups.add(lookup);
         when(source.getLookups()).thenReturn(lookups);
         when(lookup.getModel()).thenReturn(modelCode);
@@ -1105,8 +1179,7 @@ public class ETLValidatorImplTest {
         Mappings mappings = mock(Mappings.class);
         when(mappings.getParent()).thenReturn(transformation);
         when(mappings.getTargetDataStore()).thenReturn(targetDataStore);
-        when(metadataService.findDataStoreInAllModels(targetDataStore))
-                .thenReturn(new ArrayList<DataStore>());
+        when(metadataService.findDataStoreInAllModels(targetDataStore)).thenReturn(new ArrayList<>());
 
         fixture.handleModelCode(new NoModelFoundException(""), mappings);
     }
@@ -1124,9 +1197,6 @@ public class ETLValidatorImplTest {
         when(mappings.getParent()).thenReturn(transformation);
         when(mappings.getTargetDataStore()).thenReturn(targetDataStore);
         when(mappings.getModel()).thenReturn(modelCode);
-        ArrayList<DataStore> dataStores = new ArrayList<DataStore>();
-        DataStore dataStore = mock(DataStore.class);
-        dataStores.add(dataStore);
 
         fixture.handleModelCode(new JodiPropertyNotFoundException("", ""), mappings);
     }
@@ -1147,7 +1217,7 @@ public class ETLValidatorImplTest {
     }
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_40011() {
         String modelCode = "MODEL_CODE";
         Transformation transformation = mock(Transformation.class);
@@ -1168,7 +1238,7 @@ public class ETLValidatorImplTest {
 
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
         testValidateKM("ikm", kmName, new String[]{}, new String[]{}, null);
@@ -1183,12 +1253,11 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
-        testValidateKM("ikm", kmName, new String[]{"INVALID_OPTION"},
-                new String[]{"INVALID_OPTION_VALUE"}, null);
+        testValidateKM("ikm", kmName, new String[]{"INVALID_OPTION"}, new String[]{"INVALID_OPTION_VALUE"}, null);
     }
 
 
@@ -1200,17 +1269,16 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
-        StringBuffer outputBuffer = new StringBuffer(255);
+        StringBuilder outputBuffer = new StringBuilder(255);
         for (int i = 0; i < 255; i++) {
             outputBuffer.append("X");
         }
 
-        testValidateKM("ikm", kmName, new String[]{"SHORTTEXT"},
-                new String[]{outputBuffer.toString()}, null);
+        testValidateKM("ikm", kmName, new String[]{"SHORTTEXT"}, new String[]{outputBuffer.toString()}, null);
     }
 
     @Test
@@ -1221,12 +1289,11 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
-        testValidateKM("ikm", kmName, new String[]{"CHECKBOX"},
-                new String[]{"INVALID_OPTION_VALUE"}, null);
+        testValidateKM("ikm", kmName, new String[]{"CHECKBOX"}, new String[]{"INVALID_OPTION_VALUE"}, null);
     }
 
 
@@ -1234,8 +1301,7 @@ public class ETLValidatorImplTest {
     @Expected(errors = {40110})
     public void testValidate_40110() {
         String kmName = "IKM";
-        when(properties.getProperty(kmName + ".name"))
-                .thenThrow(new JodiPropertyNotFoundException("", ""));
+        when(properties.getProperty(kmName + ".name")).thenThrow(new JodiPropertyNotFoundException("", ""));
         testValidateKM("ikm", kmName, new String[]{}, new String[]{}, null);
     }
 
@@ -1246,7 +1312,7 @@ public class ETLValidatorImplTest {
 
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
         testValidateKM("ckm", kmName, new String[]{}, new String[]{}, null);
@@ -1261,7 +1327,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
@@ -1277,11 +1343,11 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
-        StringBuffer outputBuffer = new StringBuffer(255);
+        StringBuilder outputBuffer = new StringBuilder(255);
         for (int i = 0; i < 255; i++) {
             outputBuffer.append("X");
         }
@@ -1297,7 +1363,7 @@ public class ETLValidatorImplTest {
         when(properties.getProperty(kmName + ".name")).thenReturn(kmName);
 
         KnowledgeModule km = mockKnowledgeModule(kmName);
-        ArrayList<KnowledgeModule> kms = new ArrayList<KnowledgeModule>();
+        ArrayList<KnowledgeModule> kms = new ArrayList<>();
         kms.add(km);
         when(etlSubsystemService.getKMs()).thenReturn(kms);
 
@@ -1308,22 +1374,19 @@ public class ETLValidatorImplTest {
     @Expected(errors = {40210})
     public void testValidate_40210() {
         String kmName = "CKM";
-        when(properties.getProperty(kmName + ".name"))
-                .thenThrow(new JodiPropertyNotFoundException("", ""));
+        when(properties.getProperty(kmName + ".name")).thenThrow(new JodiPropertyNotFoundException("", ""));
         testValidateKM("ckm", kmName, new String[]{}, new String[]{}, null);
     }
 
 
-    private void testValidateKM(String type, String kmName, String[] keys,
-                                String[] values,
-                                KnowledgeModuleStrategy customStrategy) {
+    private void testValidateKM(String type, String kmName, String[] keys, String[] values, KnowledgeModuleStrategy customStrategy) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Mappings mappings = mock(Mappings.class);
         when(mappings.getParent()).thenReturn(transformation);
         when(transformation.getMappings()).thenReturn(mappings);
 
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         for (int i = 0; i < keys.length; i++) {
             map.put(keys[i], values[i]);
         }
@@ -1335,17 +1398,19 @@ public class ETLValidatorImplTest {
 
         if ("ikm".equals(type)) {
             when(mappings.getIkm()).thenReturn(kmType);
-            if (customStrategy != null)
+            if (customStrategy != null) {
                 fixture.validateIKM(mappings, customStrategy);
-            else
+            } else {
                 fixture.validateIKM(mappings);
+            }
 
         } else {
             when(mappings.getCkm()).thenReturn(kmType);
-            if (customStrategy != null)
+            if (customStrategy != null) {
                 fixture.validateCKM(mappings, customStrategy);
-            else
+            } else {
                 fixture.validateCKM(mappings);
+            }
 
         }
     }
@@ -1354,7 +1419,7 @@ public class ETLValidatorImplTest {
     private KnowledgeModule mockKnowledgeModule(String name) {
         KnowledgeModule km = mock(KnowledgeModule.class);
         when(km.getName()).thenReturn(name);
-        HashMap<String, KnowledgeModule.KMOptionType> options = new HashMap<String, KnowledgeModule.KMOptionType>();
+        HashMap<String, KnowledgeModule.KMOptionType> options = new HashMap<>();
         options.put("CHECKBOX", KnowledgeModule.KMOptionType.CHECKBOX);
         options.put("LONGTEXT", KnowledgeModule.KMOptionType.LONG_TEXT);
         options.put("SHORTTEXT", KnowledgeModule.KMOptionType.SHORT_TEXT);
@@ -1370,13 +1435,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "DOESNT_EXIST", null, 0, 0, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
         DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1390,13 +1459,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
         DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"DATE"}, new int[]{11}, new int[]{11});
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"DATE"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1409,14 +1482,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{22}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{22}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1429,14 +1505,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{22});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{22});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1448,12 +1527,14 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", true, "COL_12", "VARCHAR", 10, 0, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{22});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{22});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1465,12 +1546,14 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", true, "COL_12", "VARCHAR", 0, 11, "ALIAS.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{22}, new int[]{22});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{22}, new int[]{22});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1483,14 +1566,18 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"}, new String[]{"SOURCE1", "SOURCE2"}, new String[]{"MODEL", "MODEL"});
+        List<Dataset> datasets =
+                InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"},
+                                                           new String[]{"SOURCE1", "SOURCE2"},
+                                                           new String[]{"MODEL", "MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1503,14 +1590,18 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0);
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"}, new String[]{"SOURCE1", "SOURCE2"}, new String[]{"MODEL", "MODEL"});
+        List<Dataset> datasets =
+                InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"},
+                                                           new String[]{"SOURCE1", "SOURCE2"},
+                                                           new String[]{"MODEL", "MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1523,14 +1614,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "SOURCE.COL_2");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1539,55 +1633,68 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {41011})
     public void testValidate_41011() {
-        Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS2.COL_2", "NULL");
+        Targetcolumn targetColumn =
+                createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS2.COL_2", "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"}, new String[]{"SOURCE1", "SOURCE2"}, new String[]{"MODEL", "MODEL"});
+        List<Dataset> datasets =
+                InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS1", "ALIAS2"},
+                                                           new String[]{"SOURCE1", "SOURCE2"},
+                                                           new String[]{"MODEL", "MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
-
-        fixture.validateTargetColumn(targetColumn);
-    }
-
-    //@Test
-    @Expected(errors = {41016})
-    public void testValidate_41016() {
-        Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "UNKNOWN_ALIAS.C1");
-        Mappings mappings = targetColumn.getParent();
-        Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
-        when(transformation.getDatasets()).thenReturn(datasets);
-
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
     }
 
     @Test
-    @Expected(errors = {})
-    public void testValidate_targetColumnNEXTVAL() {
-        Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "UNKNOWN_ALIAS.C1.NEXTVAL");
+    @Expected(errors = {41016})
+    @Ignore
+    public void testValidate_41016() {
+        Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "UNKNOWN_ALIAS.C1");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
+
+        fixture.validateTargetColumn(targetColumn);
+    }
+
+    @Test
+    @Expected()
+    public void testValidate_targetColumnNEXTVAL() {
+        Targetcolumn targetColumn =
+                createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "UNKNOWN_ALIAS.C1.NEXTVAL");
+        Mappings mappings = targetColumn.getParent();
+        Transformation transformation = mappings.getParent();
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
+        when(transformation.getDatasets()).thenReturn(datasets);
+
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1596,17 +1703,21 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {41012})
     public void testValidate_41012() {
-        Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS.UNDEFINED_COLUMN");
+        Targetcolumn targetColumn =
+                createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "ALIAS.UNDEFINED_COLUMN");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1619,14 +1730,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 0, "");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1638,14 +1752,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", "VARCHAR", 0, 0, "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1657,14 +1774,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 1, 0, "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1676,14 +1796,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", false, "COL_1", null, 0, 1, "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1695,14 +1818,17 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", true, "COL_1", null, 0, 0, "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
@@ -1714,25 +1840,29 @@ public class ETLValidatorImplTest {
         Targetcolumn targetColumn = createMockTargetColumn("TARGET", true, "COL_1", null, 22, 22, "NULL");
         Mappings mappings = targetColumn.getParent();
         Transformation transformation = mappings.getParent();
-        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"}, new String[]{"SOURCE"}, new String[]{"MODEL"});
+        List<Dataset> datasets = InputModelMockHelper.createMockETLDatasets(transformation, new String[]{"ALIAS"},
+                                                                            new String[]{"SOURCE"},
+                                                                            new String[]{"MODEL"});
         when(transformation.getDatasets()).thenReturn(datasets);
 
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getTargetDataStoreInModel(mappings)).thenReturn(targetDataStore);
-        @SuppressWarnings("unused")
-        DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
-        DataStore sourceDataStore = createMockDataStore("SOURCE", new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        @SuppressWarnings("unused") DataStore ds = metadataService.getTargetDataStoreInModel(mappings);
+        DataStore sourceDataStore =
+                createMockDataStore(new String[]{"COL_2"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
         when(metadataService.getSourceDataStoreInModel("SOURCE", "MODEL")).thenReturn(sourceDataStore);
 
         fixture.validateTargetColumn(targetColumn);
     }
 
 
-    private DataStore createMockDataStore(String name, String[] columns, String[] dataTypes, int[] scales, int[] lengths) {
-        assert (columns.length == dataTypes.length && scales.length == lengths.length && dataTypes.length == scales.length);
+    private DataStore createMockDataStore(String[] columns, String[] dataTypes, int[] scales, int[] lengths) {
+        assert (columns.length == dataTypes.length && scales.length == lengths.length &&
+                dataTypes.length == scales.length);
 
         DataStore dataStore = mock(DataStore.class);
-        HashMap<String, DataStoreColumn> dataStoreColumns = new HashMap<String, DataStoreColumn>();
+        HashMap<String, DataStoreColumn> dataStoreColumns = new HashMap<>();
         when(dataStore.getColumns()).thenReturn(dataStoreColumns);
         for (int i = 0; i < columns.length; i++) {
             DataStoreColumn dataStoreColumn = mock(DataStoreColumn.class);
@@ -1752,15 +1882,14 @@ public class ETLValidatorImplTest {
         when(targetColumn.getLength()).thenReturn(length);
         when(targetColumn.getDataType()).thenReturn(dataType);
         when(targetColumn.getScale()).thenReturn(scale);
-        ArrayList<String> expressionList = new ArrayList<String>();
-        for (String expression : expressions)
-            expressionList.add(expression);
+        ArrayList<String> expressionList = new ArrayList<>();
+        Collections.addAll(expressionList, expressions);
         when(targetColumn.getMappingExpressions()).thenReturn(expressionList);
 
         Mappings mappings = mock(Mappings.class);
         when(mappings.getTargetDataStore()).thenReturn(targetDataStore);
         when(targetColumn.getParent()).thenReturn(mappings);
-        when(mappings.getTargetColumns()).thenReturn(Collections.singletonList(targetColumn));
+        when(mappings.getTargetColumns()).thenReturn(singletonList(targetColumn));
 
         Transformation transformation = mock(Transformation.class);
         when(mappings.getParent()).thenReturn(transformation);
@@ -1793,7 +1922,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("S1A", "S1N", "model");
         when(source1.getJoinType()).thenReturn(JoinTypeEnum.INNER);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         Source source2 = InputModelMockHelper.createMockETLSource("S2A", "S2N", "model");
         sources.add(source2);
@@ -1802,14 +1931,14 @@ public class ETLValidatorImplTest {
         when(dataset.getSources()).thenReturn(sources);
         when(source1.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getParent()).thenReturn(source1);
         when(lookup.getJoin()).thenReturn("");
-        ArrayList<Lookup> lookups = new ArrayList<Lookup>();
+        ArrayList<Lookup> lookups = new ArrayList<>();
         lookups.add(lookup);
         when(source1.getLookups()).thenReturn(lookups);
         when(lookup.getModel()).thenReturn(modelCode);
@@ -1834,7 +1963,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("S1A", "S1N", "model");
         when(source1.getJoinType()).thenReturn(JoinTypeEnum.INNER);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         Source source2 = InputModelMockHelper.createMockETLSource("S2A", "S2N", "model");
         sources.add(source2);
@@ -1843,14 +1972,14 @@ public class ETLValidatorImplTest {
         when(dataset.getSources()).thenReturn(sources);
         when(source1.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getParent()).thenReturn(source1);
         when(lookup.getJoin()).thenReturn("");
-        ArrayList<Lookup> lookups = new ArrayList<Lookup>();
+        ArrayList<Lookup> lookups = new ArrayList<>();
         lookups.add(lookup);
         when(source1.getLookups()).thenReturn(lookups);
         when(lookup.getModel()).thenReturn(modelCode);
@@ -1874,7 +2003,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("S1A", "S1N", "model");
         when(source1.getJoinType()).thenReturn(JoinTypeEnum.INNER);
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         Source source2 = InputModelMockHelper.createMockETLSource("S2A", "S2N", "model");
         sources.add(source2);
@@ -1883,14 +2012,14 @@ public class ETLValidatorImplTest {
         when(dataset.getSources()).thenReturn(sources);
         when(source1.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
         Lookup lookup = mock(Lookup.class);
         when(lookup.getParent()).thenReturn(source1);
         when(lookup.getJoin()).thenReturn(join);
-        ArrayList<Lookup> lookups = new ArrayList<Lookup>();
+        ArrayList<Lookup> lookups = new ArrayList<>();
         lookups.add(lookup);
         when(source1.getLookups()).thenReturn(lookups);
         when(lookup.getModel()).thenReturn(modelCode);
@@ -1933,10 +2062,10 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias1", "source1", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
 
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("lookup");
@@ -1944,8 +2073,9 @@ public class ETLValidatorImplTest {
         when(lookup.getModel()).thenReturn("model");
         when(lookup.getParent()).thenReturn(source);
         when(lookup.getJoin()).thenReturn("alias.col1 = alias.col2");
-        when(source.getLookups()).thenReturn(Arrays.asList(lookup));
-        when(metadataService.getSourceDataStoreInModel("lookup", "model")).thenThrow(new DataStoreNotInModelException(""));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
+        when(metadataService.getSourceDataStoreInModel("lookup", "model")).thenThrow(
+                new DataStoreNotInModelException(""));
         fixture.validateJoinEnriched(lookup);
     }
 
@@ -1957,10 +2087,10 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias1", "source1", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
 
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("lookup");
@@ -1968,26 +2098,26 @@ public class ETLValidatorImplTest {
         when(lookup.getModel()).thenReturn("model");
         when(lookup.getParent()).thenReturn(source);
         when(lookup.getJoin()).thenReturn("alias.col1 = alias.col2");
-        when(source.getLookups()).thenReturn(Arrays.asList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("lookup");
-        when(dataStore.getColumns()).thenReturn(new HashMap<String, DataStoreColumn>());
+        when(dataStore.getColumns()).thenReturn(new HashMap<>());
         when(metadataService.getSourceDataStoreInModel("lookup", "model")).thenReturn(dataStore);
         fixture.validateJoinEnriched(lookup);
     }
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_31231_temporary() {
 
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias1", "source1", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
 
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("lookup");
@@ -1995,10 +2125,10 @@ public class ETLValidatorImplTest {
         when(lookup.getModel()).thenReturn("model");
         when(lookup.getParent()).thenReturn(source);
         when(lookup.getJoin()).thenReturn("alias.col1 = alias.col2");
-        when(source.getLookups()).thenReturn(Arrays.asList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("lookup");
-        when(dataStore.getColumns()).thenReturn(new HashMap<String, DataStoreColumn>());
+        when(dataStore.getColumns()).thenReturn(new HashMap<>());
         when(dataStore.isTemporary()).thenReturn(true);
         when(metadataService.getSourceDataStoreInModel("lookup", "model")).thenReturn(dataStore);
         fixture.validateJoinEnriched(lookup);
@@ -2012,10 +2142,10 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Source source = InputModelMockHelper.createMockETLSource("alias1", "source1", "model");
         Dataset dataset = mock(Dataset.class);
-        when(dataset.getSources()).thenReturn(Arrays.asList(source));
+        when(dataset.getSources()).thenReturn(singletonList(source));
         when(source.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        when(transformation.getDatasets()).thenReturn(Arrays.asList(dataset));
+        when(transformation.getDatasets()).thenReturn(singletonList(dataset));
 
         Lookup lookup = mock(Lookup.class);
         when(lookup.getLookupDataStore()).thenReturn("lookup");
@@ -2023,7 +2153,7 @@ public class ETLValidatorImplTest {
         when(lookup.getModel()).thenReturn("model");
         when(lookup.getParent()).thenReturn(source);
         when(lookup.getJoin()).thenReturn("alias.col1 = alias.col2");
-        when(source.getLookups()).thenReturn(Arrays.asList(lookup));
+        when(source.getLookups()).thenReturn(singletonList(lookup));
         DataStore dataStore = mock(DataStore.class);
         when(dataStore.getDataStoreName()).thenReturn("lookup");
         DataStoreColumn col1 = mock(DataStoreColumn.class);
@@ -2032,7 +2162,7 @@ public class ETLValidatorImplTest {
         DataStoreColumn col2 = mock(DataStoreColumn.class);
         when(col2.getName()).thenReturn("col2");
         when(col2.getColumnDataType()).thenReturn("NUMERIC");
-        HashMap<String, DataStoreColumn> map = new HashMap<String, DataStoreColumn>();
+        HashMap<String, DataStoreColumn> map = new HashMap<>();
         map.put("col1", col1);
         map.put("col2", col2);
         when(dataStore.getColumns()).thenReturn(map);
@@ -2057,8 +2187,10 @@ public class ETLValidatorImplTest {
 
         try {
             fixture.handleIKM(new NoKnowledgeModuleFoundException(""), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
     }
 
@@ -2071,9 +2203,11 @@ public class ETLValidatorImplTest {
         when(mappings.getParent()).thenReturn(transformation);
         when(mappings.getTargetDataStore()).thenReturn("TargetDataStore");
         try {
-            fixture.handleIKM(new KnowledgeModulePropertiesException(Collections.singletonList("bad rule")), mappings);
+            fixture.handleIKM(new KnowledgeModulePropertiesException(singletonList("bad rule")), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
     }
 
@@ -2087,8 +2221,10 @@ public class ETLValidatorImplTest {
         when(mappings.getTargetDataStore()).thenReturn("TargetDataStore");
         try {
             fixture.handleIKM(new RuntimeException(""), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
     }
 
@@ -2108,10 +2244,11 @@ public class ETLValidatorImplTest {
 
         try {
             fixture.handleCKM(new NoKnowledgeModuleFoundException(""), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
-
     }
 
     @Test
@@ -2123,9 +2260,11 @@ public class ETLValidatorImplTest {
         when(mappings.getParent()).thenReturn(transformation);
         when(mappings.getTargetDataStore()).thenReturn("TargetDataStore");
         try {
-            fixture.handleIKM(new KnowledgeModulePropertiesException(Collections.singletonList("bad rule")), mappings);
+            fixture.handleIKM(new KnowledgeModulePropertiesException(singletonList("bad rule")), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
     }
 
@@ -2139,8 +2278,10 @@ public class ETLValidatorImplTest {
         when(mappings.getTargetDataStore()).thenReturn("TargetDataStore");
         try {
             fixture.handleCKM(new RuntimeException(""), mappings);
+            // if here it failed
+            fail();
         } catch (Exception e) {
-
+            // no-op
         }
     }
 
@@ -2149,8 +2290,8 @@ public class ETLValidatorImplTest {
     @Expected(errors = {70010}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70010() {
         KnowledgeModule km = mockKnowledgeModule("KM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         String modelCode = "MODELCODE";
         String jkm = "JKM";
         fixture.validateJournalizingOptions(modelCode, jkm, options);
@@ -2160,8 +2301,8 @@ public class ETLValidatorImplTest {
     @Expected(errors = {70011}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70011() {
         KnowledgeModule km = mockKnowledgeModule("JKM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         options.put("OPTION_1", "false");
         String modelCode = "MODELCODE";
         String jkm = "JKM";
@@ -2172,8 +2313,8 @@ public class ETLValidatorImplTest {
     @Expected(errors = {70012}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70012() {
         KnowledgeModule km = mockKnowledgeModule("JKM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         options.put("CHECKBOX", "2");
         String modelCode = "MODELCODE";
         String jkm = "JKM";
@@ -2181,48 +2322,51 @@ public class ETLValidatorImplTest {
     }
 
     @Test
-    @Expected(errors = {}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
+    @Expected(packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70013() {
         KnowledgeModule km = mockKnowledgeModule("KM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         String modelCode = "MODELCODE";
         String jkm = "JKM";
         JournalizingStrategy strategy = mock(JournalizingStrategy.class);
-        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass().getCanonicalName());
+        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass()
+                                                                             .getCanonicalName());
     }
 
     @Test
     @Expected(errors = {70014}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70014() {
         KnowledgeModule km = mockKnowledgeModule("JKM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         options.put("OPTION_1", "false");
         String modelCode = "MODELCODE";
         String jkm = "JKM";
         JournalizingStrategy strategy = mock(JournalizingStrategy.class);
-        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass().getCanonicalName());
+        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass()
+                                                                             .getCanonicalName());
     }
 
     @Test
     @Expected(errors = {70015}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70015() {
         KnowledgeModule km = mockKnowledgeModule("JKM");
-        when(etlSubsystemService.getKMs()).thenReturn(Arrays.asList(km));
-        HashMap<String, String> options = new HashMap<String, String>();
+        when(etlSubsystemService.getKMs()).thenReturn(singletonList(km));
+        HashMap<String, String> options = new HashMap<>();
         options.put("CHECKBOX", "2");
         String modelCode = "MODELCODE";
         String jkm = "JKM";
         JournalizingStrategy strategy = mock(JournalizingStrategy.class);
-        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass().getCanonicalName());
+        fixture.validateJournalizingOptions(modelCode, jkm, options, strategy.getClass()
+                                                                             .getCanonicalName());
     }
 
     @Test
     @Expected(errors = {70010, 70020}, packageSequences = {ErrorWarningMessageJodiImpl.PackageSequenceGlobal})
     public void testValidate_70020() {
         when(properties.hasDeprecateCDCProperty()).thenReturn(true);
-        HashMap<String, String> options = new HashMap<String, String>();
+        HashMap<String, String> options = new HashMap<>();
         fixture.validateJournalizingOptions("MODELCODE", "JKM", options);
     }
 
@@ -2242,18 +2386,25 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30140})
     public void testValidate_30140() {
         //buildPivot(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions)
-        Pivot pivot = buildPivotFollowingSource("alias1", "source1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot =
+                buildPivotFollowingSource("alias1", "source1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                          new String[]{"source1.unknown"});
         fixture.validateFlow(pivot);
     }
 
     @Test
     @Expected(errors = {30140})
     public void testValidate_30140_sibling() {
-        Pivot pivot1 = buildPivotFollowingSource("OurPivot", "source1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
-        Pivot pivot2 = InputModelMockHelper.createMockPivot("OurPivot", "source.c1", "SUM", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot1 = buildPivotFollowingSource("OurPivot", "source1.c1", new String[]{"PivotCol"},
+                                                 new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot2 = InputModelMockHelper.createMockPivot("OurPivot", "source.c1", "SUM", new String[]{"PivotCol"},
+                                                            new String[]{"PivotValue"},
+                                                            new String[]{"source1.unknown"});
         Source source1 = pivot1.getParent();
         when(pivot2.getParent()).thenReturn(source1);
-        pivot1.getParent().getFlows().add(pivot2);
+        pivot1.getParent()
+              .getFlows()
+              .add(pivot2);
         fixture.validateFlow(pivot1);
     }
 
@@ -2261,14 +2412,17 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30141})
     public void testValidate_30141() {
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "'unknown.unknown'", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot = buildPivotFollowingSource("MyPivot", "'unknown.unknown'", new String[]{"PivotCol"},
+                                                new String[]{"PivotValue"}, new String[]{"source1.unknown"});
         fixture.validateFlow(pivot);
     }
 
     @Test
     @Expected(errors = {30141})
     public void testValidate_30141_flows() {
-        Pivot pivot = buildPivotFollowingFlow("Pivot2", "'UNKNOWN.C1'", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot =
+                buildPivotFollowingFlow("Pivot2", "'UNKNOWN.C1'", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                        new String[]{"source1.unknown"});
         fixture.validateFlow(pivot);
     }
 
@@ -2277,9 +2431,13 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30142})
     public void testValidate_30142() {
         //            buildPivot(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions)
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "alias1.UNKNOWN", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getSourceDataStoreInModel(pivot.getParent().getName(), pivot.getParent().getModel())).thenReturn(targetDataStore);
+        Pivot pivot = buildPivotFollowingSource("MyPivot", "alias1.UNKNOWN", new String[]{"PivotCol"},
+                                                new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getSourceDataStoreInModel(pivot.getParent()
+                                                            .getName(), pivot.getParent()
+                                                                             .getModel())).thenReturn(targetDataStore);
         fixture.validateFlow(pivot);
     }
 
@@ -2287,9 +2445,13 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30142})
     public void testValidate_30142_flows() {
         //            buildPivot(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions)
-        Pivot pivot = buildPivotFollowingFlow("Pivot2", "Pivot1.UNKNOWN", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.COL_1"});
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getSourceDataStoreInModel(pivot.getParent().getName(), pivot.getParent().getModel())).thenReturn(targetDataStore);
+        Pivot pivot = buildPivotFollowingFlow("Pivot2", "Pivot1.UNKNOWN", new String[]{"PivotCol"},
+                                              new String[]{"PivotValue"}, new String[]{"source1.COL_1"});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getSourceDataStoreInModel(pivot.getParent()
+                                                            .getName(), pivot.getParent()
+                                                                             .getModel())).thenReturn(targetDataStore);
         fixture.validateFlow(pivot);
     }
 
@@ -2297,23 +2459,31 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30143})
     public void testValidate_30143() {
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "'name1.c1'", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"source1.unknown"});
+        Pivot pivot =
+                buildPivotFollowingSource("MyPivot", "'name1.c1'", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                          new String[]{"source1.unknown"});
         fixture.validateFlow(pivot);
     }
 
     @Test
     @Expected(errors = {30144})
     public void testValidate_30144() {
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "a.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"UnknownSource.col"});
+        Pivot pivot = buildPivotFollowingSource("MyPivot", "a.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                                new String[]{"UnknownSource.col"});
         fixture.validateFlow(pivot);
     }
 
     @Test //Unknown Column
     @Expected(errors = {30142})
     public void testValidate_30145() {
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "alias1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"alias1.UnknownColumn"});
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getSourceDataStoreInModel(pivot.getParent().getName(), pivot.getParent().getModel())).thenReturn(targetDataStore);
+        Pivot pivot =
+                buildPivotFollowingSource("MyPivot", "alias1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                          new String[]{"alias1.UnknownColumn"});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getSourceDataStoreInModel(pivot.getParent()
+                                                            .getName(), pivot.getParent()
+                                                                             .getModel())).thenReturn(targetDataStore);
 
         fixture.validateFlow(pivot);
     }
@@ -2322,16 +2492,23 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30146})
     public void testValidate_30146() {
         when(packageService.projectVariableExists("project", "variable")).thenReturn(false);
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"#project.variable"});
+        Pivot pivot =
+                buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                          new String[]{"#project.variable"});
         fixture.validateFlow(pivot);
     }
 
     @Test //Unknown Column
     @Expected(errors = {30147})
     public void testValidate_30147() {
-        Pivot pivot = buildPivotFollowingSource("MyPivot", "a1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"name1.col1"});
-        DataStore targetDataStore = createMockDataStore("TARGET", new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
-        when(metadataService.getSourceDataStoreInModel(pivot.getParent().getName(), pivot.getParent().getModel())).thenReturn(targetDataStore);
+        Pivot pivot =
+                buildPivotFollowingSource("MyPivot", "a1.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                          new String[]{"name1.col1"});
+        DataStore targetDataStore =
+                createMockDataStore(new String[]{"COL_1"}, new String[]{"VARCHAR"}, new int[]{11}, new int[]{11});
+        when(metadataService.getSourceDataStoreInModel(pivot.getParent()
+                                                            .getName(), pivot.getParent()
+                                                                             .getModel())).thenReturn(targetDataStore);
 
         fixture.validateFlow(pivot);
     }
@@ -2341,31 +2518,40 @@ public class ETLValidatorImplTest {
     @Expected(errors = {30148})
     public void testValidate_30148_duplicated_outputattributes() {
         //buildPivot(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions)
-        Pivot pivot = buildPivotFollowingSource("alias1", "source1.c1", new String[]{"PivotCol", "PivotCol"}, new String[]{"PivotValue", "PivotValue"}, new String[]{"source1.unknown", "source.unknown"});
+        Pivot pivot = buildPivotFollowingSource("alias1", "source1.c1", new String[]{"PivotCol", "PivotCol"},
+                                                new String[]{"PivotValue", "PivotValue"},
+                                                new String[]{"source1.unknown", "source.unknown"});
         fixture.validateFlow(pivot);
     }
 
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_30142_IgnoredOutDotPrint() {
         when(metadataService.projectVariableExists("project", "variable")).thenReturn(false);
-        buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"out.print"});
+        buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                  new String[]{"out.print"});
     }
 
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_30142_IgnoredOdiRef() {
-        buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"}, new String[]{"odiref.unknown_but_ignore"});
+        buildPivotFollowingSource("MyPivot", "source.c1", new String[]{"PivotCol"}, new String[]{"PivotValue"},
+                                  new String[]{"odiref.unknown_but_ignore"});
 
     }
 
     @Test
-    @Expected(errors = {})
+    @Expected()
     public void testValidate_subquery_perfect() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.c1=F.c01", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = this.createMockDataStore("F", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery =
+                buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.c1=F.c01",
+                                             new String[]{"c01", "c02"}, new String[]{"c01", "c02"},
+                                             new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                this.createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                         new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
@@ -2376,8 +2562,13 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30151})
     public void testValidate_30151() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "UNKNOWN.c1=F.c01", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = this.createMockDataStore("F", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER,
+                                                         "UNKNOWN.c1=F.c01", new String[]{"c01", "c02"},
+                                                         new String[]{"c01", "c02"},
+                                                         new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                this.createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                         new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
@@ -2387,39 +2578,63 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30152})
     public void testValidate_30152_source() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.UNKNOWN=F.UNK", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = createMockDataStore("source1", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER,
+                                                         "alias1.UNKNOWN=F.UNK", new String[]{"c01", "c02"},
+                                                         new String[]{"c01", "c02"},
+                                                         new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
-        DataStore filterDS = createMockDataStore("F", new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
-        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(), subquery.getFilterSourceModel())).thenReturn(filterDS);
+        DataStore filterDS =
+                createMockDataStore(new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
+        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(),
+                                                       subquery.getFilterSourceModel())).thenReturn(filterDS);
         fixture.validateFlow(subquery);
     }
 
     @Test
     @Expected(errors = {30152})
     public void testValidate_30152_filter() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.c1=F.UNK", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = createMockDataStore("source1", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery =
+                buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.c1=F.UNK",
+                                             new String[]{"c01", "c02"}, new String[]{"c01", "c02"},
+                                             new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
-        DataStore filterDS = createMockDataStore("F", new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
-        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(), subquery.getFilterSourceModel())).thenReturn(filterDS);
+        DataStore filterDS =
+                createMockDataStore(new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
+        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(),
+                                                       subquery.getFilterSourceModel())).thenReturn(filterDS);
         fixture.validateFlow(subquery);
     }
 
     @Test
     @Expected(errors = {30152})
     public void testValidate_30152_filter_afterpivot() {
-        SubQuery subquery = buildSubQueryFollowingPivot("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "PVT.UNKOWN=F.c3", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"SQRY.c1", "SQRY.c2"});
-        DataStore sourceDS = createMockDataStore("source1", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery =
+                buildSubQueryFollowingPivot("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "PVT.UNKOWN=F.c3",
+                                            new String[]{"c01", "c02"}, new String[]{"c01", "c02"},
+                                            new String[]{"SQRY.c1", "SQRY.c2"});
+        DataStore sourceDS =
+                createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
-        DataStore filterDS = createMockDataStore("F", new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
-        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(), subquery.getFilterSourceModel())).thenReturn(filterDS);
+        DataStore filterDS =
+                createMockDataStore(new String[]{"c3", "c4"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
+        when(metadataService.getSourceDataStoreInModel(subquery.getFilterSource(),
+                                                       subquery.getFilterSourceModel())).thenReturn(filterDS);
         fixture.validateFlow(subquery);
     }
 
@@ -2427,8 +2642,13 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30153})
     public void testValidate_30153() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "name1.c1=F.c01", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = createMockDataStore("F", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery =
+                buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "name1.c1=F.c01",
+                                             new String[]{"c01", "c02"}, new String[]{"c01", "c02"},
+                                             new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                    new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
@@ -2440,8 +2660,13 @@ public class ETLValidatorImplTest {
     @Test
     @Expected(errors = {30154})
     public void testValidate_30154() {
-        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER, "alias1.c1=alias1.c1", new String[]{"c01", "c02"}, new String[]{"c01", "c02"}, new String[]{"alias1.c1", "alias1.c2"});
-        DataStore sourceDS = this.createMockDataStore("F", new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0}, new int[]{0, 0});
+        SubQuery subquery = buildSubQueryFollowingSource("SQRY", "F", GroupComparisonEnum.NONE, RoleEnum.GREATER,
+                                                         "alias1.c1=alias1.c1", new String[]{"c01", "c02"},
+                                                         new String[]{"c01", "c02"},
+                                                         new String[]{"alias1.c1", "alias1.c2"});
+        DataStore sourceDS =
+                this.createMockDataStore(new String[]{"c1", "c2"}, new String[]{"VARCHAR", "VARCHAR"}, new int[]{0, 0},
+                                         new int[]{0, 0});
 
         Source source = subquery.getParent();
         when(metadataService.getSourceDataStoreInModel(source.getName(), source.getModel())).thenReturn(sourceDS);
@@ -2455,7 +2680,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -2463,14 +2688,15 @@ public class ETLValidatorImplTest {
         when(source1.getParent()).thenReturn(dataset);
         when(source2.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
 
-        Pivot pivot = InputModelMockHelper.createMockPivot(name, rowLocator, "SUM", attributeNames, attributeValues, attributeExpressions);
+        Pivot pivot = InputModelMockHelper.createMockPivot(name, rowLocator, "SUM", attributeNames, attributeValues,
+                                                           attributeExpressions);
         when(pivot.getParent()).thenReturn(source1);
-        ArrayList<Flow> flows = new ArrayList<Flow>();
+        ArrayList<Flow> flows = new ArrayList<>();
         flows.add(pivot);
         when(source1.getFlows()).thenReturn(flows);
 
@@ -2482,22 +2708,25 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         Dataset dataset = mock(Dataset.class);
         when(dataset.getSources()).thenReturn(sources);
         when(source1.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
 
-        Pivot previousPivot = InputModelMockHelper.createMockPivot("Pivot1", "alias1.COL_1", "SUM", new String[]{"C1", "C2"}, new String[]{"", ""}, new String[]{"", ""});
-        Pivot pivot = InputModelMockHelper.createMockPivot(name, rowLocator, "SUM", attributeNames, attributeValues, attributeExpressions);
+        Pivot previousPivot =
+                InputModelMockHelper.createMockPivot("Pivot1", "alias1.COL_1", "SUM", new String[]{"C1", "C2"},
+                                                     new String[]{"", ""}, new String[]{"", ""});
+        Pivot pivot = InputModelMockHelper.createMockPivot(name, rowLocator, "SUM", attributeNames, attributeValues,
+                                                           attributeExpressions);
         when(pivot.getParent()).thenReturn(source1);
         when(previousPivot.getParent()).thenReturn(source1);
-        ArrayList<Flow> flows = new ArrayList<Flow>();
+        ArrayList<Flow> flows = new ArrayList<>();
         flows.add(previousPivot);
         flows.add(pivot);
         when(source1.getFlows()).thenReturn(flows);
@@ -2511,7 +2740,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -2519,14 +2748,15 @@ public class ETLValidatorImplTest {
         when(source1.getParent()).thenReturn(dataset);
         when(source2.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
 
-        SubQuery sq = InputModelMockHelper.createMockSubQuery(name, filterSource, gc, role, condition, attributeNames, attributeValues, attributeExpressions);
+        SubQuery sq = InputModelMockHelper.createMockSubQuery(name, filterSource, gc, role, condition, attributeNames,
+                                                              attributeValues, attributeExpressions);
         when(sq.getParent()).thenReturn(source1);
-        ArrayList<Flow> flows = new ArrayList<Flow>();
+        ArrayList<Flow> flows = new ArrayList<>();
         flows.add(sq);
         when(source1.getFlows()).thenReturn(flows);
 
@@ -2539,7 +2769,7 @@ public class ETLValidatorImplTest {
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
         Source source1 = InputModelMockHelper.createMockETLSource("alias1", "name1", "model");
         Source source2 = InputModelMockHelper.createMockETLSource("alias2", "name2", "model");
-        ArrayList<Source> sources = new ArrayList<Source>();
+        ArrayList<Source> sources = new ArrayList<>();
         sources.add(source1);
         sources.add(source2);
         Dataset dataset = mock(Dataset.class);
@@ -2547,16 +2777,18 @@ public class ETLValidatorImplTest {
         when(source1.getParent()).thenReturn(dataset);
         when(source2.getParent()).thenReturn(dataset);
         when(dataset.getParent()).thenReturn(transformation);
-        ArrayList<Dataset> datasets = new ArrayList<Dataset>();
+        ArrayList<Dataset> datasets = new ArrayList<>();
         when(transformation.getDatasets()).thenReturn(datasets);
         datasets.add(dataset);
         when(dataset.getParent()).thenReturn(transformation);
 
-        Pivot pivot = InputModelMockHelper.createMockPivot("PVT", "alias1.COL_1", "SUM", new String[]{"c5", "c6"}, new String[]{"", ""}, new String[]{"", ""});
+        Pivot pivot = InputModelMockHelper.createMockPivot("PVT", "alias1.COL_1", "SUM", new String[]{"c5", "c6"},
+                                                           new String[]{"", ""}, new String[]{"", ""});
         when(pivot.getParent()).thenReturn(source1);
-        SubQuery sq = InputModelMockHelper.createMockSubQuery(name, filterSource, gc, role, condition, attributeNames, attributeValues, attributeExpressions);
+        SubQuery sq = InputModelMockHelper.createMockSubQuery(name, filterSource, gc, role, condition, attributeNames,
+                                                              attributeValues, attributeExpressions);
         when(sq.getParent()).thenReturn(source1);
-        ArrayList<Flow> flows = new ArrayList<Flow>();
+        ArrayList<Flow> flows = new ArrayList<>();
         flows.add(pivot);
         flows.add(sq);
 
