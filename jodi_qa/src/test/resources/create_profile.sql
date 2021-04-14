@@ -37,6 +37,15 @@ BEGIN
           OR username like 'ESCS%'
           OR username like 'BICS%'
           OR username like 'M12%'
+         OR username like 'ODITMP'
+         OR username like 'MTM'
+         OR username like 'MCM'
+         OR username like 'ERM'
+         OR username like 'INF'
+         OR username like 'MCV'
+         OR username like 'DWHPUBLIC'
+         OR username like 'EXN%'
+         OR username like 'STG%'
    )
   )
    LOOP
