@@ -45,6 +45,7 @@ public class ETLValidatorImpl implements ETLValidator {
     private final static String ERROR_MESSAGE_10020 = "While processing transformation with sequence number %s an unpredicted error occurred in plug-in %s during the calculation of the transformation name.";
     private final static String ERROR_MESSAGE_10030 = "While processing transformation with sequence # %s an unpredicted error occurred in plug-in %s during the calculation of target folder.";
     private final static String ERROR_MESSAGE_10040 = "Folder Name Strategy %s returned null or empty file name.";
+    private final static String ERROR_MESSAGE_10050 = "Transformation %s has data store %s of length %s which exceeds maximum length of 128 characters for regular mappings and 126 characters for reusable mappings, a possible solution could be to use an alias for reusable mappings, please note the first 28 characters of the datastores should be unique (only applies to ORACLE technology).";
     private final static String ERROR_MESSAGE_10060 = "Transformation does not specify any associated packages.";
     private final static String ERROR_MESSAGE_10061 = "Transformation specifies package list item %s which is not contained in package file (0.xml/1.xml).";
     private final static String ERROR_MESSAGE_10070 = "Transformation contains more than one Source or Lookup with journalized option set.";
@@ -315,6 +316,22 @@ public class ETLValidatorImpl implements ETLValidator {
         String targetDataStore = transformation.getMappings().getTargetDataStore() + "";
         // check for validity with Dataset number added
         // D1 for dataset 1 so now max length is 26 // 2 for reusable mappings + 2 for dataset
+        if (targetDataStore.length() > 128) {
+            addErrorMessage(transformation.getPackageSequence(),
+                    errorWarningMessages.formatMessage(10050,
+                            ERROR_MESSAGE_10050, this.getClass(), transformation.getName(),
+                            transformation.getMappings().getTargetDataStore(),
+                            transformation.getMappings().getTargetDataStore().length()));
+            valid = false;
+        }
+        if (targetDataStore.length() > 126 && transformation.isTemporary()) {
+            addWarningMessage(transformation.getPackageSequence(),
+                    errorWarningMessages.formatMessage(10050,
+                            ERROR_MESSAGE_10050, this.getClass(), transformation.getName(),
+                            transformation.getMappings().getTargetDataStore(),
+                            transformation.getMappings().getTargetDataStore().length()));
+            valid = true;
+        }
         return valid;
     }
 
@@ -480,6 +497,28 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateSourceDataStoreName(Source source) {
         // TODO create own validation messages
         String prefix = source.getName();
+        if (prefix.length() > 128 && !source.isTemporary()) {
+            // if the source is not temporary we 28 positions + 2 for datasets =
+            // 30 oracle max
+            addErrorMessage(
+                    source.getParent().getParent().getPackageSequence(),
+                    errorWarningMessages.formatMessage(10050,
+                            ERROR_MESSAGE_10050, this.getClass(), source
+                                    .getParent().getParent().getName(), prefix,
+                            prefix.length()));
+            return false;
+        }
+        if (prefix.length() > 128 && source.isTemporary()) {
+            // if the source is temporary we need 26 positions + 2 for datasets +
+            // 2 for journalizing = 30 oracle max.
+            addWarningMessage(
+                    source.getParent().getParent().getPackageSequence(),
+                    errorWarningMessages.formatMessage(10050,
+                            ERROR_MESSAGE_10050, this.getClass(), source
+                                    .getParent().getParent().getName(), prefix,
+                            prefix.length()));
+            return true;
+        }
         if ((source.getAlias() == null ||
                 source.getAlias().length() == 0
         ) && source.getName().contains("$")) {
@@ -935,6 +974,26 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateLookupName(Lookup lookup) {
         // TODO own error code
         String prefixLkup = lookup.getLookupDataStore();
+        if (prefixLkup.length() > 128 && !lookup.isTemporary()) {
+            // if the lookup is not temporary we need 28 positions + 2 for
+            // datasets = 30 oracle max
+            addErrorMessage(lookup.getParent().getParent().getParent()
+                    .getPackageSequence(), errorWarningMessages.formatMessage(
+                    10050, ERROR_MESSAGE_10050, this.getClass(), lookup
+                            .getParent().getParent().getParent().getName(),
+                    prefixLkup, prefixLkup.length()));
+            return false;
+        }
+        if (prefixLkup.length() > 128 && lookup.isTemporary()) {
+            // if the lookup is temporary we need 26 positions + 2 for
+            // journalizing + 2 for datasets = 30 oracle max
+            addWarningMessage(lookup.getParent().getParent().getParent()
+                    .getPackageSequence(), errorWarningMessages.formatMessage(
+                    10050, ERROR_MESSAGE_10050, this.getClass(), lookup
+                            .getParent().getParent().getParent().getName(),
+                    prefixLkup, prefixLkup.length()));
+            return true;
+        }
         if (lookup.getAlias() == null && lookup.getLookupDataStore().contains("$")) {
             addErrorMessage(
                     lookup.getParent().getParent().getParent().getPackageSequence(),
