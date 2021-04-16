@@ -60,6 +60,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.fail;
@@ -201,6 +203,22 @@ public class ETLValidatorImplTest {
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
 
         fixture.validateFolderName(transformation, strategy);
+    }
+
+    @Test
+    @Expected(errors = {10050})
+    public void testValidate_10050() {
+        Transformation transformation = mock(Transformation.class);
+        when(transformation.getPackageSequence()).thenReturn(packageSequence);
+        when(transformation.getName()).thenReturn("TransformationName");
+        Mappings mappings = mock(Mappings.class);
+        when(transformation.getMappings()).thenReturn(mappings);
+        final String prefix = "TargetDataStoreExceedsMaxLength";
+        String tooLongDS = prefix + IntStream.range(prefix.length(), 129)
+                                             .mapToObj(i -> "x")
+                                             .collect(Collectors.joining());
+        when(mappings.getTargetDataStore()).thenReturn(tooLongDS);
+        fixture.validateTransformationName(transformation);
     }
 
     @Test
@@ -1133,7 +1151,8 @@ public class ETLValidatorImplTest {
     }
 
 
-    private void testValidateLookup(String lookupDataStore, String alias, String modelCode, boolean subselect, Map<String, String> defaultColumns) {
+    private void testValidateLookup(String lookupDataStore, String alias, String modelCode, boolean subselect,
+                                    Map<String, String> defaultColumns) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
@@ -1379,7 +1398,8 @@ public class ETLValidatorImplTest {
     }
 
 
-    private void testValidateKM(String type, String kmName, String[] keys, String[] values, KnowledgeModuleStrategy customStrategy) {
+    private void testValidateKM(String type, String kmName, String[] keys, String[] values,
+                                KnowledgeModuleStrategy customStrategy) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         Mappings mappings = mock(Mappings.class);
@@ -1876,7 +1896,8 @@ public class ETLValidatorImplTest {
         return dataStore;
     }
 
-    private Targetcolumn createMockTargetColumn(String targetDataStore, boolean temporary, String name, String dataType, int length, int scale, String... expressions) {
+    private Targetcolumn createMockTargetColumn(String targetDataStore, boolean temporary, String name, String dataType,
+                                                int length, int scale, String... expressions) {
         Targetcolumn targetColumn = mock(Targetcolumn.class);
         when(targetColumn.getName()).thenReturn(name);
         when(targetColumn.getLength()).thenReturn(length);
@@ -2674,7 +2695,8 @@ public class ETLValidatorImplTest {
     }
 
 
-    private Pivot buildPivotFollowingSource(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
+    private Pivot buildPivotFollowingSource(String name, String rowLocator, String[] attributeNames,
+                                            String[] attributeValues, String[] attributeExpressions) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
@@ -2703,7 +2725,8 @@ public class ETLValidatorImplTest {
         return pivot;
     }
 
-    private Pivot buildPivotFollowingFlow(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
+    private Pivot buildPivotFollowingFlow(String name, String rowLocator, String[] attributeNames,
+                                          String[] attributeValues, String[] attributeExpressions) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
@@ -2734,7 +2757,9 @@ public class ETLValidatorImplTest {
         return pivot;
     }
 
-    private SubQuery buildSubQueryFollowingSource(String name, String filterSource, GroupComparisonEnum gc, RoleEnum role, String condition, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
+    private SubQuery buildSubQueryFollowingSource(String name, String filterSource, GroupComparisonEnum gc,
+                                                  RoleEnum role, String condition, String[] attributeNames,
+                                                  String[] attributeValues, String[] attributeExpressions) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
@@ -2763,7 +2788,9 @@ public class ETLValidatorImplTest {
         return sq;
     }
 
-    private SubQuery buildSubQueryFollowingPivot(String name, String filterSource, GroupComparisonEnum gc, RoleEnum role, String condition, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
+    private SubQuery buildSubQueryFollowingPivot(String name, String filterSource, GroupComparisonEnum gc,
+                                                 RoleEnum role, String condition, String[] attributeNames,
+                                                 String[] attributeValues, String[] attributeExpressions) {
         Transformation transformation = mock(Transformation.class);
         when(transformation.getPackageSequence()).thenReturn(packageSequence);
         when(transformation.getName()).thenReturn("TRANSFORMATION NAME");
