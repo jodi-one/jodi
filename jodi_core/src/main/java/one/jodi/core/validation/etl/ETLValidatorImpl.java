@@ -348,6 +348,8 @@ public class ETLValidatorImpl implements ETLValidator {
     private static final String ERROR_MESSAGE_71010 =
             "Tranformation with package sequence %s does not have valid %s %s";
 
+    private static final int MAX_DATASTORE_LENGTH = 128;
+
     // duplicated since we don't want dependencies
     public final ErrorWarningMessageJodi errorWarningMessages;
     public final Boolean devMode;
@@ -471,7 +473,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                .getTargetDataStore() + "";
         // check for validity with Dataset number added
         // D1 for dataset 1 so now max length is 26 // 2 for reusable mappings + 2 for dataset
-        if (targetDataStore.length() > 128) {
+        if (targetDataStore.length() > MAX_DATASTORE_LENGTH) {
             addErrorMessage(transformation.getPackageSequence(),
                             errorWarningMessages.formatMessage(10050, ERROR_MESSAGE_10050, this.getClass(),
                                                                transformation.getName(), transformation.getMappings()
@@ -481,7 +483,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                                              .length()));
             valid = false;
         }
-        if (targetDataStore.length() > 126 && transformation.isTemporary()) {
+        if (targetDataStore.length() > (MAX_DATASTORE_LENGTH - 2) && transformation.isTemporary()) {
             addWarningMessage(transformation.getPackageSequence(),
                               errorWarningMessages.formatMessage(10050, ERROR_MESSAGE_10050, this.getClass(),
                                                                  transformation.getName(), transformation.getMappings()
@@ -660,7 +662,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateSourceDataStoreName(Source source) {
         // TODO create own validation messages
         String prefix = source.getName();
-        if (prefix.length() > 128 && !source.isTemporary()) {
+        if (prefix.length() > MAX_DATASTORE_LENGTH && !source.isTemporary()) {
             // if the source is not temporary we 28 positions + 2 for datasets =
             // 30 oracle max
             addErrorMessage(source.getParent()
@@ -672,7 +674,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                                      .getName(), prefix, prefix.length()));
             return false;
         }
-        if (prefix.length() > 128 && source.isTemporary()) {
+        if (prefix.length() > MAX_DATASTORE_LENGTH && source.isTemporary()) {
             // if the source is temporary we need 26 positions + 2 for datasets +
             // 2 for journalizing = 30 oracle max.
             addWarningMessage(source.getParent()
@@ -1134,7 +1136,7 @@ public class ETLValidatorImpl implements ETLValidator {
     public boolean validateLookupName(Lookup lookup) {
         // TODO own error code
         String prefixLkup = lookup.getLookupDataStore();
-        if (prefixLkup.length() > 128 && !lookup.isTemporary()) {
+        if (prefixLkup.length() > MAX_DATASTORE_LENGTH && !lookup.isTemporary()) {
             // if the lookup is not temporary we need 28 positions + 2 for
             // datasets = 30 oracle max
             addErrorMessage(lookup.getParent()
@@ -1148,7 +1150,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                                      .getName(), prefixLkup, prefixLkup.length()));
             return false;
         }
-        if (prefixLkup.length() > 128 && lookup.isTemporary()) {
+        if (prefixLkup.length() > MAX_DATASTORE_LENGTH && lookup.isTemporary()) {
             // if the lookup is temporary we need 26 positions + 2 for
             // journalizing + 2 for datasets = 30 oracle max
             addWarningMessage(lookup.getParent()
