@@ -6,6 +6,7 @@ public interface DateNode extends ExprNode {
     Date getValue();
 
     // TODO remove this method
+    @Deprecated
     String getUnderlyingValue();
 
 }

@@ -13,19 +13,27 @@ import one.jodi.base.service.metadata.Key;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class TableBaseImpl implements TableBase {
 
-    private final static Logger logger = LogManager.getLogger(TableBaseImpl.class);
+    private final static Logger LOGGER = LogManager.getLogger(TableBaseImpl.class);
 
-    private final static String ERROR_MESSAGE_84000 =
-            "Tables including '%1$s' contains a cycle.";
+    private final static String ERROR_MESSAGE_84000 = "Tables including '%1$s' contains a cycle.";
 
-    private static final String ERROR_MESSAGE_84020 =
-            "Hierarchy associated with base table '%1$s' misses levels and cannot " +
-                    "properly reflect levels in itself and shrunken dimension table '%2$s'.";
+    private static final String ERROR_MESSAGE_84020 = "Hierarchy associated with base table '%1$s' misses levels " +
+            "and cannot properly reflect levels in itself and shrunken dimension table '%2$s'.";
 
     // Adaptee of Table
     private final boolean defaultConstruction;
@@ -43,7 +51,7 @@ public class TableBaseImpl implements TableBase {
     private final List<HierarchyBranchBase> hierarchy = new ArrayList<>();
     private final ErrorWarningMessageJodi errorWarningMessages;
     protected List<KeyBase> cachedKeys = new ArrayList<>();
-    private Optional<TableAnnotations> tableAnnotations = Optional.empty();
+    private final Optional<TableAnnotations> tableAnnotations;
     // Cache Lists and Maps so that the objects can be referenced
     // by other model classes
     private Map<String, ColumnBase> cachedColumns = new HashMap<>();
@@ -109,7 +117,7 @@ public class TableBaseImpl implements TableBase {
             final String columnName) {
         Optional<ColumnAnnotations> columnAnnotations = Optional.empty();
         if (tableAnnotations.isPresent()) {
-            ColumnAnnotations ca = (ColumnAnnotations) tableAnnotations
+            ColumnAnnotations ca = tableAnnotations
                     .get()
                     .getColumnAnnotations()
                     .get(columnName);
@@ -119,6 +127,7 @@ public class TableBaseImpl implements TableBase {
     }
 
     //TODO needs to point to new SCHEMA class, which implements ModelNode
+    @Override
     public SchemaBase getParent() {
         return parent;
     }
@@ -199,8 +208,7 @@ public class TableBaseImpl implements TableBase {
     // factory method that may be overwritten by subclass
     protected ColumnBase createColumn(final String columnName,
                                       final ColumnMetaData dColumn) {
-        return new ColumnBase(dColumn, this, getColumnAnnotations(columnName),
-                errorWarningMessages);
+        return new ColumnBase(dColumn, this, getColumnAnnotations(columnName), errorWarningMessages);
     }
 
     // only used if useDateStore() is returning false
@@ -229,14 +237,12 @@ public class TableBaseImpl implements TableBase {
     public List<? extends ColumnBase> getOrderedColumns(final boolean reversed) {
         int sign = (reversed) ? -1 : 1;
 
-        List<ColumnBase> orderedColumns = new ArrayList<>();
         // use TreeMap to order items
         Map<Integer, ColumnBase> orderedMap = new TreeMap<>();
         for (ColumnBase column : this.getColumns().values()) {
             orderedMap.put(column.getPosition() * sign, column);
         }
-        orderedColumns.addAll(orderedMap.values());
-
+        List<ColumnBase> orderedColumns = new ArrayList<>(orderedMap.values());
         return Collections.unmodifiableList(orderedColumns);
     }
 
@@ -257,17 +263,13 @@ public class TableBaseImpl implements TableBase {
     private Set<String> getColumnNameSet(final DataStoreDescriptor tableData) {
         return tableData.getColumnMetaData()
                 .stream()
-                .map(c -> c.getName())
+                .map(ColumnMetaData::getName)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     private boolean isValidKey(final Key key, final DataStoreDescriptor targetData) {
         Set<String> tableColumns = getColumnNameSet(targetData);
-        return !key.getColumns()
-                .stream()
-                .filter(c -> !tableColumns.contains(c))
-                .findFirst()
-                .isPresent();
+        return tableColumns.containsAll(key.getColumns());
     }
 
     /*
@@ -297,13 +299,14 @@ public class TableBaseImpl implements TableBase {
         return removeIndexForPk(tableData.getKeys())
                 .stream()
                 .peek(k -> {
-                    if (!isValidKey(k, tableData))
-                        logger.debug("Skip creation of inconsistent key: " +
+                    if (!isValidKey(k, tableData)) {
+                        LOGGER.debug("Skip creation of inconsistent key: " +
                                 tableData.getDataStoreName() + "." +
                                 k.getName());
+                    }
                 })
                 .filter(k -> isValidKey(k, tableData))
-                .map(k -> createKey(k))
+                .map(this::createKey)
                 .collect(Collectors.toList());
     }
 
@@ -328,9 +331,9 @@ public class TableBaseImpl implements TableBase {
     public KeyBase getAlternateKey() {
         Optional<? extends KeyBase> firstKey =
                 getKeys().stream()
-                        .filter(key -> key.isAlternativeKey())
+                        .filter(KeyBase::isAlternativeKey)
                         .findFirst();
-        return firstKey.isPresent() ? firstKey.get() : null;
+        return firstKey.orElse(null);
     }
 
     //
@@ -343,21 +346,16 @@ public class TableBaseImpl implements TableBase {
         assert (fk.getReferenceColumns() != null && fk.getReferenceColumns().size() > 0) :
                 "Invalid FK Key defintion for " + fk.getName();
         assert (cardinality != null);
-        FkRelationshipBase newFk = new FkRelationshipBase(this, fk.getName(), fk,
-                cardinality,
-                errorWarningMessages);
-        return newFk;
+        return new FkRelationshipBase(this, fk.getName(), fk, cardinality, errorWarningMessages);
     }
 
     private boolean keysAreDefined(final ForeignReference fk,
                                    final DataStoreDescriptor tableData) {
         Set<String> tableColumns = getColumnNameSet(tableData);
-        return !fk.getReferenceColumns()
+        return fk.getReferenceColumns()
                 .stream()
-                .map(r -> r.getForeignKeyColumnName())
-                .filter(c -> !tableColumns.contains(c))
-                .findFirst()
-                .isPresent();
+                .map(ForeignReference.RefColumns::getForeignKeyColumnName)
+                .allMatch(tableColumns::contains);
     }
 
     private void addFks(final DataStoreDescriptor tableData) {
@@ -365,7 +363,7 @@ public class TableBaseImpl implements TableBase {
             if (keysAreDefined(fk, tableData)) {
                 addFk(createFk(fk));
             } else {
-                logger.warn("Fk not created " + tableData.getDataStoreName() + "." +
+                LOGGER.warn("Fk not created " + tableData.getDataStoreName() + "." +
                         fk.getName() + ". FK columns not all present.");
             }
         }
@@ -386,8 +384,7 @@ public class TableBaseImpl implements TableBase {
         ColumnBase namingColumn = getColumns().get(namingColumnName);
         Cardinality cardinality = getCardinality(namingColumn);
 
-        FkRelationshipBase newFk = createFkRelationship(fk, cardinality);
-        return newFk;
+        return createFkRelationship(fk, cardinality);
     }
 
 
@@ -419,12 +416,10 @@ public class TableBaseImpl implements TableBase {
 
     @Override
     public List<? extends FkRelationshipBase> getFks(final TableBase target) {
-        List<FkRelationshipBase> found =
-                this.cachedFks.stream()
-                        .filter(fk -> fk.getReferencedPrimaryKey()
-                                .getParent() == target)
-                        .collect(Collectors.toList());
-        return found;
+        return this.cachedFks.stream()
+                .filter(fk -> fk.getReferencedPrimaryKey()
+                        .getParent() == target)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -585,7 +580,7 @@ public class TableBaseImpl implements TableBase {
         TableBase thisObject = this;
         toProcess.add(thisObject);
         while (!toProcess.isEmpty()) {
-            TableBase currentTable = (TableBase) toProcess.pop();
+            TableBase currentTable = toProcess.pop();
             for (RelationshipBase rel : ((TableBaseImpl) currentTable).getRelationships()) {
                 if ((rel.getType() == type) && !reachable.contains(rel.getTarget())) {
                     reachable.add(rel.getTarget());
@@ -598,7 +593,7 @@ public class TableBaseImpl implements TableBase {
                     errorWarningMessages.addMessage(
                             errorWarningMessages.assignSequenceNumber(),
                             msg, MESSAGE_TYPE.ERRORS);
-                    logger.error(msg);
+                    LOGGER.error(msg);
                     errorDetected = true;
                 }
             }
@@ -614,7 +609,7 @@ public class TableBaseImpl implements TableBase {
 
     public int countTablesBetween(final TableBase toDimension, final RelType type) {
         int count = 0;
-        TableBaseImpl current = (TableBaseImpl) this;
+        TableBaseImpl current = this;
         while ((current != toDimension) && (current.getRelationships(type).size() > 0)) {
             count++;
             // we can assume that only one relationship exists
@@ -778,7 +773,7 @@ public class TableBaseImpl implements TableBase {
                 errorWarningMessages.addMessage(
                         errorWarningMessages.assignSequenceNumber(),
                         msg, MESSAGE_TYPE.ERRORS);
-                logger.error(msg);
+                LOGGER.error(msg);
                 // set default value "Detail"
                 if (associatedLevel == null) {
                     associatedLevel = ((TableBaseImpl) baseTable).getDetailLevel();

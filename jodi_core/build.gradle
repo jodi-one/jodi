@@ -126,7 +126,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'javax.validation:validation-api:1.0.0.GA'
-    compileOnly "com.oracle.database.jdbc:ojdbc8:19.3.0.0"
+    compileOnly group: "com.oracle.database.jdbc", name: "ojdbc8", version: "19.3.0.0"
     implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
 
@@ -214,9 +214,8 @@ processResources {
     from(jaxbGenOutputDir) { include '**/jaxb.properties' }
 }
 
-
 task extensionsJar(type: Jar, dependsOn: compileXmlExtensionsJava) {
-    baseName 'jodi_core_extensions'
+    archiveBaseName.set('jodi_core_extensions')
     from sourceSets.xmlExtensions.output.classesDirs
 }
 

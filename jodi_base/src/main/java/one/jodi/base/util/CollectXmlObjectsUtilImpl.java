@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectXmlObjectsUtilImpl<T, O> implements CollectXmlObjectsUtil<T> {
-    private final static Logger logger =
-            LogManager.getLogger(CollectXmlObjectsUtilImpl.class);
+    private final static Logger LOGGER = LogManager.getLogger(CollectXmlObjectsUtilImpl.class);
 
     private final static String ERROR_MESSAGE_81150 =
             "Exception while reading definition from file '%1$s': %2$s";
@@ -43,11 +42,7 @@ public class CollectXmlObjectsUtilImpl<T, O> implements CollectXmlObjectsUtil<T>
      * whether a value is present.
      */
     private static <X> Stream<X> toStream(final Optional<X> opt) {
-        if (opt.isPresent()) {
-            return Stream.of(opt.get());
-        } else {
-            return Stream.empty();
-        }
+        return opt.map(Stream::of).orElse(Stream.empty());
     }
 
     private T loadFile(final InputStream inputStream, final String pathName) {
@@ -58,17 +53,16 @@ public class CollectXmlObjectsUtilImpl<T, O> implements CollectXmlObjectsUtil<T>
     // protected for test purposes only - to inject an object
     protected Optional<Entry<Path, T>> loadXmlFile(final Path f) {
         try (final InputStream is = new FileInputStream(f.toFile().getAbsolutePath())) {
-            return Optional.of(new AbstractMap.SimpleEntry<Path, T>(
-                    f, loadFile(is, f.toString())));
+            return Optional.of(new AbstractMap.SimpleEntry<>(f, loadFile(is, f.toString())));
         } catch (RuntimeException | IOException iox) {
             String msg = this.errorWarningMessageJodi
                     .formatMessage(81150, ERROR_MESSAGE_81150, this.getClass(),
-                            f.toFile().getAbsolutePath().toString(),
+                            f.toFile().getAbsolutePath(),
                             iox.getMessage() != null ? iox.getMessage()
                                     : "");
             errorWarningMessageJodi.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
                     .ERRORS);
-            logger.error(msg, iox);
+            LOGGER.error(msg, iox);
             iox.printStackTrace();
             return Optional.empty();
         }
@@ -78,11 +72,10 @@ public class CollectXmlObjectsUtilImpl<T, O> implements CollectXmlObjectsUtil<T>
     public Map<Path, T> collectObjectsFromFiles(final List<Path> files) {
         return files.stream()
                 // .filter( e -> !e.toString().contains("provided_mappings"))
-                .peek(f -> logger.debug("Processing file: (" +
+                .peek(f -> LOGGER.debug("Processing file: (" +
                         f.toFile().getAbsolutePath() + ")"))
                 .flatMap(p -> toStream(loadXmlFile(p)))
                 .filter(entry -> !entry.getKey().toString().contains("provided_mappings"))
-                .collect(Collectors.toMap(e -> e.getKey(),
-                        e -> e.getValue()));
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 }

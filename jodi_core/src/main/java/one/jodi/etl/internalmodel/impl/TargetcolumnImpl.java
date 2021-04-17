@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -21,7 +20,12 @@ import java.util.regex.Pattern;
  */
 public class TargetcolumnImpl implements Targetcolumn {
 
-    private final static Logger logger = LogManager.getLogger(TargetcolumnImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(TargetcolumnImpl.class);
+
+    // Pattern compilation is slow, do it only once per regex expression
+    private static final Pattern PATTERN_AGGREGATE_EXPRESSION =
+            Pattern.compile("(?i)(min|max|sum|avg|count|variance|stdev|stats_mode)(\\s)*(\\()");
+
     Mappings parent;
     String name;
     List<String> mappingExpressions;
@@ -224,21 +228,7 @@ public class TargetcolumnImpl implements Targetcolumn {
     }
 
     private boolean isAggregateExpression(String me) {
-        if (isAggregateExpression(me, "(?i)(min|max|sum|avg|count|variance|stdev|stats_mode){1,1}(\\s){0,}(\\(){1,1}")) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isAggregateExpression(String me, String pattern) {
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(me);
-        boolean found = m.find();
-        // seems to slow down on the at
-        // java.util.regex.Pattern.createGroup(Pattern.java:2984)
-        p = null;
-        m = null;
-        return found;
+        return PATTERN_AGGREGATE_EXPRESSION.matcher(me).find();
     }
 
     @Override
@@ -247,14 +237,13 @@ public class TargetcolumnImpl implements Targetcolumn {
         // this determines whether it is analytical function or not
         // the presence of "OVER(" or "OVER ("
         //
-        for (int dataSetIndex =
-             0; dataSetIndex < this.mappingExpressions.size(); dataSetIndex++) {
+        for (int dataSetIndex = 0; dataSetIndex < this.mappingExpressions.size(); dataSetIndex++) {
             if ((dataSetIndex + 1) != dataSetNumber) {
                 continue;
             }
             String expression = this.mappingExpressions.get(dataSetIndex);
             if (containsOver(expression)) {
-                logger.debug(String.format("The targetcolumn %s is an analytical function for expression %s.", this.name, expression));
+                LOGGER.debug(String.format("The targetcolumn %s is an analytical function for expression %s.", this.name, expression));
                 return true;
             }
         }
@@ -264,12 +253,9 @@ public class TargetcolumnImpl implements Targetcolumn {
     private boolean containsOver(String expression) {
         expression = expression.toLowerCase().trim();
         if (expression.contains(" over")) {
-            if (expression.replace(" ", "").contains("over(")) {
-                return true;
-            }
-            return false;
-        } else
-            return false;
+            return expression.replace(" ", "").contains("over(");
+        }
+        return false;
     }
 
     @Override

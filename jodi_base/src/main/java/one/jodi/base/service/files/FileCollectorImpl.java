@@ -33,13 +33,13 @@ public class FileCollectorImpl implements FileCollector {
         try {
             Files.walkFileTree(path, visitor);
         } catch (FileNotFoundException e) {
-            String msg = errorWarningMessages.formatMessage(00045, ERROR_MESSAGE_00045,
+            String msg = errorWarningMessages.formatMessage(45, ERROR_MESSAGE_00045,
                     this.getClass(),
                     path.toFile().getAbsolutePath());
             logger.error(msg, e);
             throw new FileException(msg, e);
         } catch (IOException e) {
-            String msg = errorWarningMessages.formatMessage(00047, ERROR_MESSAGE_00047,
+            String msg = errorWarningMessages.formatMessage(47, ERROR_MESSAGE_00047,
                     this.getClass(),
                     path.toFile().getAbsolutePath());
             logger.error(msg, e);
@@ -69,6 +69,7 @@ public class FileCollectorImpl implements FileCollector {
             this.orFilenameIs = orFilenameIs;
         }
 
+        @Override
         public List<Path> getPathList() {
             return Collections.unmodifiableList(files);
         }
@@ -80,7 +81,7 @@ public class FileCollectorImpl implements FileCollector {
             if (!attrs.isDirectory() &&
                     (file.toFile().getName().startsWith(startsWith) &&
                             file.toFile().getName().endsWith(endsWith)) ||
-                    file.toFile().getName().toString().equals(orFilenameIs)) {
+                    file.toFile().getName().equals(orFilenameIs)) {
                 files.add(file);
             }
             return FileVisitResult.CONTINUE;

@@ -7,11 +7,15 @@ import one.jodi.core.extensions.types.TargetColumnFlags;
 import one.jodi.core.extensions.types.UserDefinedFlag;
 import one.jodi.model.extensions.TargetColumnExtension;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @Deprecated
-public class GenericFlagsStrategy
-        implements FlagsStrategy {
+public class GenericFlagsStrategy implements FlagsStrategy {
 
     private UserDefinedFlag createFlag(final String name, final Boolean value) {
         return new UserDefinedFlag() {
@@ -22,7 +26,7 @@ public class GenericFlagsStrategy
 
             @Override
             public boolean getValue() {
-                return value.booleanValue();
+                return value;
             }
         };
     }
@@ -86,9 +90,7 @@ public class GenericFlagsStrategy
                 allUdfs.add(ud);
             } else {
                 Optional<UserDefinedFlag> defValue = getUdValue(name, defaultFlags);
-                if (defValue.isPresent()) {
-                    allUdfs.add(defValue.get());
-                }
+                defValue.ifPresent(allUdfs::add);
             }
         }
         return Collections.unmodifiableSet(allUdfs);

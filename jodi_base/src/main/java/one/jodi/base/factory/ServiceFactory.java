@@ -8,7 +8,7 @@ import com.google.inject.Injector;
  */
 public class ServiceFactory {
     private static ServiceFactory instance;
-    private Injector injector;
+    private final Injector injector;
 
     private ServiceFactory(final Injector injector) {
         this.injector = injector;

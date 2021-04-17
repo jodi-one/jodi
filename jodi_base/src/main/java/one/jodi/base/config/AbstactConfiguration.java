@@ -14,7 +14,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstactConfiguration {
 
@@ -67,8 +73,7 @@ public abstract class AbstactConfiguration {
             logger.debug("Loading Jodi properties file " + fileName);
             Parameters params = new Parameters();
             FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                    new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                            PropertiesConfiguration.class)
+                    new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
                             .configure(params.fileBased()
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
                                     .setFileName(fileName));
@@ -138,9 +143,10 @@ public abstract class AbstactConfiguration {
     }
 
     private String upCase(String target) {
-        return (target == null ? null : target);
+        return (target);
     }
 
+    @SuppressWarnings("unused")
     public Map<String, String> getPropertyMap(final String prop) {
         List<String> list = getPropertyList(prop);
         HashMap<String, String> map = new HashMap<>();
@@ -165,7 +171,7 @@ public abstract class AbstactConfiguration {
         List<String> keys = new ArrayList<>();
         Iterator<String> iter = getConfig().getKeys();
         while (iter.hasNext()) {
-            keys.add((String) iter.next());
+            keys.add(iter.next());
         }
         return keys;
     }

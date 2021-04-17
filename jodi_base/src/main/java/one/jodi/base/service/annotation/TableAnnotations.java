@@ -105,6 +105,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
         }
     }
 
+    @Override
     protected void reportUnexpectedType(final String key, final Class<?> keyTypes) {
         String msg = errorWarningMessages.formatMessage(80700,
                 ERROR_MESSAGE_80700, this.getClass(), key, getName(),
@@ -119,6 +120,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
     // process column annotations
     //
 
+    @Override
     protected void reportUndefinedAnnotation(final String key) {
         String msg = errorWarningMessages.formatMessage(80710,
                 ERROR_MESSAGE_80710, this.getClass(), key, getName());
@@ -150,7 +152,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
         String value = (String) annotations.get(DESCRIPTION.toLowerCase());
         // map empty string to null as well
         if (value != null && !value.trim().isEmpty()) {
-            result = Optional.ofNullable(value);
+            result = Optional.of(value);
         }
         return result;
     }
@@ -160,7 +162,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
         String value = (String) annotations.get(BUSINESS_NAME.toLowerCase());
         // map empty string to null as well
         if (value != null && !value.trim().isEmpty()) {
-            result = Optional.ofNullable(value);
+            result = Optional.of(value);
         }
         return result;
     }
@@ -170,7 +172,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
         String value = (String) annotations.get(BUSINESS_ABBREV.toLowerCase());
         // map empty string to null as well
         if (value != null && !value.trim().isEmpty()) {
-            result = Optional.ofNullable(value);
+            result = Optional.of(value);
         }
         return result;
     }

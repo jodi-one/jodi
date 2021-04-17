@@ -8,8 +8,16 @@ import one.jodi.base.annotations.Cached;
 import one.jodi.base.aop.WriteThroughCacheInterceptor;
 import one.jodi.core.annotations.TransactionAttribute;
 import one.jodi.core.aop.TransactionInterceptor;
-import one.jodi.core.service.*;
-import one.jodi.core.service.impl.*;
+import one.jodi.core.service.ConstraintService;
+import one.jodi.core.service.ProjectService;
+import one.jodi.core.service.SequenceService;
+import one.jodi.core.service.ValidationService;
+import one.jodi.core.service.VariableService;
+import one.jodi.core.service.impl.ConstraintServiceImpl;
+import one.jodi.core.service.impl.ProjectServiceImpl;
+import one.jodi.core.service.impl.SequenceServiceImpl;
+import one.jodi.core.service.impl.ValidationServiceImpl;
+import one.jodi.core.service.impl.VariableServiceImpl;
 import one.jodi.core.validation.sequences.SequenceValidator;
 import one.jodi.core.validation.sequences.SequenceValidatorImpl;
 import one.jodi.core.validation.variables.VariableValidator;
@@ -24,7 +32,12 @@ import one.jodi.etl.builder.impl.VariableEnrichmentBuilderImpl;
 import one.jodi.etl.builder.impl.VariableTransformationBuilderImpl;
 import one.jodi.etl.common.EtlSubSystemVersion;
 import one.jodi.etl.service.EtlDataStoreBuildService;
-import one.jodi.etl.service.constraints.*;
+import one.jodi.etl.service.constraints.ConstraintEnrichmentService;
+import one.jodi.etl.service.constraints.ConstraintEnrichmentServiceImpl;
+import one.jodi.etl.service.constraints.ConstraintServiceProvider;
+import one.jodi.etl.service.constraints.ConstraintTransformationService;
+import one.jodi.etl.service.constraints.ConstraintTransformationServiceImpl;
+import one.jodi.etl.service.constraints.ConstraintValidationService;
 import one.jodi.etl.service.interfaces.TransformationPrintServiceProvider;
 import one.jodi.etl.service.interfaces.TransformationServiceProvider;
 import one.jodi.etl.service.loadplan.LoadPlanExportService;
@@ -50,8 +63,28 @@ import one.jodi.odi.sequences.OdiSequenceAccessStrategy;
 import one.jodi.odi.variables.OdiVariableAccessStrategy;
 import one.jodi.odi12.constraints.Odi12ConstraintServiceProvider;
 import one.jodi.odi12.constraints.Odi12ConstraintsAccessStrategy;
-import one.jodi.odi12.etl.*;
-import one.jodi.odi12.etl.impl.*;
+import one.jodi.odi12.etl.AggregateBuilder;
+import one.jodi.odi12.etl.DatastoreBuilder;
+import one.jodi.odi12.etl.DistinctBuilder;
+import one.jodi.odi12.etl.ExpressionsBuilder;
+import one.jodi.odi12.etl.FilterBuilder;
+import one.jodi.odi12.etl.FlagsBuilder;
+import one.jodi.odi12.etl.FlowsBuilder;
+import one.jodi.odi12.etl.JoinBuilder;
+import one.jodi.odi12.etl.KMBuilder;
+import one.jodi.odi12.etl.LookupBuilder;
+import one.jodi.odi12.etl.SetBuilder;
+import one.jodi.odi12.etl.impl.AggregateBuilderImpl;
+import one.jodi.odi12.etl.impl.DatastoreBuilderImpl;
+import one.jodi.odi12.etl.impl.DistinctBuilderImpl;
+import one.jodi.odi12.etl.impl.ExpressionsBuilderImpl;
+import one.jodi.odi12.etl.impl.FilterBuilderImpl;
+import one.jodi.odi12.etl.impl.FlagsBuilderImpl;
+import one.jodi.odi12.etl.impl.FlowsBuilderImpl;
+import one.jodi.odi12.etl.impl.JoinBuilderImpl;
+import one.jodi.odi12.etl.impl.KMBuilderImpl;
+import one.jodi.odi12.etl.impl.LookupBuilderImpl;
+import one.jodi.odi12.etl.impl.SetBuilderImpl;
 import one.jodi.odi12.flow.FlowStrategy;
 import one.jodi.odi12.flow.FlowStrategyImpl;
 import one.jodi.odi12.loadplan.Odi12LoadPlanAccessStrategy;
@@ -65,7 +98,12 @@ import one.jodi.odi12.procedure.Odi12ProcedureServiceProvider;
 import one.jodi.odi12.project.Odi12ProjectServiceProvider;
 import one.jodi.odi12.sequences.Odi12SequenceAccessStrategy;
 import one.jodi.odi12.sequences.Odi12SequenceServiceProvider;
-import one.jodi.odi12.service.*;
+import one.jodi.odi12.service.Odi12LoadPlanExportService;
+import one.jodi.odi12.service.Odi12LoadPlanService;
+import one.jodi.odi12.service.Odi12LoadPlanTransformationService;
+import one.jodi.odi12.service.Odi12RepositoryExportService;
+import one.jodi.odi12.service.Odi12RepositoryImportService;
+import one.jodi.odi12.service.OdiDatastoreBuildService;
 import one.jodi.odi12.variables.Odi12VariableAccessStrategy;
 import one.jodi.odi12.variables.Odi12VariableServiceProvider;
 import oracle.odi.domain.adapter.topology.ILogicalSchema;
@@ -90,22 +128,18 @@ public class Odi12Module extends AbstractModule {
     protected void configure() {
         // ODI 12C
         bind(FlowStrategy.class).to(FlowStrategyImpl.class);
-        bind(TransformationServiceProvider.class)
-                .to(Odi12TransformationServiceProvider.class);
+        bind(TransformationServiceProvider.class).to(Odi12TransformationServiceProvider.class);
         bind(PackageServiceProvider.class).to(Odi12PackageServiceProviderImpl.class);
         bind(new TypeLiteral<OdiPackageAccessStrategy<Mapping, StepMapping>>() {
-        })
-                .to(Odi12PackageAccessStrategyImpl.class);
+        }).to(Odi12PackageAccessStrategyImpl.class);
         bind(new TypeLiteral<OdiTransformationAccessStrategy<MapRootContainer,
                 Dataset, DatastoreComponent, ReusableMappingComponent,
                 IMapComponent, OdiContext, ILogicalSchema>>() {
-        })
-                .to(Odi12TransformationAccessStrategy.class);
+        }).to(Odi12TransformationAccessStrategy.class);
         bind(OdiRepositoryExportService.class).to(Odi12RepositoryExportService.class);
         bind(OdiRepositoryImportService.class).to(Odi12RepositoryImportService.class);
         bind(new TypeLiteral<OdiLoadPlanAccessStrategy<OdiLoadPlan, Mapping>>() {
-        })
-                .to(Odi12LoadPlanAccessStrategy.class);
+        }).to(Odi12LoadPlanAccessStrategy.class);
 
         bind(LoadPlanExportService.class).to(Odi12LoadPlanExportService.class);
         bind(LoadPlanService.class).to(Odi12LoadPlanService.class);

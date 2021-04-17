@@ -14,7 +14,12 @@ import one.jodi.base.context.ContextImpl;
 import one.jodi.base.service.files.FileCollector;
 import one.jodi.base.service.files.FileCollectorImpl;
 import one.jodi.bootstrap.EtlRunConfig;
-import one.jodi.core.annotations.*;
+import one.jodi.core.annotations.ExportInDatabaseConstraints;
+import one.jodi.core.annotations.IncludeConstraints;
+import one.jodi.core.annotations.InterfacePrefix;
+import one.jodi.core.annotations.JournalizedData;
+import one.jodi.core.annotations.MasterPassword;
+import one.jodi.core.annotations.TransactionAttribute;
 import one.jodi.core.aop.TransactionInterceptor;
 import one.jodi.core.automapping.ColumnMappingContext;
 import one.jodi.core.automapping.impl.ColumnMappingContextImpl;
@@ -36,7 +41,14 @@ import one.jodi.core.executionlocation.ExecutionLocationContext;
 import one.jodi.core.executionlocation.impl.ExecutionLocationContextImpl;
 import one.jodi.core.executionlocation.impl.ExecutionLocationDefaultStrategy;
 import one.jodi.core.executionlocation.impl.ExecutionLocationIDStrategy;
-import one.jodi.core.extensions.strategies.*;
+import one.jodi.core.extensions.strategies.ColumnMappingStrategy;
+import one.jodi.core.extensions.strategies.ExecutionLocationStrategy;
+import one.jodi.core.extensions.strategies.FlagsStrategy;
+import one.jodi.core.extensions.strategies.FolderNameStrategy;
+import one.jodi.core.extensions.strategies.JournalizingStrategy;
+import one.jodi.core.extensions.strategies.KnowledgeModuleStrategy;
+import one.jodi.core.extensions.strategies.ModelCodeStrategy;
+import one.jodi.core.extensions.strategies.TransformationNameStrategy;
 import one.jodi.core.folder.FolderNameContext;
 import one.jodi.core.folder.impl.FolderNameContextImpl;
 import one.jodi.core.folder.impl.FolderNameDefaultStrategy;
@@ -53,8 +65,24 @@ import one.jodi.core.metadata.DatabaseMetadataService;
 import one.jodi.core.metadata.DatabaseMetadataServiceImpl;
 import one.jodi.core.metadata.ETLSubsystemService;
 import one.jodi.core.metadata.ETLSubsystemServiceImpl;
-import one.jodi.core.service.*;
-import one.jodi.core.service.impl.*;
+import one.jodi.core.service.DatastoreService;
+import one.jodi.core.service.ExtractionTables;
+import one.jodi.core.service.MetadataServiceProvider;
+import one.jodi.core.service.ModelValidator;
+import one.jodi.core.service.PackageService;
+import one.jodi.core.service.ProcedureService;
+import one.jodi.core.service.ScenarioService;
+import one.jodi.core.service.TableService;
+import one.jodi.core.service.TransformationService;
+import one.jodi.core.service.impl.DatastoreServiceImpl;
+import one.jodi.core.service.impl.ModelValidatorImpl;
+import one.jodi.core.service.impl.OneToOneMappingGenerationImpl;
+import one.jodi.core.service.impl.PackageServiceImpl;
+import one.jodi.core.service.impl.ProcedureServiceImpl;
+import one.jodi.core.service.impl.ScenarioServiceImpl;
+import one.jodi.core.service.impl.TableServiceImpl;
+import one.jodi.core.service.impl.TransformationServiceImpl;
+import one.jodi.core.service.impl.XMLMetadataServiceProvider;
 import one.jodi.core.targetcolumn.FlagsContext;
 import one.jodi.core.targetcolumn.impl.FlagsContextImpl;
 import one.jodi.core.targetcolumn.impl.FlagsDefaultStrategy;
@@ -71,7 +99,12 @@ import one.jodi.etl.builder.EnrichingBuilder;
 import one.jodi.etl.builder.PackageBuilder;
 import one.jodi.etl.builder.ProcedureTransformationBuilder;
 import one.jodi.etl.builder.TransformationBuilder;
-import one.jodi.etl.builder.impl.*;
+import one.jodi.etl.builder.impl.DictionaryModelLogicalSchema;
+import one.jodi.etl.builder.impl.DictionaryModelLogicalSchemaImpl;
+import one.jodi.etl.builder.impl.EnrichingBuilderImpl;
+import one.jodi.etl.builder.impl.PackageBuilderImpl;
+import one.jodi.etl.builder.impl.ProcedureTransformationBuilderImpl;
+import one.jodi.etl.builder.impl.TransformationBuilderImpl;
 
 import java.lang.reflect.Method;
 
@@ -132,10 +165,10 @@ public class CoreETLModule extends AbstractModule {
         bind(ExtractionTables.class).to(OneToOneMappingGenerationImpl.class);
 
         bind(Boolean.class).annotatedWith(IncludeConstraints.class)
-                .toProvider(Providers.<Boolean>of(config.isIncludingConstraints()));
+                .toProvider(Providers.of(config.isIncludingConstraints()));
 
         bind(Boolean.class).annotatedWith(ExportInDatabaseConstraints.class)
-                .toProvider(Providers.<Boolean>of(config.isExportingDBConstraints()));
+                .toProvider(Providers.of(config.isExportingDBConstraints()));
 
         // Dependencies for Procedures
         bind(ProcedureService.class).to(ProcedureServiceImpl.class);
@@ -151,13 +184,11 @@ public class CoreETLModule extends AbstractModule {
         bind(TransformationNameStrategy.class).to(TransformationNameIDStrategy.class);
 
         bind(FolderNameContext.class).to(FolderNameContextImpl.class);
-        bind(FolderNameStrategy.class).annotatedWith(DefaultStrategy.class)
-                .to(FolderNameDefaultStrategy.class);
+        bind(FolderNameStrategy.class).annotatedWith(DefaultStrategy.class).to(FolderNameDefaultStrategy.class);
         bind(FolderNameStrategy.class).to(FolderNameIDStrategy.class);
 
         bind(ModelCodeContext.class).to(ModelCodeContextImpl.class);
-        bind(ModelCodeStrategy.class).annotatedWith(DefaultStrategy.class)
-                .to(ModelCodeDefaultStrategy.class);
+        bind(ModelCodeStrategy.class).annotatedWith(DefaultStrategy.class).to(ModelCodeDefaultStrategy.class);
         bind(ModelCodeStrategy.class).to(ModelCodeIDStrategy.class);
 
         bind(KnowledgeModuleContext.class).to(KnowledgeModuleContextImpl.class);
@@ -172,22 +203,19 @@ public class CoreETLModule extends AbstractModule {
 
         bind(FlagsContext.class).to(FlagsContextImpl.class);
         bind(FlagsStrategy.class).to(FlagsIDStrategy.class);
-        bind(FlagsStrategy.class).annotatedWith(DefaultStrategy.class)
-                .to(FlagsDefaultStrategy.class);
+        bind(FlagsStrategy.class).annotatedWith(DefaultStrategy.class).to(FlagsDefaultStrategy.class);
 
         bind(JournalizingContext.class).to(JournalizingContextImpl.class);
         bind(JournalizingStrategy.class).to(JournalizingIDStrategy.class);
-        bind(JournalizingStrategy.class).annotatedWith(DefaultStrategy.class)
-                .to(JournalizingDefaultStrategy.class);
+        bind(JournalizingStrategy.class).annotatedWith(DefaultStrategy.class).to(JournalizingDefaultStrategy.class);
 
         bind(ColumnMappingContext.class).to(ColumnMappingContextImpl.class);
         bind(ColumnMappingStrategy.class).to(ColumnMappingIDStrategy.class);
-        bind(ColumnMappingStrategy.class).annotatedWith(DefaultStrategy.class)
-                .to(ColumnMappingDefaultStrategy.class);
+        bind(ColumnMappingStrategy.class).annotatedWith(DefaultStrategy.class).to(ColumnMappingDefaultStrategy.class);
 
         bind(FileCollector.class).to(FileCollectorImpl.class);
         bind(Boolean.class).annotatedWith(IncludeVariables.class)
-                .toProvider(Providers.<Boolean>of(config.isIncludeVariables()));
+                .toProvider(Providers.of(config.isIncludeVariables()));
 
         bind(DictionaryModelLogicalSchema.class).to(DictionaryModelLogicalSchemaImpl.class);
         // AOP

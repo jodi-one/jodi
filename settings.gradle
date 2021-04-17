@@ -6,9 +6,9 @@ if (doExtraProjects().equals('yes')) {
     println "Including extra projects."
 }
 include ':jodi_odi12'
+include ':jodi_plugins'
 include ':jodi_qa'
 // plugin projects
-include ':jodi_plugins'
 include ':jodi_tools'
 include ':jodi_model'
 

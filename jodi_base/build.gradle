@@ -41,7 +41,7 @@ dependencies {
 }
 
 task srcZip(type: Zip) {
-    classifier = 'src'
+    archiveClassifier.set('src')
     from projectDir
 
     include 'src/main/java/**/*.java'

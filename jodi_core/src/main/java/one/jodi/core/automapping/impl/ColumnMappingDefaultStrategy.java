@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -35,14 +36,13 @@ import java.util.regex.Pattern;
  */
 public class ColumnMappingDefaultStrategy implements ColumnMappingStrategy {
 
+    private final static Logger LOGGER = LogManager.getLogger(ColumnMappingDefaultStrategy.class);
 
-    private static final String identityRegex = ".*";
-
-    private final static Logger log = LogManager.getLogger(ColumnMappingDefaultStrategy.class);
+    private static final Pattern IDENTITY_REGEX = Pattern.compile(".*");
     private final static String ERROR_MESSAGE_01080 = "The Jodi properties file property '" + JodiConstants.COLUMN_MATCH_REGEX + "' contains invalid regex /%s/.";
+
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;
-
 
     @Inject
     public ColumnMappingDefaultStrategy(JodiProperties properties,
@@ -52,71 +52,50 @@ public class ColumnMappingDefaultStrategy implements ColumnMappingStrategy {
     }
 
     @Override
-    public String getMappingExpression(
-            String currentMappingExpression,
-            ColumnMappingExecutionContext columnMappingContext,
-            TargetColumnExecutionContext targetColumnContext) {
-
-
-        String mappingExpression = null;
-				
-		/*
-		String regexesString = cmContext.getCoreProperties().get(JodiConstants.COLUMN_MATCH_REGEX);
-		if(regexesString == null || regexesString.length() < 1) {
-			log.info(JodiConstants.COLUMN_MATCH_REGEX + " appears not to be set in Jodi properties file.  Adding identity regex /" + identityRegex + "/");
-			regexesString = identityRegex;
-		}
-		*/
+    public String getMappingExpression(String currentMappingExpression,
+                                       ColumnMappingExecutionContext columnMappingContext,
+                                       TargetColumnExecutionContext targetColumnContext) {
         ArrayList<Pattern> patterns = new ArrayList<>();
-        //for(String regex : regexesString.split(",")) {
-        for (String regex : properties
-                .getPropertyList(JodiConstants.COLUMN_MATCH_REGEX)) {
+        for (String regex : properties.getPropertyList(JodiConstants.COLUMN_MATCH_REGEX)) {
             try {
                 Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
                 patterns.add(pattern);
-            } catch (java.util.regex.PatternSyntaxException pse) {
+            } catch (PatternSyntaxException pse) {
                 String msg = errorWarningMessages.formatMessage(1080, ERROR_MESSAGE_01080, this.getClass(), regex);
-                log.error(msg);
+                LOGGER.error(msg);
                 errorWarningMessages.addMessage(columnMappingContext.getDataset().getParent().getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 throw new RuntimeException(msg);
             }
         }
 
         if (patterns.size() == 0) {
-            Pattern pattern = Pattern.compile(identityRegex);
-            patterns.add(pattern);
-            log.debug("Jodi Properties " + JodiConstants.COLUMN_MATCH_REGEX + " not set. Defaulting to identity regex (source and target columns must have identical names).");
+            patterns.add(IDENTITY_REGEX);
+            LOGGER.debug("Jodi Properties " + JodiConstants.COLUMN_MATCH_REGEX + " not set. Defaulting to identity " +
+                    "regex (source and target columns must have identical names).");
         }
-		
-		/*
-		String ignoreString = cmContext.getCoreProperties().get(JodiConstants.COLUMN_MATCH_SOURCE_IGNORE);
-		String[] ignoreArray = ignoreString != null ? ignoreString.split(",") : new String[]{};
-		List<String> ignoreList = Arrays.asList(ignoreArray);		
-		*/
-        List<String> ignoreList = null;
+
+        List<String> ignoreList;
         try {
             ignoreList = properties.getPropertyList(JodiConstants.COLUMN_MATCH_SOURCE_IGNORE);
         } catch (JodiPropertyNotFoundException e) {
-            ignoreList = Collections.<String>emptyList();
+            ignoreList = Collections.emptyList();
         }
 
         // Call the registered regexes, making sure first regex does not get ignoreList
-        mappingExpression = match(patterns.get(0), Collections.<String>emptyList(), columnMappingContext, targetColumnContext);
-        for (int i = 1; i < patterns.size(); i++) {
+        String mappingExpression = match(patterns.get(0), Collections.emptyList(), columnMappingContext, targetColumnContext);
 
+        for (int i = 1; i < patterns.size(); i++) {
             if (mappingExpression != null) {
                 break;
             }
-
             mappingExpression = match(patterns.get(i), ignoreList, columnMappingContext, targetColumnContext);
         }
 
         return mappingExpression;
     }
 
-
-    private String match(Pattern pattern, List<String> ignoreList, ColumnMappingExecutionContext cmContext, TargetColumnExecutionContext columnContext) {
-
+    private String match(Pattern pattern, List<String> ignoreList, ColumnMappingExecutionContext cmContext,
+                         TargetColumnExecutionContext columnContext) {
         String mappingExpression = null;
 
         for (DataStoreWithAlias dataStoreWithAlias : cmContext.getDataStores()) {

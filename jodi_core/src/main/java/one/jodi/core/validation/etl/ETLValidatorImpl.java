@@ -537,7 +537,6 @@ public class ETLValidatorImpl implements ETLValidator {
             int packageSequence = datasets.get(0)
                                           .getParent()
                                           .getPackageSequence();
-
             SetOperatorTypeEnum setOperator = datasets.get(0)
                                                       .getSetOperator() != null ? datasets.get(0)
                                                                                           .getSetOperator()
@@ -650,7 +649,6 @@ public class ETLValidatorImpl implements ETLValidator {
             int packageSequence = source.getParent()
                                         .getParent()
                                         .getPackageSequence();
-
             addErrorMessage(packageSequence,
                             errorWarningMessages.formatMessage(30010, ERROR_MESSAGE_30010, this.getClass(),
                                                                source.getName(), getDatasetIndex(source)));
@@ -717,7 +715,6 @@ public class ETLValidatorImpl implements ETLValidator {
         HashMap<String, String> invalidReferencesMap = new HashMap<>();
 
         int index = getDatasetIndex(source);
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX_OR_VAR;
 
         // TODO - may want to extract this to not regenerate pattern each time.
         Pattern pattern = Pattern.compile(regex);
@@ -761,7 +758,6 @@ public class ETLValidatorImpl implements ETLValidator {
         int packageSequence = source.getParent()
                                     .getParent()
                                     .getPackageSequence();
-
         if (!referencesParent) {
             addErrorMessage(packageSequence,
                             errorWarningMessages.formatMessage(30101, ERROR_MESSAGE_30101, this.getClass(),
@@ -813,7 +809,6 @@ public class ETLValidatorImpl implements ETLValidator {
             return true;
         }
     }
-
 
     /**
      * Return the alias map for a given flow item.  This will either be the parent Source or the previous Flow item.
@@ -887,7 +882,6 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateJoin(Source source) {
         boolean valid = true;
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX_OR_VAR;
         HashMap<String, String> aliasesToNames = getAllAliases(source.getParent(), false);
         HashMap<String, String> invalidReferencesMap = new HashMap<>();
 
@@ -896,14 +890,12 @@ public class ETLValidatorImpl implements ETLValidator {
         int packageSequence = source.getParent()
                                     .getParent()
                                     .getPackageSequence();
-
         //@TODO
         // add validation for flows.
         if (source.getFlows()
                   .size() != 0) {
             return true;
         }
-
         if (source.getJoin() != null && source.getJoin()
                                               .length() > 0) {
             // TODO - may want to extract this to not regenerate pattern each
@@ -1117,13 +1109,11 @@ public class ETLValidatorImpl implements ETLValidator {
     @Override
     public boolean validateLookup(Lookup lookup) {
         int datasetIndex = getDatasetIndex(lookup);
-
         if (metadataService.isTemporaryTransformation(lookup.getLookupDataStore()) && lookup.isSubSelect()) {
             int packageSequence = lookup.getParent()
                                         .getParent()
                                         .getParent()
                                         .getPackageSequence();
-
             addWarningMessage(packageSequence,
                               errorWarningMessages.formatMessage(31000, ERROR_MESSAGE_31000, this.getClass(),
                                                                  lookup.getAlias(), lookup.getParent()
@@ -1193,7 +1183,6 @@ public class ETLValidatorImpl implements ETLValidator {
         List<KMValidation> errors = validateKM(mappings.getIkm());
         int packageSequence = mappings.getParent()
                                       .getPackageSequence();
-
         for (KMValidation error : errors) {
             switch (error.error) {
                 case UNDEFINED:
@@ -1227,7 +1216,6 @@ public class ETLValidatorImpl implements ETLValidator {
         List<KMValidation> errors = validateKM(mappings.getIkm());
         int packageSequence = mappings.getParent()
                                       .getPackageSequence();
-
         for (KMValidation error : errors) {
             switch (error.error) {
                 case UNDEFINED:
@@ -1261,7 +1249,6 @@ public class ETLValidatorImpl implements ETLValidator {
         List<KMValidation> errors = validateKM(mappings.getCkm());
         int packageSequence = mappings.getParent()
                                       .getPackageSequence();
-
         for (KMValidation error : errors) {
             switch (error.error) {
                 case UNDEFINED:
@@ -1295,7 +1282,6 @@ public class ETLValidatorImpl implements ETLValidator {
         List<KMValidation> errors = validateKM(mappings.getCkm());
         int packageSequence = mappings.getParent()
                                       .getPackageSequence();
-
         for (KMValidation error : errors) {
             switch (error.error) {
                 case UNDEFINED:
@@ -1524,10 +1510,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                                       .getParent();
         HashMap<String, String> aliasMap = getAllAliases(dataset, isFilter);
 
-        String regex = JodiConstants.ALIAS_DOT_COLUMN_PREFIX;
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(expression + "");
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression + "");
         while (matcher.find()) {
             String alias = matcher.group(1);
             String column = matcher.group(3);
@@ -1565,8 +1548,7 @@ public class ETLValidatorImpl implements ETLValidator {
 
         HashMap<String, String> scopeAliases = getAllAliases(dataset, false);
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(join + "");
+        Matcher matcher = PATTERN_JOIN.matcher(join + "");
         while (matcher.find()) {
             String leftAlias = matcher.group(1);
             String leftColumn = matcher.group(3);
@@ -1593,7 +1575,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                                    rightAlias + "." + rightColumn));
                 }
             } catch (DataStoreNotInModelException | ColumnNotInDataStoreException de) {
-                // validation should have already been performed on datastore existance.
+                // validation should have already been performed on datastore existence.
             }
         }
 
@@ -1858,8 +1840,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                     .getParent()
                                     .getPackageSequence();
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(lookup.getJoin());
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(lookup.getJoin());
         boolean referencesParent = false;
         while (matcher.find()) {
             String columnName = matcher.group();
@@ -2240,7 +2221,6 @@ public class ETLValidatorImpl implements ETLValidator {
     public void handleModelCode(Exception e, Mappings mappings) {
         int packageSequence = mappings.getParent()
                                       .getPackageSequence();
-
         if (e instanceof DataStoreNotInModelException) {
             if (mappings.getModel() != null && mappings.getModel()
                                                        .length() > 0) {
@@ -2647,7 +2627,7 @@ public class ETLValidatorImpl implements ETLValidator {
             for (Map.Entry<String, String> entry : attribute.getExpressions()
                                                             .entrySet()) {
                 String expression = entry.getValue();
-                Matcher matcher = pattern.matcher(expression + "");
+                Matcher matcher = PATTERN_SUBQUERY.matcher(expression + "");
                 while (matcher.find()) {
                     String alias = matcher.group(1);
                     String columnName = matcher.group();
@@ -2670,7 +2650,6 @@ public class ETLValidatorImpl implements ETLValidator {
                                 valid = false;
                             }
                         } else {
-
                             HashMap<String, String> scopeAliases = getAliases(flow);
                             if (scopeAliases.containsValue(alias) && !scopeAliases.containsKey(alias)) {
                                 String msg =
@@ -2768,7 +2747,6 @@ public class ETLValidatorImpl implements ETLValidator {
                 }
             }
         }
-
         return valid;
     }
 
@@ -2877,21 +2855,7 @@ public class ETLValidatorImpl implements ETLValidator {
             errorWarningMessages.addMessage(packageSequence, msg, MESSAGE_TYPE.ERRORS);
             valid = false;
         }
-
-		/*
-		// determine that correct number of expressions are used
-		subquery.getOutputAttributes().forEach(f -> {
-				if(f.getExpressions().keySet().stream().filter(k -> k == ExpressionSource.DRIVER.name()). > 1) {
-
-				}
-			}
-		);
-			*/
-
-
         return valid;
-
-
     }
 
     @Override
@@ -3042,7 +3006,6 @@ public class ETLValidatorImpl implements ETLValidator {
 
     private boolean validateLookupDefaultRowExpression(Lookup lookup, String column, String expression) {
         boolean valid = true;
-
         String sourceNameOrAlias = lookup.getParent()
                                          .getAlias() != null ? lookup.getParent()
                                                                      .getAlias()
@@ -3059,8 +3022,7 @@ public class ETLValidatorImpl implements ETLValidator {
                                     .getParent()
                                     .getPackageSequence();
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(expression);
+        Matcher matcher = PATTERN_ALIAS_DOT_COLUMN_PREFIX.matcher(expression);
         while (matcher.find()) {
             String columnName = matcher.group();
             String tableName = columnName.substring(0, columnName.indexOf("."));

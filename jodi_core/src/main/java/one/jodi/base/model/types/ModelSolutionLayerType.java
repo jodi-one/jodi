@@ -9,8 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 public enum ModelSolutionLayerType implements ModelSolutionLayer {
     UNKNOWN, SOURCE, EDW_SDS, EDW_SIS, EDW, STAR_SDS, STAR_SIS, STAR;
 
-    private static ConcurrentMap<String, ModelSolutionLayer> layers =
-            new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, ModelSolutionLayer> LAYERS = new ConcurrentHashMap<>();
 
     /**
      * Gets the ModelSolutionLayer constant associated with the specified name.
@@ -20,32 +19,33 @@ public enum ModelSolutionLayerType implements ModelSolutionLayer {
      * @return the ModelSolutionLayer constant associated with the specified
      * name
      */
-    public static ModelSolutionLayer modelSolutionLayerFor(
-            final String layerName) {
-        ModelSolutionLayer result = null;
+    public static ModelSolutionLayer modelSolutionLayerFor(final String layerName) {
+        ModelSolutionLayer result;
         if (layerName != null) {
-            if (layers.isEmpty()) {
+            if (LAYERS.isEmpty()) {
                 for (ModelSolutionLayerType layer : values()) {
                     String name = layer.name();
-                    layers.putIfAbsent(name, layer);
+                    LAYERS.putIfAbsent(name, layer);
                 }
-                layers.putIfAbsent("DM", STAR);
+                LAYERS.putIfAbsent("DM", STAR);
             }
             final String uppercaseName = layerName.toUpperCase();
-            result = layers.get(uppercaseName);
+            result = LAYERS.get(uppercaseName);
 
             if (result == null) {
                 result = new ModelSolutionLayer() {
+                    @Override
                     public String getSolutionLayerName() {
                         return layerName;
                     }
 
+                    @Override
                     public String toString() {
                         return getSolutionLayerName();
                     }
                 };
 
-                layers.putIfAbsent(uppercaseName, result);
+                LAYERS.putIfAbsent(uppercaseName, result);
             }
         } else {
             result = UNKNOWN;
@@ -53,6 +53,7 @@ public enum ModelSolutionLayerType implements ModelSolutionLayer {
         return result;
     }
 
+    @Override
     public String getSolutionLayerName() {
         return name().toLowerCase();
     }

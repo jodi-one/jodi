@@ -14,7 +14,7 @@ import one.jodi.etl.internalmodel.Transformation;
 
 /**
  * At the highest level this interface serves as the single point by which the internal model is enriched with information not
- * defined from the original external input model (XML).  After the sucessful call to {@link #enrich(Transformation, boolean)} the model
+ * defined from the original external input model (XML).  After the successful call to {@link #enrich(Transformation, boolean)} the model
  * is considered fully populated and ready to be consumed by the Jodi ODI layer to create an ODI interface.
  * <p>
  * The implementor will delegate the work of deriving information to

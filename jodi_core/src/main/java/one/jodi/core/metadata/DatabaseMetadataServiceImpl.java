@@ -5,7 +5,12 @@ import one.jodi.base.annotations.Cached;
 import one.jodi.base.context.Context;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
-import one.jodi.base.model.types.*;
+import one.jodi.base.model.types.DataModel;
+import one.jodi.base.model.types.DataStore;
+import one.jodi.base.model.types.DataStoreColumn;
+import one.jodi.base.model.types.DataStoreType;
+import one.jodi.base.model.types.LazyCreation;
+import one.jodi.base.model.types.ModelSolutionLayerType;
 import one.jodi.base.model.types.impl.DataModelImpl;
 import one.jodi.base.model.types.impl.DataStoreColumnImpl;
 import one.jodi.base.model.types.impl.DataStoreImpl;
@@ -14,7 +19,6 @@ import one.jodi.base.service.metadata.DataModelDescriptor;
 import one.jodi.base.service.metadata.DataStoreDescriptor;
 import one.jodi.base.service.metadata.SchemaMetaDataProvider;
 import one.jodi.base.service.schema.DatabaseSchemaServiceImpl;
-import one.jodi.base.util.StringUtils;
 import one.jodi.core.config.JodiConstants;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.config.PropertyValueHolder;
@@ -27,18 +31,26 @@ import one.jodi.etl.service.SubsystemServiceProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static one.jodi.base.util.StringUtils.endsWithIgnoreCase;
 
 public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
         implements DatabaseMetadataService, LazyCreation {
 
-    private final static Logger logger =
-            LogManager.getLogger(DatabaseMetadataServiceImpl.class);
+    private final static Logger LOGGER = LogManager.getLogger(DatabaseMetadataServiceImpl.class);
 
-    private final static String ERROR_MESSAGE_00030 =
-            "Unknown data model %s.";
+    private final static String ERROR_MESSAGE_00030 = "Unknown data model %s.";
 
     private final SchemaMetaDataProvider etlProvider;
     private final SubsystemServiceProvider subsystemServiceProvider;
@@ -76,30 +88,22 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
 
     @Override
     public Map<String, PropertyValueHolder> getCoreProperties() {
-        Map<String, PropertyValueHolder> properties = new HashMap<>();
         List<String> exclusions = subsystemServiceProvider.getPropertyNameExclusionList();
-        for (String key : jodiProperties.getPropertyKeys()) {
-            // Skips keys that are explicitly referenced in the OdiConstants
-            // class as they refer to ODI-specific details that should not be
-            // made available in execution contexts.
-            if (!exclusions.contains(key)) {
-                properties.put(key, jodiProperties.getPropertyValueHolder(key));
-            }
-        }
-        properties = Collections.unmodifiableMap(properties);
-        return properties;
+
+        // Skips keys that are explicitly referenced in the OdiConstants class as they refer to ODI-specific details
+        // that should not be made available in execution contexts.
+        Map<String, PropertyValueHolder> collect = jodiProperties.getPropertyKeys().stream()
+                .filter(key -> !exclusions.contains(key))
+                .collect(Collectors.toMap(key -> key, jodiProperties::getPropertyValueHolder));
+        return Collections.unmodifiableMap(collect);
     }
 
     private ModelProperties findModelPropertyByCode(final String modelCode) {
-
-        ModelProperties found = null;
-        for (ModelProperties mp : modelPropertiesProvider.getConfiguredModels()) {
-            if (modelCode.equals(mp.getCode())) {
-                found = mp;
-                break;
-            }
-        }
-        return found;
+        return modelPropertiesProvider.getConfiguredModels().stream()
+                .filter(Objects::nonNull)
+                .filter(mp -> modelCode.equals(mp.getCode()))
+                .findAny()
+                .orElse(null);
     }
 
     @Override
@@ -112,34 +116,25 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
             Map<String, DataStoreDescriptor> d = etlProvider
                     .getDataStoreDescriptorsInModel(modelCode);
             if (d.containsKey(dataStoreName)) {
-                foundDataStores
-                        .add(findOrCreateDataStore(d.get(dataStoreName)));
+                foundDataStores.add(findOrCreateDataStore(d.get(dataStoreName)));
             }
         }
 
         // add temporary tables that are registered with the cache
-        final List<DataStore> registeredTemporaryDataStores = context
-                .getAllTempTables();
+        final List<DataStore> registeredTemporaryDataStores = context.getAllTempTables();
         foundDataStores.addAll(registeredTemporaryDataStores.stream()
-                .filter(tds -> dataStoreName
-                        .equals(tds
-                                .getDataStoreName()))
-                .collect(Collectors
-                        .toList()));
+                .filter(tds -> dataStoreName.equals(tds.getDataStoreName()))
+                .collect(Collectors.toList()));
 
         return Collections.unmodifiableList(foundDataStores);
     }
 
     private DataModelDescriptor findModelDescriptor(final String modelCode) {
-        DataModelDescriptor found = null;
-        List<DataModelDescriptor> dmdList = etlProvider.getDataModelDescriptors();
-        for (DataModelDescriptor dmd : dmdList) {
-            if (dmd.getModelCode().equals(modelCode)) {
-                found = dmd;
-                break;
-            }
-        }
-        return found;
+        return etlProvider.getDataModelDescriptors().stream()
+                .filter(Objects::nonNull)
+                .filter(dmd -> dmd.getModelCode().equals(modelCode))
+                .findAny()
+                .orElse(null);
     }
 
     @Override
@@ -151,7 +146,7 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
     public DataStore getSourceDataStoreInModel(final String dataStoreName,
                                                final String modelCode) {
         // consider temporary interfaces
-        return getDataStoreInModel(dataStoreName, modelCode, (Mappings) null, true);
+        return getDataStoreInModel(dataStoreName, modelCode, null, true);
     }
 
     @Override
@@ -170,83 +165,44 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
     }
 
     private boolean isDimension(String targetDataStore) {
-        boolean isDimension = false;
-        boolean hasDataMartPrefix = false;
-        for (String dmp : jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)) {
-            if (targetDataStore.startsWith(dmp)) {
-                hasDataMartPrefix = true;
-            }
-        }
-        if (hasDataMartPrefix && StringUtils.endsWithIgnoreCase(targetDataStore,
-                jodiProperties.getProperty(JodiConstants.DIMENSION_SUFFIX))) {
-            isDimension = true;
-        }
-        return isDimension;
+        boolean hasDataMartPrefix = jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX).stream()
+                .anyMatch(targetDataStore::startsWith);
+        return hasDataMartPrefix && endsWithIgnoreCase(targetDataStore,
+                jodiProperties.getProperty(JodiConstants.DIMENSION_SUFFIX));
     }
 
     private boolean isFact(String targetDataStore) {
-        boolean isFact = false;
-        boolean hasDataMartPrefix = false;
-        for (String dmp : jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)) {
-            if (targetDataStore.startsWith(dmp)) {
-                hasDataMartPrefix = true;
-            }
-        }
-        if (hasDataMartPrefix) {
-            for (String fs : jodiProperties.getPropertyList(JodiConstants.FACT_SUFFIX)) {
-                if (StringUtils.endsWithIgnoreCase(targetDataStore,
-                        fs)) {
-                    isFact = true;
-                }
-            }
-        }
-        return isFact;
+        boolean hasDataMartPrefix = jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX).stream()
+                .anyMatch(targetDataStore::startsWith);
+        return hasDataMartPrefix && jodiProperties.getPropertyList(JodiConstants.FACT_SUFFIX).stream()
+                .anyMatch(fs -> endsWithIgnoreCase(targetDataStore, fs));
     }
 
     private boolean isHelper(String targetDataStore) {
-        boolean hasDataMartPrefix = false;
-        for (String dmp : jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX)) {
-            if (targetDataStore.startsWith(dmp)) {
-                hasDataMartPrefix = true;
-            }
-        }
-        if (hasDataMartPrefix && StringUtils.endsWithIgnoreCase(targetDataStore,
-                jodiProperties.getProperty(JodiConstants.HELPER_SUFFIX))) {
-            return true;
-        }
-        return false;
+        boolean hasDataMartPrefix = jodiProperties.getPropertyList(JodiConstants.DATA_MART_PREFIX).stream()
+                .anyMatch(targetDataStore::startsWith);
+        return hasDataMartPrefix
+                && endsWithIgnoreCase(targetDataStore, jodiProperties.getProperty(JodiConstants.HELPER_SUFFIX));
     }
 
     @Override
     public boolean isSourceModel(String modelCode) {
-        return isTypeModel(modelCode,
-                ModelSolutionLayerType.SOURCE.getSolutionLayerName());
+        return isTypeModel(modelCode, ModelSolutionLayerType.SOURCE.getSolutionLayerName());
     }
 
     @Override
     public boolean isConnectorModel(String modelCode) {
-        return isTypeModel(modelCode,
-                ModelSolutionLayerType.EDW_SDS.getSolutionLayerName());
+        return isTypeModel(modelCode, ModelSolutionLayerType.EDW_SDS.getSolutionLayerName());
     }
 
     private boolean isTypeModel(String modelCode, String modelTypeFlag) {
-
-        boolean isOfModelType = false;
-        List<ModelProperties> properties = getConfiguredModels();
-
-        ModelProperties matchingProperties = null;
-        for (ModelProperties mp : properties) {
-            if (mp.getCode().equalsIgnoreCase(modelCode)) {
-                matchingProperties = mp;
-                break;
-            }
-        }
-        if ((matchingProperties != null)
-                && (matchingProperties.getLayer() != null && matchingProperties
-                .getLayer().equalsIgnoreCase(modelTypeFlag))) {
-            isOfModelType = true;
-        }
-        return isOfModelType;
+        return getConfiguredModels().stream()
+                .filter(Objects::nonNull)
+                .filter(mp -> mp.getCode().equalsIgnoreCase(modelCode))
+                .findAny()
+                .map(ModelProperties::getLayer)
+                .map(layer -> layer.equalsIgnoreCase(modelTypeFlag))
+                .orElse(false);
     }
 
     @Cached
@@ -257,35 +213,25 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
         // have similar characteristics. We should generalize this by
         // passing in the model associated with the data store.
         List<ModelProperties> mpList = modelPropertiesProvider
-                .getConfiguredModels(Arrays.asList(new String[]{
-                        ModelSolutionLayerType.STAR.getSolutionLayerName(), "dm"}));
+                .getConfiguredModels(Arrays.asList(ModelSolutionLayerType.STAR.getSolutionLayerName(), "dm"));
 
-        DataStoreDescriptor odiDataStore = null;
+        Optional<DataStoreDescriptor> odiDataStore = mpList.stream()
+                .map(ModelProperties::getCode)
+                .map(etlProvider::getDataStoreDescriptorsInModel)
+                .map(dsMap -> dsMap.get(aOdiDataStoreName))
+                .filter(Objects::nonNull)
+                .findFirst();
 
-        for (ModelProperties mp : mpList) {
-            Map<String, DataStoreDescriptor> dsMap = etlProvider
-                    .getDataStoreDescriptorsInModel(mp.getCode());
-
-            if (dsMap != null) {
-                odiDataStore = dsMap.get(aOdiDataStoreName);
-                if (odiDataStore != null) {
-                    break;
-                }
-            }
+        if (!odiDataStore.isPresent()) {
+            LOGGER.debug("Datastore not found:");
+            return false;
         }
+        String effectiveDate = jodiProperties.getProperty(JodiConstants.EFFECTIVE_DATE);
+        boolean isSCD2Type = odiDataStore.get().getColumnMetaData().stream()
+                .map(ColumnMetaData::getName)
+                .anyMatch(effectiveDate::equalsIgnoreCase);
 
-        boolean isSCD2Type = false;
-        if (odiDataStore == null) {
-            logger.debug("Datastore not found:");
-            return isSCD2Type;
-        }
-        for (ColumnMetaData column : odiDataStore.getColumnMetaData()) {
-            if (column.getName().equalsIgnoreCase(
-                    jodiProperties.getProperty(JodiConstants.EFFECTIVE_DATE))) {
-                isSCD2Type = true;
-            }
-        }
-        logger.debug("Datastore :" + aOdiDataStoreName + " is of type SCD2.");
+        LOGGER.debug("Datastore :" + aOdiDataStoreName + " is of type SCD2: " + isSCD2Type);
         return isSCD2Type;
     }
 
@@ -303,21 +249,20 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
         String mappingsInfo = (mappings != null)
                 ? " mappings:" + mappings.getTargetDataStore()
                 : "";
-        logger.debug("getDataStoreInModel ---> dataStoreName:" + dataStoreName +
+        LOGGER.debug("getDataStoreInModel ---> dataStoreName:" + dataStoreName +
                 " modelCode:" + modelCode + mappingsInfo);
 
-        DataStore foundDataStore = null;
+        DataStore foundDataStore;
         if (isTemporaryTransformation(dataStoreName)) {
-            logger.debug("getDataStoreInModel is temp.");
+            LOGGER.debug("getDataStoreInModel is temp.");
             DataModelDescriptor dataModelDesc = findModelDescriptor(modelCode);
             foundDataStore = createTemporaryDataStore(dataStoreName,
                     dataModelDesc, mappings,
                     isSourceModelAndDoesntNeedColumns);
         } else {
-            logger.debug("getDataStoreInModel is not temp. ");
+            LOGGER.debug("getDataStoreInModel is not temp. ");
             foundDataStore = getDataStoreInModel(dataStoreName, modelCode);
         }
-
         return foundDataStore;
     }
 
@@ -364,8 +309,7 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
      * @param mappings defines the name and type of a temporary table columns
      * @return Map<String, DataStoreColumn> e.g. ColumnName, Datastorecolumn
      */
-    private Map<String, DataStoreColumn> getTempTableColumnMetaData(
-            final DataStore parent, final Mappings mappings) {
+    private Map<String, DataStoreColumn> getTempTableColumnMetaData(final DataStore parent, final Mappings mappings) {
         Map<String, DataStoreColumn> result = new HashMap<>();
         int position = 1;
         if (mappings != null) {
@@ -374,60 +318,55 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
                         createColumnMetaData(parent, column, position++));
             }
         }
-
         return Collections.unmodifiableMap(result);
     }
 
     private DataStoreColumn createColumnMetaData(final DataStore parent,
                                                  final Targetcolumn column,
                                                  final int position) {
-        boolean mandatory = (column.isMandatory() != null) ? column
-                .isMandatory() : false;
+        boolean mandatory = (column.isMandatory() != null) ? column.isMandatory() : false;
         return new DataStoreColumnImpl(parent, column.getName(), column.getLength(),
-                column.getScale(), column.getDataType(), null, mandatory, null,
-                position);
+                column.getScale(), column.getDataType(), null, mandatory, null, position);
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     protected DataModel createDataModel(final DataModelDescriptor descriptor) {
-        ModelProperties modelProperties = findModelPropertyByCode(descriptor
-                .getModelCode());
+        ModelProperties modelProperties = findModelPropertyByCode(descriptor.getModelCode());
         String layerName = null;
         boolean ignoredByHeuristics = false;
         if (modelProperties != null) {
             layerName = modelProperties.getLayer();
             ignoredByHeuristics = modelProperties.isIgnoredByHeuristics();
         } else {
-            logger.debug("Model properties not found for code:  "
-                    + descriptor.getModelCode());
+            LOGGER.debug("Model properties not found for code:  " + descriptor.getModelCode());
         }
 
         return new DataModelImpl(descriptor.getModelCode(),
                 descriptor.getDataServerName(),
                 descriptor.getPhysicalDataServerName(),
                 descriptor.getDataServerTechnology(),
-                descriptor.getSchemaName(), descriptor.getModelFlexfields(),
-                layerName, ignoredByHeuristics,
+                descriptor.getSchemaName(),
+                descriptor.getModelFlexfields(),
+                layerName,
+                ignoredByHeuristics,
                 descriptor.getDataBaseServiceName(),
                 descriptor.getDataBaseServicePort());
     }
 
     @Override
     public DataModel getDataModel(String modelCode) {
-        List<DataModelDescriptor> descriptors = etlProvider
-                .getDataModelDescriptors();
-        for (final DataModelDescriptor descriptor : descriptors) {
-            if (descriptor.getModelCode().equalsIgnoreCase(modelCode)) {
-                return findOrCreateDataModel(descriptor);
-            }
-        }
-        String msg = errorWarningMessages.formatMessage(30,
-                ERROR_MESSAGE_00030, this.getClass(), modelCode);
-        errorWarningMessages.addMessage(
-                errorWarningMessages.assignSequenceNumber(),
-                msg, MESSAGE_TYPE.ERRORS);
-        logger.error(msg);
-        throw new NoModelFoundException(msg);
+        return etlProvider.getDataModelDescriptors().stream()
+                .filter(Objects::nonNull)
+                .filter(d -> d.getModelCode().equalsIgnoreCase(modelCode))
+                .findAny()
+                .map(this::findOrCreateDataModel)
+                .orElseThrow(() -> {
+                    String msg = errorWarningMessages.formatMessage(30, ERROR_MESSAGE_00030, this.getClass(), modelCode);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    LOGGER.error(msg);
+                    return new NoModelFoundException(msg);
+                });
     }
 
     @Override
@@ -441,9 +380,7 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
     }
 
     @Override
-    public boolean projectVariableExists(final String projectCode,
-                                         final String variableName) {
-
+    public boolean projectVariableExists(final String projectCode, final String variableName) {
         return etlProvider.projectVariableExists(projectCode, variableName);
     }
 
@@ -471,5 +408,4 @@ public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
     public Set<String> getSchemaNames() {
         return etlProvider.getLogicalSchemaNames();
     }
-
 }

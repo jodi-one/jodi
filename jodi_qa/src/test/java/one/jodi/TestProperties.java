@@ -6,13 +6,17 @@ import one.jodi.core.config.JodiProperties;
 import one.jodi.core.config.JodiPropertyValueHolder;
 import one.jodi.core.config.PropertyValueHolder;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
 public class TestProperties implements JodiProperties {
     public static final String LIST_SEPERATOR = ",";
-    private Properties properties;
+    private final Properties properties;
 
     public TestProperties() {
         properties = new Properties();
@@ -67,11 +71,8 @@ public class TestProperties implements JodiProperties {
 
     @Override
     public List<String> getPropertyKeys() {
-        List<String> propertiesAsList = new ArrayList<>();
         Set<Object> propSet = properties.keySet();
-        propertiesAsList.addAll(propSet.stream().map(Object::toString)
-                .collect(Collectors.toList()));
-        return propertiesAsList;
+        return propSet.stream().map(Object::toString).collect(Collectors.toList());
     }
 
     @Override
@@ -87,6 +88,7 @@ public class TestProperties implements JodiProperties {
                 isUpdate = true;
             }
         } catch (Exception ex) {
+            // no-op
         }
         return isUpdate;
     }
@@ -100,6 +102,7 @@ public class TestProperties implements JodiProperties {
                 include = false;
             }
         } catch (Exception ex) {
+            // no-op
         }
         return include;
     }
@@ -121,6 +124,7 @@ public class TestProperties implements JodiProperties {
         return allProperties;
     }
 
+    @Override
     public PropertyValueHolder getPropertyValueHolder(String key) {
         return new JodiPropertyValueHolder(key, this);
     }

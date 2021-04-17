@@ -18,7 +18,7 @@ abstract public class ObjectAnnotation {
         this.name = name;
     }
 
-    final static protected Map<String, Class<?>> createKeyTypeMap(
+    static protected Map<String, Class<?>> createKeyTypeMap(
             final String[] bKeys,
             final String[] sKeys,
             final String[] iKeys,
@@ -55,8 +55,8 @@ abstract public class ObjectAnnotation {
     //
 
     private boolean keysAllLowerCase(final Set<String> keys) {
-        return !keys.stream()
-                .anyMatch(key -> !key.equals(key.toLowerCase()));
+        return keys.stream()
+                .allMatch(key -> key.equals(key.toLowerCase()));
     }
 
     private boolean hasUnexpectedType(final Entry<String, Object> annotation,

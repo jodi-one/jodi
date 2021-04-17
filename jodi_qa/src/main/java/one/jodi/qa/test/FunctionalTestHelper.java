@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import one.jodi.action.CreateScenariosActionRunner;
+import one.jodi.base.ListAppender;
 import one.jodi.base.bootstrap.RunConfig;
 import one.jodi.base.config.PasswordConfigImpl;
 import one.jodi.base.factory.BaseModule;
@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Set;
@@ -51,8 +52,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FunctionalTestHelper {
 
-    private final static Logger logger =
-            LogManager.getLogger(CreateScenariosActionRunner.class);
+    private final static Logger LOGGER = LogManager.getLogger(FunctionalTestHelper.class);
 
     static OdiSequenceAccessStrategy odiSequenceAccessStrategy;
     static OdiVariableAccessStrategy odiVariableAccessStrategy;
@@ -74,10 +74,14 @@ public class FunctionalTestHelper {
     }
 
     public static String getDefaultAgent(String properties) {
-        logger.info(properties);
-        String hostName = "localhost";
+        return getDefaultAgent(Paths.get(properties));
+    }
+
+    public static String getDefaultAgent(Path properties) {
+        LOGGER.info(properties);
+        String hostName;
         try {
-            hostName = Files.lines(Paths.get(properties)).filter(l -> l.contains("jodi:1521")).count() > 0 ? "jodi" : "localhost";
+            hostName = Files.lines(properties).anyMatch(l -> l.contains("jodi:1521")) ? "jodi" : "localhost";
         } catch (IOException e) {
             hostName = "localhost";
         }
@@ -126,10 +130,9 @@ public class FunctionalTestHelper {
                                                                          JodiController controller) {
 
         if (odiSequenceAccessStrategy == null) {
-            EtlRunConfig etlRunConfig = (EtlRunConfig) runConfig;
             Injector injector = Guice.createInjector(new Odi12Module(),
                     new OdiModule(runConfig),
-                    new CoreETLModule(etlRunConfig),
+                    new CoreETLModule(runConfig),
                     new BaseModule(runConfig, controller));
             odiSequenceAccessStrategy = injector.getInstance(Key.get(
                     new TypeLiteral<OdiSequenceAccessStrategy>() {
@@ -141,10 +144,9 @@ public class FunctionalTestHelper {
     public static OdiVariableAccessStrategy getOdiVariableAccessStrategy(EtlRunConfig runConfig,
                                                                          JodiController controller) {
         if (odiVariableAccessStrategy == null) {
-            EtlRunConfig etlRunConfig = (EtlRunConfig) runConfig;
             Injector injector = Guice.createInjector(new Odi12Module(),
                     new OdiModule(runConfig),
-                    new CoreETLModule(etlRunConfig),
+                    new CoreETLModule(runConfig),
                     new BaseModule(runConfig, controller));
             odiVariableAccessStrategy = injector.getInstance(Key.get(
                     new TypeLiteral<OdiVariableAccessStrategy>() {
@@ -156,10 +158,9 @@ public class FunctionalTestHelper {
     public static OdiConstraintAccessStrategy getOdiConstraintsAccessStrategy(EtlRunConfig runConfig,
                                                                               JodiController controller) {
         if (odiConstraintAccessStrategy == null) {
-            EtlRunConfig etlRunConfig = (EtlRunConfig) runConfig;
             Injector injector = Guice.createInjector(new Odi12Module(),
                     new OdiModule(runConfig),
-                    new CoreETLModule(etlRunConfig),
+                    new CoreETLModule(runConfig),
                     new BaseModule(runConfig, controller));
             odiConstraintAccessStrategy = injector.getInstance(Key.get(
                     new TypeLiteral<OdiConstraintAccessStrategy>() {
@@ -172,10 +173,9 @@ public class FunctionalTestHelper {
     public static OdiLoadPlanAccessStrategy<OdiLoadPlan, Mapping> getOdiLoadPlanAccessStrategy(EtlRunConfig runConfig,
                                                                                                JodiController controller) {
         if (odiLoadPlanAccessStrategy == null) {
-            EtlRunConfig etlRunConfig = (EtlRunConfig) runConfig;
             Injector injector = Guice.createInjector(new Odi12Module(),
                     new OdiModule(runConfig),
-                    new CoreETLModule(etlRunConfig),
+                    new CoreETLModule(runConfig),
                     new BaseModule(runConfig, controller));
             odiLoadPlanAccessStrategy = injector.getInstance(Key.get(
                     new TypeLiteral<OdiLoadPlanAccessStrategy<OdiLoadPlan, Mapping>>() {
@@ -188,10 +188,9 @@ public class FunctionalTestHelper {
             final EtlRunConfig runConfig,
             final JodiController controller) {
         if (odi12ProcedureServiceProvider == null) {
-            EtlRunConfig etlRunConfig = (EtlRunConfig) runConfig;
             Injector injector =
                     Guice.createInjector(new Odi12Module(), new OdiModule(runConfig),
-                            new CoreETLModule(etlRunConfig),
+                            new CoreETLModule(runConfig),
                             new BaseModule(runConfig, controller));
             odi12ProcedureServiceProvider =
                     injector.getInstance(Odi12ProcedureServiceProvider.class);
@@ -199,7 +198,7 @@ public class FunctionalTestHelper {
         return odi12ProcedureServiceProvider;
     }
 
-    public static <T extends Object> void checkThatKeysAreSet(T mapping, String string) throws Exception {
+    public static <T> void checkThatKeysAreSet(T mapping, String string) throws Exception {
         boolean found = false;
         for (IMapComponent target : ((Mapping) mapping).getTargets()) {
             if (target instanceof DatastoreComponent) {
@@ -221,7 +220,7 @@ public class FunctionalTestHelper {
     public static void printColumnsDetails(OdiInstance odiInstance) throws Exception {
         IMappingFinder mappingsFinder = (IMappingFinder) odiInstance.getTransactionalEntityManager()
                 .getFinder(Mapping.class);
-        Set<String> messages = new TreeSet<String>();
+        Set<String> messages = new TreeSet<>();
         @SuppressWarnings("unchecked")
         Collection<Mapping> mappings = mappingsFinder.findAll();
         for (Mapping m : mappings) {
@@ -250,7 +249,7 @@ public class FunctionalTestHelper {
             }
         }
         for (String m : messages) {
-            logger.info(m);
+            LOGGER.info(m);
         }
     }
 
@@ -265,4 +264,16 @@ public class FunctionalTestHelper {
         return activeStep;
     }
 
+    public static ListAppender getListAppender(String testName) {
+        ListAppender listAppender = new ListAppender(testName);
+        org.apache.logging.log4j.core.Logger rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        rootLogger.addAppender(listAppender);
+        rootLogger.setLevel(org.apache.logging.log4j.Level.INFO);
+        return listAppender;
+    }
+
+    public static void removeAppender(ListAppender listAppender) {
+        org.apache.logging.log4j.core.Logger rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        rootLogger.removeAppender(listAppender);
+    }
 }

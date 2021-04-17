@@ -36,8 +36,7 @@ public class JodiController extends JodiControllerBase {
 
     @Override
     protected void customBinding(final Injector injector) {
-        // register Context object instance with command line tool to be
-        // cleaned up after use
+        // register Context object instance with command line tool to be cleaned up after use
         register(injector.getInstance(Context.class));
     }
 
@@ -45,12 +44,12 @@ public class JodiController extends JodiControllerBase {
     protected Injector createInjector(Collection<? extends Module> applicationModules,
                                       boolean isDevMode, RunConfig config) {
         EtlRunConfig etlConfig = (EtlRunConfig) config;
-        Injector injector = Guice.createInjector(
+        return Guice.createInjector(
                 (isDevMode ? Stage.DEVELOPMENT : Stage.PRODUCTION),
-                Modules.override(new BootstrapModule(config),
-                        new BaseModule(config, this),
-                        new CoreETLModule(etlConfig)).with(applicationModules));
-        return injector;
+                Modules.override(new BootstrapModule(config)
+                        , new BaseModule(config, this)
+                        , new CoreETLModule(etlConfig))
+                        .with(applicationModules));
     }
 
 }

@@ -4,14 +4,14 @@ import java.util.List;
 
 public interface OperationNode extends ExprNode {
 
-    public int countParameters();
+    int countParameters();
 
-    public String getOperation();
+    String getOperation();
 
-    public ExprNode getParameter(int index);
+    ExprNode getParameter(int index);
 
-    public List<ExprNode> getParameters();
+    List<ExprNode> getParameters();
 
-    public boolean isFunction();
+    boolean isFunction();
 
 }

@@ -59,6 +59,8 @@ dependencies {
     implementation project(':jodi_base')
     implementation project(':jodi_core')
     implementation project(':jodi_odi12')
+    implementation project(':jodi_plugins')
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
 //    implementation fileTree(dir: 'lib', include: '*/**.jar')
     implementation 'org.codehaus.groovy:groovy-all:2.5.7'
     // implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
@@ -67,7 +69,7 @@ dependencies {
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
 
     // ojdbc10
-    compile fileTree(include: ['*.jar'], dir: 'lib')
+    implementation fileTree(include: ['*.jar'], dir: 'lib')
 
     // for test
     // compile project(path: ':jodi_core', configuration: 'xmlExtensions')

@@ -54,21 +54,17 @@ public class OdiModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        String masterPwd = (config.getMasterPassword() == null) ? "" :
-                config.getMasterPassword();
-        bind(String.class).annotatedWith(MasterPassword.class)
-                .toInstance(masterPwd);
+        String masterPwd = (config.getMasterPassword() == null) ? "" : config.getMasterPassword();
+        bind(String.class).annotatedWith(MasterPassword.class).toInstance(masterPwd);
         if (config instanceof EtlRunConfig) {
             String deploymentArchivePassword = (((EtlRunConfig) config).getDeployementArchivePassword() == null) ? "" :
                     ((EtlRunConfig) config).getDeployementArchivePassword();
-            bind(String.class).annotatedWith(DeploymentArchivePassword.class)
-                    .toInstance(deploymentArchivePassword);
+            bind(String.class).annotatedWith(DeploymentArchivePassword.class).toInstance(deploymentArchivePassword);
         }
         //use provide to generate ODIInstance, which follows the singleton pattern
         //this avoids the need to close and open new ODI instances for every task
         //or pass the instance around through method calls
-        bind(OdiInstance.class).toProvider(OdiInstanceManager.class)
-                .in(Singleton.class);
+        bind(OdiInstance.class).toProvider(OdiInstanceManager.class).in(Singleton.class);
         // used for running within ODI.
         bind(OdiCommon.class).to(OdiETLProvider.class);
         bind(SchemaMetaDataProvider.class).to(OdiETLProvider.class);
@@ -77,20 +73,14 @@ public class OdiModule extends AbstractModule {
 
         //more complex logic required for binding an instance with a generic type
         bind(new TypeLiteral<FlexfieldUtil<OdiInterface>>() {
-        })
-                .to(new TypeLiteral<FlexfieldUtilImpl<OdiInterface>>() {
-                })
-                .in(Singleton.class);
+        }).to(new TypeLiteral<FlexfieldUtilImpl<OdiInterface>>() {
+        }).in(Singleton.class);
         bind(new TypeLiteral<FlexfieldUtil<OdiModel>>() {
-        })
-                .to(new TypeLiteral<FlexfieldUtilImpl<OdiModel>>() {
-                })
-                .in(Singleton.class);
+        }).to(new TypeLiteral<FlexfieldUtilImpl<OdiModel>>() {
+        }).in(Singleton.class);
         bind(new TypeLiteral<FlexfieldUtil<OdiDataStore>>() {
-        })
-                .to(new TypeLiteral<FlexfieldUtilImpl<OdiDataStore>>() {
-                })
-                .in(Singleton.class);
+        }).to(new TypeLiteral<FlexfieldUtilImpl<OdiDataStore>>() {
+        }).in(Singleton.class);
 
         bind(TableServiceProvider.class).to(OdiTableServiceImpl.class);
         bind(DatastoreServiceProvider.class).to(OdiDatastoreServiceProvider.class);
@@ -115,14 +105,12 @@ public class OdiModule extends AbstractModule {
         TransactionInterceptor ti = new TransactionInterceptor();
         // TransactionMethodMatcher includes logic to
         // prevent annotation of synthetic methods
-        bindInterceptor(Matchers.inSubpackage(packageScopeForAOP()),
-                new TransactionMethodMatcher(), ti);
+        bindInterceptor(Matchers.inSubpackage(packageScopeForAOP()), new TransactionMethodMatcher(), ti);
         requestInjection(ti);
 
         WriteThroughCacheInterceptor ci = new WriteThroughCacheInterceptor();
         // CacheMethodMatcher includes logic to prevent annotation of synthetic methods
-        bindInterceptor(Matchers.inSubpackage(packageScopeForAOP()),
-                new CacheMethodMatcher(), ci);
+        bindInterceptor(Matchers.inSubpackage(packageScopeForAOP()), new CacheMethodMatcher(), ci);
         requestInjection(ci);
     }
 

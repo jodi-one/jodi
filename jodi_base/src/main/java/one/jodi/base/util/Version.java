@@ -30,8 +30,8 @@ public class Version {
             "The Version property file has not been found.";
     private static final String ERROR_MESSAGE_83010 =
             "Fatal error while attempting to retrieve the Version property file.";
-    private static Properties properties = new Properties();
-    private static ErrorWarningMessageJodi errorWarningMessages =
+    private static final Properties PROPERTIES = new Properties();
+    private static final ErrorWarningMessageJodi ERROR_WARNING_MESSAGES =
             ErrorWarningMessageJodiImpl.getInstance();
 
     /*
@@ -49,13 +49,13 @@ public class Version {
         if (cl != null) {
             try {
                 inputStream = cl.getResourceAsStream(FILE_NAME);
-                properties.load(inputStream);
+                PROPERTIES.load(inputStream);
             } catch (Exception e) {
-                String msg = errorWarningMessages.formatMessage(83000,
+                String msg = ERROR_WARNING_MESSAGES.formatMessage(83000,
                         ERROR_MESSAGE_83000, Version.class);
                 logger.warn(msg);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
+                ERROR_WARNING_MESSAGES.addMessage(
+                        ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg,
                         MESSAGE_TYPE.ERRORS);
                 throw new IllegalArgumentException(msg, e);
             } finally {
@@ -68,10 +68,10 @@ public class Version {
                 }
             }
         } else {
-            String msg = errorWarningMessages.formatMessage(83010,
+            String msg = ERROR_WARNING_MESSAGES.formatMessage(83010,
                     ERROR_MESSAGE_83010, Version.class);
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
+            ERROR_WARNING_MESSAGES.addMessage(
+                    ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg,
                     MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             throw new UnRecoverableException(msg);
@@ -79,43 +79,49 @@ public class Version {
     }
 
     public static String getProductVersion() {
-        return properties.getProperty(PRODUCT_VERSION);
+        return PROPERTIES.getProperty(PRODUCT_VERSION);
     }
 
+    @SuppressWarnings("unused")
     public static String getMajorVersion() {
-        return properties.getProperty(PRODUCT_MAJOR_VERSION);
+        return PROPERTIES.getProperty(PRODUCT_MAJOR_VERSION);
     }
 
+    @SuppressWarnings("unused")
     public static String getMinorVersion() {
-        return properties.getProperty(PRODUCT_MINOR_VERSION);
+        return PROPERTIES.getProperty(PRODUCT_MINOR_VERSION);
     }
 
+    @SuppressWarnings("unused")
     public static String getPatchVersion() {
-        return properties.getProperty(PRODUCT_PATCH_VERSION);
+        return PROPERTIES.getProperty(PRODUCT_PATCH_VERSION);
     }
 
+    @SuppressWarnings("unused")
     public static String getPatchVersion2() {
-        return properties.getProperty(PRODUCT_PATCH_VERSION2);
+        return PROPERTIES.getProperty(PRODUCT_PATCH_VERSION2);
     }
 
+    @SuppressWarnings("unused")
     public static String getPatchVersion3() {
-        return properties.getProperty(PRODUCT_PATCH_VERSION3);
+        return PROPERTIES.getProperty(PRODUCT_PATCH_VERSION3);
     }
 
-
+    @SuppressWarnings("unused")
     public static String getBuildNumber() {
-        return properties.getProperty(BUILD_NUMBER);
+        return PROPERTIES.getProperty(BUILD_NUMBER);
     }
 
     public static String getBuildDate() {
-        return properties.getProperty(BUILD_DATE);
+        return PROPERTIES.getProperty(BUILD_DATE);
     }
 
     public static String getBuildTime() {
-        return properties.getProperty(BUILD_TIME);
+        return PROPERTIES.getProperty(BUILD_TIME);
     }
 
+    @SuppressWarnings("unused")
     public static Boolean isReleaseVersion() {
-        return Boolean.valueOf(properties.getProperty(BUILD_IS_RELEASE));
+        return Boolean.valueOf(PROPERTIES.getProperty(BUILD_IS_RELEASE));
     }
 }

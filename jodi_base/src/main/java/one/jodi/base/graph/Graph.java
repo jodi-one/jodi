@@ -3,7 +3,14 @@ package one.jodi.base.graph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -12,7 +19,7 @@ public class Graph<T> {
     private final static Logger logger = LogManager.getLogger(Graph.class);
 
     // please note that graph is destroyed after topological sort has completed
-    private Set<Node<T>> allNodes = new HashSet<>();
+    private final Set<Node<T>> allNodes = new HashSet<>();
 
     public Set<Node<T>> getNodes() {
         return Collections.unmodifiableSet(this.allNodes);
@@ -81,7 +88,7 @@ public class Graph<T> {
         }
 
         return topologicallySorted.stream()
-                .map(n -> n.getValue())
+                .map(Node::getValue)
                 .collect(Collectors.toList());
     }
 
@@ -92,9 +99,7 @@ public class Graph<T> {
 
     public List<Set<T>> groupByLongestPredecessorPath() {
         // set level to 1 for all nodes
-        this.allNodes
-                .stream()
-                .forEach(n -> n.setSupplemental(1));
+        this.allNodes.forEach(n -> n.setSupplemental(1));
 
         BiFunction<Node<T>, Node<T>, Integer> determineChildLevel =
                 (Node<T> parent, Node<T> child)
@@ -107,12 +112,12 @@ public class Graph<T> {
                 .stream()
                 .collect(Collectors.groupingBy(n -> (Integer) n.getSupplemental(),
                         TreeMap::new,
-                        Collectors.mapping(n -> n.getValue(),
+                        Collectors.mapping(Node::getValue,
                                 Collectors.toSet())))
                 .entrySet()
                 .stream()
-                .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-                .map(e -> e.getValue())
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
                 .collect(Collectors.collectingAndThen(Collectors.toList(),
                         Collections::unmodifiableList));
     }

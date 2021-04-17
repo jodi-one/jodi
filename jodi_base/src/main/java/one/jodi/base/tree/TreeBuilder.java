@@ -93,7 +93,7 @@ public class TreeBuilder<T> {
         }
 
         List<List<T>> prunedPath = new ArrayList<>();
-        final TreeNode<T> root = new TreeNode<T>(linearPaths.get(0).get(0));
+        final TreeNode<T> root = new TreeNode<>(linearPaths.get(0).get(0));
 
         for (List<T> path : linearPaths) {
             // validate root nodes and prune lists

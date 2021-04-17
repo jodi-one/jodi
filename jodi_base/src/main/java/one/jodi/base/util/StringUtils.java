@@ -3,12 +3,18 @@ package one.jodi.base.util;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * The methods in this class were copied from commons-lang-2.6 StringUtils because the ODI library includes a version of commons-lang StringUtils that does not include all of the necessary APIs.
  */
-public class StringUtils {
+public final class StringUtils {
+
+    private StringUtils() {
+        // no util class instances
+    }
+
     public static boolean containsIgnoreCase(String str, String searchStr) {
         if (str == null || searchStr == null) {
             return false;
@@ -49,7 +55,7 @@ public class StringUtils {
     }
 
     public static boolean equals(String str1, String str2) {
-        return str1 == null ? str2 == null : str1.equals(str2);
+        return Objects.equals(str1, str2);
     }
 
     public static boolean hasLength(String str) {
@@ -76,8 +82,9 @@ public class StringUtils {
         while (itr.hasNext()) {
             sb.append(prefix).append(itr.next()).append(suffix);
 
-            if (itr.hasNext())
+            if (itr.hasNext()) {
                 sb.append(delimiter);
+            }
         }
 
         return sb.toString();
@@ -85,7 +92,7 @@ public class StringUtils {
 
     public static String deriveReadableName(final String text) {
         assert (text.split("\\s").length == 1);
-        String[] tokens = text.split("_|-");
+        String[] tokens = text.split("[_\\-]");
         return Arrays.stream(tokens)
                 .filter(t -> !t.isEmpty())
                 .map(t -> t.substring(0, 1).toUpperCase() +

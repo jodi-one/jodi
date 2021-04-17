@@ -15,9 +15,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -90,14 +98,14 @@ public class JsAnnotationImpl implements JsAnnotation {
     }
 
     private List<String> gatherAnnotationFiles(String xmlFolderName2) {
-        List<String> aFiles = new ArrayList<String>();
+        List<String> aFiles = new ArrayList<>();
         try {
             aFiles = Files.walk(new File(xmlFolderName2).toPath())
                     .filter(p -> (
                             p.getFileName()
                                     .toString()
                                     .matches("Annotations(-\\w+)?.js")))
-                    .map(file -> file.toString())
+                    .map(Path::toString)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             String msg = errorWarningMessages.formatMessage(80531,
@@ -137,7 +145,7 @@ public class JsAnnotationImpl implements JsAnnotation {
     protected Map<String, List<String>> createTableCountMap(
             Map<String, String> fileJsMap) {
         Map<String, List<String>> tableCountMap =
-                new HashMap<String, List<String>>();
+                new HashMap<>();
 
         for (Entry<String, String> entry : fileJsMap.entrySet()) {
             Map<String, List<String>> map = getTableMap(entry.getKey(), entry.getValue());
@@ -145,7 +153,7 @@ public class JsAnnotationImpl implements JsAnnotation {
             //merge results
             for (Entry<String, List<String>> e : map.entrySet()) {
                 tableCountMap.computeIfAbsent(e.getKey(),
-                        k -> new ArrayList<String>())
+                        k -> new ArrayList<>())
                         .addAll(e.getValue());
             }
         }
@@ -173,7 +181,7 @@ public class JsAnnotationImpl implements JsAnnotation {
         countMap.entrySet()
                 .stream()
                 .filter(e -> e.getValue().size() > 1)
-                .forEach(e -> reportIssue(e));
+                .forEach(this::reportIssue);
     }
 
     @Override
@@ -185,9 +193,9 @@ public class JsAnnotationImpl implements JsAnnotation {
 
     @Cached  // Avoids re-reading file many times
     protected Map<String, String> getAnnotations() {
-        Map<String, String> resultsMap = new HashMap<String, String>();
+        Map<String, String> resultsMap = new HashMap<>();
         try {
-            String result = null;
+            String result;
             for (String file : gatherAnnotationFiles(this.xmlFolderName)) {
                 logger.info("Processing JSON file " + file);
                 result = new String(Files.readAllBytes(Paths.get(file)),
@@ -217,8 +225,7 @@ public class JsAnnotationImpl implements JsAnnotation {
         assert (jsonObject != null);
         Object result = null;
         try {
-            JSONObject json = jsonObject;
-            result = json.get(memberName);
+            result = jsonObject.get(memberName);
             if (JSONObject.NULL == result) {
                 result = null;
             }
@@ -247,8 +254,7 @@ public class JsAnnotationImpl implements JsAnnotation {
             for (int i = 0; i < jsObjects.length(); i++) {
                 JSONObject element = jsObjects.getJSONObject(i);
                 Object obj = element.get(ATTRIBUTE_NAME.toLowerCase());
-                if (obj == null || (!(obj instanceof String)) ||
-                        ((String) obj).trim().isEmpty()) {
+                if (!(obj instanceof String) || ((String) obj).trim().isEmpty()) {
                     String msg = errorWarningMessages.formatMessage(80560,
                             ERROR_MESSAGE_80560, this.getClass(),
                             this.xmlFolderName + "/" + keyFileName,
@@ -335,8 +341,7 @@ public class JsAnnotationImpl implements JsAnnotation {
             String arrayKey = ns.getType().getComponentName();
 
             // find array value associated with array keyword
-            Object array = findArrayWithKeyName(jsonObject, arrayKey.toLowerCase(),
-                    key);
+            JSONArray array = findArrayWithKeyName(jsonObject, arrayKey.toLowerCase(), key);
             if (array == null) {
                 logger.debug("JSON object for key " + key.toString() +
                         " was not found. Expected array with key " + arrayKey +
@@ -346,7 +351,7 @@ public class JsAnnotationImpl implements JsAnnotation {
 
             String nameKey = ns.getName();
             // find object in array that has the expected name
-            jsonObject = getJsByName(nameKey, (JSONArray) array, keyFileName);
+            jsonObject = getJsByName(nameKey, array, keyFileName);
             if (jsonObject == null) {
                 logger.debug("JSON element with \"" + ATTRIBUTE_NAME + "\" " +
                         nameKey + " was not found in array.");
@@ -396,7 +401,7 @@ public class JsAnnotationImpl implements JsAnnotation {
                     JSONObject table = (JSONObject) tables.get(j);
                     String tableName = table.getString(ATTRIBUTE_NAME.toLowerCase());
                     String key = schemaName + "." + tableName;
-                    tableFileMapping.computeIfAbsent(key, k -> new ArrayList<String>())
+                    tableFileMapping.computeIfAbsent(key, k -> new ArrayList<>())
                             .add(filename);
                 }
             }
@@ -426,8 +431,7 @@ public class JsAnnotationImpl implements JsAnnotation {
 
     private boolean arrayExpected(final Object json, final boolean excludeArrays) {
         // Findbugs issue BC excluded
-        return !(json instanceof JSONArray) ||
-                json instanceof JSONArray && !excludeArrays;
+        return !(json instanceof JSONArray) || !excludeArrays;
     }
 
     private String toLower(final String exludedName) {
@@ -549,9 +553,7 @@ public class JsAnnotationImpl implements JsAnnotation {
             final String jsonExpr)
             throws MalformedAnnotationException {
         Map<String, Object> annotations = getAnnotations(jsonExpr, false);
-        Optional<ColumnAnnotations> optionalAnnotations =
-                getColumnAnnotations(parent, columnName, annotations);
-        return optionalAnnotations;
+        return getColumnAnnotations(parent, columnName, annotations);
     }
 
     @Override
@@ -578,16 +580,15 @@ public class JsAnnotationImpl implements JsAnnotation {
                     tableName);
             for (Map<String, Object> calcColumn : calculatedColumns) {
                 String name = (String) calcColumn.get("name");
-                if (name == null) continue;
+                if (name == null) {
+                    continue;
+                }
                 calcColumn.remove("name");
                 Optional<ColumnAnnotations> ca =
                         getColumnAnnotations(ta, name, calcColumn);
-                if (ca.isPresent()) {
-                    ta.addColumnAnnotations(ca.get());
-                }
+                ca.ifPresent(ta::addColumnAnnotations);
             }
-            optionalAnnotations = ta.getColumnAnnotations().isEmpty() ? Optional.empty()
-                    : Optional.of(ta);
+            optionalAnnotations = ta.getColumnAnnotations().isEmpty() ? Optional.empty() : Optional.of(ta);
         }
         return optionalAnnotations;
     }
@@ -596,7 +597,7 @@ public class JsAnnotationImpl implements JsAnnotation {
             Map<String, String> resultsMap)
             throws MalformedAnnotationException {
         Set<String> processedVariableNames = new HashSet<>();
-        List<VariableAnnotations> variableAnnotations = new ArrayList<VariableAnnotations>();
+        List<VariableAnnotations> variableAnnotations = new ArrayList<>();
         JSONObject jsonObject;
         for (Entry<String, String> entry : resultsMap.entrySet()) {
             try {
@@ -665,7 +666,9 @@ public class JsAnnotationImpl implements JsAnnotation {
 
         JSONArray array = findArrayWithKeyName(json, KeyParser.NS_COLUMN, fullKey);
 
-        if (array == null) return annotationMap; // return empty map
+        if (array == null) {
+            return annotationMap; // return empty map
+        }
 
         String lastName = "";
         for (int i = 0; i < array.length(); i++) {
@@ -703,7 +706,9 @@ public class JsAnnotationImpl implements JsAnnotation {
 
             lastName = columnName;
 
-            if (annotations.isEmpty()) continue;
+            if (annotations.isEmpty()) {
+                continue;
+            }
 
             if (annotationMap.get(columnName) != null) {
                 String msg = errorWarningMessages.formatMessage(80570,
@@ -750,7 +755,9 @@ public class JsAnnotationImpl implements JsAnnotation {
         String jsString = fcp.get().getFileContents();
 
         JSONObject json = getJsonObjectForBaseKey(baseKey, jsString, keyFileName);
-        if (json == null) return Optional.empty();
+        if (json == null) {
+            return Optional.empty();
+        }
 
         final Map<String, Object> annotations;
         // collect table annotations

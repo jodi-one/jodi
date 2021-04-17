@@ -6,7 +6,12 @@ import one.jodi.base.config.BaseConfigurations;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.exception.UnRecoverableException;
-import one.jodi.base.service.metadata.*;
+import one.jodi.base.service.metadata.ColumnMetaData;
+import one.jodi.base.service.metadata.DataModelDescriptor;
+import one.jodi.base.service.metadata.DataStoreDescriptor;
+import one.jodi.base.service.metadata.ForeignReference;
+import one.jodi.base.service.metadata.Key;
+import one.jodi.base.service.metadata.SchemaMetaDataProvider;
 import one.jodi.base.util.Register;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +20,14 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -38,6 +50,7 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
             "Failed to get jdbcUrl from properties file.";
     private static final String ERROR_MESSAGE_80870 =
             "No data store in the given database! Verify the database for data store objects.";
+
     @SuppressWarnings("unused")
     private final BaseConfigurations biProperties;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -45,11 +58,11 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
     private final OdbMetaDataHelper dbHelper;
     private final List<Pattern> inclusionPattern = new ArrayList<>();
     private final List<Pattern> exclusionPattern = new ArrayList<>();
+    private final Map<String, Map<String, DataStoreDescriptor>> models = new HashMap<>();
     /* @Inject @Registered private */ Register register;
     private Connection dbConn;
     private String jdbcUrl;
     private String userName;
-    private Map<String, Map<String, DataStoreDescriptor>> models = new HashMap<String, Map<String, DataStoreDescriptor>>();
 
     @Inject
     protected OdbETLProvider(final DbConnectionUtil dbConnUtil,
@@ -197,16 +210,7 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
             dbHelper.createCache(dbConn);
             dataStoreList = dbHelper.getDataStoreList(dbConn);
             logger.debug("size:" + dataStoreList.size());
-        } catch (SQLException e) {
-            String msg = errorWarningMessages.formatMessage(80850,
-                    ERROR_MESSAGE_80850, this.getClass(),
-                    this.jdbcUrl, e.getMessage());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(),
-                    msg, MESSAGE_TYPE.ERRORS);
-            logger.error(msg, e);
-            return null;
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             String msg = errorWarningMessages.formatMessage(80850,
                     ERROR_MESSAGE_80850, this.getClass(),
                     this.jdbcUrl, e.getMessage());
@@ -317,7 +321,7 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
             throw new UnRecoverableException(msg, e);
         }
 
-        DataStoreDescriptor descriptor = new DataStoreDescriptor() {
+        return new DataStoreDescriptor() {
 
             @Override
             public String getDataStoreName() {
@@ -359,8 +363,6 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
                 return dataStoreComments;
             }
         };
-
-        return descriptor;
     }
 
     private boolean jdbcUrlExists(final String jdbcUrl) {
@@ -391,12 +393,8 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
             // vs jdbc:oracle:thin:@jodi:1521/FT06
             final String[] jdbcPartsString = jdbcUrl.split("@");
             serverPartsString = jdbcPartsString[1].split(":");
-            serverPartsString[1] =
-                    serverPartsString[1].substring(0, serverPartsString[1].indexOf("/"));
-            databaseServiceNameIfNotFound =
-                    jdbcPartsString[1].substring(jdbcPartsString[1].indexOf("/") + 1,
-                            jdbcPartsString[1].length())
-                            .trim();
+            serverPartsString[1] = serverPartsString[1].substring(0, serverPartsString[1].indexOf("/"));
+            databaseServiceNameIfNotFound = jdbcPartsString[1].substring(jdbcPartsString[1].indexOf("/") + 1).trim();
         }
         final String[] serverParts = serverPartsString;
         final String schemaName = this.userName;
@@ -407,7 +405,7 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
                 ? databaseServiceNameIfNotFound
                 : jdbcParts[3];
 
-        DataModelDescriptor dmDesc = new DataModelDescriptor() {
+        return new DataModelDescriptor() {
 
             @Override
             public String getModelCode() {
@@ -449,7 +447,6 @@ public class OdbETLProvider implements SchemaMetaDataProvider {
                 return Integer.parseInt(port);
             }
         };
-        return dmDesc;
     }
 
     @Override

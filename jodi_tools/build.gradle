@@ -32,15 +32,13 @@ dependencies {
     testImplementation project(':jodi_base')
     testImplementation project(':jodi_core')
     testImplementation project(':jodi_odi12')
-  //  testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
-//    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
-//j   implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
+
     testImplementation project(':jodi_core').sourceSets.test.output
 
     //JAXB xjc plugin
     jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
 
-    testCompile "xmlunit:xmlunit:1.6"
+    testImplementation "xmlunit:xmlunit:1.6"
 
     testImplementation project(path: ':jodi_core', configuration: 'xmlExtensions')
 }

@@ -72,9 +72,7 @@ public class AnnotationServiceDefaultImpl implements AnnotationService {
     private boolean isHiddenByDefault(final ColumnMetaData column,
                                       final List<Pattern> hiddenColumnPattern) {
         return hiddenColumnPattern.stream()
-                .filter(p -> p.matcher(column.getName()).matches())
-                .findFirst()
-                .isPresent();
+                .anyMatch(p -> p.matcher(column.getName()).matches());
     }
 
     private boolean throwAnnotationException() {
@@ -97,14 +95,10 @@ public class AnnotationServiceDefaultImpl implements AnnotationService {
             // create Annotation object with default annotations
             ColumnAnnotations ca = annotationFactory.createColumnAnnotations(
                     parent, column.getName(),
-                    businessName.trim().isEmpty()
-                            ? null : businessName.trim(),
-                    abbrBusinessName.trim().isEmpty()
-                            ? null : abbrBusinessName.trim(),
-                    description.trim().isEmpty()
-                            ? null : description.trim(),
-                    isHiddenByDefault ? isHiddenByDefault
-                            : null);
+                    businessName.trim().isEmpty() ? null : businessName.trim(),
+                    abbrBusinessName.trim().isEmpty() ? null : abbrBusinessName.trim(),
+                    description.trim().isEmpty() ? null : description.trim(),
+                    isHiddenByDefault ? true : null);
             result = Optional.of(ca);
         }
 
@@ -159,14 +153,12 @@ public class AnnotationServiceDefaultImpl implements AnnotationService {
             final TableAnnotations parent,
             final DataStoreDescriptor tableData,
             final List<Pattern> hiddenColumnPattern) {
-        List<ColumnAnnotations> result =
-                tableData.getColumnMetaData()
-                        .stream()
-                        .map(column -> getColumnAnnotations(parent, column, tableData,
-                                hiddenColumnPattern))
-                        .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty())
-                        .collect(Collectors.toList());
-        return result;
+        return tableData.getColumnMetaData()
+                .stream()
+                .map(column -> getColumnAnnotations(parent, column, tableData,
+                        hiddenColumnPattern))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.toList());
     }
 
     private Optional<TableAnnotations> getTableAnnotations(

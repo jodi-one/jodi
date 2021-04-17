@@ -406,4 +406,4 @@ gradle-app.setting
 /jodi_qa/ojdbc.policy
 /jodi_qa/README.txt
 
-jodi_qa/src/test/resources/FunctionalTest/DeploymentService/oditemp_235508771/**
+jodi_qa/src/test/resources/FunctionalTest/DeploymentService/oditemp_*/

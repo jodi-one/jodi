@@ -8,7 +8,11 @@ import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -69,7 +73,7 @@ public class XMLParserUtil<T, O> {
     }
 
     private Unmarshaller initializeJAXB(String xsdBaseFile) {
-        Unmarshaller u = null;
+        Unmarshaller u;
         try {
             JAXBContext jc = JAXBContext.newInstance(objectFactory);
             u = jc.createUnmarshaller();
@@ -87,7 +91,7 @@ public class XMLParserUtil<T, O> {
         try {
             SchemaFactory schemaFactory =
                     SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = null;
+            Schema schema;
             if (xsdBaseFile == null) {
                 String msg = errorWarningMessages.formatMessage(81090,
                         ERROR_MESSAGE_81090, this.getClass());
@@ -129,7 +133,7 @@ public class XMLParserUtil<T, O> {
     }
 
     private Source getXsdFileFromFileSystem(String xsdBaseFile) {
-        Source schemaFile = null;
+        Source schemaFile;
         // for jodi_etl, since this class is in base we go to jodi_core
         File file = Paths.get(xsdBaseFile).toFile();
         logger.debug("Reading xsdBaseFile: " + xsdBaseFile);
@@ -175,7 +179,7 @@ public class XMLParserUtil<T, O> {
             object = (T) u.unmarshal(xmlStream);
         } catch (JAXBException je) {
             logger.error(String.format("Error processing file '%1$s'.", pathName), je);
-            String friendlyMessage = "";
+            String friendlyMessage;
             if (je.getMessage() != null) {
                 friendlyMessage = je.getMessage();
             } else if (je.getLinkedException().getMessage() != null) {
@@ -225,6 +229,7 @@ public class XMLParserUtil<T, O> {
             this.fileName = fileName;
         }
 
+        @Override
         public boolean handleEvent(ValidationEvent event) {
             int severity = event.getSeverity();
             if (severity == ValidationEvent.WARNING) {

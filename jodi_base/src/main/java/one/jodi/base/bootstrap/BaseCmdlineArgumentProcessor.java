@@ -18,8 +18,9 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
     protected static final String OPTION_ACTION = "action";
     protected static final String OPTION_MODULE = "module";
-    private final static Logger logger = LogManager.getLogger(
-            BaseCmdlineArgumentProcessor.class);
+
+    private final static Logger LOGGER = LogManager.getLogger(BaseCmdlineArgumentProcessor.class);
+
     private final static String ERROR_MESSAGE_80050 = "Usage failure %s";
     private static final String OPTION_CONFIG = "config";
     private static final String OPTION_METADATA = "metadata";
@@ -35,14 +36,15 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
     private static final String OPTION_WORKREP_PASSWORD = "masterpassword";
     private static final String OPTION_IDS = "ids";
     private static final String OPTION_DEPLOYMENT_ARCHIVE_TYPE = "da_type";
+
     protected String prefix;
     protected String action;
     protected String[] modules;
-    private ErrorWarningMessageJodi errorWarningMessages =
+    private final ErrorWarningMessageJodi errorWarningMessages =
             ErrorWarningMessageJodiImpl.getInstance();
     private String metadataDirectory;
     private String propertyFile;
-    private List<String> moduleProviderClass = new ArrayList<>();
+    private final List<String> moduleProviderClass = new ArrayList<>();
     private boolean devMode;
     private String packageItem;
     private String scenario;
@@ -82,7 +84,8 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
         Option moduleOpt = new Option(OPTION_MODULE, true,
                 "one.jodi.bootstrap.ModuleProvider implementation");
-        moduleOpt.setArgs(4); // maximal number of values for this option
+        // this is not a maximum but minimum, ant that shouldn't be set to 4.
+       // moduleOpt.setArgs(4); // maximal number of values for this option
         opts.addOption(moduleOpt);
 
         opts.addOption(OPTION_DEV_MODE, false,
@@ -115,14 +118,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
     protected abstract Options addOptions(final Options existing);
 
+    @Override
     public String getMetadataDirectory() {
         return metadataDirectory;
     }
 
+    @Override
     public List<String> getModuleClasses() {
         return moduleProviderClass;
     }
 
+    @Override
     public String getPropertyFile() {
         return propertyFile;
     }
@@ -135,14 +141,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return scenario;
     }
 
+    @Override
     public boolean isDevMode() {
         return devMode;
     }
 
+    @Override
     public String getSourceModel() {
         return sourceModel;
     }
 
+    @Override
     public String getTargetModel() {
         return targetModel;
     }
@@ -151,14 +160,17 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return packageSequence;
     }
 
+    @Override
     public String getModelCode() {
         return modelCode;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public String getMasterPassword() {
         return masterPassword;
     }
@@ -167,11 +179,10 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         return generateIds;
     }
 
+    @Override
     public String getDeploymentArchiveType() {
         return da_type;
     }
-
-    ;
 
     /**
      * Returns <code>true</code> if the {@link #moduleProviderClass} property
@@ -181,7 +192,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
      * otherwise
      */
     public boolean hasModule() {
-        return ((moduleProviderClass != null) && (!moduleProviderClass.isEmpty()));
+        return !moduleProviderClass.isEmpty();
     }
 
     /**
@@ -193,17 +204,18 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
         Options opts = createOptions();
 
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
         CommandLine cmdLine = null;
-
         try {
             cmdLine = parser.parse(opts, args);
         } catch (ParseException e) {
             usage("Unexpected exception:" + e.getMessage(), opts, -1);
         }
-
         if (cmdLine == null || cmdLine.hasOption(OPTION_HELP)) {
             usage(null, opts, 1);
+        }
+        if (cmdLine == null) {
+            return;
         }
         metadataDirectory = cmdLine.getOptionValue(OPTION_METADATA, "");
 
@@ -223,12 +235,10 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         targetModel = cmdLine.getOptionValue(OPTION_TARGET_MODEL);
         packageSequence = cmdLine.getOptionValue(OPTION_PACKAGE_SEQUENCE);
         modelCode = cmdLine.getOptionValue(OPTION_MODEL);
-        generateIds = cmdLine.hasOption(OPTION_IDS) ? Boolean
-                .parseBoolean(cmdLine.getOptionValue(OPTION_IDS)) : true;
+        generateIds = !cmdLine.hasOption(OPTION_IDS) || Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_IDS));
         da_type = cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_TYPE);
+        modules = cmdLine.getOptionValues(OPTION_MODULE);
     }
-
-    //protected abstract String getPrefix(String[] args);
 
     protected abstract String getAction(String[] args);
 
@@ -241,22 +251,20 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
      * @param opts     options
      * @param exitCode the return / exit code
      */
-    protected void usage(final String header, final Options opts,
-                         final int exitCode) {
+    protected void usage(final String header, final Options opts, final int exitCode) {
         try {
             HelpFormatter formatter = new HelpFormatter();
             Version.init();
-            System.out.println("Jodi.one Version "
-                    + Version.getProductVersion());
+            System.out.println("Jodi.one Version " + Version.getProductVersion());
             formatter.printHelp(" ", header, opts, null);
         } catch (RuntimeException r) {
             String msg = errorWarningMessages.formatMessage(80050,
                     ERROR_MESSAGE_80050,
-                    Class.class.getClass(), r.getMessage());
+                    Class.class, r.getMessage());
             errorWarningMessages.addMessage(
                     errorWarningMessages.assignSequenceNumber(), msg,
                     MESSAGE_TYPE.ERRORS);
-            logger.error(msg, r);
+            LOGGER.error(msg, r);
         }
     }
 

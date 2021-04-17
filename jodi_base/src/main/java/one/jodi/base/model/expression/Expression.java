@@ -5,8 +5,6 @@ import one.jodi.base.model.TableBase;
 public interface Expression {
     EType getType();
 
-    ;
-
     TableBase getParent();
 
     Object getValue();

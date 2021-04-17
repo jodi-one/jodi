@@ -5,7 +5,13 @@ import one.jodi.base.service.annotation.AnnotationService;
 import one.jodi.base.service.annotation.TableAnnotations;
 import one.jodi.base.service.metadata.DataStoreDescriptor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class SchemaBase implements ModelNode {
@@ -53,10 +59,6 @@ public class SchemaBase implements ModelNode {
         }
         return table;
     }
-
-    //
-    //
-    //
 
     @Override
     public ApplicationBase getParent() {
@@ -183,12 +185,7 @@ public class SchemaBase implements ModelNode {
         for (DataStoreDescriptor tableData : dataStores) {
             final Optional<TableAnnotations> taBase =
                     annotationService.getAnnotations(tableData, hiddenColumnPattern);
-            Optional<TableAnnotations> ta = Optional.empty();
-            if (taBase.isPresent()) {
-                ta = Optional.of((TableAnnotations) taBase.get());
-            }
-            TableBase newTable = createTable(tableData, ta,
-                    Collections.unmodifiableMap(newTables));
+            TableBase newTable = createTable(tableData, taBase, Collections.unmodifiableMap(newTables));
             newTables.put(getMapKey(tableData), newTable);
             // add table to correct schema
             addTable(getMapKey(tableData), newTable);

@@ -31,7 +31,7 @@ public class Node<T> {
     }
 
     Node<T> addEdge(final Node<T> toNode) {
-        Edge<T> edge = new Edge<T>(this, toNode);
+        Edge<T> edge = new Edge<>(this, toNode);
         this.outgoingEdges.add(edge);
         toNode.incomingEdges.add(edge);
         return this;

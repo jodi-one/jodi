@@ -2,7 +2,11 @@ package one.jodi.bootstrap;
 
 import one.jodi.base.bootstrap.BaseCmdlineArgumentProcessor;
 import one.jodi.base.bootstrap.RunConfig;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +15,6 @@ import java.util.List;
  * Derived class of BaseCmdlineArgumentProcessor class for an
  * {@link RunConfig} implementation that is initialized from the command line.
  */
-@SuppressWarnings("deprecation")
 public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor implements EtlRunConfig {
     private static final String OPTION_ACTION = "action";
     private static final String OPTION_PREFIX = "prefix";
@@ -24,7 +27,9 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
     private static final String OPTION_DEPLOYMENT_ARCHIVE_PWD = "deploymentArchivePassword";
     private final static ActionType ACTION_DEFAULT_VALUE = ActionType.CREATE_ETLS;
     private final static String MODULE_CLASS_DEFAULT_VALUE = "one.jodi.odi.factory.OdiModuleProvider";
-    private List<String> moduleProviderClass = new ArrayList<>();
+
+    private final List<String> moduleProviderClass = new ArrayList<>();
+
     private boolean journalized;
     private boolean useDefaultScenarionames;
     private String folder;
@@ -42,6 +47,7 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
         return includeVariables;
     }
 
+    @Override
     public boolean isJournalized() {
         return journalized;
     }
@@ -65,9 +71,8 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
     protected Options addOptions(Options existingOptions) {
         existingOptions.addOption("a", OPTION_ACTION, true, "defaults to '" + ACTION_DEFAULT_VALUE.getCode() + "'");
         existingOptions.addOption("p", OPTION_PREFIX, true, "transformation prefix");
-        existingOptions.addOption(OPTION_JOURNALIZED, false,
-                "presence of this option indicates 'journalized=true'. "
-                        + "Absence indicates 'journalized=false'");
+        existingOptions.addOption(OPTION_JOURNALIZED, false, "presence of this option indicates 'journalized=true'. "
+                + "Absence indicates 'journalized=false'");
         existingOptions.addOption("f", OPTION_FOLDER, true, "folder name");
         existingOptions.addOption("dsn", OPTION_DEFAULTSCENARIONAMES, true, "Applicable for loadplan import; while importing use the default names for scenarios.");
         existingOptions.addOption("includeVariables", OPTION_INCLUDE_VARIABLES, true, "includeVariables");
@@ -82,13 +87,15 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
         super.parseCommandLine(args);
 
         Options opts = createOptions();
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmdLine = null;
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmdLine;
 
         try {
             cmdLine = parser.parse(opts, args);
         } catch (ParseException e) {
             usage("Unexpected exception:" + e.getMessage(), opts, -1);
+            // fail here or face the NullPointerException later
+            throw new IllegalArgumentException("Input failure");
         }
 
         action = cmdLine.getOptionValue(OPTION_ACTION);
@@ -114,24 +121,19 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
             }
         }
         if (cmdLine.hasOption(OPTION_INCLUDE_VARIABLES)) {
-            includeVariables = cmdLine.getOptionValue(OPTION_INCLUDE_VARIABLES).equalsIgnoreCase("true") ? true : false;
+            includeVariables = cmdLine.getOptionValue(OPTION_INCLUDE_VARIABLES).equalsIgnoreCase("true");
         } else {
             includeVariables = true;
         }
 
-        includingConstraints = cmdLine.hasOption(OPTION_INCLUDE_CONSTRAINTS) ? Boolean
-                .parseBoolean(cmdLine.getOptionValue(OPTION_INCLUDE_CONSTRAINTS)) : true;
+        includingConstraints = !cmdLine.hasOption(OPTION_INCLUDE_CONSTRAINTS)
+                || Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_INCLUDE_CONSTRAINTS));
 
-        exportingDBConstraints = cmdLine.hasOption(OPTION_EXPORT_DB_CONSTRAINTS) ? Boolean
-                .parseBoolean(cmdLine.getOptionValue(OPTION_EXPORT_DB_CONSTRAINTS)) : false;
-
+        exportingDBConstraints = cmdLine.hasOption(OPTION_EXPORT_DB_CONSTRAINTS)
+                && Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_EXPORT_DB_CONSTRAINTS));
 
         String aDefaultScenarioNames = cmdLine.getOptionValue(OPTION_DEFAULTSCENARIONAMES);
-        if (aDefaultScenarioNames != null && aDefaultScenarioNames.equals("false")) {
-            useDefaultScenarionames = false;
-        } else {
-            useDefaultScenarionames = true;
-        }
+        useDefaultScenarionames = aDefaultScenarioNames == null || !aDefaultScenarioNames.equals("false");
         deploymentArchivePassword = cmdLine.hasOption(OPTION_DEPLOYMENT_ARCHIVE_PWD) ? cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_PWD) : "";
     }
 
@@ -148,6 +150,7 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
         return prefix;
     }
 
+    @Override
     protected String[] getDefaultModule(String[] args) {
         return new String[]{MODULE_CLASS_DEFAULT_VALUE};
     }
