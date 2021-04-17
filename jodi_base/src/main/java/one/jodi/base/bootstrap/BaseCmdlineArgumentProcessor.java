@@ -4,13 +4,7 @@ import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.error.ErrorWarningMessageJodiImpl;
 import one.jodi.base.util.Version;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,7 +84,8 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
 
         Option moduleOpt = new Option(OPTION_MODULE, true,
                 "one.jodi.bootstrap.ModuleProvider implementation");
-        moduleOpt.setArgs(4); // maximal number of values for this option
+        // this is not a maximum but minimum, ant that shouldn't be set to 4.
+       // moduleOpt.setArgs(4); // maximal number of values for this option
         opts.addOption(moduleOpt);
 
         opts.addOption(OPTION_DEV_MODE, false,
@@ -242,6 +237,7 @@ public abstract class BaseCmdlineArgumentProcessor implements RunConfig {
         modelCode = cmdLine.getOptionValue(OPTION_MODEL);
         generateIds = !cmdLine.hasOption(OPTION_IDS) || Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_IDS));
         da_type = cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_TYPE);
+        modules = cmdLine.getOptionValues(OPTION_MODULE);
     }
 
     protected abstract String getAction(String[] args);

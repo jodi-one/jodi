@@ -49,8 +49,9 @@ public class GenericColumnMappingStrategy implements ColumnMappingStrategy {
     public String getMappingExpression(final String currentMappingExpression,
                                        final ColumnMappingExecutionContext cmContext,
                                        final TargetColumnExecutionContext targetColumnExecutionContext) {
-
-        if (currentMappingExpression == null || cmContext == null || targetColumnExecutionContext == null) {
+        // currentMappingExpression may be null; it assumes that the target exrpression is the same as
+        // the source e.g. target.column_x expression is source.column_x
+        if ( cmContext == null || targetColumnExecutionContext == null) {
             throw new IllegalArgumentException("Input is mandatory, no null values allowed: currentMappingExpression="
                     + currentMappingExpression + "; cmContext=" + cmContext + "; targetColumnExecutionContext="
                     + targetColumnExecutionContext);

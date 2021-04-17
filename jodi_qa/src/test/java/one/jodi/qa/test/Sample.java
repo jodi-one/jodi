@@ -20,6 +20,9 @@ import oracle.odi.core.persistence.transaction.ITransactionStatus;
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition;
 import oracle.odi.domain.IOdiEntity;
 import oracle.odi.domain.IRepositoryEntity;
+import oracle.odi.domain.mapping.Mapping;
+import oracle.odi.domain.mapping.expression.MapExpression;
+import oracle.odi.domain.mapping.properties.PropertyException;
 import oracle.odi.domain.model.OdiColumn;
 import oracle.odi.domain.model.OdiColumn.ScdType;
 import oracle.odi.domain.model.OdiDataStore;
@@ -398,7 +401,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
      */
     @Override
     @Test
-    public void test020Generation() {
+    public void test020Generation()  {
         LOGGER.info("Cleanup packages if necessary");
         ListAppender listAppender = getListAppender();
         runController("dap", "src/test/resources/" + SampleHelper.getFunctionalTestDir() +
@@ -413,7 +416,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
         LOGGER.info("Create etls started");
         runController("ct",
                 "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/conf/" + DEFAULT_PROPERTIES, "-p",
-                "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml");
+                "Init ", "-m", "src/test/resources/" + SampleHelper.getFunctionalTestDir() + "/xml","-module", "one.jodi.extensions.GbuModuleProvider");
+        // the -module one.jodi.extensions.GbuModuleProvider is automapping
         if (listAppender.contains(Level.ERROR, false)) {
             Assert.fail("Sample threw errors.");
         }
@@ -445,6 +449,26 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             String generatedText = this.odiAccessStrategy.getBeginOrEndMappingText(mapping, "BEGIN");
             String generatedLocationCode = this.odiAccessStrategy.getBeginOrEndMappingLocationCode(mapping, "BEGIN");
             String generatedTechnologyCode = this.odiAccessStrategy.getBeginOrEndMappingTechnologyCode(mapping, "BEGIN");
+            Mapping W_ALBUM_D = ((Mapping) mapping);
+            boolean found = false;
+            try {
+                List<MapExpression> mapExpresions = W_ALBUM_D.getTargets().get(0).getAllExpressions();
+                for(MapExpression me : mapExpresions) {
+                    MapExpression e = me.getExpressionMap().values().iterator().next();
+                    System.out.println( e.getQualifiedName() +":"+ e.getText());
+                    if( e.getText().equalsIgnoreCase("trunc(sysdate)")) {
+                        // this test automapping functionallity
+                        // this is set by property
+                        // ext.automapping.W_INSERT_DT=trunc(sysdate)
+                        // and config ,"-module", "one.jodi.extensions.GbuModuleProvider
+                        found = true;
+                    }
+                }
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+            // automapping works if it is picked up from properties
+            assert (found );
             if (!generatedText.replaceAll("\\s+", "").equalsIgnoreCase(text.replaceAll("\\s+", ""))) {
                 throw new RuntimeException("Begin mapping command text set wrong to '" + generatedText + "'.");
             }

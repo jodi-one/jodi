@@ -59,6 +59,8 @@ dependencies {
     implementation project(':jodi_base')
     implementation project(':jodi_core')
     implementation project(':jodi_odi12')
+    implementation project(':jodi_plugins')
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
 //    implementation fileTree(dir: 'lib', include: '*/**.jar')
     implementation 'org.codehaus.groovy:groovy-all:2.5.7'
     // implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
