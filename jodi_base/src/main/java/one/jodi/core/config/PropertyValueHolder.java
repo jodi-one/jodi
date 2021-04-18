@@ -11,4 +11,6 @@ public interface PropertyValueHolder {
     List<String> getList();
 
     Map<String, String> getMap();
+
+    String getListAsString();
 }

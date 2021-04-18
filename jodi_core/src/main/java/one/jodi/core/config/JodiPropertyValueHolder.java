@@ -31,4 +31,9 @@ public class JodiPropertyValueHolder implements PropertyValueHolder {
     public Map<String, String> getMap() {
         return properties.getPropertyMap(key);
     }
+
+    @Override
+    public String getListAsString(){
+        return properties.getListAsString(key);
+    }
 }

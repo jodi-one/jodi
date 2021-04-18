@@ -61,7 +61,13 @@ public class GenericColumnMappingStrategy implements ColumnMappingStrategy {
         String targetColumn = targetColumnExecutionContext.getTargetColumnName();
         PropertyValueHolder propAutomap = cmContext.getCoreProperties().get(String.format(PROPERTY_COLUMN_AUTOMAP_FMT, targetColumn));
         if (propAutomap != null) {
-            return propAutomap.getString();
+            try {
+                return propAutomap.getString();
+            }catch(ClassCastException cce){
+                // for expressions with a comma like to_date('99991231','yyyymmdd')
+                // it is then casted as list hence need to retrieve as string
+                return propAutomap.getListAsString();
+            }
         }
 
         // when property ohi.column_match_type is set, we assume Oracle Health Insurance handling usage
