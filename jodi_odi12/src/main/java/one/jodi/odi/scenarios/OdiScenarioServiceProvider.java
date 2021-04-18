@@ -34,7 +34,6 @@ import oracle.odi.domain.runtime.scenario.OdiScenario;
 import oracle.odi.domain.runtime.scenario.OdiScenarioFolder;
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder;
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFolderFinder;
-import oracle.odi.domain.runtime.scenario.finder.toplink.OdiScenarioFinderImpl;
 import oracle.odi.generation.GenerationOptions;
 import oracle.odi.generation.IOdiScenarioGenerator;
 import oracle.odi.generation.OdiScenarioGeneratorException;
@@ -314,11 +313,7 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void generateScenarioForMapping(final String name, final String folderPath) {
-     //   DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
-      //  ITransactionManager tm = odiInstance.getTransactionManager();
-      //  ITransactionStatus txnStatus = tm.getTransaction(txnDef);
         IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-
         IOdiScenarioFolderFinder scenFolderFinder = (IOdiScenarioFolderFinder) tem.getFinder(OdiScenarioFolder.class);
         IOdiPackageFinder packFinder = (IOdiPackageFinder) tem.getFinder(OdiPackage.class);
         IMappingFinder mapFinder = (IMappingFinder) tem.getFinder(Mapping.class);
@@ -367,15 +362,11 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
         return folderList;
     }
 
- //   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private OdiScenarioFolder moveScenariosToFoldersCreatProjectFolder(OdiScenario scenario, IOdiScenarioFolderFinder scenFolderFinder) {
         DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
         ITransactionManager tm = odiInstance.getTransactionManager();
         ITransactionStatus txnStatus = tm.getTransaction(txnDef);
         IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-
-        // IOdiScenarioFinder scenFinder = (IOdiScenarioFinder) tem.getFinder(OdiScenario.class);
-        // IOdiScenarioFolderFinder scenFolderFinder = (IOdiScenarioFolderFinder) tem.getFinder(OdiScenarioFolder.class);
 
         OdiProject project = getProject();
         OdiScenarioFolder projectScenarioFolder = null;
@@ -401,14 +392,6 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
                                                           IMappingFinder mapFinder,
                                                           IOdiUserProcedureFinder procFinder,
                                                           IOdiVariableFinder varFinder) {
-
-       // OdiProject project = getProject();
-//        OdiScenarioFolder projectScenarioFolder = null;
-//        if (project != null) {
-//            projectScenarioFolder = scenFolderFinder.findByName(project.getName().toUpperCase());
-//            //assert projectScenarioFolder != null;
-//        }
-
         OdiFolder folder = null;
         String objName;
 
@@ -430,7 +413,7 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
             } else if (scenario.getSourceComponentClass().getName().endsWith("OdiVariable")) {
                 OdiVariable var = (OdiVariable) varFinder.findById(scenario.getSourceComponentId());
                 objName = var.getName();
-              //  project = var.getProject();
+                //  project = var.getProject();
             } else {
                 //println(scenario.getSourceComponentClass().getName());
             }
@@ -443,13 +426,13 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
                 for (String subFolder : sourceFolderList) {
                     Collection<OdiScenarioFolder> subFolders = projectScenarioFolder.getSubFolders();
                     boolean found = false;
-                    for(OdiScenarioFolder sub : subFolders) {
+                    for (OdiScenarioFolder sub : subFolders) {
                         if (sub.getName().equalsIgnoreCase(subFolder)) {
                             found = true;
                             return sub;
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         OdiScenarioFolder subF = new OdiScenarioFolder(projectScenarioFolder, subFolder.toUpperCase());
                         tem.persist(subF);
                         tm.commit(txnStatus);
@@ -462,65 +445,10 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void moveScenariosToFolders(OdiScenario scenario,OdiScenarioFolder projectScenarioFolder, OdiScenarioFolder subFolder) {
-//        DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
-//        ITransactionManager tm = odiInstance.getTransactionManager();
-//        ITransactionStatus txnStatus = tm.getTransaction(txnDef);
-//        IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-
-      //  IOdiScenarioFinder scenFinder = (IOdiScenarioFinder) tem.getFinder(OdiScenario.class);
-      //  IOdiScenarioFolderFinder scenFolderFinder = (IOdiScenarioFolderFinder) tem.getFinder(OdiScenarioFolder.class);
-//        OdiProject project = getProject();
-//
-//        OdiScenarioFolder projectScenarioFolder = null;
-//        if (project != null) {
-//            projectScenarioFolder = scenFolderFinder.findByName(project.getName().toUpperCase());
-//        }
-
+    public void moveScenariosToFolders(OdiScenario scenario, OdiScenarioFolder projectScenarioFolder, OdiScenarioFolder subFolder) {
         assert projectScenarioFolder != null;
-
-//        IOdiPackageFinder packFinder = (IOdiPackageFinder) tem.getFinder(OdiPackage.class);
-//        IMappingFinder mapFinder = (IMappingFinder) tem.getFinder(Mapping.class);
-//        IOdiUserProcedureFinder procFinder = (IOdiUserProcedureFinder) tem.getFinder(OdiUserProcedure.class);
-//        IOdiVariableFinder varFinder = (IOdiVariableFinder) tem.getFinder(OdiVariable.class);
-//
-//        OdiFolder folder = null;
-//        String objName;
-//
-//        if (scenario.getScenarioFolder() == null) {
-//            if (scenario.getSourceComponentClass().getName().endsWith("Mapping")) {
-//                Mapping m = (Mapping) mapFinder.findById(scenario.getSourceComponentId());
-//                objName = m.getName();
-//                folder = (OdiFolder) m.getParentFolder();
-//            } else if (scenario.getSourceComponentClass().getName().endsWith("OdiUserProcedure")) {
-//                OdiUserProcedure up = (OdiUserProcedure) procFinder.findById(scenario.getSourceComponentId());
-//                objName = up.getName();
-//                folder = up.getFolder();
-//            } else if (scenario.getSourceComponentClass().getName().endsWith("OdiPackage")) {
-//                OdiPackage op = (OdiPackage) packFinder.findById(scenario.getSourceComponentId());
-//                if (op != null && op.getName() != null) {
-//                    objName = op.getName();
-//                    folder = op.getParentFolder();
-//                }
-//            } else if (scenario.getSourceComponentClass().getName().endsWith("OdiVariable")) {
-//                OdiVariable var = (OdiVariable) varFinder.findById(scenario.getSourceComponentId());
-//                objName = var.getName();
-//            } else {
-//                //println(scenario.getSourceComponentClass().getName());
-//            }
- //           if (folder != null) {
-//                ArrayList<String> sourceFolderList = getFolderList(folder);
-//                for (String subFolder : sourceFolderList) {
-//                    Collection<OdiScenarioFolder> subFolders = scenFolderFinder.findByParentName(subFolder,
-//                            projectScenarioFolder.getName().toUpperCase());
-  //                  OdiScenarioFolder subF = subFolders.iterator().next();
-                    assert subFolder != null;
-                    subFolder.addScenario(scenario);
-//                    tem.merge(subF);
-//                    tm.commit(txnStatus);
- //               }
- //           }
- //       }
+        assert subFolder != null;
+        subFolder.addScenario(scenario);
     }
 
     @Override
