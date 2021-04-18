@@ -332,7 +332,7 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
                     JodiConstants.getScenarioNameFromObject(name, true),
                     "001");
             OdiScenarioFolder projectFolder = moveScenariosToFoldersCreatProjectFolder(scenario, scenFolderFinder);
-            OdiScenarioFolder subFolder = moveScenariosToFoldersCreat(scenario, projectFolder, packFinder, mapFinder, procFinder, varFinder);
+            OdiScenarioFolder subFolder = moveScenariosToFoldersCreateSubFolder(scenario, projectFolder, packFinder, mapFinder, procFinder, varFinder);
             moveScenariosToFolders(scenario, projectFolder, subFolder);
         } catch (OdiScenarioGeneratorException | ResourceNotFoundException |
                 ResourceFoundAmbiguouslyException e) {
@@ -386,12 +386,12 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
         }
     }
 
-    private OdiScenarioFolder moveScenariosToFoldersCreat(OdiScenario scenario,
-                                                          OdiScenarioFolder projectScenarioFolder,
-                                                          IOdiPackageFinder packFinder,
-                                                          IMappingFinder mapFinder,
-                                                          IOdiUserProcedureFinder procFinder,
-                                                          IOdiVariableFinder varFinder) {
+    private OdiScenarioFolder moveScenariosToFoldersCreateSubFolder(OdiScenario scenario,
+                                                                    OdiScenarioFolder projectScenarioFolder,
+                                                                    IOdiPackageFinder packFinder,
+                                                                    IMappingFinder mapFinder,
+                                                                    IOdiUserProcedureFinder procFinder,
+                                                                    IOdiVariableFinder varFinder) {
         OdiFolder folder = null;
         String objName;
 
