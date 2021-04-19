@@ -5,7 +5,7 @@ indent_size = 3
 indent_style = space
 insert_final_newline = false
 max_line_length = 120
-tab_width = 4
+tab_width = 3
 ij_continuation_indent_size = 8
 ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
@@ -264,7 +264,7 @@ ij_editorconfig_spaces_around_assignment_operators = true
 
 [{*.ant, *.fxml, *.jhm, *.jnlp, *.jrxml, *.jspx, *.pom, *.rng, *.tagx, *.tld, *.wsdl, *.xml, *.xsd, *.xsl, *.xslt, *.xul}]
 ij_xml_align_attributes = true
-ij_xml_align_text = false
+ij_xml_align_text = true
 ij_xml_attribute_wrap = normal
 ij_xml_block_comment_at_first_column = true
 ij_xml_keep_blank_lines = 2
@@ -510,9 +510,6 @@ ij_html_space_around_equality_in_attribute = false
 ij_html_space_inside_empty_tag = false
 ij_html_text_wrap = normal
 ij_html_uniform_ident = false
-
-[*.xml]
-ij_xml_align_text = true
 
 [{*.markdown, *.md}]
 ij_markdown_force_one_space_after_blockquote_symbol = true
