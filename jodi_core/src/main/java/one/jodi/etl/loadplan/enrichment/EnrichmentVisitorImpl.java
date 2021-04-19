@@ -20,9 +20,9 @@ import java.util.Collection;
  */
 public class EnrichmentVisitorImpl implements EnrichmentVisitor {
 
-    private final static String DEFAULT_RESTARTTYPE_SERIAL = "odi.loadplan.restartTypeSerial";
-    private final static String DEFAULT_RESTARTTYPE_PARALLEL = "odi.loadplan.restartTypeParallel";
-    private final static String DEFAULT_RESTARTTYPE_SCENARIO = "odi.loadplan.restartTypeScenario";
+    private static final String DEFAULT_RESTARTTYPE_SERIAL = "odi.loadplan.restartTypeSerial";
+    private static final String DEFAULT_RESTARTTYPE_PARALLEL = "odi.loadplan.restartTypeParallel";
+    private static final String DEFAULT_RESTARTTYPE_SCENARIO = "odi.loadplan.restartTypeScenario";
     private final Logger logger = LogManager.getLogger(EnrichmentVisitorImpl.class);
     private final JodiProperties jodiProperties;
     private final ErrorWarningMessageJodi errorWarningMessages;

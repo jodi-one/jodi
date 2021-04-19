@@ -21,11 +21,11 @@ import java.util.List;
  * TableServiceProvider#alterTables()} method.
  */
 public class AlterTablesActionRunner implements ActionRunner {
-    private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
-            + "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n"
-            + "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n"
-            + "or this could be due to an invalid XML file.";
-    private final static String ERROR_MESSAGE_01030 = "The configuration property file is required to run Alter Tables";
+    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n" +
+            "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n" +
+            "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n" +
+            "or this could be due to an invalid XML file.";
+    private static final String ERROR_MESSAGE_01030 = "The configuration property file is required to run Alter Tables";
     private final TableServiceProvider tableService;
     private final TableService tableServiceCore;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -37,10 +37,8 @@ public class AlterTablesActionRunner implements ActionRunner {
      * @param tableService the table service
      */
     @Inject
-    protected AlterTablesActionRunner(
-            final TableServiceProvider tableService,
-            final TableService tableServiceCore,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    protected AlterTablesActionRunner(final TableServiceProvider tableService, final TableService tableServiceCore,
+                                      final ErrorWarningMessageJodi errorWarningMessages) {
         this.tableService = tableService;
         this.tableServiceCore = tableServiceCore;
         this.errorWarningMessages = errorWarningMessages;
@@ -56,8 +54,7 @@ public class AlterTablesActionRunner implements ActionRunner {
             tableService.alterTables(tableDefaults);
         } catch (Exception ex) {
             throw new UnRecoverableException(
-                    errorWarningMessages.formatMessage(1010,
-                            ERROR_MESSAGE_01010, this.getClass()), ex);
+                    errorWarningMessages.formatMessage(1010, ERROR_MESSAGE_01010, this.getClass()), ex);
         }
     }
 
@@ -67,11 +64,8 @@ public class AlterTablesActionRunner implements ActionRunner {
     @Override
     public void validateRunConfig(RunConfig config) throws UsageException {
         if (!StringUtils.hasLength(config.getPropertyFile())) {
-            String msg = errorWarningMessages.formatMessage(1030,
-                    ERROR_MESSAGE_01030, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1030, ERROR_MESSAGE_01030, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
     }

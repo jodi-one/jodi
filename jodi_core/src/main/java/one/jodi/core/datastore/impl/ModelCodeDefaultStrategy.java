@@ -24,17 +24,17 @@ import java.util.List;
  */
 public class ModelCodeDefaultStrategy implements ModelCodeStrategy {
 
-    private final static String SELECTED_MODEL = "Model for data store '%1$s' is '%2$s'.";
-    private final static String HEURISTICS_USED = "Heuristic was used to determine the model for data store '%1$s'.";
-    private final static String DEFAULT_MODEL = "Selected default model '%2$s' for temporary table '%1$s'.";
-    private final static String NO_POLICY_APPLIED = "Policy did not determine model for data store '%1$s'.";
+    private static final String SELECTED_MODEL = "Model for data store '%1$s' is '%2$s'.";
+    private static final String HEURISTICS_USED = "Heuristic was used to determine the model for data store '%1$s'.";
+    private static final String DEFAULT_MODEL = "Selected default model '%2$s' for temporary table '%1$s'.";
+    private static final String NO_POLICY_APPLIED = "Policy did not determine model for data store '%1$s'.";
 
-    private final static String ERROR_MESSAGE_03100 = "Unable to determine a model for data store '%1$s'. It does not exist in any model. Check name of the specified data store.";
-    private final static String ERROR_MESSAGE_03110 = "Unable to determine a model for data store '%1$s' in list of potential models '%2$s'. More than two potential models exist but logic is insufficient to determine one.";
-    private final static String ERROR_MESSAGE_03120 = "Unable to determine a model for temporary table '%1$s' because no default model is defined. Consider adding model definitions in the Jodi configuration file.";
-    private final static String ERROR_MESSAGE_03130 = "Data store '%1$s' is not in explicitly defined model '%2$s'. Check definition of data store and specified model.";
+    private static final String ERROR_MESSAGE_03100 = "Unable to determine a model for data store '%1$s'. It does not exist in any model. Check name of the specified data store.";
+    private static final String ERROR_MESSAGE_03110 = "Unable to determine a model for data store '%1$s' in list of potential models '%2$s'. More than two potential models exist but logic is insufficient to determine one.";
+    private static final String ERROR_MESSAGE_03120 = "Unable to determine a model for temporary table '%1$s' because no default model is defined. Consider adding model definitions in the Jodi configuration file.";
+    private static final String ERROR_MESSAGE_03130 = "Data store '%1$s' is not in explicitly defined model '%2$s'. Check definition of data store and specified model.";
 
-    private final static Logger logger = LogManager.getLogger(ModelCodeDefaultStrategy.class);
+    private static final Logger logger = LogManager.getLogger(ModelCodeDefaultStrategy.class);
     private final ErrorWarningMessageJodi errorWarningMessages;
 
     @Inject

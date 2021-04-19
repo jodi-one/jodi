@@ -39,12 +39,13 @@ import java.util.stream.Collectors;
  */
 public class FlagsContextImpl implements FlagsContext {
 
-    private final static String ERROR_MESSAGE_02032 = "An unknown exception was raised in flags strategy %s while determining flags for data store";
-    private final static String ERROR_MESSAGE_02034 = "TargetColumn '%s' does not exist.";
+    private static final String ERROR_MESSAGE_02032 =
+            "An unknown exception was raised in flags strategy %s while determining flags for data store";
+    private static final String ERROR_MESSAGE_02034 = "TargetColumn '%s' does not exist.";
 
-    private final static String ERROR_MESSAGE_03093 =
+    private static final String ERROR_MESSAGE_03093 =
             "Custom flags strategy %1$s must return non-empty " + TargetColumnFlags.class + " object";
-    private final static Logger logger = LogManager.getLogger(FlagsContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(FlagsContextImpl.class);
     private final DatabaseMetadataService databaseMetadataService;
     private final ErrorWarningMessageJodi errorWarningMessages;
     /**
@@ -68,12 +69,9 @@ public class FlagsContextImpl implements FlagsContext {
      * @param properties              reference to the property file
      */
     @Inject
-    public FlagsContextImpl(
-            final DatabaseMetadataService databaseMetadataService,
-            @DefaultStrategy final FlagsStrategy defaultStrategy,
-            final FlagsStrategy customStrategy,
-            final ErrorWarningMessageJodi errorWarningMessages,
-            final JodiProperties properties) {
+    public FlagsContextImpl(final DatabaseMetadataService databaseMetadataService,
+                            @DefaultStrategy final FlagsStrategy defaultStrategy, final FlagsStrategy customStrategy,
+                            final ErrorWarningMessageJodi errorWarningMessages, final JodiProperties properties) {
         this.databaseMetadataService = databaseMetadataService;
         this.defaultStrategy = defaultStrategy;
         this.customStrategy = customStrategy;
@@ -83,9 +81,9 @@ public class FlagsContextImpl implements FlagsContext {
 
     private boolean isValidResultFlags(TargetColumnFlags flags) {
 
-        boolean cond = (flags != null && flags.isInsert() != null &&
-                flags.isUpdate() != null && flags.isUpdateKey() != null &&
-                flags.isMandatory() != null);
+        boolean cond =
+                (flags != null && flags.isInsert() != null && flags.isUpdate() != null && flags.isUpdateKey() != null &&
+                        flags.isMandatory() != null);
 
         return cond;
     }
@@ -104,8 +102,10 @@ public class FlagsContextImpl implements FlagsContext {
     }
 
     private DataStoreColumn getDataStoreColumn(Targetcolumn targetColumn, DataStore datastore) {
-        for (DataStoreColumn datastoreColumn : datastore.getColumns().values()) {
-            if (datastoreColumn.getName().equalsIgnoreCase(targetColumn.getName())) {
+        for (DataStoreColumn datastoreColumn : datastore.getColumns()
+                                                        .values()) {
+            if (datastoreColumn.getName()
+                               .equalsIgnoreCase(targetColumn.getName())) {
                 return datastoreColumn;
             }
         }
@@ -130,25 +130,23 @@ public class FlagsContextImpl implements FlagsContext {
 
     private Set<UserDefinedFlag> getUdFlags(final Targetcolumn column) {
         return column.getExplicitUserDefinedFlags()
-                .stream()
-                .map(u -> map(u))
-                .collect(Collectors.collectingAndThen(Collectors.toSet(),
-                        Collections::unmodifiableSet));
+                     .stream()
+                     .map(u -> map(u))
+                     .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
     }
 
-    private UDFlagsTargetColumnExecutionContext createColumnContext(
-            final DataStoreColumn column,
-            final Targetcolumn targetColumn,
-            final TargetColumnFlags targetColumnFlags) {
+    private UDFlagsTargetColumnExecutionContext createColumnContext(final DataStoreColumn column,
+                                                                    final Targetcolumn targetColumn,
+                                                                    final TargetColumnFlags targetColumnFlags) {
         TargetColumnExtension tce = null;
         if (targetColumn != null && targetColumn.getExtension() != null) {
-            ClonerUtil<TargetColumnExtension> cloner =
-                    new ClonerUtil<>(errorWarningMessages);
+            ClonerUtil<TargetColumnExtension> cloner = new ClonerUtil<>(errorWarningMessages);
             tce = cloner.clone(targetColumn.getExtension());
         }
         boolean analyticalFunction = false;
         if (targetColumn != null) {
-            for (int dataSetIndex = 0; dataSetIndex < targetColumn.getMappingExpressions().size(); dataSetIndex++) {
+            for (int dataSetIndex = 0; dataSetIndex < targetColumn.getMappingExpressions()
+                                                                  .size(); dataSetIndex++) {
                 if (targetColumn.isAnalyticalFunction((dataSetIndex + 1))) {
                     analyticalFunction = true;
                     break;
@@ -156,55 +154,55 @@ public class FlagsContextImpl implements FlagsContext {
             }
         }
         if (column == null) {
-            String message =
-                    this.errorWarningMessages.formatMessage(2034, ERROR_MESSAGE_02034,
-                            this.getClass(),
-                            targetColumn.getName());
-            this.errorWarningMessages.addMessage(targetColumn.getParent().getParent()
-                            .getPackageSequence(),
-                    message, MESSAGE_TYPE.ERRORS);
+            String message = this.errorWarningMessages.formatMessage(2034, ERROR_MESSAGE_02034, this.getClass(),
+                                                                     targetColumn.getName());
+            this.errorWarningMessages.addMessage(targetColumn.getParent()
+                                                             .getParent()
+                                                             .getPackageSequence(), message, MESSAGE_TYPE.ERRORS);
             throw new TransformationException(message);
         }
 
-        return new FlagsTargetColumnExecutionContextImpl(
-                column.getColumnDataType(), column.getName(),
-                column.getColumnSCDType(), column.hasNotNullConstraint(),
-                tce, targetColumnFlags,
-                targetColumn != null ? getUdFlags(targetColumn) : Collections.emptySet(),
-                (targetColumn != null),
-                targetColumn != null ? targetColumn.isExplicitlyUpdateKey() : null,
-                targetColumn != null ? targetColumn.isExplicitlyMandatory() : null,
-                targetColumnFlags != null ? targetColumnFlags.useExpression() : true,
-                targetColumn != null ? analyticalFunction : false, null);
+        return new FlagsTargetColumnExecutionContextImpl(column.getColumnDataType(), column.getName(),
+                                                         column.getColumnSCDType(), column.hasNotNullConstraint(), tce,
+                                                         targetColumnFlags,
+                                                         targetColumn != null ? getUdFlags(targetColumn)
+                                                                              : Collections.emptySet(),
+                                                         (targetColumn != null),
+                                                         targetColumn != null ? targetColumn.isExplicitlyUpdateKey()
+                                                                              : null,
+                                                         targetColumn != null ? targetColumn.isExplicitlyMandatory()
+                                                                              : null,
+                                                         targetColumnFlags != null ? targetColumnFlags.useExpression()
+                                                                                   : true,
+                                                         targetColumn != null ? analyticalFunction : false, null);
     }
 
-    private FlagsDataStoreExecutionContext createDataStoreContext(final Transformation transformation, final String targetDataStore) {
+    private FlagsDataStoreExecutionContext createDataStoreContext(final Transformation transformation,
+                                                                  final String targetDataStore) {
         final Mappings mappings = transformation.getMappings();
         final DataStore ds = databaseMetadataService.getTargetDataStoreInModel(mappings);
         TransformationExtension teClone = null;
         if (transformation.getExtension() != null) {
-            ClonerUtil<TransformationExtension> cloner =
-                    new ClonerUtil<>(errorWarningMessages);
+            ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
             teClone = cloner.clone(transformation.getExtension());
         }
-        MappingsExtension mappingsExtension = transformation.getMappings().getExtension();
+        MappingsExtension mappingsExtension = transformation.getMappings()
+                                                            .getExtension();
         MappingsExtension meClone = null;
         if (mappingsExtension != null) {
-            ClonerUtil<MappingsExtension> cloner =
-                    new ClonerUtil<>(errorWarningMessages);
+            ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
             meClone = cloner.clone(mappingsExtension);
         }
 
-        return new FlagsDataStoreExecutionContextImpl(meClone,
-                databaseMetadataService.getCoreProperties(),
-                transformation.getMappings().getIkm().getName(),
-                ds, teClone);
+        return new FlagsDataStoreExecutionContextImpl(meClone, databaseMetadataService.getCoreProperties(),
+                                                      transformation.getMappings()
+                                                                    .getIkm()
+                                                                    .getName(), ds, teClone);
     }
 
 
     @Override
-    public Map<String, Set<UserDefinedFlag>> getUserDefinedFlags(
-            Mappings mappings) {
+    public Map<String, Set<UserDefinedFlag>> getUserDefinedFlags(Mappings mappings) {
         String targetDataStore = mappings.getTargetDataStore();
         Transformation transformation = mappings.getParent();
         FlagsDataStoreExecutionContext dataStoreContext = createDataStoreContext(transformation, targetDataStore);
@@ -213,34 +211,35 @@ public class FlagsContextImpl implements FlagsContext {
         Map<String, TargetColumnFlags> flagsMap = getTargetColumnFlags(mappings);
 
         DataStore ds = dataStoreContext.getTargetDataStore();
-        Map<String, Set<UserDefinedFlag>> result =
-                new HashMap<>(ds.getColumns().size());
+        Map<String, Set<UserDefinedFlag>> result = new HashMap<>(ds.getColumns()
+                                                                   .size());
 
-        for (DataStoreColumn md : ds.getColumns().values()) {
+        for (DataStoreColumn md : ds.getColumns()
+                                    .values()) {
             Targetcolumn targetColumn = getMappedColumn(mappings, md.getName());
             TargetColumnFlags currentFlags = flagsMap.get(md.getName());
             UDFlagsTargetColumnExecutionContext columnContext = createColumnContext(md, targetColumn, currentFlags);
             Set<UserDefinedFlag> defaultValues =
-                    defaultStrategy.getUserDefinedFlags(columnContext.getUserDefinedFlags(),
-                            dataStoreContext, columnContext);
+                    defaultStrategy.getUserDefinedFlags(columnContext.getUserDefinedFlags(), dataStoreContext,
+                                                        columnContext);
             assert (defaultValues != null) : "default strategy must not return a null result";
             Set<UserDefinedFlag> customValues;
             try {
                 customValues = customStrategy.getUserDefinedFlags(defaultValues, dataStoreContext, columnContext);
                 result.put(md.getName(), customValues);
             } catch (RuntimeException ex) {
-                String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(), customStrategy.toString());
-                errorWarningMessages.addMessage(
-                        mappings.getParent().getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(),
+                                                                customStrategy.toString());
+                errorWarningMessages.addMessage(mappings.getParent()
+                                                        .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 throw new IncorrectCustomStrategyException(msg, ex);
             }
             if (customValues == null) {
-                String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(), customStrategy.toString());
-                errorWarningMessages.addMessage(
-                        mappings.getParent().getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(),
+                                                                customStrategy.toString());
+                errorWarningMessages.addMessage(mappings.getParent()
+                                                        .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 throw new IncorrectCustomStrategyException(msg);
             }
         }
@@ -250,17 +249,17 @@ public class FlagsContextImpl implements FlagsContext {
 
 
     @Override
-    public Map<String, TargetColumnFlags> getTargetColumnFlags(
-            Mappings mappings) {
+    public Map<String, TargetColumnFlags> getTargetColumnFlags(Mappings mappings) {
         String targetDataStore = mappings.getTargetDataStore();
         final Transformation transformation = mappings.getParent();
         FlagsDataStoreExecutionContext dataStoreContext = createDataStoreContext(transformation, targetDataStore);
 
         DataStore ds = dataStoreContext.getTargetDataStore();
-        Map<String, TargetColumnFlags> result =
-                new HashMap<>(ds.getColumns().size());
+        Map<String, TargetColumnFlags> result = new HashMap<>(ds.getColumns()
+                                                                .size());
 
-        for (DataStoreColumn md : ds.getColumns().values()) {
+        for (DataStoreColumn md : ds.getColumns()
+                                    .values()) {
             TargetColumnFlags explicitValues = null;
             final Targetcolumn targetColumn = getMappedColumn(mappings, md.getName());
             if (targetColumn != null) {
@@ -293,26 +292,26 @@ public class FlagsContextImpl implements FlagsContext {
             }
 
             FlagsTargetColumnExecutionContext columnContext = createColumnContext(md, targetColumn, null);
-            TargetColumnFlags defaultValues = defaultStrategy
-                    .getTargetColumnFlags(explicitValues, dataStoreContext, columnContext);
+            TargetColumnFlags defaultValues =
+                    defaultStrategy.getTargetColumnFlags(explicitValues, dataStoreContext, columnContext);
             assert (isValidResultFlags(defaultValues)) : "default strategy must not contain null results";
             TargetColumnFlags customValues;
             try {
                 customValues = customStrategy.getTargetColumnFlags(defaultValues, dataStoreContext, columnContext);
                 result.put(md.getName(), customValues);
             } catch (RuntimeException ex) {
-                String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(), customStrategy.toString());
-                errorWarningMessages.addMessage(
-                        mappings.getParent().getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(),
+                                                                customStrategy.toString());
+                errorWarningMessages.addMessage(mappings.getParent()
+                                                        .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 throw new IncorrectCustomStrategyException(msg, ex);
             }
             if (!isValidResultFlags(customValues)) {
-                String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(), customStrategy.toString());
-                errorWarningMessages.addMessage(
-                        mappings.getParent().getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(),
+                                                                customStrategy.toString());
+                errorWarningMessages.addMessage(mappings.getParent()
+                                                        .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 throw new IncorrectCustomStrategyException(msg);
             }
         }
@@ -352,8 +351,8 @@ public class FlagsContextImpl implements FlagsContext {
 
             @Override
             public Boolean useExpression() {
-                if (properties.getProperty("suppressExpression") == null ||
-                        properties.getProperty("suppressExpression").equals("false")) {
+                if (properties.getProperty("suppressExpression") == null || properties.getProperty("suppressExpression")
+                                                                                      .equals("false")) {
                     return true;
                 } else {
                     return false;
@@ -363,7 +362,8 @@ public class FlagsContextImpl implements FlagsContext {
 
         DataStoreColumn datastoreColumn = getDataStoreColumn(targetColumn, datastore);
         FlagsTargetColumnExecutionContext columnContext = createColumnContext(datastoreColumn, targetColumn, null);
-        TargetColumnFlags defaultValues = defaultStrategy.getTargetColumnFlags(explicitValues, dataStoreContext, columnContext);
+        TargetColumnFlags defaultValues =
+                defaultStrategy.getTargetColumnFlags(explicitValues, dataStoreContext, columnContext);
 
         assert (isValidResultFlags(defaultValues)) : "default strategy must not contain null results";
 
@@ -371,18 +371,18 @@ public class FlagsContextImpl implements FlagsContext {
         try {
             customValues = customStrategy.getTargetColumnFlags(defaultValues, dataStoreContext, columnContext);
         } catch (RuntimeException ex) {
-            String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(), customStrategy.toString() + "");
+            String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(),
+                                                            customStrategy.toString() + "");
             logger.error(msg);
-            errorWarningMessages.addMessage(
-                    mappings.getParent().getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            errorWarningMessages.addMessage(mappings.getParent()
+                                                    .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             throw new IncorrectCustomStrategyException(msg, ex);
         }
         if (!isValidResultFlags(customValues)) {
-            String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(), customStrategy.toString());
-            errorWarningMessages.addMessage(
-                    mappings.getParent().getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(),
+                                                            customStrategy.toString());
+            errorWarningMessages.addMessage(mappings.getParent()
+                                                    .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             throw new IncorrectCustomStrategyException(msg);
         }
 
@@ -391,8 +391,7 @@ public class FlagsContextImpl implements FlagsContext {
 
 
     @Override
-    public Set<UserDefinedFlag> getUserDefinedFlags(
-            Targetcolumn targetColumn) {
+    public Set<UserDefinedFlag> getUserDefinedFlags(Targetcolumn targetColumn) {
         Mappings mappings = targetColumn.getParent();
         String targetDataStore = mappings.getTargetDataStore();
         Transformation transformation = mappings.getParent();
@@ -408,25 +407,25 @@ public class FlagsContextImpl implements FlagsContext {
         UDFlagsTargetColumnExecutionContext columnContext = createColumnContext(dataStoreColumn, targetColumn, flags);
 
         Set<UserDefinedFlag> defaultValues =
-                defaultStrategy.getUserDefinedFlags(columnContext.getUserDefinedFlags(),
-                        dataStoreContext, columnContext);
+                defaultStrategy.getUserDefinedFlags(columnContext.getUserDefinedFlags(), dataStoreContext,
+                                                    columnContext);
         assert (defaultValues != null) : "default strategy must not return a null result";
         Set<UserDefinedFlag> customValues;
         try {
             customValues = customStrategy.getUserDefinedFlags(defaultValues, dataStoreContext, columnContext);
         } catch (RuntimeException ex) {
-            String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(), customStrategy.toString());
+            String msg = errorWarningMessages.formatMessage(2032, ERROR_MESSAGE_02032, this.getClass(),
+                                                            customStrategy.toString());
             logger.error(msg);
-            errorWarningMessages.addMessage(
-                    mappings.getParent().getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            errorWarningMessages.addMessage(mappings.getParent()
+                                                    .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             throw new IncorrectCustomStrategyException(msg, ex);
         }
         if (customValues == null) {
-            String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(), customStrategy.toString());
-            errorWarningMessages.addMessage(
-                    mappings.getParent().getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3093, ERROR_MESSAGE_03093, this.getClass(),
+                                                            customStrategy.toString());
+            errorWarningMessages.addMessage(mappings.getParent()
+                                                    .getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             throw new IncorrectCustomStrategyException(msg);
         } else {
             return customValues;

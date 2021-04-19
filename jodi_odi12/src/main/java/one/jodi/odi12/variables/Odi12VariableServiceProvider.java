@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Odi12VariableServiceProvider implements VariableServiceProvider {
-    private final static String ERROR_MESSAGE_6003 = "Variable type unknown.";
-    private final static String ERROR_MESSAGE_6004 = "Can't find logicalschema for variable: %s.";
-    private final static Logger logger = LogManager.getLogger(Odi12VariableServiceProvider.class);
+    private static final String ERROR_MESSAGE_6003 = "Variable type unknown.";
+    private static final String ERROR_MESSAGE_6004 = "Can't find logicalschema for variable: %s.";
+    private static final Logger logger = LogManager.getLogger(Odi12VariableServiceProvider.class);
     private final ErrorWarningMessageJodi errorWarningMessageJodi;
     private final OdiVariableAccessStrategy accessStrategy;
     private final DictionaryModelLogicalSchema dictionaryModelLogicalSchema;

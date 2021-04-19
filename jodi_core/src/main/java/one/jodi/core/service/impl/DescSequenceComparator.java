@@ -11,14 +11,13 @@ import java.util.Comparator;
  */
 public class DescSequenceComparator implements Comparator<Path> {
 
-    private final static Logger logger =
-            LogManager.getLogger(DescSequenceComparator.class);
+    private static final Logger logger = LogManager.getLogger(DescSequenceComparator.class);
 
     private int deriveTransformationSequence(final Path path) {
         int index = TransformationNameHelper.getLeadingInteger(path);
         if (index < 0) {
-            logger.error("File " + path.toFile().getName() +
-                    " should not have been picked.");
+            logger.error("File " + path.toFile()
+                                       .getName() + " should not have been picked.");
         }
         return index;
     }
@@ -27,8 +26,10 @@ public class DescSequenceComparator implements Comparator<Path> {
     public int compare(final Path p1, final Path p2) {
         int i1 = deriveTransformationSequence(p1);
         int i2 = deriveTransformationSequence(p2);
-        return (i1 != i2) ? i2 - i1
-                : p2.toFile().getName().compareTo(p1.toFile().getName());
+        return (i1 != i2) ? i2 - i1 : p2.toFile()
+                                        .getName()
+                                        .compareTo(p1.toFile()
+                                                     .getName());
     }
 
 }

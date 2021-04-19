@@ -22,7 +22,7 @@ import one.jodi.base.util.Register;
  */
 public class BaseModule extends AbstractModule {
 
-    private final static String ERROR_MESSAGE_80200 = "Guice injection error. "
+    private static final String ERROR_MESSAGE_80200 = "Guice injection error. "
             + "Action: Pass in the password parameters, "
             + "-pw <password> -mpw <masterPassword>.";
     private final RunConfig config;

@@ -17,7 +17,7 @@ import java.io.File;
  */
 public class LoadPlanExportActionRunner implements ActionRunner {
 
-    private final static Logger logger = LogManager.getLogger(LoadPlanExportActionRunner.class);
+    private static final Logger logger = LogManager.getLogger(LoadPlanExportActionRunner.class);
     private final LoadPlanExportService loadPlanExportService;
 
     @Inject

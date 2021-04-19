@@ -21,7 +21,7 @@ import java.util.List;
 
 public class FlowStrategyImpl implements FlowStrategy {
 
-    private final static Logger logger = LogManager.getLogger(FlowStrategyImpl.class);
+    private static final Logger logger = LogManager.getLogger(FlowStrategyImpl.class);
     private final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy;
 
     @Inject

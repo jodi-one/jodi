@@ -16,7 +16,7 @@ public abstract class TableAnnotations extends ObjectAnnotation {
     protected static final String DESCRIPTION = "Description";
     protected static final String BUSINESS_NAME = "Business Name";
     protected static final String BUSINESS_ABBREV = "Abbreviated Business Name";
-    private final static Logger logger = LogManager.getLogger(TableAnnotations.class);
+    private static final Logger logger = LogManager.getLogger(TableAnnotations.class);
     private static final String ERROR_MESSAGE_80700 =
             "Unexpected result type for annotation with key '%1$s' in " +
                     "table '%2$s'. Type '%3$s' was expected.";

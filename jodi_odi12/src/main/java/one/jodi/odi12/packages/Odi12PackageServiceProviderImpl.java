@@ -26,7 +26,7 @@ import java.util.List;
 public class Odi12PackageServiceProviderImpl
         extends OdiBasePackageServiceProvider<Mapping, StepMapping> {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(Odi12PackageServiceProviderImpl.class);
     private final OdiPackageAccessStrategy<Mapping, StepMapping> packageAccessStrategy;
 

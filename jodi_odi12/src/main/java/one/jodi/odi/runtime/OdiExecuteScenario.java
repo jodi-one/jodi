@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class OdiExecuteScenario {
-    private final static Logger logger = LogManager.getLogger(OdiExecuteScenario.class);
+    private static final Logger logger = LogManager.getLogger(OdiExecuteScenario.class);
 
     public OdiExecuteScenario() {
         super();

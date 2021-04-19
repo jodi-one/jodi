@@ -68,38 +68,38 @@ import java.util.stream.Collectors;
  */
 public class PropertiesParser<T> {
 
-    private final static Logger logger = LogManager.getLogger(PropertiesParser.class);
-    private final static String newLine = System.getProperty("line.separator");
-    private final static String ERROR_MESSAGE_01140 =
+    private static final Logger logger = LogManager.getLogger(PropertiesParser.class);
+    private static final String newLine = System.getProperty("line.separator");
+    private static final String ERROR_MESSAGE_01140 =
             "The parameter definition string '%1$s' is not correctly formed.";
-    private final static String ERROR_MESSAGE_01150 =
+    private static final String ERROR_MESSAGE_01150 =
             "The mandatory property '%1$s' in property group '%2$s' is missing.";
-    private final static String ERROR_MESSAGE_01151 =
+    private static final String ERROR_MESSAGE_01151 =
             "Mandatory properties missing.";
-    private final static String ERROR_MESSAGE_01160 =
+    private static final String ERROR_MESSAGE_01160 =
             "Creating a bean instance for type '%1$s' failed.";
-    private final static String ERROR_MESSAGE_01170 =
+    private static final String ERROR_MESSAGE_01170 =
             "Population of the bean instance '%1$s' experienced an error.";
-    private final static String ERROR_MESSAGE_06030 =
+    private static final String ERROR_MESSAGE_06030 =
             "Failed to list property for property key = %s";
-    private final static String ERROR_MESSAGE_06040 =
+    private static final String ERROR_MESSAGE_06040 =
             "Failed to add item to map for property key = %s";
-    private final static String ERROR_MESSAGE_06050 =
+    private static final String ERROR_MESSAGE_06050 =
             "No value has been defined for property '%1$s' in property group '%2$s'.";
-    private final static String ERROR_MESSAGE_06060 =
+    private static final String ERROR_MESSAGE_06060 =
             "Property '%1$s' is undefined in property group '%2$s'. This property will be ignored.";
-    private final static String CORE_PROP_PATTERN = "(([A-Za-z]+[A-Za-z0-9_]*).([A-Za-z]+[A-Za-z0-9_]*))";
+    private static final String CORE_PROP_PATTERN = "(([A-Za-z]+[A-Za-z0-9_]*).([A-Za-z]+[A-Za-z0-9_]*))";
 
 
     /*
      * parameter definition expresses which parameters are expected in the properties files and
      * it also conveys if information is mandatory (ends with '!') or a list (ends with '[]')
      */
-    private final static int patternGroupIndex = 2;
-    private final static int patternPropertyIndex = 3;
-    //private final static String  PROPDEF_PATTERN = "([A-Za-z]+[A-Za-z0-9]*)(\\[\\])?!?";
-    private final static String PROPDEF_PATTERN = "([A-Za-z]+[A-Za-z0-9_]*)(\\[\\]|\\{\\})?!?";
-    private final static Pattern propDefPattern = Pattern.compile(PROPDEF_PATTERN);
+    private static final int patternGroupIndex = 2;
+    private static final int patternPropertyIndex = 3;
+    //private static final String  PROPDEF_PATTERN = "([A-Za-z]+[A-Za-z0-9]*)(\\[\\])?!?";
+    private static final String PROPDEF_PATTERN = "([A-Za-z]+[A-Za-z0-9_]*)(\\[\\]|\\{\\})?!?";
+    private static final Pattern propDefPattern = Pattern.compile(PROPDEF_PATTERN);
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final JodiProperties wfProperties;
 

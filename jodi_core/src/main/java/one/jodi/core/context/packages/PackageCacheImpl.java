@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Singleton
 public class PackageCacheImpl implements PackageCache, Resource {
 
-    private final static Logger logger = LogManager.getLogger(PackageCacheImpl.class);
+    private static final Logger logger = LogManager.getLogger(PackageCacheImpl.class);
 
-    private final static String ERROR_MESSAGE_03080 =
+    private static final String ERROR_MESSAGE_03080 =
             "Attempting to cache transformation with package sequence %d without " +
                     "transformation name set.";
 

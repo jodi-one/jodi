@@ -11,8 +11,7 @@ import java.util.Map;
 
 public class DirectedGraphTest {
 
-    private final static Logger logger = LogManager.getLogger(
-            DirectedGraphTest.class);
+    private static final Logger logger = LogManager.getLogger(DirectedGraphTest.class);
 
     @Test
     public void test() {
@@ -21,12 +20,14 @@ public class DirectedGraphTest {
 
     @Test
     public void testAddAndContains() {
-        DirectedGraph<String> dg = new DirectedGraphImpl<String>();
+        DirectedGraph<String> dg = new DirectedGraphImpl<>();
 
         dg.addEdge("A", "B");
         dg.add("C");
-        assert (dg.outDegree().get("A") == 1);
-        assert (dg.outDegree().get("C") == 0);
+        assert (dg.outDegree()
+                  .get("A") == 1);
+        assert (dg.outDegree()
+                  .get("C") == 0);
 
         assert (dg.contains("A"));
         assert (dg.contains("B"));
@@ -35,13 +36,14 @@ public class DirectedGraphTest {
 
     @Test
     public void testRemove() {
-        DirectedGraph<String> dg = new DirectedGraphImpl<String>();
+        DirectedGraph<String> dg = new DirectedGraphImpl<>();
 
         dg.addEdge("A", "B");
         dg.add("C");
         dg.removeEdge("A", "B");
 
-        assert (dg.outDegree().get("A") == 0);
+        assert (dg.outDegree()
+                  .get("A") == 0);
 
         assert (dg.contains("A"));
         assert (dg.contains("B"));
@@ -51,7 +53,7 @@ public class DirectedGraphTest {
 
     @Test
     public void testTopologicalSort() {
-        DirectedGraph<String> dg = new DirectedGraphImpl<String>();
+        DirectedGraph<String> dg = new DirectedGraphImpl<>();
 
         dg.addEdge("A", "B");
         dg.addEdge("B", "C");
@@ -73,7 +75,7 @@ public class DirectedGraphTest {
 
     @Test
     public void testCyclic() {
-        DirectedGraph<String> dg = new DirectedGraphImpl<String>();
+        DirectedGraph<String> dg = new DirectedGraphImpl<>();
 
         dg.addEdge("A", "B");
         dg.addEdge("B", "C");
@@ -84,7 +86,7 @@ public class DirectedGraphTest {
 
 
     private Map<String, Integer> pivot(List<String> list) {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        HashMap<String, Integer> map = new HashMap<>();
         for (Integer i = 0; i < list.size(); i++) {
             map.put(list.get(i), i);
         }

@@ -36,7 +36,7 @@ import java.util.List;
  * @param <T> loadplanstep
  */
 public abstract class OdiLoadPlanExportServiceImpl<B extends IOdiEntity, T> implements LoadPlanExportService {
-    private final static Logger logger = LogManager.getLogger(OdiLoadPlanExportServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(OdiLoadPlanExportServiceImpl.class);
     private final OdiLoadPlanAccessStrategy<OdiLoadPlan, B> odiLoadPlanAccessStrategy;
     private final String metaDataDirectory;
     private final OdiLoadPlanValidationService loadPlanValidationService;

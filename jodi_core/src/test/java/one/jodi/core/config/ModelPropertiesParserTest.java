@@ -21,10 +21,10 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class ModelPropertiesParserTest {
 
-    private final static String BEAN_ID_FIELD = "modelID";
-    private final static String TOPIC = "model";
-    private final static String[] PARAMETER_DEFS = new String[]{"name!", "default", "order", "layer", "prefix[]", "postfix[]"};
-    private final static String[] INCORRECT_PAR_DEFS = new String[]{"layer", "prefix[", "postfix[]"};
+    private static final String BEAN_ID_FIELD = "modelID";
+    private static final String TOPIC = "model";
+    private static final String[] PARAMETER_DEFS = new String[]{"name!", "default", "order", "layer", "prefix[]", "postfix[]"};
+    private static final String[] INCORRECT_PAR_DEFS = new String[]{"layer", "prefix[", "postfix[]"};
     // Infrastructure
     @Rule
     public ExpectedException thrown = ExpectedException.none();

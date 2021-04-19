@@ -33,7 +33,7 @@ import java.util.Collection;
  * Transformations
  */
 public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
-    private final static Logger logger = LogManager.getLogger(OdiDatastoreBuildService.class);
+    private static final Logger logger = LogManager.getLogger(OdiDatastoreBuildService.class);
     public final String ODI_CREATE_MODEL = "odi.create.model";
     private final JodiProperties jodiProperties;
     private final OdiConnection odiConnection;
@@ -47,9 +47,13 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
 
     ) {
         this.odiConnection = OdiConnectionFactory.getOdiConnection(jodiProperties.getProperty("odi.master.repo.url"),
-                jodiProperties.getProperty("odi.master.repo.username"), ODI_MASTER_REPO_PWD,
-                jodiProperties.getProperty("odi.login.username"), ODI_USER_PASSWORD,
-                jodiProperties.getProperty("odi.repo.db.driver"), jodiProperties.getProperty("odi.work.repo"));
+                                                                   jodiProperties.getProperty(
+                                                                           "odi.master.repo.username"),
+                                                                   ODI_MASTER_REPO_PWD,
+                                                                   jodiProperties.getProperty("odi.login.username"),
+                                                                   ODI_USER_PASSWORD,
+                                                                   jodiProperties.getProperty("odi.repo.db.driver"),
+                                                                   jodiProperties.getProperty("odi.work.repo"));
         this.jodiProperties = jodiProperties;
         this.errorWarningMessages = errorWarningMessages;
     }
@@ -69,20 +73,33 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
         logger.info("Building transformation: " + t.getName());
         // this.odiInstance;
         OdiModel pModel = findModel();
-        OdiDataStore odiDataStore = new OdiDataStore(pModel, t.getMappings().getTargetDataStore());
-        odiDataStore.setName(t.getMappings().getTargetDataStore());
-        odiDataStore.setDefaultAlias(t.getMappings().getTargetDataStore());
-        for (int columPosition = 0; columPosition < t.getMappings().getTargetColumn().size(); columPosition++) {
-            Targetcolumn targetColumn = t.getMappings().getTargetColumn().get(columPosition);
-            logger.debug("Processing + " + t.getMappings().getTargetDataStore() + "." + targetColumn.getName());
+        OdiDataStore odiDataStore = new OdiDataStore(pModel, t.getMappings()
+                                                              .getTargetDataStore());
+        odiDataStore.setName(t.getMappings()
+                              .getTargetDataStore());
+        odiDataStore.setDefaultAlias(t.getMappings()
+                                      .getTargetDataStore());
+        for (int columPosition = 0; columPosition < t.getMappings()
+                                                     .getTargetColumn()
+                                                     .size(); columPosition++) {
+            Targetcolumn targetColumn = t.getMappings()
+                                         .getTargetColumn()
+                                         .get(columPosition);
+            logger.debug("Processing + " + t.getMappings()
+                                            .getTargetDataStore() + "." + targetColumn.getName());
             OdiColumn column = new OdiColumn(odiDataStore, targetColumn.getName());
-            column.setDataType(mapFrom(targetColumn.getProperties().getDataType(), pModel));
-            column.setScale(targetColumn.getProperties().getScale());
-            column.setLength(targetColumn.getProperties().getLength());
+            column.setDataType(mapFrom(targetColumn.getProperties()
+                                                   .getDataType(), pModel));
+            column.setScale(targetColumn.getProperties()
+                                        .getScale());
+            column.setLength(targetColumn.getProperties()
+                                         .getLength());
             column.setPosition((columPosition + 1));
-            column.setDescription(targetColumn.getProperties().getComments());
+            column.setDescription(targetColumn.getProperties()
+                                              .getComments());
         }
-        odiDataStore.setDescription(t.getMappings().getTargetDataStoreComment());
+        odiDataStore.setDescription(t.getMappings()
+                                     .getTargetDataStoreComment());
         // this was for checking FKs connected tot target.
         // for (Targetcolumn tc : t.getMappings().getTargetColumn()) {
         // String comments = tc.getProperties().getComments();
@@ -101,7 +118,8 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
         //
         // }
         // }
-        odiInstance.getTransactionalEntityManager().persist(odiDataStore);
+        odiInstance.getTransactionalEntityManager()
+                   .persist(odiDataStore);
         tm.commit(txnStatus);
     }
 
@@ -111,11 +129,14 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
         ITransactionManager tm = odiInstance.getTransactionManager();
         ITransactionStatus txnStatus = tm.getTransaction(txnDef);
         IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiDataStore.class));
+                                                                       .getFinder(OdiDataStore.class));
         Collection<OdiDataStore> dataStores = finder.findAll();
         for (OdiDataStore ds : dataStores) {
-            if (ds.getModel().getCode().equals(jodiProperties.getProperty("odi.create.model"))) {
-                odiInstance.getTransactionalEntityManager().remove(ds);
+            if (ds.getModel()
+                  .getCode()
+                  .equals(jodiProperties.getProperty("odi.create.model"))) {
+                odiInstance.getTransactionalEntityManager()
+                           .remove(ds);
             }
         }
         tm.commit(txnStatus);
@@ -126,8 +147,9 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
     }
 
     protected OdiModel findModel() {
-        IOdiModelFinder finder = (IOdiModelFinder) this.odiConnection.getOdiInstance().getTransactionalEntityManager()
-                .getFinder(OdiModel.class);
+        IOdiModelFinder finder = (IOdiModelFinder) this.odiConnection.getOdiInstance()
+                                                                     .getTransactionalEntityManager()
+                                                                     .getFinder(OdiModel.class);
         return finder.findByCode(jodiProperties.getProperty(ODI_CREATE_MODEL));
     }
 
@@ -157,21 +179,26 @@ public class OdiDatastoreBuildService implements EtlDataStoreBuildService {
             default:
                 throw new UnsupportedOperationException("Unsupported datatype: " + dataType);
         }
-        return pModel.getLogicalSchema().getTechnology().getDataType(dataType);
+        return pModel.getLogicalSchema()
+                     .getTechnology()
+                     .getDataType(dataType);
     }
 
     private void removeDataStore(Transformation t) {
         OdiInstance odiInstance = this.odiConnection.getOdiInstance();
         IOdiDataStoreFinder mappingsFinder = (IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiDataStore.class);
-        OdiDataStore odiDs = mappingsFinder.findByName(t.getMappings().getTargetDataStore(),
-                jodiProperties.getProperty(ODI_CREATE_MODEL));
-        if (odiDs == null)
+                                                                              .getFinder(OdiDataStore.class);
+        OdiDataStore odiDs = mappingsFinder.findByName(t.getMappings()
+                                                        .getTargetDataStore(),
+                                                       jodiProperties.getProperty(ODI_CREATE_MODEL));
+        if (odiDs == null) {
             return;
+        }
         ITransactionDefinition txnDef = new DefaultTransactionDefinition();
         ITransactionManager tm = odiInstance.getTransactionManager();
         ITransactionStatus txnStatus = tm.getTransaction(txnDef);
-        odiInstance.getTransactionalEntityManager().remove(odiDs);
+        odiInstance.getTransactionalEntityManager()
+                   .remove(odiDs);
         tm.commit(txnStatus);
     }
 

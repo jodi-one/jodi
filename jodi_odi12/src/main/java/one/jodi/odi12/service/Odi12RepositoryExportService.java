@@ -28,16 +28,14 @@ import java.util.List;
 
 public class Odi12RepositoryExportService implements OdiRepositoryExportService {
 
-    private final static Logger logger =
-            LogManager.getLogger(Odi12RepositoryExportService.class);
+    private static final Logger logger = LogManager.getLogger(Odi12RepositoryExportService.class);
     private final OdiInstance odiInstance;
     private final JodiProperties jodiProperties;
     private final String deploymentArchivePassword;
 
 
     @Inject
-    public Odi12RepositoryExportService(final OdiInstance odiInstance,
-                                        final JodiProperties jodiProperties,
+    public Odi12RepositoryExportService(final OdiInstance odiInstance, final JodiProperties jodiProperties,
                                         final @DeploymentArchivePassword String deploymentArchivePassword) {
         this.odiInstance = odiInstance;
         this.jodiProperties = jodiProperties;
@@ -46,7 +44,8 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void doExport(final String metaDataDirectory, final OdiRepositoryImportService.DA_TYPE da_type) throws IOException {
+    public void doExport(final String metaDataDirectory, final OdiRepositoryImportService.DA_TYPE da_type) throws
+            IOException {
         boolean pIncludePhysicalTopologyData = false;
         char[] pExportKey = getCipherData().toCharArray();
         boolean pCreateWithoutCipherData = false;
@@ -54,15 +53,19 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
             if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiScenario.class);
-                scenarioFinder.findAll().stream().forEach(s -> {
-                    patchList.add(new OdiObjectId(OdiScenario.class, ((OdiScenario) s).getInternalId()));
-                });
+                                                                                    .getFinder(OdiScenario.class);
+                scenarioFinder.findAll()
+                              .stream()
+                              .forEach(s -> {
+                                  patchList.add(new OdiObjectId(OdiScenario.class, ((OdiScenario) s).getInternalId()));
+                              });
                 IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLoadPlan.class);
-                loadPlanFinder.findAll().stream().forEach(l -> {
-                    patchList.add(new OdiObjectId(OdiLoadPlan.class, ((OdiLoadPlan) l).getInternalId()));
-                });
+                                                                                    .getFinder(OdiLoadPlan.class);
+                loadPlanFinder.findAll()
+                              .stream()
+                              .forEach(l -> {
+                                  patchList.add(new OdiObjectId(OdiLoadPlan.class, ((OdiLoadPlan) l).getInternalId()));
+                              });
 
                 boolean pIncludeSecurityObjects = true;
                 boolean regenerateScenarios = false;
@@ -70,81 +73,65 @@ public class Odi12RepositoryExportService implements OdiRepositoryExportService 
                 java.lang.String pFilename;
                 java.lang.String pName;
                 java.lang.String pDescription;
-                pFilename = metaDataDirectory + File.separator +
-                        "PATCH_ER_" + jodiProperties
-                        .getProjectCode() + ".zip";
+                pFilename = metaDataDirectory + File.separator + "PATCH_ER_" + jodiProperties.getProjectCode() + ".zip";
                 pName = "PATCH Execution Repository " + jodiProperties.getProjectCode();
-                pDescription = "Patch Export for project " + jodiProperties
-                        .getProjectCode() + " with scenarios and loadplans only.";
-                DeploymentService.createDeploymentArchiveFromRepo(odiInstance,
-                        patchList,
-                        pName,
-                        pDescription,
-                        DeploymentArchiveType.PATCH,
-                        pFilename,
-                        pIncludePhysicalTopologyData,
-                        pExportKey,
-                        pCreateWithoutCipherData,
-                        pIncludeSecurityObjects,
-                        regenerateScenarios);
+                pDescription = "Patch Export for project " + jodiProperties.getProjectCode() +
+                        " with scenarios and loadplans only.";
+                DeploymentService.createDeploymentArchiveFromRepo(odiInstance, patchList, pName, pDescription,
+                                                                  DeploymentArchiveType.PATCH, pFilename,
+                                                                  pIncludePhysicalTopologyData, pExportKey,
+                                                                  pCreateWithoutCipherData, pIncludeSecurityObjects,
+                                                                  regenerateScenarios);
             }
             if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_PATCH_DEV_REPOS)) {
                 final List<OdiObjectId> patchList = new ArrayList<>();
 
                 IOdiScenarioFinder scenarioFinder = (IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiScenario.class);
-                scenarioFinder.findAll().stream().forEach(s -> {
-                    patchList.add(new OdiObjectId(OdiScenario.class, ((OdiScenario) s).getInternalId()));
-                });
+                                                                                    .getFinder(OdiScenario.class);
+                scenarioFinder.findAll()
+                              .stream()
+                              .forEach(s -> {
+                                  patchList.add(new OdiObjectId(OdiScenario.class, ((OdiScenario) s).getInternalId()));
+                              });
                 IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLoadPlan.class);
-                loadPlanFinder.findAll().stream().forEach(l -> {
-                    patchList.add(new OdiObjectId(OdiLoadPlan.class, ((OdiLoadPlan) l).getInternalId()));
-                });
+                                                                                    .getFinder(OdiLoadPlan.class);
+                loadPlanFinder.findAll()
+                              .stream()
+                              .forEach(l -> {
+                                  patchList.add(new OdiObjectId(OdiLoadPlan.class, ((OdiLoadPlan) l).getInternalId()));
+                              });
                 IOdiProjectFinder projectFinder = (IOdiProjectFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiProject.class);
-                projectFinder.findAll().stream().forEach(p -> {
-                    patchList.add(new OdiObjectId(OdiProject.class, ((OdiProject) p).getInternalId()));
-                });
+                                                                                 .getFinder(OdiProject.class);
+                projectFinder.findAll()
+                             .stream()
+                             .forEach(p -> {
+                                 patchList.add(new OdiObjectId(OdiProject.class, ((OdiProject) p).getInternalId()));
+                             });
                 boolean pIncludeSecurityObjects = true;
                 boolean regenerateScenarios = false;
 
                 java.lang.String pFilename;
                 java.lang.String pName;
                 java.lang.String pDescription;
-                pFilename = metaDataDirectory + File.separator +
-                        "PATCH_DR_" + jodiProperties
-                        .getProjectCode() + ".zip";
+                pFilename = metaDataDirectory + File.separator + "PATCH_DR_" + jodiProperties.getProjectCode() + ".zip";
                 pName = "PATCH Development Repository " + jodiProperties.getProjectCode();
-                pDescription = "Patch Export for project " + jodiProperties
-                        .getProjectCode() + " with scenarios loadplans and projects only.";
-                DeploymentService.createDeploymentArchiveFromRepo(odiInstance,
-                        patchList,
-                        pName,
-                        pDescription,
-                        DeploymentArchiveType.PATCH,
-                        pFilename,
-                        pIncludePhysicalTopologyData,
-                        pExportKey,
-                        pCreateWithoutCipherData,
-                        pIncludeSecurityObjects,
-                        regenerateScenarios);
+                pDescription = "Patch Export for project " + jodiProperties.getProjectCode() +
+                        " with scenarios loadplans and projects only.";
+                DeploymentService.createDeploymentArchiveFromRepo(odiInstance, patchList, pName, pDescription,
+                                                                  DeploymentArchiveType.PATCH, pFilename,
+                                                                  pIncludePhysicalTopologyData, pExportKey,
+                                                                  pCreateWithoutCipherData, pIncludeSecurityObjects,
+                                                                  regenerateScenarios);
             }
             //
             if (da_type.equals(OdiRepositoryImportService.DA_TYPE.DA_INITIAL)) {
-                String pFilename = metaDataDirectory + File.separator +
-                        "INITIAL_" + jodiProperties
-                        .getProjectCode() + ".zip";
+                String pFilename =
+                        metaDataDirectory + File.separator + "INITIAL_" + jodiProperties.getProjectCode() + ".zip";
                 String pName = "INITIAL " + jodiProperties.getProjectCode();
-                String pDescription = "Initial Export for project " + jodiProperties
-                        .getProjectCode();
-                DeploymentService.createDeploymentArchiveFromRepo(odiInstance,
-                        pName,
-                        pDescription,
-                        pFilename,
-                        pIncludePhysicalTopologyData,
-                        pExportKey,
-                        pCreateWithoutCipherData);
+                String pDescription = "Initial Export for project " + jodiProperties.getProjectCode();
+                DeploymentService.createDeploymentArchiveFromRepo(odiInstance, pName, pDescription, pFilename,
+                                                                  pIncludePhysicalTopologyData, pExportKey,
+                                                                  pCreateWithoutCipherData);
             }
         } catch (DeploymentServiceException e) {
             logger.error(e);

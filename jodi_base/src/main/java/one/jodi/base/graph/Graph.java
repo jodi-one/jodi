@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Graph<T> {
 
-    private final static Logger logger = LogManager.getLogger(Graph.class);
+    private static final Logger logger = LogManager.getLogger(Graph.class);
 
     // please note that graph is destroyed after topological sort has completed
     private final Set<Node<T>> allNodes = new HashSet<>();
@@ -36,21 +36,20 @@ public class Graph<T> {
         fromNode.addEdge(toNode);
     }
 
-    public List<T> topologicalSort(
-            final BiFunction<Node<T>, Node<T>, Integer> determineSupplement) {
+    public List<T> topologicalSort(final BiFunction<Node<T>, Node<T>, Integer> determineSupplement) {
         // topologically sorted graph nodes (referenced as "L" in literature)
         List<Node<T>> topologicallySorted = new ArrayList<>();
 
         // Set of all nodes with no incoming edges (referred to as "S" in literature)
-        Set<Node<T>> noIncomingEdges = this.allNodes
-                .stream()
-                .filter(n -> n.incomingEdges.size() == 0)
-                .collect(Collectors.toSet());
+        Set<Node<T>> noIncomingEdges = this.allNodes.stream()
+                                                    .filter(n -> n.incomingEdges.size() == 0)
+                                                    .collect(Collectors.toSet());
 
         // while nodes without incoming edges exist do
         while (!noIncomingEdges.isEmpty()) {
             // remove a node from S
-            Node<T> node = noIncomingEdges.iterator().next();
+            Node<T> node = noIncomingEdges.iterator()
+                                          .next();
             noIncomingEdges.remove(node);
             // insert n into topologically sorted list
             topologicallySorted.add(node);
@@ -76,10 +75,9 @@ public class Graph<T> {
         }
 
         // Check to see if all edges are removed; otherwise report cycle
-        List<Node<?>> inCycle = this.allNodes
-                .stream()
-                .filter(n -> !n.incomingEdges.isEmpty())
-                .collect(Collectors.toList());
+        List<Node<?>> inCycle = this.allNodes.stream()
+                                             .filter(n -> !n.incomingEdges.isEmpty())
+                                             .collect(Collectors.toList());
 
         if (!inCycle.isEmpty()) {
             String msg = "Cycle detected in graph.";
@@ -88,8 +86,8 @@ public class Graph<T> {
         }
 
         return topologicallySorted.stream()
-                .map(Node::getValue)
-                .collect(Collectors.toList());
+                                  .map(Node::getValue)
+                                  .collect(Collectors.toList());
     }
 
     public List<T> topologicalSort() {
@@ -102,24 +100,19 @@ public class Graph<T> {
         this.allNodes.forEach(n -> n.setSupplemental(1));
 
         BiFunction<Node<T>, Node<T>, Integer> determineChildLevel =
-                (Node<T> parent, Node<T> child)
-                        -> Math.max(((Integer) parent.getSupplemental()) + 1,
-                        (Integer) child.getSupplemental());
+                (Node<T> parent, Node<T> child) -> Math.max(((Integer) parent.getSupplemental()) + 1,
+                                                            (Integer) child.getSupplemental());
         topologicalSort(determineChildLevel);
 
         // group nodes by level and order in ascending order by level
-        return this.allNodes
-                .stream()
-                .collect(Collectors.groupingBy(n -> (Integer) n.getSupplemental(),
-                        TreeMap::new,
-                        Collectors.mapping(Node::getValue,
-                                Collectors.toSet())))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.collectingAndThen(Collectors.toList(),
-                        Collections::unmodifiableList));
+        return this.allNodes.stream()
+                            .collect(Collectors.groupingBy(n -> (Integer) n.getSupplemental(), TreeMap::new,
+                                                           Collectors.mapping(Node::getValue, Collectors.toSet())))
+                            .entrySet()
+                            .stream()
+                            .sorted(Map.Entry.comparingByKey())
+                            .map(Map.Entry::getValue)
+                            .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 
 }

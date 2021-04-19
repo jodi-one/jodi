@@ -6,13 +6,13 @@ import one.jodi.base.error.ErrorWarningMessageJodi;
 
 public class BaseAnnotationServiceHelper {
 
-    public final static JsTestAnnotation createJsTestAnnotation(
+    public static final JsTestAnnotation createJsTestAnnotation(
             final ErrorWarningMessageJodi errorWarningMessages) {
         return new JsTestAnnotationImpl("ignored", errorWarningMessages);
     }
 
 
-    public final static AnnotationService createAnnotationServiceInstance(
+    public static final AnnotationService createAnnotationServiceInstance(
             final ErrorWarningMessageJodi errorWarningMessages) {
         errorWarningMessages.clear();
         BaseConfigurations b = BaseConfigurationsHelper.getTestBaseConfigurations();

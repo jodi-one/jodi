@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class ETLSubsystemServiceImpl implements ETLSubsystemService {
 
-    private final static Logger log = LogManager.getLogger(ETLSubsystemServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(ETLSubsystemServiceImpl.class);
     private final OdiInstance odiInstance;
     private final JodiProperties properties;
 

@@ -17,15 +17,15 @@ import one.jodi.core.service.ExtractionTables;
  * TableServiceProvider#alterSCDTables()} method.
  */
 public class ExtractTablesActionRunner implements ActionRunner {
-    private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
+    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
             + "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n"
             + "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n"
             + "or this could be due to an invalid XML file.";
-    private final static String ERROR_MESSAGE_01063 = "Package Sequence is required as an integer to run Extract Tables";
-    private final static String ERROR_MESSAGE_01064 = "The package sequence configuration is required to run Extract Tables";
-    private final static String ERROR_MESSAGE_01065 = "The metadata directory is required to run Extract Tables";
-    private final static String ERROR_MESSAGE_01066 = "The configuration property file is required to run Extract Tables";
-    private final static String ERROR_MESSAGE_01067 = "The source Model is required to run Extract Tables";
+    private static final String ERROR_MESSAGE_01063 = "Package Sequence is required as an integer to run Extract Tables";
+    private static final String ERROR_MESSAGE_01064 = "The package sequence configuration is required to run Extract Tables";
+    private static final String ERROR_MESSAGE_01065 = "The metadata directory is required to run Extract Tables";
+    private static final String ERROR_MESSAGE_01066 = "The configuration property file is required to run Extract Tables";
+    private static final String ERROR_MESSAGE_01067 = "The source Model is required to run Extract Tables";
     private final ExtractionTables extractTables;
     private final ErrorWarningMessageJodi errorWarningMessages;
 

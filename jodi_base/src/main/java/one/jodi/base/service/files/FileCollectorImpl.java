@@ -17,8 +17,8 @@ import java.util.List;
 
 public class FileCollectorImpl implements FileCollector {
 
-    private final static String ERROR_MESSAGE_00045 = "FATAL: xml file %s not found.";
-    private final static String ERROR_MESSAGE_00047 = "FATAL: directory %s not found.";
+    private static final String ERROR_MESSAGE_00045 = "FATAL: xml file %s not found.";
+    private static final String ERROR_MESSAGE_00047 = "FATAL: directory %s not found.";
     private final Logger logger = LogManager.getLogger(FileCollectorImpl.class);
     private final ErrorWarningMessageJodi errorWarningMessages;
 

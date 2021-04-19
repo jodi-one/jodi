@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class SequenceTransformationBuilderImpl implements SequenceTransformationBuilder {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(SequenceTransformationBuilderImpl.class);
     private final ErrorWarningMessageJodi errorWarningMessageJodi;
     private final ModelPropertiesProvider modelPropertiesProvider;

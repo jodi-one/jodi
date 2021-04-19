@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 public class CreateVariableActionRunner implements ActionRunner {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(CreateVariableActionRunner.class);
 
     private final VariableService service;

@@ -12,7 +12,7 @@ import java.util.Collections;
 
 public class MappingNameComparatorTest {
 
-    private final static Logger logger = LogManager.getLogger(
+    private static final Logger logger = LogManager.getLogger(
             MappingNameComparatorTest.class);
 
     @Test

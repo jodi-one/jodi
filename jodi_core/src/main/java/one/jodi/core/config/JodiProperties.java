@@ -10,74 +10,74 @@ import java.util.Map;
  */
 public interface JodiProperties {
 
-    static final String DATASETSEPERATOR = "_";
+   String DATASETSEPERATOR = "_";
 
-    /**
-     * Returns the value of the project code property.
-     *
-     * @return the value of the project code property.
-     */
-    String getProjectCode();
+   /**
+    * Returns the value of the project code property.
+    *
+    * @return the value of the project code property.
+    */
+   String getProjectCode();
 
-    /**
-     * Returns the property value for the given property name.
-     *
-     * @param name key of the property
-     * @return the property value for the given property name
-     */
-    String getProperty(String name);
+   /**
+    * Returns the property value for the given property name.
+    *
+    * @param name key of the property
+    * @return the property value for the given property name
+    */
+   String getProperty(String name);
 
-    /**
-     * Returns a list of String values associated with a property key.
-     * values are separated with a comma in the properties file.
-     *
-     * @param prop key of the property
-     * @return list of String values associated with a property key.
-     */
-    List<String> getPropertyList(final String prop);
+   /**
+    * Returns a list of String values associated with a property key.
+    * values are separated with a comma in the properties file.
+    *
+    * @param prop key of the property
+    * @return list of String values associated with a property key.
+    */
+   List<String> getPropertyList(final String prop);
 
-    /**
-     * Returns a map of string to string associated with property key.
-     * Key value pairs are separated with a comma with the key and value separated by a colon.
-     *
-     * @param prop key of the property
-     * @return a map of string to string associated with property key
-     */
-    Map<String, String> getPropertyMap(final String prop);
+   /**
+    * Returns a map of string to string associated with property key.
+    * Key value pairs are separated with a comma with the key and value separated by a colon.
+    *
+    * @param prop key of the property
+    * @return a map of string to string associated with property key
+    */
+   Map<String, String> getPropertyMap(final String prop);
 
-    /**
-     * Returns a list of properties that are defined in the properties file.
-     *
-     * @return list of keys in the properties file
-     */
-    List<String> getPropertyKeys();
+   /**
+    * Returns a list of properties that are defined in the properties file.
+    *
+    * @return list of keys in the properties file
+    */
+   List<String> getPropertyKeys();
 
-    /**
-     * Gets the rowid column name.
-     *
-     * @return the rowid column name
-     */
-    String getRowidColumnName();
+   /**
+    * Gets the rowid column name.
+    *
+    * @return the rowid column name
+    */
+   String getRowidColumnName();
 
-    /**
-     * Boolean value that indicates wether to update interfaces,
-     * or drop and recreate them.
-     *
-     * @return updateIndication
-     */
-    boolean isUpdateable();
+   /**
+    * Boolean value that indicates wether to update interfaces,
+    * or drop and recreate them.
+    *
+    * @return updateIndication
+    */
+   boolean isUpdateable();
 
-    boolean includeDetails();
+   boolean includeDetails();
 
-    boolean hasDeprecateCDCProperty();
+   boolean hasDeprecateCDCProperty();
 
-    PropertyValueHolder getPropertyValueHolder(String key);
+   PropertyValueHolder getPropertyValueHolder(String key);
 
-    String getListAsString(String key);
+   String getListAsString(String key);
 
-    String getInputSchemaLocation() throws ConfigurationException;
+   String getInputSchemaLocation() throws ConfigurationException;
 
-    String getPackageSchemaLocation() throws ConfigurationException;
+   String getPackageSchemaLocation() throws ConfigurationException;
 
-    String getTemporaryInterfacesRegex();
+   String getTemporaryInterfacesRegex();
 }

@@ -20,7 +20,7 @@ import java.util.TreeMap;
  * The class is a concrete strategy participating in the Strategy Pattern.
  */
 public class JournalizingDefaultStrategy implements JournalizingStrategy {
-    private final static Logger logger = LogManager.getLogger(JournalizingDefaultStrategy.class);
+    private static final Logger logger = LogManager.getLogger(JournalizingDefaultStrategy.class);
 
     /**
      * This method determines on which datastores to apply the Change Data Capture flag to.

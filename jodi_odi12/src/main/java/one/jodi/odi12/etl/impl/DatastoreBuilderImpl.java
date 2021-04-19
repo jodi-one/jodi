@@ -31,16 +31,17 @@ import java.util.HashMap;
 public class DatastoreBuilderImpl implements DatastoreBuilder {
 
 
-    private final static Logger logger = LogManager.getLogger(DatastoreBuilderImpl.class);
-    private final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy;
+    private static final Logger logger = LogManager.getLogger(DatastoreBuilderImpl.class);
+    private final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema>
+            odiAccessStrategy;
     private final FlowsBuilder flowsBuilder;
     private final JodiProperties properties;
 
     @Inject
-    protected DatastoreBuilderImpl(final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy,
-                                   final JodiProperties properties,
-                                   final HashMap<String, MapRootContainer> mappingCache,
-                                   final FlowsBuilder flowsBuilder) {
+    protected DatastoreBuilderImpl(
+            final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy,
+            final JodiProperties properties, final HashMap<String, MapRootContainer> mappingCache,
+            final FlowsBuilder flowsBuilder) {
         this.odiAccessStrategy = odiAccessStrategy;
         this.flowsBuilder = flowsBuilder;
         this.properties = properties;
@@ -50,20 +51,14 @@ public class DatastoreBuilderImpl implements DatastoreBuilder {
      * @see one.jodi.odi12.mappings.DatastoreBuilder#addDatasource(oracle.odi.domain.mapping.MapRootContainer, one.jodi.etl.internalmodel.Source, int, boolean, one.jodi.odi12.etl.EtlOperators)
      */
     @Override
-    public void addDatasource(final MapRootContainer mapping,
-                              final Source source,
-                              final int packageSequence,
-                              final boolean journalized,
-                              EtlOperators etlOperators)
-            throws AdapterException, MapPhysicalException, MappingException,
-            TransformationAccessStrategyException, ResourceNotFoundException,
+    public void addDatasource(final MapRootContainer mapping, final Source source, final int packageSequence,
+                              final boolean journalized, EtlOperators etlOperators) throws AdapterException,
+            MapPhysicalException, MappingException, TransformationAccessStrategyException, ResourceNotFoundException,
             ResourceFoundAmbiguouslyException {
         if (source.isTemporary()) {
-            addAsTemporaryDatasourceToInterface(mapping, source,
-                    packageSequence, journalized, etlOperators);
+            addAsTemporaryDatasourceToInterface(mapping, source, packageSequence, journalized, etlOperators);
         } else {
-            addAsPermanentDatasourceToInterface(mapping, source,
-                    packageSequence, journalized, etlOperators);
+            addAsPermanentDatasourceToInterface(mapping, source, packageSequence, journalized, etlOperators);
         }
     }
 
@@ -76,8 +71,10 @@ public class DatastoreBuilderImpl implements DatastoreBuilder {
      * @throws ResourceNotFoundException
      */
     private void addAsPermanentDatasourceToInterface(final MapRootContainer mapping, final Source source,
-                                                     final int packageSequence, final boolean journalized, EtlOperators etlOperators) throws AdapterException, MappingException,
-            TransformationAccessStrategyException, ResourceNotFoundException, ResourceFoundAmbiguouslyException {
+                                                     final int packageSequence, final boolean journalized,
+                                                     EtlOperators etlOperators) throws AdapterException,
+            MappingException, TransformationAccessStrategyException, ResourceNotFoundException,
+            ResourceFoundAmbiguouslyException {
         OdiDataStore boundTo = odiAccessStrategy.findDataStore(source.getName(), source.getModel());
         String alias = source.getComponentName();
         IMapComponent sourceComponent = createComponent(mapping, boundTo, false);
@@ -100,17 +97,20 @@ public class DatastoreBuilderImpl implements DatastoreBuilder {
      * @throws ResourceNotFoundException
      */
     private void addAsTemporaryDatasourceToInterface(final MapRootContainer mapping, final Source source,
-                                                     final int packageSequence, final boolean journalized, EtlOperators etlOperators) throws AdapterException, MapPhysicalException,
-            MappingException, TransformationAccessStrategyException, ResourceNotFoundException,
+                                                     final int packageSequence, final boolean journalized,
+                                                     EtlOperators etlOperators) throws AdapterException,
+            MapPhysicalException, MappingException, TransformationAccessStrategyException, ResourceNotFoundException,
             ResourceFoundAmbiguouslyException {
         /*
          * the source datastore is a temporary interface
          */
         logger.debug(packageSequence + " Source temp datastore: " + source.getName());
         String alias = source.getComponentName();
-        String folder = source.getParent().getParent().getFolderName();
-        ReusableMapping boundTo = (ReusableMapping) odiAccessStrategy.findMappingsByName(source.getName(),
-                folder, properties.getProjectCode());
+        String folder = source.getParent()
+                              .getParent()
+                              .getFolderName();
+        ReusableMapping boundTo = (ReusableMapping) odiAccessStrategy.findMappingsByName(source.getName(), folder,
+                                                                                         properties.getProjectCode());
         assert (boundTo != null) : " boundTo not found in folder: " + folder + " for source: " + source.getName();
         ReusableMappingComponent sourceComponent = (ReusableMappingComponent) createComponent(mapping, boundTo, false);
         sourceComponent.setName(alias);
@@ -127,7 +127,11 @@ public class DatastoreBuilderImpl implements DatastoreBuilder {
                                          final boolean autoJoinEnabled) throws AdapterException, MappingException {
         String type = "";
         if (boundObject instanceof OdiDataStore) {
-            if (((OdiDataStore) boundObject).getModel().getTechnology().getName().toLowerCase().equals("file")) {
+            if (((OdiDataStore) boundObject).getModel()
+                                            .getTechnology()
+                                            .getName()
+                                            .toLowerCase()
+                                            .equals("file")) {
                 type = "FILE";
             } else {
                 type = "DATASTORE";

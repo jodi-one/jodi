@@ -5,25 +5,37 @@ import one.jodi.base.model.types.DataStoreColumn;
 import one.jodi.base.model.types.SCDType;
 import one.jodi.core.config.PropertyValueHolder;
 import one.jodi.core.model.Dataset;
+import one.jodi.core.model.Datasets;
 import one.jodi.core.model.JoinTypeEnum;
 import one.jodi.core.model.Lookup;
 import one.jodi.core.model.LookupTypeEnum;
+import one.jodi.core.model.Lookups;
+import one.jodi.core.model.MappingExpressions;
 import one.jodi.core.model.Mappings;
 import one.jodi.core.model.Properties;
 import one.jodi.core.model.SetOperatorTypeEnum;
 import one.jodi.core.model.Source;
 import one.jodi.core.model.Targetcolumn;
 import one.jodi.core.model.Transformation;
-import one.jodi.core.model.*;
 import one.jodi.etl.internalmodel.AggregateFunctionEnum;
 import one.jodi.etl.internalmodel.ExecutionLocationtypeEnum;
+import one.jodi.etl.internalmodel.GroupComparisonEnum;
+import one.jodi.etl.internalmodel.OutputAttribute;
+import one.jodi.etl.internalmodel.Pivot;
 import one.jodi.etl.internalmodel.RoleEnum;
-import one.jodi.etl.internalmodel.*;
+import one.jodi.etl.internalmodel.SubQuery;
+import one.jodi.etl.internalmodel.UnPivot;
 import oracle.odi.domain.model.OdiColumn;
 import oracle.odi.domain.model.OdiDataStore;
 import oracle.odi.domain.project.OdiInterface;
 import oracle.odi.domain.project.OdiInterface.TargetDataStore;
-import oracle.odi.domain.project.interfaces.*;
+import oracle.odi.domain.project.interfaces.DataSet;
+import oracle.odi.domain.project.interfaces.ISourceColumn;
+import oracle.odi.domain.project.interfaces.Join;
+import oracle.odi.domain.project.interfaces.SourceDataStore;
+import oracle.odi.domain.project.interfaces.SourceSet;
+import oracle.odi.domain.project.interfaces.TargetColumn;
+import oracle.odi.domain.project.interfaces.TargetMapping;
 import oracle.odi.domain.relational.IColumn;
 import oracle.odi.domain.topology.OdiDataType;
 import oracle.odi.domain.topology.OdiLogicalSchema;
@@ -34,7 +46,13 @@ import oracle.odi.interfaces.interactive.IInterfaceAction;
 import oracle.odi.interfaces.interactive.IInterfaceIssue;
 import oracle.odi.interfaces.interactive.IIssueFix;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.anyString;
@@ -44,20 +62,20 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("deprecation")
 public class InputModelMockHelper {
 
-    public final static String TARGET_STORE = "targetdatastore";
+    public static final String TARGET_STORE = "targetdatastore";
 
     public static Dataset createMockDataset(final String alias, final String name, final String model) {
         Dataset mockDS = mock(Dataset.class);
         Source mockSource = createMockSource(alias, name, model);
 
-        when(mockDS.getSource()).thenReturn(Collections.singletonList(
-                mockSource));
+        when(mockDS.getSource()).thenReturn(Collections.singletonList(mockSource));
         when(mockDS.getSetOperator()).thenReturn(SetOperatorTypeEnum.UNION_ALL);
         when(mockDS.getName()).thenReturn("datasetname");
         return mockDS;
     }
 
-    public static one.jodi.etl.internalmodel.Dataset createMockETLDataset(final String alias, final String name, final String model) {
+    public static one.jodi.etl.internalmodel.Dataset createMockETLDataset(final String alias, final String name,
+                                                                          final String model) {
         one.jodi.etl.internalmodel.Dataset mockDS = mock(one.jodi.etl.internalmodel.Dataset.class);
         when(mockDS.getName()).thenReturn("");
         one.jodi.etl.internalmodel.Source mockSource = createMockETLSource(alias, name, model);
@@ -69,7 +87,8 @@ public class InputModelMockHelper {
         return mockDS;
     }
 
-    public static Dataset createMockDataset(final Datasets parent, final String[] aliases, final String[] names, final String[] models, final String[] filters, JoinTypeEnum joinType) {
+    public static Dataset createMockDataset(final Datasets parent, final String[] aliases, final String[] names,
+                                            final String[] models, final String[] filters, JoinTypeEnum joinType) {
         assert (aliases != null);
         assert (names != null);
         assert (models != null);
@@ -79,7 +98,7 @@ public class InputModelMockHelper {
         assert (aliases.length == filters.length);
         Dataset mockDS = mock(Dataset.class);
 
-        List<Source> sourceList = new ArrayList<Source>();
+        List<Source> sourceList = new ArrayList<>();
 
         for (int i = 0; i < aliases.length; i++) {
             Source mockSource = createMockSource(aliases[i], names[i], models[i]);
@@ -100,7 +119,9 @@ public class InputModelMockHelper {
         return mockDS;
     }
 
-    public static one.jodi.etl.internalmodel.Dataset createMockETLDataset(final one.jodi.etl.internalmodel.Transformation parent, final String[] aliases, final String[] names, final String[] models, final String[] filters, one.jodi.etl.internalmodel.JoinTypeEnum joinType) {
+    public static one.jodi.etl.internalmodel.Dataset createMockETLDataset(
+            final one.jodi.etl.internalmodel.Transformation parent, final String[] aliases, final String[] names,
+            final String[] models, final String[] filters, one.jodi.etl.internalmodel.JoinTypeEnum joinType) {
         assert (aliases != null);
         assert (names != null);
         assert (models != null);
@@ -110,7 +131,7 @@ public class InputModelMockHelper {
         assert (aliases.length == filters.length);
         one.jodi.etl.internalmodel.Dataset mockDS = mock(one.jodi.etl.internalmodel.Dataset.class);
 
-        List<one.jodi.etl.internalmodel.Source> sourceList = new ArrayList<one.jodi.etl.internalmodel.Source>();
+        List<one.jodi.etl.internalmodel.Source> sourceList = new ArrayList<>();
 
         for (int i = 0; i < aliases.length; i++) {
             one.jodi.etl.internalmodel.Source mockSource = createMockETLSource(aliases[i], names[i], models[i]);
@@ -133,7 +154,7 @@ public class InputModelMockHelper {
 
     public static Lookups createMockLookups(String join) {
         Lookups l = mock(Lookups.class);
-        List<Lookup> ll = new ArrayList<Lookup>();
+        List<Lookup> ll = new ArrayList<>();
 
         Lookup lu = mock(Lookup.class);
         when(lu.getJoin()).thenReturn(join);
@@ -146,7 +167,7 @@ public class InputModelMockHelper {
 
     public static List<one.jodi.etl.internalmodel.Lookup> createMockETLLookups(String join) {
         one.jodi.etl.internalmodel.Lookup l = mock(one.jodi.etl.internalmodel.Lookup.class);
-        List<one.jodi.etl.internalmodel.Lookup> list = new ArrayList<one.jodi.etl.internalmodel.Lookup>();
+        List<one.jodi.etl.internalmodel.Lookup> list = new ArrayList<>();
 
         when(l.getJoin()).thenReturn(join);
         when(l.getLookupType()).thenReturn(one.jodi.etl.internalmodel.LookupTypeEnum.SCALAR);
@@ -167,14 +188,13 @@ public class InputModelMockHelper {
         return mockDS;
     }
 
-    public static Datasets createMockDatasets(final String[] aliases,
-                                              final String[] names, final String[] models) {
+    public static Datasets createMockDatasets(final String[] aliases, final String[] names, final String[] models) {
         assert (aliases != null);
         assert (names != null);
         assert (models != null);
         assert (aliases.length == names.length && aliases.length == models.length);
 
-        List<Dataset> dsList = new ArrayList<Dataset>();
+        List<Dataset> dsList = new ArrayList<>();
 
         Datasets mockDS = mock(Datasets.class);
         for (int i = 0; i < names.length; i++) {
@@ -189,16 +209,15 @@ public class InputModelMockHelper {
     }
 
 
-    public static List<one.jodi.etl.internalmodel.Dataset> createMockETLDatasets(one.jodi.etl.internalmodel.Transformation transformation,
-                                                                                 final String[] aliases,
-                                                                                 final String[] names,
-                                                                                 final String[] models) {
+    public static List<one.jodi.etl.internalmodel.Dataset> createMockETLDatasets(
+            one.jodi.etl.internalmodel.Transformation transformation, final String[] aliases, final String[] names,
+            final String[] models) {
         assert (aliases != null);
         assert (names != null);
         assert (models != null);
         assert (aliases.length == names.length && aliases.length == models.length);
 
-        List<one.jodi.etl.internalmodel.Dataset> dsList = new ArrayList<one.jodi.etl.internalmodel.Dataset>();
+        List<one.jodi.etl.internalmodel.Dataset> dsList = new ArrayList<>();
 
         for (int i = 0; i < names.length; i++) {
             one.jodi.etl.internalmodel.Dataset ds = createMockETLDataset(aliases[i], names[i], models[i]);
@@ -231,24 +250,31 @@ public class InputModelMockHelper {
         return mockMap;
     }
 
-    public static one.jodi.etl.internalmodel.Mappings createMockETLMappings(final String targetDataStore, String dataType, String model, int numberDatasets) {
+    public static one.jodi.etl.internalmodel.Mappings createMockETLMappings(final String targetDataStore,
+                                                                            String dataType, String model,
+                                                                            int numberDatasets) {
         one.jodi.etl.internalmodel.Mappings mockMap = mock(one.jodi.etl.internalmodel.Mappings.class);
         when(mockMap.getTargetDataStore()).thenReturn(targetDataStore);
         when(mockMap.getModel()).thenReturn(model);
 
-        one.jodi.etl.internalmodel.ExecutionLocationtypeEnum el = one.jodi.etl.internalmodel.ExecutionLocationtypeEnum.SOURCE;
+        one.jodi.etl.internalmodel.ExecutionLocationtypeEnum el =
+                one.jodi.etl.internalmodel.ExecutionLocationtypeEnum.SOURCE;
         one.jodi.etl.internalmodel.Targetcolumn mockColumn = mock(one.jodi.etl.internalmodel.Targetcolumn.class);
         when(mockColumn.getName()).thenReturn("colname");
         when(mockColumn.isUpdateKey()).thenReturn(true);
         when(mockColumn.getParent()).thenReturn(mockMap);
         when(mockColumn.getExecutionLocations()).thenReturn(Collections.<ExecutionLocationtypeEnum>singletonList(el));
 
-        when(mockColumn.getMappingExpressions()).thenReturn(Arrays.asList(new String[numberDatasets]).stream().map(s -> "alias1.expr").collect(Collectors.toList()));
+        when(mockColumn.getMappingExpressions()).thenReturn(Arrays.asList(new String[numberDatasets])
+                                                                  .stream()
+                                                                  .map(s -> "alias1.expr")
+                                                                  .collect(Collectors.toList()));
         //when(mockColumn.getMappingExpressions()).thenReturn(Collections.<String> singletonList("alias1.expr"));
         if (dataType != null) {
             when(mockColumn.getDataType()).thenReturn(dataType);
         }
-        when(mockMap.getTargetColumns()).thenReturn(Collections.<one.jodi.etl.internalmodel.Targetcolumn>singletonList(mockColumn));
+        when(mockMap.getTargetColumns()).thenReturn(
+                Collections.<one.jodi.etl.internalmodel.Targetcolumn>singletonList(mockColumn));
         return mockMap;
     }
 
@@ -256,7 +282,7 @@ public class InputModelMockHelper {
 
         Mappings mockMap = mock(Mappings.class);
         when(mockMap.getTargetDataStore()).thenReturn(targetDataStore);
-        List<Targetcolumn> mockTargetColumns = new ArrayList<Targetcolumn>();
+        List<Targetcolumn> mockTargetColumns = new ArrayList<>();
 
         for (String columnName : columnList) {
             int count;
@@ -302,12 +328,14 @@ public class InputModelMockHelper {
     }
 
 
-    public static one.jodi.etl.internalmodel.Mappings createMockETLMappings(final String targetDataStore, String[] columnList, String dataType, String model) {
+    public static one.jodi.etl.internalmodel.Mappings createMockETLMappings(final String targetDataStore,
+                                                                            String[] columnList, String dataType,
+                                                                            String model) {
 
         one.jodi.etl.internalmodel.Mappings mockMap = mock(one.jodi.etl.internalmodel.Mappings.class);
         when(mockMap.getTargetDataStore()).thenReturn(targetDataStore);
         when(mockMap.getModel()).thenReturn(model);
-        List<one.jodi.etl.internalmodel.Targetcolumn> mockTargetColumns = new ArrayList<one.jodi.etl.internalmodel.Targetcolumn>();
+        List<one.jodi.etl.internalmodel.Targetcolumn> mockTargetColumns = new ArrayList<>();
 
         for (String columnName : columnList) {
             int count;
@@ -335,14 +363,13 @@ public class InputModelMockHelper {
     }
 
 
-    public static Dataset createMockMultiSourceDataset(final String[] aliases,
-                                                       final String[] names) {
+    public static Dataset createMockMultiSourceDataset(final String[] aliases, final String[] names) {
         assert (aliases != null);
         assert (names != null);
         assert (aliases.length == names.length);
 
         Dataset mockDS = mock(Dataset.class);
-        List<Source> sources = new ArrayList<Source>();
+        List<Source> sources = new ArrayList<>();
         when(mockDS.getSetOperator()).thenReturn(SetOperatorTypeEnum.UNION_ALL);
 
         for (int i = 0; i < names.length; i++) {
@@ -363,7 +390,7 @@ public class InputModelMockHelper {
         assert (aliases.length == names.length);
 
         one.jodi.etl.internalmodel.Dataset mockDS = mock(one.jodi.etl.internalmodel.Dataset.class);
-        List<one.jodi.etl.internalmodel.Source> sources = new ArrayList<one.jodi.etl.internalmodel.Source>();
+        List<one.jodi.etl.internalmodel.Source> sources = new ArrayList<>();
         when(mockDS.getSetOperator()).thenReturn(one.jodi.etl.internalmodel.SetOperatorTypeEnum.UNION_ALL);
 
         for (int i = 0; i < names.length; i++) {
@@ -389,7 +416,8 @@ public class InputModelMockHelper {
         return mockSource;
     }
 
-    public static one.jodi.etl.internalmodel.Source createMockETLSource(String alias, final String name, final String model) {
+    public static one.jodi.etl.internalmodel.Source createMockETLSource(String alias, final String name,
+                                                                        final String model) {
         one.jodi.etl.internalmodel.Source mockSource = mock(one.jodi.etl.internalmodel.Source.class);
 
         when(mockSource.getAlias()).thenReturn(alias);
@@ -410,81 +438,75 @@ public class InputModelMockHelper {
     }
 
     public static Transformation createMockTransformation(String transformationName, String type) {
-        return createMockTransformation("packagelist",
-                new String[]{
-                        "alias", "alias"
-                }, new String[]{
-                        "name", "name"
-                }, new String[]{"model", "model"}, transformationName, type);
+        return createMockTransformation("packagelist", new String[]{"alias", "alias"}, new String[]{"name", "name"},
+                                        new String[]{"model", "model"}, transformationName, type);
     }
 
     public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(String transformationName) {
-        return createMockETLTransformation("packagelist",
-                new String[]{
-                        "alias", "alias"
-                }, new String[]{
-                        "name", "name"
-                }, new String[]{"model", "model"}, transformationName);
+        return createMockETLTransformation("packagelist", new String[]{"alias", "alias"}, new String[]{"name", "name"},
+                                           new String[]{"model", "model"}, transformationName);
     }
 
 
-    public static Transformation createMockTransformation(final String[] dsaliases,
-                                                          final String[] dsnames, final String[] models) {
+    public static Transformation createMockTransformation(final String[] dsaliases, final String[] dsnames,
+                                                          final String[] models) {
         Mappings mockMap = createMockMappings(TARGET_STORE, null);
 
-        return createMockTransformation("packagelist", dsaliases, dsnames, models,
-                mockMap);
+        return createMockTransformation("packagelist", dsaliases, dsnames, models, mockMap);
     }
 
     public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(final String[] dsaliases,
-                                                                                        final String[] dsnames, final String[] models) {
+                                                                                        final String[] dsnames,
+                                                                                        final String[] models) {
         one.jodi.etl.internalmodel.Mappings mockMap = createMockETLMappings(TARGET_STORE, null, null, dsnames.length);
 
-        return createMockETLTransformation("packagelist", dsaliases, dsnames, models,
-                mockMap);
+        return createMockETLTransformation("packagelist", dsaliases, dsnames, models, mockMap);
     }
 
 
-    public static Transformation createMockTransformation(final String packageList,
-                                                          final String[] dsaliases, final String[] dsnames, final String[] models, final String target) {
+    public static Transformation createMockTransformation(final String packageList, final String[] dsaliases,
+                                                          final String[] dsnames, final String[] models,
+                                                          final String target) {
 
         Mappings mockMap = createMockMappings(target, null);
 
-        return createMockTransformation(packageList, dsaliases, dsnames, models,
-                mockMap);
+        return createMockTransformation(packageList, dsaliases, dsnames, models, mockMap);
     }
 
     public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(final String packageList,
-                                                                                        final String[] dsaliases, final String[] dsnames, final String[] models, final String target) {
+                                                                                        final String[] dsaliases,
+                                                                                        final String[] dsnames,
+                                                                                        final String[] models,
+                                                                                        final String target) {
 
         one.jodi.etl.internalmodel.Mappings mockMap = createMockETLMappings(target, null, null, dsnames.length);
 
-        return createMockETLTransformation(packageList, dsaliases, dsnames, models,
-                mockMap);
+        return createMockETLTransformation(packageList, dsaliases, dsnames, models, mockMap);
     }
 
-    public static Transformation createMockTransformation(final String packageList,
-                                                          final String[] dsaliases, final String[] dsnames, final String[] models,
+    public static Transformation createMockTransformation(final String packageList, final String[] dsaliases,
+                                                          final String[] dsnames, final String[] models,
                                                           final String target, final String type) {
 
         Mappings mockMap = createMockMappings(target, type);
 
-        return createMockTransformation(packageList, dsaliases, dsnames, models,
-                mockMap);
+        return createMockTransformation(packageList, dsaliases, dsnames, models, mockMap);
     }
 
-    public static Transformation createMockTransformation(final String packageList,
-                                                          final String[] dsaliases, final String[] dsnames, final String[] models) {
+    public static Transformation createMockTransformation(final String packageList, final String[] dsaliases,
+                                                          final String[] dsnames, final String[] models) {
         return createMockTransformation(packageList, dsaliases, dsnames, models, TARGET_STORE);
     }
 
     public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(final String packageList,
-                                                                                        final String[] dsaliases, final String[] dsnames, final String[] models) {
+                                                                                        final String[] dsaliases,
+                                                                                        final String[] dsnames,
+                                                                                        final String[] models) {
         return createMockETLTransformation(packageList, dsaliases, dsnames, models, TARGET_STORE);
     }
 
-    public static Transformation createMockTransformation(final String packageList,
-                                                          final String[] dsaliases, final String[] dsnames, String[] models,
+    public static Transformation createMockTransformation(final String packageList, final String[] dsaliases,
+                                                          final String[] dsnames, String[] models,
                                                           final Mappings mockMap) {
         Transformation mockT = mock(Transformation.class);
         Datasets mockDS = createMockDatasets(dsaliases, dsnames, models);
@@ -497,10 +519,11 @@ public class InputModelMockHelper {
         return mockT;
     }
 
-    public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(
-            final String packageList, final String[] dsaliases,
-            final String[] dsnames, String[] models,
-            final one.jodi.etl.internalmodel.Mappings mockMap) {
+    public static one.jodi.etl.internalmodel.Transformation createMockETLTransformation(final String packageList,
+                                                                                        final String[] dsaliases,
+                                                                                        final String[] dsnames,
+                                                                                        String[] models,
+                                                                                        final one.jodi.etl.internalmodel.Mappings mockMap) {
         one.jodi.etl.internalmodel.Transformation mockT = mock(one.jodi.etl.internalmodel.Transformation.class);
         List<one.jodi.etl.internalmodel.Dataset> datasets = createMockETLDatasets(mockT, dsaliases, dsnames, models);
         when(mockT.getDatasets()).thenReturn(datasets);
@@ -523,12 +546,13 @@ public class InputModelMockHelper {
         return Collections.<IInterfaceIssue>singletonList(issue);
     }
 
-    public static DataSet createMockDataSet(String dsname, String[] sourcenames, String[] sourcealiases, OdiInterface odiInterface) throws Exception {
+    public static DataSet createMockDataSet(String dsname, String[] sourcenames, String[] sourcealiases,
+                                            OdiInterface odiInterface) throws Exception {
         DataSet ds = mock(DataSet.class);
         when(ds.getName()).thenReturn(dsname);
 
 
-        List<SourceDataStore> sourceDataStores = new ArrayList<SourceDataStore>();
+        List<SourceDataStore> sourceDataStores = new ArrayList<>();
         SourceDataStore sds = null;
         for (int i = 0; i < sourcenames.length; i++) {
             sds = mock(SourceDataStore.class);
@@ -575,7 +599,7 @@ public class InputModelMockHelper {
     }
 
     public static List<TargetColumn> createMockTargetColumn(final String[] names) throws Exception {
-        List<TargetColumn> colList = new ArrayList<TargetColumn>();
+        List<TargetColumn> colList = new ArrayList<>();
 
         for (String name : names) {
             TargetColumn col = mock(TargetColumn.class);
@@ -590,7 +614,7 @@ public class InputModelMockHelper {
     }
 
     public static List<TargetMapping> createMockTargetMapping(String[] expressions) throws Exception {
-        List<TargetMapping> mapList = new ArrayList<TargetMapping>();
+        List<TargetMapping> mapList = new ArrayList<>();
 
         for (String sqlString : expressions) {
             TargetMapping map = mock(TargetMapping.class);
@@ -631,7 +655,7 @@ public class InputModelMockHelper {
         when(col.getName()).thenReturn(name);
 
         MappingExpressions expr = mock(MappingExpressions.class);
-        List<String> exprList = new ArrayList<String>();
+        List<String> exprList = new ArrayList<>();
         for (String e : expressions) {
             exprList.add(e);
         }
@@ -642,11 +666,12 @@ public class InputModelMockHelper {
         return col;
     }
 
-    public static one.jodi.etl.internalmodel.Targetcolumn createMockETLTargetcolumn(String name, String... expressions) {
+    public static one.jodi.etl.internalmodel.Targetcolumn createMockETLTargetcolumn(String name,
+                                                                                    String... expressions) {
         one.jodi.etl.internalmodel.Targetcolumn col = mock(one.jodi.etl.internalmodel.Targetcolumn.class);
         when(col.getName()).thenReturn(name);
 
-        List<String> exprList = new ArrayList<String>();
+        List<String> exprList = new ArrayList<>();
         for (String e : expressions) {
             exprList.add(e);
         }
@@ -656,9 +681,8 @@ public class InputModelMockHelper {
         return col;
     }
 
-    public static Map<String, DataStoreColumn> createDataStoreColumns(
-            final DataStore parent, final String[] names) {
-        Map<String, DataStoreColumn> result = new HashMap<String, DataStoreColumn>();
+    public static Map<String, DataStoreColumn> createDataStoreColumns(final DataStore parent, final String[] names) {
+        Map<String, DataStoreColumn> result = new HashMap<>();
 
         int position = 1;
         for (final String name : names) {
@@ -746,18 +770,21 @@ public class InputModelMockHelper {
         return mock;
     }
 
-    public static Pivot createMockPivot(String name, String rowLocator, String aggregateFunction, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
-        assert (attributeNames.length == attributeValues.length && attributeValues.length == attributeExpressions.length);
+    public static Pivot createMockPivot(String name, String rowLocator, String aggregateFunction,
+                                        String[] attributeNames, String[] attributeValues,
+                                        String[] attributeExpressions) {
+        assert (attributeNames.length == attributeValues.length &&
+                attributeValues.length == attributeExpressions.length);
         Pivot pivot = mock(Pivot.class);
         when(pivot.getName()).thenReturn(name);
         when(pivot.getRowLocator()).thenReturn(rowLocator);
         when(pivot.getAggregateFunction()).thenReturn(AggregateFunctionEnum.fromValue(aggregateFunction));
-        ArrayList<OutputAttribute> outputAttributes = new ArrayList<OutputAttribute>();
+        ArrayList<OutputAttribute> outputAttributes = new ArrayList<>();
         when(pivot.getOutputAttributes()).thenReturn(outputAttributes);
         for (int i = 0; i < attributeNames.length; i++) {
             OutputAttribute outputAttribute = mock(OutputAttribute.class);
             when(outputAttribute.getName()).thenReturn(attributeNames[i]);
-            Map<String, String> expressions = new HashMap<String, String>();
+            Map<String, String> expressions = new HashMap<>();
             expressions.put(attributeValues[i], attributeExpressions[i]);
             when(outputAttribute.getExpressions()).thenReturn(expressions);
             outputAttributes.add(outputAttribute);
@@ -766,17 +793,19 @@ public class InputModelMockHelper {
         return pivot;
     }
 
-    public static UnPivot createMockUnPivot(String name, String rowLocator, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
-        assert (attributeNames.length == attributeValues.length && attributeValues.length == attributeExpressions.length);
+    public static UnPivot createMockUnPivot(String name, String rowLocator, String[] attributeNames,
+                                            String[] attributeValues, String[] attributeExpressions) {
+        assert (attributeNames.length == attributeValues.length &&
+                attributeValues.length == attributeExpressions.length);
         UnPivot up = mock(UnPivot.class);
         when(up.getName()).thenReturn(name);
         when(up.getRowLocator()).thenReturn(rowLocator);
-        ArrayList<OutputAttribute> outputAttributes = new ArrayList<OutputAttribute>();
+        ArrayList<OutputAttribute> outputAttributes = new ArrayList<>();
         when(up.getOutputAttributes()).thenReturn(outputAttributes);
         for (int i = 0; i < attributeNames.length; i++) {
             OutputAttribute outputAttribute = mock(OutputAttribute.class);
             when(outputAttribute.getName()).thenReturn(attributeNames[i]);
-            Map<String, String> expressions = new HashMap<String, String>();
+            Map<String, String> expressions = new HashMap<>();
             expressions.put(null, attributeExpressions[i]);
             when(outputAttribute.getExpressions()).thenReturn(expressions);
             outputAttributes.add(outputAttribute);
@@ -785,20 +814,25 @@ public class InputModelMockHelper {
         return up;
     }
 
-    public static SubQuery createMockSubQuery(String name, String filterSource, GroupComparisonEnum gc, RoleEnum role, String condition, String[] attributeNames, String[] attributeValues, String[] attributeExpressions) {
-        assert (attributeNames.length == attributeValues.length && attributeValues.length == attributeExpressions.length);
+    public static SubQuery createMockSubQuery(String name, String filterSource, GroupComparisonEnum gc, RoleEnum role,
+                                              String condition, String[] attributeNames, String[] attributeValues,
+                                              String[] attributeExpressions) {
+        assert (attributeNames.length == attributeValues.length &&
+                attributeValues.length == attributeExpressions.length);
         SubQuery sq = mock(SubQuery.class);
         when(sq.getName()).thenReturn(name);
         when(sq.getFilterSource()).thenReturn(filterSource);
         when(sq.getGroupComparison()).thenReturn(gc);
         when(sq.getCondition()).thenReturn(condition);
-        if (role != null) when(sq.getRole()).thenReturn(role);
-        ArrayList<OutputAttribute> outputAttributes = new ArrayList<OutputAttribute>();
+        if (role != null) {
+            when(sq.getRole()).thenReturn(role);
+        }
+        ArrayList<OutputAttribute> outputAttributes = new ArrayList<>();
         when(sq.getOutputAttributes()).thenReturn(outputAttributes);
         for (int i = 0; i < attributeNames.length; i++) {
             OutputAttribute outputAttribute = mock(OutputAttribute.class);
             when(outputAttribute.getName()).thenReturn(attributeNames[i]);
-            Map<String, String> expressions = new HashMap<String, String>();
+            Map<String, String> expressions = new HashMap<>();
             expressions.put(attributeValues[i], attributeExpressions[i]);
             when(outputAttribute.getExpressions()).thenReturn(expressions);
             outputAttributes.add(outputAttribute);

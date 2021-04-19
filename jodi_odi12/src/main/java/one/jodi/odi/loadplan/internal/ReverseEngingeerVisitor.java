@@ -2,9 +2,36 @@ package one.jodi.odi.loadplan.internal;
 
 import one.jodi.core.config.JodiConstants;
 import one.jodi.core.config.JodiProperties;
-import one.jodi.core.lpmodel.*;
+import one.jodi.core.lpmodel.Loadplan;
+import one.jodi.core.lpmodel.Loadplanbranchesteptype;
+import one.jodi.core.lpmodel.Loadplancoresteptype;
+import one.jodi.core.lpmodel.Loadplanstepcasetype;
+import one.jodi.core.lpmodel.Loadplanstepelsetype;
+import one.jodi.core.lpmodel.Loadplanstepexceptiontype;
+import one.jodi.core.lpmodel.Loadplanstepparalleltype;
+import one.jodi.core.lpmodel.Loadplanstepscenariotype;
+import one.jodi.core.lpmodel.Loadplanstepserialtype;
+import one.jodi.core.lpmodel.Loadplansteptype;
+import one.jodi.core.lpmodel.Loadplanstepwhentype;
+import one.jodi.core.lpmodel.LogsessionsType;
+import one.jodi.core.lpmodel.LogsessionstepType;
+import one.jodi.core.lpmodel.Restarttypeparallel;
+import one.jodi.core.lpmodel.Restarttypescenario;
+import one.jodi.core.lpmodel.Restarttypeserial;
+import one.jodi.core.lpmodel.Variables;
+import one.jodi.core.lpmodel.ViolatebehaviorType;
+import one.jodi.core.lpmodel.impl.ChildrenImpl;
+import one.jodi.core.lpmodel.impl.ExceptionsImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepcasetypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepelsetypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepexceptiontypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepparalleltypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepscenariotypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepserialtypeImpl;
+import one.jodi.core.lpmodel.impl.LoadplanstepwhentypeImpl;
 import one.jodi.core.lpmodel.impl.ObjectFactory;
-import one.jodi.core.lpmodel.impl.*;
+import one.jodi.core.lpmodel.impl.VariableImpl;
+import one.jodi.core.lpmodel.impl.VariablesImpl;
 import one.jodi.etl.service.loadplan.internalmodel.LoadPlanDetails;
 import one.jodi.etl.service.loadplan.internalmodel.LoadPlanDetails.LogsessionType;
 import one.jodi.etl.service.loadplan.internalmodel.LoadPlanStepType;
@@ -20,7 +47,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,12 +68,11 @@ import java.util.Map;
  */
 public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanstep> {
 
-    private final static Logger logger = LogManager.getLogger(ReverseEngingeerVisitor.class);
+    private static final Logger logger = LogManager.getLogger(ReverseEngingeerVisitor.class);
     private final File file;
     private final Loadplan target;
     private final Map<String, Loadplansteptype> node = new HashMap<>();
-    private final Map<String, Loadplanbranchesteptype> nodeBranche =
-            new HashMap<>();
+    private final Map<String, Loadplanbranchesteptype> nodeBranche = new HashMap<>();
     private final JodiProperties jodiProperties;
     private final int indent;
 
@@ -61,7 +93,8 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         this.target.setSessiontaskloglevel(BigInteger.valueOf(loadPlanDetails.getSessiontaskloglevel()));
         this.target.setKeywords(loadPlanDetails.getKeywords());
         this.target.setLimitconcurrentexecutions(loadPlanDetails.isLimitconcurrentexecutions());
-        this.target.setNumberOfConcurrentexecutions((loadPlanDetails.isLimitconcurrentexecutions() ? BigInteger.ONE : BigInteger.ZERO));
+        this.target.setNumberOfConcurrentexecutions(
+                (loadPlanDetails.isLimitconcurrentexecutions() ? BigInteger.ONE : BigInteger.ZERO));
         this.target.setViolateBehavior(mapFrom(loadPlanDetails.getViolatebehaviourType()));
         this.target.setWaitpollinginterval(loadPlanDetails.getWaitpollinginterval());
         this.target.setDescription(loadPlanDetails.getDescription());
@@ -75,14 +108,11 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         return target;
     }
 
-    private ViolatebehaviorType mapFrom(
-            LoadPlanDetails.ViolatebehaviourType violatebehaviourType) {
+    private ViolatebehaviorType mapFrom(LoadPlanDetails.ViolatebehaviourType violatebehaviourType) {
         final ViolatebehaviorType aViolatebehaviourType;
-        if (violatebehaviourType
-                .equals(LoadPlanDetails.ViolatebehaviourType.WAIT_TO_EXECUTE)) {
+        if (violatebehaviourType.equals(LoadPlanDetails.ViolatebehaviourType.WAIT_TO_EXECUTE)) {
             aViolatebehaviourType = ViolatebehaviorType.WAIT_TO_EXECUTE;
-        } else if (violatebehaviourType.equals(
-                LoadPlanDetails.ViolatebehaviourType.RAISE_EXECUTION_ERROR)) {
+        } else if (violatebehaviourType.equals(LoadPlanDetails.ViolatebehaviourType.RAISE_EXECUTION_ERROR)) {
             aViolatebehaviourType = ViolatebehaviorType.RAISE_EXECUTION_ERROR;
         } else {
             throw new UnsupportedOperationException();
@@ -90,8 +120,7 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         return aViolatebehaviourType;
     }
 
-    private LogsessionstepType mapFrom(
-            LoadPlanDetails.LogsessionstepType logsessionstepType) {
+    private LogsessionstepType mapFrom(LoadPlanDetails.LogsessionstepType logsessionstepType) {
         final LogsessionstepType alogsessionstepType;
         if (logsessionstepType.equals(LoadPlanDetails.LogsessionstepType.BYSCENARIOSETTINGS)) {
             alogsessionstepType = LogsessionstepType.BYSCENARIOSETTINGS;
@@ -127,11 +156,15 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     @Override
     public void visit(Odiloadplanstep loadPlanStep) {
         if (loadPlanStep != null) {
-            if (loadPlanStep.getParent() != null && loadPlanStep.getParent().getRoot().getName() != null) {
-                Loadplansteptype parent = getParentByName(loadPlanStep.getParent().getRoot().getName());
-                if (loadPlanStep.getType().equals(LoadPlanStepType.CASEELSE) ||
-                        loadPlanStep.getType().equals(LoadPlanStepType.CASEWHEN)
-                ) {
+            if (loadPlanStep.getParent() != null && loadPlanStep.getParent()
+                                                                .getRoot()
+                                                                .getName() != null) {
+                Loadplansteptype parent = getParentByName(loadPlanStep.getParent()
+                                                                      .getRoot()
+                                                                      .getName());
+                if (loadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASEELSE) || loadPlanStep.getType()
+                                                                                  .equals(LoadPlanStepType.CASEWHEN)) {
                     Loadplanbranchesteptype child = populateBrancheNode(loadPlanStep);
                     nodeBranche.put(child.getName(), child);
                     attachNode(child, parent);
@@ -140,16 +173,21 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
                     node.put(child.getName(), child);
                     attachNode(child, parent);
                 } else {
-                    Loadplanbranchesteptype parentBranche = getBrancheParentByName(loadPlanStep.getParent().getRoot().getName());
+                    Loadplanbranchesteptype parentBranche = getBrancheParentByName(loadPlanStep.getParent()
+                                                                                               .getRoot()
+                                                                                               .getName());
                     Loadplansteptype child = populateNode(loadPlanStep);
                     node.put(child.getName(), child);
                     attachNode(child, parentBranche);
                 }
-            } else if (loadPlanStep.getType().equals(LoadPlanStepType.EXCEPTION)) {
+            } else if (loadPlanStep.getType()
+                                   .equals(LoadPlanStepType.EXCEPTION)) {
                 // is parent (exception node)
                 Loadplansteptype rootNode = populateExceptionNode(loadPlanStep);
                 node.put(rootNode.getName(), rootNode);
-                this.target.getExceptions().getException().add(getXmlInstanceOfLoadplanstepException(rootNode).getValue());
+                this.target.getExceptions()
+                           .getException()
+                           .add(getXmlInstanceOfLoadplanstepException(rootNode).getValue());
             } else {
                 // is parent (root node)
                 Loadplansteptype rootNode = populateRootNode(loadPlanStep);
@@ -163,11 +201,13 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         assert (parent.getName() != null);
         assert (child.getName() != null);
         if (parent instanceof Loadplanstepwhentype) {
-            ((Loadplanstepwhentype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepwhentype) parent).getChildren()
+                                           .getLoadplancorestep()
+                                           .add(getXmlInstanceOfLoadplanstep(child));
         } else if (parent instanceof Loadplanstepelsetype) {
-            ((Loadplanstepelsetype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepelsetype) parent).getChildren()
+                                           .getLoadplancorestep()
+                                           .add(getXmlInstanceOfLoadplanstep(child));
         } else {
             logger.warn("Not attaching child " + child.getName() + " to parent: " + parent.getName());
         }
@@ -179,7 +219,8 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         assert (child.getName() != null);
         if (parent instanceof Loadplanstepcasetype) {
             if (child instanceof Loadplanstepwhentype) {
-                ((Loadplanstepcasetype) parent).getWhen().add(getXmlInstanceOfLoadplanWhenstep(child).getValue());
+                ((Loadplanstepcasetype) parent).getWhen()
+                                               .add(getXmlInstanceOfLoadplanWhenstep(child).getValue());
             }
             if (child instanceof Loadplanstepelsetype) {
                 ((Loadplanstepcasetype) parent).setElse(getXmlInstanceOfLoadplanElsestep(child).getValue());
@@ -190,39 +231,44 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
 
     }
 
-    private void attachNode(Loadplansteptype child,
-                            Loadplansteptype parent) {
+    private void attachNode(Loadplansteptype child, Loadplansteptype parent) {
         assert (parent != null);
         assert (parent.getName() != null);
         assert (child.getName() != null);
         if (parent instanceof Loadplanstepserialtype) {
-            ((Loadplanstepserialtype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepserialtype) parent).getChildren()
+                                             .getLoadplancorestep()
+                                             .add(getXmlInstanceOfLoadplanstep(child));
         } else if (parent instanceof Loadplanstepparalleltype) {
-            ((Loadplanstepparalleltype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepparalleltype) parent).getChildren()
+                                               .getLoadplancorestep()
+                                               .add(getXmlInstanceOfLoadplanstep(child));
 //		} else if (parent instanceof Loadplanstepcasetype) {
 //		((Loadplanstepcasetype) parent).getCaseChildren().getLoadplanbranchestep()
 //					.add(getXmlInstanceOfLoadplanbranchestep((Loadplanbranchesteptype) child));
         } else if (parent instanceof Loadplanstepwhentype) {
-            ((Loadplanstepwhentype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepwhentype) parent).getChildren()
+                                           .getLoadplancorestep()
+                                           .add(getXmlInstanceOfLoadplanstep(child));
         } else if (parent instanceof Loadplanstepelsetype) {
-            ((Loadplanstepelsetype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepelsetype) parent).getChildren()
+                                           .getLoadplancorestep()
+                                           .add(getXmlInstanceOfLoadplanstep(child));
         } else if (parent instanceof Loadplanstepexceptiontype) {
-            ((Loadplanstepexceptiontype) parent).getChildren().getLoadplancorestep()
-                    .add(getXmlInstanceOfLoadplanstep(child));
+            ((Loadplanstepexceptiontype) parent).getChildren()
+                                                .getLoadplancorestep()
+                                                .add(getXmlInstanceOfLoadplanstep(child));
         } else {
             logger.warn("Not attaching child " + child.getName() + " to parent: " + parent.getName());
         }
     }
 
-    private JAXBElement<? extends LoadplanstepexceptiontypeImpl> getXmlInstanceOfLoadplanstepException(Loadplansteptype child) {
+    private JAXBElement<? extends LoadplanstepexceptiontypeImpl> getXmlInstanceOfLoadplanstepException(
+            Loadplansteptype child) {
         ObjectFactory factory = new ObjectFactory();
         if (child instanceof LoadplanstepexceptiontypeImpl) {
-            JAXBElement<? extends LoadplanstepexceptiontypeImpl> childXml = factory
-                    .createException((LoadplanstepexceptiontypeImpl) child);
+            JAXBElement<? extends LoadplanstepexceptiontypeImpl> childXml =
+                    factory.createException((LoadplanstepexceptiontypeImpl) child);
             return childXml;
         }
         throw new UnsupportedOperationException();
@@ -231,51 +277,55 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     private JAXBElement<? extends Loadplancoresteptype> getXmlInstanceOfLoadplanstep(Loadplansteptype child) {
         ObjectFactory factory = new ObjectFactory();
         if (child instanceof Loadplanstepparalleltype) {
-            JAXBElement<? extends Loadplancoresteptype> childXml = factory
-                    .createParallel((LoadplanstepparalleltypeImpl) child);
+            JAXBElement<? extends Loadplancoresteptype> childXml =
+                    factory.createParallel((LoadplanstepparalleltypeImpl) child);
             return childXml;
         } else if (child instanceof Loadplanstepserialtype) {
-            JAXBElement<? extends Loadplancoresteptype> childXml = factory
-                    .createSerial((LoadplanstepserialtypeImpl) child);
+            JAXBElement<? extends Loadplancoresteptype> childXml =
+                    factory.createSerial((LoadplanstepserialtypeImpl) child);
             return childXml;
         } else if (child instanceof Loadplanstepcasetype) {
-            JAXBElement<? extends Loadplancoresteptype> childXml = factory
-                    .createCase((LoadplanstepcasetypeImpl) child);
+            JAXBElement<? extends Loadplancoresteptype> childXml = factory.createCase((LoadplanstepcasetypeImpl) child);
             return childXml;
         } else if (child instanceof Loadplanstepscenariotype) {
-            JAXBElement<? extends Loadplancoresteptype> childXml = factory
-                    .createRunScenario((LoadplanstepscenariotypeImpl) child);
+            JAXBElement<? extends Loadplancoresteptype> childXml =
+                    factory.createRunScenario((LoadplanstepscenariotypeImpl) child);
             return childXml;
         } else if (child instanceof Loadplanstepexceptiontype) {
-            JAXBElement<? extends Loadplancoresteptype> childXml = factory
-                    .createException((LoadplanstepexceptiontypeImpl) child);
+            JAXBElement<? extends Loadplancoresteptype> childXml =
+                    factory.createException((LoadplanstepexceptiontypeImpl) child);
             return childXml;
         } else {
-            logger.info(child.getClass().toString());
+            logger.info(child.getClass()
+                             .toString());
             throw new UnsupportedOperationException();
         }
     }
 
-    private JAXBElement<? extends LoadplanstepwhentypeImpl> getXmlInstanceOfLoadplanWhenstep(Loadplanbranchesteptype child) {
+    private JAXBElement<? extends LoadplanstepwhentypeImpl> getXmlInstanceOfLoadplanWhenstep(
+            Loadplanbranchesteptype child) {
         ObjectFactory factory = new ObjectFactory();
         if (child instanceof Loadplanstepwhentype) {
-            JAXBElement<? extends LoadplanstepwhentypeImpl> childXml = factory
-                    .createWhen((LoadplanstepwhentypeImpl) child);
+            JAXBElement<? extends LoadplanstepwhentypeImpl> childXml =
+                    factory.createWhen((LoadplanstepwhentypeImpl) child);
             return childXml;
         } else {
-            logger.info(child.getClass().toString());
+            logger.info(child.getClass()
+                             .toString());
             throw new UnsupportedOperationException();
         }
     }
 
-    private JAXBElement<? extends Loadplanstepelsetype> getXmlInstanceOfLoadplanElsestep(Loadplanbranchesteptype child) {
+    private JAXBElement<? extends Loadplanstepelsetype> getXmlInstanceOfLoadplanElsestep(
+            Loadplanbranchesteptype child) {
         ObjectFactory factory = new ObjectFactory();
         if (child instanceof Loadplanstepelsetype) {
-            JAXBElement<? extends LoadplanstepelsetypeImpl> childXml = factory
-                    .createElse((LoadplanstepelsetypeImpl) child);
+            JAXBElement<? extends LoadplanstepelsetypeImpl> childXml =
+                    factory.createElse((LoadplanstepelsetypeImpl) child);
             return childXml;
         } else {
-            logger.info(child.getClass().toString());
+            logger.info(child.getClass()
+                             .toString());
             throw new UnsupportedOperationException();
         }
     }
@@ -284,7 +334,8 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     private Loadplansteptype populateNode(Odiloadplanstep pLoadPlanStep) {
         Loadplansteptype externalLPS = getInstanceofLoadPlanStep(pLoadPlanStep);
         assert (externalLPS != null);
-        if (pLoadPlanStep.getType().equals(LoadPlanStepType.SERIAL)) {
+        if (pLoadPlanStep.getType()
+                         .equals(LoadPlanStepType.SERIAL)) {
             ((Loadplanstepserialtype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepserialtype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
             ((Loadplanstepserialtype) externalLPS).setKeywords(pLoadPlanStep.getKeywords());
@@ -292,21 +343,25 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             ((Loadplanstepserialtype) externalLPS).setTimeout(pLoadPlanStep.getTimeout());
             ((Loadplanstepserialtype) externalLPS).setExceptionbehavior(pLoadPlanStep.getExceptionBehavior());
             ((Loadplanstepserialtype) externalLPS).setExceptionName(pLoadPlanStep.getExceptionStep());
-            if (pLoadPlanStep.getVariables().size() > 0) {
+            if (pLoadPlanStep.getVariables()
+                             .size() > 0) {
                 Variables externalVS = new VariablesImpl();
                 for (Variable v : pLoadPlanStep.getVariables()) {
                     one.jodi.core.lpmodel.Variable externalV = new VariableImpl();
                     externalV.setName(v.getName());
                     externalV.setRefresh(v.isRefresh());
                     externalV.setValue(v.getValue());
-                    externalVS.getVariable().add(externalV);
+                    externalVS.getVariable()
+                              .add(externalV);
                 }
                 ((Loadplanstepserialtype) externalLPS).setVariables(externalVS);
             }
-            if (((Loadplanstepserialtype) externalLPS).getChildren() == null)
+            if (((Loadplanstepserialtype) externalLPS).getChildren() == null) {
                 ((Loadplanstepserialtype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.PARALLEL)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.PARALLEL)) {
             ((Loadplanstepparalleltype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepparalleltype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
             ((Loadplanstepparalleltype) externalLPS).setKeywords(pLoadPlanStep.getKeywords());
@@ -314,34 +369,42 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             ((Loadplanstepparalleltype) externalLPS).setTimeout(pLoadPlanStep.getTimeout());
             ((Loadplanstepparalleltype) externalLPS).setExceptionbehavior(pLoadPlanStep.getExceptionBehavior());
             ((Loadplanstepparalleltype) externalLPS).setExceptionName(pLoadPlanStep.getExceptionStep());
-            if (pLoadPlanStep.getVariables().size() > 0) {
+            if (pLoadPlanStep.getVariables()
+                             .size() > 0) {
                 Variables externalVS = new VariablesImpl();
                 for (Variable v : pLoadPlanStep.getVariables()) {
                     one.jodi.core.lpmodel.Variable externalV = new VariableImpl();
                     externalV.setName(v.getName());
                     externalV.setRefresh(v.isRefresh());
                     externalV.setValue(v.getValue());
-                    externalVS.getVariable().add(externalV);
+                    externalVS.getVariable()
+                              .add(externalV);
                 }
                 ((Loadplanstepparalleltype) externalLPS).setVariables(externalVS);
             }
-            if (((Loadplanstepparalleltype) externalLPS).getChildren() == null)
+            if (((Loadplanstepparalleltype) externalLPS).getChildren() == null) {
                 ((Loadplanstepparalleltype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEWHEN)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASEWHEN)) {
             assert (pLoadPlanStep.getName() != null) : "Loadplanstep name can't be null.";
             ((Loadplanstepwhentype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepwhentype) externalLPS).setOperator(pLoadPlanStep.getOperator());
             ((Loadplanstepwhentype) externalLPS).setValue(pLoadPlanStep.getValue());
-            if (((Loadplanstepwhentype) externalLPS).getChildren() == null)
+            if (((Loadplanstepwhentype) externalLPS).getChildren() == null) {
                 ((Loadplanstepwhentype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEELSE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASEELSE)) {
             ((Loadplanstepelsetype) externalLPS).setName(pLoadPlanStep.getName());
-            if (((Loadplanstepelsetype) externalLPS).getChildren() == null)
+            if (((Loadplanstepelsetype) externalLPS).getChildren() == null) {
                 ((Loadplanstepelsetype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASE)) {
             ((Loadplanstepcasetype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepcasetype) externalLPS).setTestVariable(pLoadPlanStep.getTestVariable());
             ((Loadplanstepcasetype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
@@ -349,23 +412,26 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             ((Loadplanstepcasetype) externalLPS).setTimeout(pLoadPlanStep.getTimeout());
             ((Loadplanstepcasetype) externalLPS).setExceptionName(pLoadPlanStep.getExceptionStep());
             ((Loadplanstepcasetype) externalLPS).setExceptionbehavior(pLoadPlanStep.getExceptionBehavior());
-            if (pLoadPlanStep.getVariables().size() > 0) {
+            if (pLoadPlanStep.getVariables()
+                             .size() > 0) {
                 Variables externalVS = new VariablesImpl();
                 for (Variable v : pLoadPlanStep.getVariables()) {
                     one.jodi.core.lpmodel.Variable externalV = new VariableImpl();
                     externalV.setName(v.getName());
                     externalV.setRefresh(v.isRefresh());
                     externalV.setValue(v.getValue());
-                    externalVS.getVariable().add(externalV);
+                    externalVS.getVariable()
+                              .add(externalV);
                 }
                 ((Loadplanstepcasetype) externalLPS).setVariables(externalVS);
             }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.SCENARIO)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.SCENARIO)) {
             ((Loadplanstepscenariotype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepscenariotype) externalLPS).setScenario(pLoadPlanStep.getScenario());
-            ((Loadplanstepscenariotype) externalLPS)
-                    .setVersion(new BigInteger(pLoadPlanStep.getScenarioVersion() + ""));
+            ((Loadplanstepscenariotype) externalLPS).setVersion(
+                    new BigInteger(pLoadPlanStep.getScenarioVersion() + ""));
             ((Loadplanstepscenariotype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepscenariotype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
             ((Loadplanstepscenariotype) externalLPS).setKeywords(pLoadPlanStep.getKeywords());
@@ -374,24 +440,28 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             ((Loadplanstepscenariotype) externalLPS).setExceptionbehavior(pLoadPlanStep.getExceptionBehavior());
             ((Loadplanstepscenariotype) externalLPS).setExceptionName(pLoadPlanStep.getExceptionStep());
             ((Loadplanstepscenariotype) externalLPS).setPriority(pLoadPlanStep.getPriority());
-            if (pLoadPlanStep.getVariables().size() > 0) {
+            if (pLoadPlanStep.getVariables()
+                             .size() > 0) {
                 Variables externalVS = new VariablesImpl();
                 for (Variable v : pLoadPlanStep.getVariables()) {
                     one.jodi.core.lpmodel.Variable externalV = new VariableImpl();
                     externalV.setName(v.getName());
                     externalV.setRefresh(v.isRefresh());
                     externalV.setValue(v.getValue());
-                    externalVS.getVariable().add(externalV);
+                    externalVS.getVariable()
+                              .add(externalV);
                 }
                 ((Loadplanstepscenariotype) externalLPS).setVariables(externalVS);
             }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.EXCEPTION)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.EXCEPTION)) {
             ((Loadplanstepexceptiontype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepexceptiontype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
             ((Loadplanstepexceptiontype) externalLPS).setKeywords(pLoadPlanStep.getKeywords());
-            if (((Loadplanstepexceptiontype) externalLPS).getChildren() == null)
+            if (((Loadplanstepexceptiontype) externalLPS).getChildren() == null) {
                 ((Loadplanstepexceptiontype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
         } else {
             throw new UnsupportedOperationException();
@@ -402,20 +472,25 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     private Loadplanbranchesteptype populateBrancheNode(Odiloadplanstep pLoadPlanStep) {
         Loadplanbranchesteptype externalLPS = getInstanceofLoadPlanStepCase(pLoadPlanStep);
         assert (externalLPS != null);
-        if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEWHEN)) {
+        if (pLoadPlanStep.getType()
+                         .equals(LoadPlanStepType.CASEWHEN)) {
             assert (pLoadPlanStep.getName() != null) : "Loadplanstep name can't be null.";
             ((Loadplanstepwhentype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepwhentype) externalLPS).setOperator(pLoadPlanStep.getOperator());
             ((Loadplanstepwhentype) externalLPS).setValue(pLoadPlanStep.getValue());
-            if (((Loadplanstepwhentype) externalLPS).getChildren() == null)
+            if (((Loadplanstepwhentype) externalLPS).getChildren() == null) {
                 ((Loadplanstepwhentype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEELSE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASEELSE)) {
             ((Loadplanstepelsetype) externalLPS).setName(pLoadPlanStep.getName());
-            if (((Loadplanstepelsetype) externalLPS).getChildren() == null)
+            if (((Loadplanstepelsetype) externalLPS).getChildren() == null) {
                 ((Loadplanstepelsetype) externalLPS).setChildren(new ChildrenImpl());
+            }
             return externalLPS;
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASE)) {
             ((Loadplanstepcasetype) externalLPS).setName(pLoadPlanStep.getName());
             ((Loadplanstepcasetype) externalLPS).setTestVariable(pLoadPlanStep.getTestVariable());
             ((Loadplanstepcasetype) externalLPS).setEnabled(pLoadPlanStep.isEnabled());
@@ -423,14 +498,16 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             ((Loadplanstepcasetype) externalLPS).setTimeout(pLoadPlanStep.getTimeout());
             ((Loadplanstepcasetype) externalLPS).setExceptionName(pLoadPlanStep.getExceptionStep());
             ((Loadplanstepcasetype) externalLPS).setExceptionbehavior(pLoadPlanStep.getExceptionBehavior());
-            if (pLoadPlanStep.getVariables().size() > 0) {
+            if (pLoadPlanStep.getVariables()
+                             .size() > 0) {
                 Variables externalVS = new VariablesImpl();
                 for (Variable v : pLoadPlanStep.getVariables()) {
                     one.jodi.core.lpmodel.Variable externalV = new VariableImpl();
                     externalV.setName(v.getName());
                     externalV.setRefresh(v.isRefresh());
                     externalV.setValue(v.getValue());
-                    externalVS.getVariable().add(externalV);
+                    externalVS.getVariable()
+                              .add(externalV);
                 }
                 ((Loadplanstepcasetype) externalLPS).setVariables(externalVS);
             }
@@ -441,9 +518,11 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     }
 
     private Loadplanbranchesteptype getInstanceofLoadPlanStepCase(Odiloadplanstep pLoadPlanStep) {
-        if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEWHEN)) {
+        if (pLoadPlanStep.getType()
+                         .equals(LoadPlanStepType.CASEWHEN)) {
             return new LoadplanstepwhentypeImpl();
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASEELSE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASEELSE)) {
             return new LoadplanstepelsetypeImpl();
         } else {
             throw new UnsupportedOperationException();
@@ -451,15 +530,20 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     }
 
     private Loadplancoresteptype getInstanceofLoadPlanStep(Odiloadplanstep pLoadPlanStep) {
-        if (pLoadPlanStep.getType().equals(LoadPlanStepType.PARALLEL)) {
+        if (pLoadPlanStep.getType()
+                         .equals(LoadPlanStepType.PARALLEL)) {
             return new LoadplanstepparalleltypeImpl();
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.SERIAL)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.SERIAL)) {
             return new LoadplanstepserialtypeImpl();
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.SCENARIO)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.SCENARIO)) {
             return new LoadplanstepscenariotypeImpl();
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.CASE)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.CASE)) {
             return new LoadplanstepcasetypeImpl();
-        } else if (pLoadPlanStep.getType().equals(LoadPlanStepType.EXCEPTION)) {
+        } else if (pLoadPlanStep.getType()
+                                .equals(LoadPlanStepType.EXCEPTION)) {
             return new LoadplanstepexceptiontypeImpl();
         } else {
             throw new UnsupportedOperationException();
@@ -501,8 +585,10 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
     private Loadplanstepserialtype populateRootNode(Odiloadplanstep loadPlanStep) {
         Loadplanstepserialtype rootStep = (Loadplanstepserialtype) populateNode(loadPlanStep);
         this.target.setSerial(rootStep);
-        if (this.target.getSerial().getChildren() == null) {
-            this.target.getSerial().setChildren(new ChildrenImpl());
+        if (this.target.getSerial()
+                       .getChildren() == null) {
+            this.target.getSerial()
+                       .setChildren(new ChildrenImpl());
         }
         return rootStep;
     }
@@ -541,23 +627,26 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
         FileOutputStream fos = null;
         BufferedWriter fout = null;
         final String xsdLoc;
-        if (jodiProperties.getPropertyKeys().contains(JodiConstants.XSDLOCPROPERTY)) {
+        if (jodiProperties.getPropertyKeys()
+                          .contains(JodiConstants.XSDLOCPROPERTY)) {
             xsdLoc = jodiProperties.getProperty(JodiConstants.XSDLOCPROPERTY);
         } else {
             xsdLoc = JodiConstants.XSD_FILE_LOADPLAN;
         }
         try {
-            jaxbCtx = JAXBContext.newInstance(Loadplan.class.getPackage().getName());
+            jaxbCtx = JAXBContext.newInstance(Loadplan.class.getPackage()
+                                                            .getName());
             Marshaller marshaller = jaxbCtx.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.setProperty("jaxb.noNamespaceSchemaLocation", xsdLoc);
             marshaller.marshal(target, file);
             String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), "UTF-8");
-            content = content.replace("<ns2:", "<").replace("</ns2:", "</").replace("xmlns:ns2=\"http://one.jodi/jodi/model/loadplan\"", "");
+            content = content.replace("<ns2:", "<")
+                             .replace("</ns2:", "</")
+                             .replace("xmlns:ns2=\"http://one.jodi/jodi/model/loadplan\"", "");
             fos = new FileOutputStream(file.getAbsolutePath());
-            writer = new OutputStreamWriter(
-                    fos, "UTF-8");
+            writer = new OutputStreamWriter(fos, "UTF-8");
             fout = new BufferedWriter(writer);
             fout.write(content);
             fout.close();
@@ -573,20 +662,23 @@ public class ReverseEngingeerVisitor implements OdiLoadPlanVisitor<Odiloadplanst
             throw new RuntimeException(e);
         } finally {
             try {
-                if (fos != null)
+                if (fos != null) {
                     fos.close();
+                }
             } catch (IOException e) {
                 logger.debug("IOException generated during marshalling", e);
             }
             try {
-                if (fout != null)
+                if (fout != null) {
                     fout.close();
+                }
             } catch (IOException e) {
                 logger.debug("IOException generated during marshalling", e);
             }
             try {
-                if (writer != null)
+                if (writer != null) {
                     writer.close();
+                }
             } catch (IOException e) {
                 logger.debug("IOException generated during marshalling", e);
             }

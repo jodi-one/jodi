@@ -19,8 +19,7 @@ import java.util.Map;
  */
 public class FolderNameDefaultStrategy implements FolderNameStrategy {
 
-    private final static Logger logger =
-            LogManager.getLogger(FolderNameDefaultStrategy.class);
+    private static final Logger logger = LogManager.getLogger(FolderNameDefaultStrategy.class);
 
     /**
      * This method determines the name of the folder to insert the
@@ -35,8 +34,7 @@ public class FolderNameDefaultStrategy implements FolderNameStrategy {
      *                          support the decision
      */
     @Override
-    public String getFolderName(final String defaultFolderName,
-                                final FolderNameExecutionContext execContext,
+    public String getFolderName(final String defaultFolderName, final FolderNameExecutionContext execContext,
                                 final boolean isJournalizedData) {
         Map<String, PropertyValueHolder> props = execContext.getProperties();
 
@@ -45,25 +43,25 @@ public class FolderNameDefaultStrategy implements FolderNameStrategy {
             PropertyValueHolder valueHolder = props.get(JodiConstants.INITIAL_LOAD_FOLDER);
             prefix = (valueHolder != null) ? valueHolder.getString() : "";
         } else {
-            PropertyValueHolder valueHolder =
-                    props.get(JodiConstants.INCREMENTALL_LOAD_FOLDER);
+            PropertyValueHolder valueHolder = props.get(JodiConstants.INCREMENTALL_LOAD_FOLDER);
             if (valueHolder != null) { // allow empty value
-                prefix = valueHolder.getString().trim();
+                prefix = valueHolder.getString()
+                                    .trim();
             } else {
                 prefix = JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT;
-                logger.debug("Default value " +
-                        JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT +
-                        " is selected as the folder prefix.");
+                logger.debug("Default value " + JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT +
+                                     " is selected as the folder prefix.");
             }
         }
 
         String folderName;
-        if (defaultFolderName != null && !defaultFolderName.trim().isEmpty()) {
+        if (defaultFolderName != null && !defaultFolderName.trim()
+                                                           .isEmpty()) {
             folderName = prefix + defaultFolderName;
         } else {
             folderName = prefix + execContext.getTargetDataStore()
-                    .getDataModel()
-                    .getModelCode();
+                                             .getDataModel()
+                                             .getModelCode();
         }
         return folderName;
     }

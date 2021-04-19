@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class OdiUpdateDataserver {
-    private final static Logger logger = LogManager.getLogger(OdiUpdateDataserver.class);
+    private static final Logger logger = LogManager.getLogger(OdiUpdateDataserver.class);
     private OdiDataServer oracleDataServer;
     private OdiPhysicalSchema oraclePhysicalSchema;
     private OdiLogicalSchema oracleLogicalSchema;

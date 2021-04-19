@@ -19,11 +19,11 @@ import java.util.Map;
 @Singleton
 public class FlexfieldUtilImpl<T extends IFlexFieldUser> implements FlexfieldUtil<T> {
 
-    private final static Logger logger = LogManager.getLogger(FlexfieldUtilImpl.class);
+    private static final Logger logger = LogManager.getLogger(FlexfieldUtilImpl.class);
 
-    private final static String ERROR_MESSAGE_00340 =
+    private static final String ERROR_MESSAGE_00340 =
             "ERROR: %s does not have required flex field %s: %s";
-    private final static String ERROR_MESSAGE_00350 =
+    private static final String ERROR_MESSAGE_00350 =
             "ERROR: %s does not have required flex field %s";
 
     private final OdiInstance odiInstance;

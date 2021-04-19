@@ -11,11 +11,11 @@ import javax.validation.constraints.Null;
 @Deprecated
 public class GenericFolderNameStrategy implements FolderNameStrategy {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(GenericFolderNameStrategy.class);
-    private final static String GENERIC_DEFAULT_FOLDER_KEY =
+    private static final String GENERIC_DEFAULT_FOLDER_KEY =
             "generic" + ".defaultfolder";
-    private final static String GENERIC_DEFAULT_FOLDER_NAME_NOT_FOUND =
+    private static final String GENERIC_DEFAULT_FOLDER_NAME_NOT_FOUND =
             "Generic ODI default folder is not properly configured. Please add " +
                     " property '%1$s' into your property file and assign a default folder name.";
     private static int logCount = 0;

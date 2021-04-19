@@ -35,10 +35,9 @@ import java.util.Map;
  */
 public class FolderNameContextImpl implements FolderNameContext {
 
-    private final static Logger logger =
-            LogManager.getLogger(FolderNameContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(FolderNameContextImpl.class);
 
-    private final static String ERROR_MESSAGE_03800 = "Error setting folder name.";
+    private static final String ERROR_MESSAGE_03800 = "Error setting folder name.";
 
     private final DatabaseMetadataService databaseMetadataService;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -67,8 +66,7 @@ public class FolderNameContextImpl implements FolderNameContext {
     @Inject
     public FolderNameContextImpl(final DatabaseMetadataService databaseMetadataService,
                                  final @DefaultStrategy FolderNameStrategy defaultStrategy,
-                                 final FolderNameStrategy customStrategy,
-                                 final ETLValidator etlValidator,
+                                 final FolderNameStrategy customStrategy, final ETLValidator etlValidator,
                                  final ErrorWarningMessageJodi errorWarningMessages) {
         this.databaseMetadataService = databaseMetadataService;
         this.defaultStrategy = defaultStrategy;
@@ -79,8 +77,7 @@ public class FolderNameContextImpl implements FolderNameContext {
 
 
     @Override
-    public String getFolderName(final Transformation transformation,
-                                final boolean isJournalizedData) {
+    public String getFolderName(final Transformation transformation, final boolean isJournalizedData) {
         final Mappings mappings = transformation.getMappings();
         final DataStore dataStore = databaseMetadataService.getTargetDataStoreInModel(mappings);
 
@@ -98,16 +95,14 @@ public class FolderNameContextImpl implements FolderNameContext {
 
             @Override
             public TransformationExtension getTransformationExtension() {
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(transformation.getExtension());
             }
         };
 
         // execute default strategy
         String defaultFolderName =
-                defaultStrategy.getFolderName(transformation.getOriginalFolderPath(), exc,
-                        isJournalizedData);
+                defaultStrategy.getFolderName(transformation.getOriginalFolderPath(), exc, isJournalizedData);
         assert ((defaultFolderName != null) && (!defaultFolderName.equals("")));
 
         // execute custom strategy
@@ -118,23 +113,21 @@ public class FolderNameContextImpl implements FolderNameContext {
         // @Nullable annotation (JSR305) is used in the constructor
         if (this.customStrategy != null) {
             try {
-                folderName = customStrategy.getFolderName(defaultFolderName, exc,
-                        isJournalizedData);
+                folderName = customStrategy.getFolderName(defaultFolderName, exc, isJournalizedData);
             } catch (RuntimeException e) {
                 etlValidator.handleFolderName(e, transformation);
                 throw e;
             }
         }
         logger.debug("derived folder name as " + folderName);
-        if (transformation.getFolderName() != null)
+        if (transformation.getFolderName() != null) {
             folderName = transformation.getFolderName();
+        }
         ((TransformationImpl) transformation).setFolderName(folderName);
         if (!etlValidator.validateFolderName(transformation,
-                customStrategy != null ? customStrategy
-                        : defaultStrategy)) {
+                                             customStrategy != null ? customStrategy : defaultStrategy)) {
             throw new UnRecoverableException(
-                    errorWarningMessages.formatMessage(3800,
-                            ERROR_MESSAGE_03800, this.getClass()));
+                    errorWarningMessages.formatMessage(3800, ERROR_MESSAGE_03800, this.getClass()));
         }
 
         return folderName;

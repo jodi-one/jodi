@@ -30,8 +30,10 @@ import java.util.List;
  */
 public class CreatePackagesActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01050 = "The metadata directory is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_01051 = "The configuration property file is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01050 =
+            "The metadata directory is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01051 =
+            "The configuration property file is required to run Transformation creation";
 
     private final PackageService packageService;
     private final MetadataServiceProvider metadataServiceProvider;
@@ -45,12 +47,10 @@ public class CreatePackagesActionRunner implements ActionRunner {
      * @param metadataServiceProvider the metadata service provider
      */
     @Inject
-    protected CreatePackagesActionRunner(
-            final PackageService packageService,
-            final MetadataServiceProvider metadataServiceProvider,
-            final PackageCache packageCache,
-            final EnrichingBuilder enrichingBuilder,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    protected CreatePackagesActionRunner(final PackageService packageService,
+                                         final MetadataServiceProvider metadataServiceProvider,
+                                         final PackageCache packageCache, final EnrichingBuilder enrichingBuilder,
+                                         final ErrorWarningMessageJodi errorWarningMessages) {
         this.packageService = packageService;
         this.metadataServiceProvider = metadataServiceProvider;
         this.enrichingBuilder = enrichingBuilder;
@@ -81,7 +81,8 @@ public class CreatePackagesActionRunner implements ActionRunner {
             @Override
             public void handleTransformationASC(Transformation transformation, int packageSequence) {
                 //enrichingBuilder.enrich(transformation, etlConfig.isJournalized());
-                DeleteTransformationContext context = enrichingBuilder.createDeleteContext(transformation, etlConfig.isJournalized());
+                DeleteTransformationContext context =
+                        enrichingBuilder.createDeleteContext(transformation, etlConfig.isJournalized());
                 ((TransformationImpl) transformation).setName(context.getName());
                 ((TransformationImpl) transformation).setOriginalFolderPath(context.getName());
                 ((TransformationImpl) transformation).setFolderName(context.getFolderName());
@@ -118,8 +119,7 @@ public class CreatePackagesActionRunner implements ActionRunner {
 
         // Remove all packages first
         boolean throwErrorOnFailureWhileDeleting = false;
-        packageService.deletePackages((List<ETLPackageHeader>) (List<?>) packages,
-                throwErrorOnFailureWhileDeleting);
+        packageService.deletePackages((List<ETLPackageHeader>) (List<?>) packages, throwErrorOnFailureWhileDeleting);
         boolean throwErrorOnFailureWhileCreating = true;
         //Then recreate
         packageService.createPackages(packages, throwErrorOnFailureWhileCreating);
@@ -132,20 +132,14 @@ public class CreatePackagesActionRunner implements ActionRunner {
     public void validateRunConfig(RunConfig config) throws UsageException {
 
         if (!StringUtils.hasLength(config.getMetadataDirectory())) {
-            String msg = errorWarningMessages.formatMessage(1050,
-                    ERROR_MESSAGE_01050, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1050, ERROR_MESSAGE_01050, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
 
         if (!StringUtils.hasLength(config.getPropertyFile())) {
-            String msg = errorWarningMessages.formatMessage(1051,
-                    ERROR_MESSAGE_01051, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1051, ERROR_MESSAGE_01051, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
     }

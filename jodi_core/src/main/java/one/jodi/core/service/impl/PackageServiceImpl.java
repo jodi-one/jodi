@@ -23,10 +23,10 @@ import java.util.List;
  */
 public class PackageServiceImpl implements PackageService {
 
-    private final static Logger logger = LogManager.getLogger(PackageServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(PackageServiceImpl.class);
 
-    private final static String ERROR_MESSAGE_00090 = "Validation Error: %s";
-    private final static String ERROR_MESSAGE_05030 = "Validation Warning: %s";
+    private static final String ERROR_MESSAGE_00090 = "Validation Error: %s";
+    private static final String ERROR_MESSAGE_05030 = "Validation Warning: %s";
 
     private final PackageServiceProvider packageService;
     private final JodiProperties properties;

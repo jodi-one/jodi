@@ -28,14 +28,12 @@ import java.util.stream.Stream;
 
 public class ProcedureServiceImpl implements ProcedureService {
 
-    private final static Logger logger =
-            LogManager.getLogger(ProcedureServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(ProcedureServiceImpl.class);
 
-    private final static String PROCEDURE_FILE_NAME = "Procedure";
+    private static final String PROCEDURE_FILE_NAME = "Procedure";
 
-    private final static String ERROR_MESSAGE_61010 =
-            "Exception while %1$s procedure definitions from file: %2$s. " +
-                    "The following procedures were not processed: %3$s.";
+    private static final String ERROR_MESSAGE_61010 = "Exception while %1$s procedure definitions from file: %2$s. " +
+            "The following procedures were not processed: %3$s.";
 
     private final String projectCode;
     private final FileCollector fileCollector;
@@ -46,8 +44,7 @@ public class ProcedureServiceImpl implements ProcedureService {
     private CollectXmlObjectsUtil<Procedure> collectXMLObjectUtil;
 
     @Inject
-    ProcedureServiceImpl(final FileCollector fileCollector,
-                         final JodiProperties jodiProperties,
+    ProcedureServiceImpl(final FileCollector fileCollector, final JodiProperties jodiProperties,
                          final ProcedureTransformationBuilder procTransformationBuilder,
                          final ProcedureServiceProvider procServiceProvider,
                          final ErrorWarningMessageJodi errorWarningMessageJodi) {
@@ -56,10 +53,9 @@ public class ProcedureServiceImpl implements ProcedureService {
         this.procTransformationBuilder = procTransformationBuilder;
         this.procServiceProvider = procServiceProvider;
         this.errorWarningMessageJodi = errorWarningMessageJodi;
-        this.collectXMLObjectUtil = new CollectXmlObjectsUtilImpl<>(
-                ObjectFactory.class,
-                JodiConstants.XSD_FILE_PROCEDURE,
-                errorWarningMessageJodi);
+        this.collectXMLObjectUtil =
+                new CollectXmlObjectsUtilImpl<>(ObjectFactory.class, JodiConstants.XSD_FILE_PROCEDURE,
+                                                errorWarningMessageJodi);
     }
 
     /**
@@ -75,69 +71,56 @@ public class ProcedureServiceImpl implements ProcedureService {
     }
 
     // for test purposes only
-    protected void setCollectXmlObjectUtil(
-            final CollectXmlObjectsUtil<Procedure> collectXMLObjectUtil) {
+    protected void setCollectXmlObjectUtil(final CollectXmlObjectsUtil<Procedure> collectXMLObjectUtil) {
         this.collectXMLObjectUtil = collectXMLObjectUtil;
     }
 
-    private List<ProcedureInternal> enrichAndValidate(
-            final Map<Path, Procedure> procedures) {
+    private List<ProcedureInternal> enrichAndValidate(final Map<Path, Procedure> procedures) {
         return procedures.entrySet()
-                .stream()
-                .flatMap(e -> toStream(this.procTransformationBuilder
-                        .build(e.getValue(),
-                                e.getKey().toString())))
-                .collect(Collectors.toList());
+                         .stream()
+                         .flatMap(e -> toStream(this.procTransformationBuilder.build(e.getValue(), e.getKey()
+                                                                                                    .toString())))
+                         .collect(Collectors.toList());
     }
 
-    private void createProcedures(final List<ProcedureInternal> internalProcedures,
-                                  final boolean generateScenarios) {
-        this.procServiceProvider.createProcedures(internalProcedures, generateScenarios,
-                this.projectCode);
+    private void createProcedures(final List<ProcedureInternal> internalProcedures, final boolean generateScenarios) {
+        this.procServiceProvider.createProcedures(internalProcedures, generateScenarios, this.projectCode);
     }
 
     private String getProcedureNames(final List<ProcedureHeader> procedures) {
         return procedures.stream()
-                .map(p -> p.getName() + " -> " +
-                        String.join("/", p.getFolderNames()))
-                .collect(Collectors.joining(", "));
+                         .map(p -> p.getName() + " -> " + String.join("/", p.getFolderNames()))
+                         .collect(Collectors.joining(", "));
     }
 
     @Override
     public void create(final String metadataDirectory, final boolean generateScenarios) {
         Path path = Paths.get(metadataDirectory);
         final List<Path> files =
-                fileCollector.collectInPath(path, PROCEDURE_FILE_NAME + "-", ".xml",
-                        PROCEDURE_FILE_NAME + ".xml");
-        Map<Path, Procedure> procedures = this.collectXMLObjectUtil
-                .collectObjectsFromFiles(files);
+                fileCollector.collectInPath(path, PROCEDURE_FILE_NAME + "-", ".xml", PROCEDURE_FILE_NAME + ".xml");
+        Map<Path, Procedure> procedures = this.collectXMLObjectUtil.collectObjectsFromFiles(files);
         // this list will contain only those procedure definitions that are valid
         List<ProcedureInternal> validProcedures = enrichAndValidate(procedures);
         if (!validProcedures.isEmpty()) {
             try {
                 createProcedures(validProcedures, generateScenarios);
             } catch (ProcedureException pe) {
-                String msg = this.errorWarningMessageJodi
-                        .formatMessage(61010, ERROR_MESSAGE_61010,
-                                this.getClass(), "creating",
-                                pe.getMessage() != null
-                                        ? pe.getMessage() : "",
-                                getProcedureNames(pe.getProcedures()));
-                errorWarningMessageJodi.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
-                        .ERRORS);
+                String msg = this.errorWarningMessageJodi.formatMessage(61010, ERROR_MESSAGE_61010, this.getClass(),
+                                                                        "creating",
+                                                                        pe.getMessage() != null ? pe.getMessage() : "",
+                                                                        getProcedureNames(pe.getProcedures()));
+                errorWarningMessageJodi.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
                 logger.error(msg, pe);
             }
         }
     }
 
-    private List<ProcedureHeader> enrichAndValidateHeader(
-            final Map<Path, Procedure> procedures) {
+    private List<ProcedureHeader> enrichAndValidateHeader(final Map<Path, Procedure> procedures) {
         return procedures.entrySet()
-                .stream()
-                .flatMap(e -> toStream(this.procTransformationBuilder
-                        .buildHeader(e.getValue(),
-                                e.getKey().toString())))
-                .collect(Collectors.toList());
+                         .stream()
+                         .flatMap(e -> toStream(this.procTransformationBuilder.buildHeader(e.getValue(), e.getKey()
+                                                                                                          .toString())))
+                         .collect(Collectors.toList());
     }
 
     private void deleteProcedures(final List<ProcedureHeader> internalProcedures) {
@@ -148,24 +131,19 @@ public class ProcedureServiceImpl implements ProcedureService {
     public void delete(final String metadataDirectory) {
         Path path = Paths.get(metadataDirectory);
         final List<Path> files =
-                fileCollector.collectInPath(path, PROCEDURE_FILE_NAME + "-", ".xml",
-                        PROCEDURE_FILE_NAME + ".xml");
-        Map<Path, Procedure> procedures =
-                collectXMLObjectUtil.collectObjectsFromFiles(files);
+                fileCollector.collectInPath(path, PROCEDURE_FILE_NAME + "-", ".xml", PROCEDURE_FILE_NAME + ".xml");
+        Map<Path, Procedure> procedures = collectXMLObjectUtil.collectObjectsFromFiles(files);
         // this list will contain only those procedure definitions that are valid
         List<ProcedureHeader> validProcedures = enrichAndValidateHeader(procedures);
         if (!validProcedures.isEmpty()) {
             try {
                 deleteProcedures(validProcedures);
             } catch (ProcedureException pe) {
-                String msg = this.errorWarningMessageJodi
-                        .formatMessage(61010, ERROR_MESSAGE_61010,
-                                this.getClass(), "deleting",
-                                pe.getMessage() != null
-                                        ? pe.getMessage() : "",
-                                getProcedureNames(pe.getProcedures()));
-                errorWarningMessageJodi.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
-                        .ERRORS);
+                String msg = this.errorWarningMessageJodi.formatMessage(61010, ERROR_MESSAGE_61010, this.getClass(),
+                                                                        "deleting",
+                                                                        pe.getMessage() != null ? pe.getMessage() : "",
+                                                                        getProcedureNames(pe.getProcedures()));
+                errorWarningMessageJodi.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
                 logger.error(msg, pe);
             }
         }

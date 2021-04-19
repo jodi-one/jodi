@@ -43,8 +43,8 @@ import java.util.Optional;
  * decision of the default strategy.
  */
 public class ColumnMappingContextImpl implements ColumnMappingContext {
-    private final static Logger LOGGER = LogManager.getLogger(ColumnMappingContextImpl.class);
-    private final static String ERROR_MESSAGE_01070 =
+    private static final Logger LOGGER = LogManager.getLogger(ColumnMappingContextImpl.class);
+    private static final String ERROR_MESSAGE_01070 =
             "An unknown exception was raised in column mapping strategy '%1$s' " +
                     "while determining mapping expression for target data store '%2$s' " +
                     "dataset index %3$s with package sequence %4$s.";

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TransformationCacheImpl implements TransformationCache {
 
-    public final static int INITIAL_PACKAGE_SEQUENCE = 1000000;
+    public static final int INITIAL_PACKAGE_SEQUENCE = 1000000;
     final static String INITIAL_PACKAGE_SEQUENCE_PROPERTY = "tools.initial_package_sequence";
     final static String PACKAGE_SEQUENCE_STEP_PROPERTY = "tools.package_sequence_step";
     private final JodiProperties properties;

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class JsAnnotationImpl implements JsAnnotation {
 
-    private final static Logger logger = LogManager.getLogger(JsAnnotationImpl.class);
+    private static final Logger logger = LogManager.getLogger(JsAnnotationImpl.class);
 
     /*
      * JSON Key is assumed to start with a quotation mark followed by
@@ -41,38 +41,38 @@ public class JsAnnotationImpl implements JsAnnotation {
      */
     private static final String JSON_KEY_PATTERN = "\"([\\w-\\s]{1,})\"\\s*:";
 
-    private final static String ATTRIBUTE_NAME = "Name";
+    private static final String ATTRIBUTE_NAME = "Name";
 
-    private final static String ERROR_MESSAGE_80500 =
+    private static final String ERROR_MESSAGE_80500 =
             "Key '%1$s' encountered to an unexpected type in the JSON object.";
 
-    private final static String ERROR_MESSAGE_80510 =
+    private static final String ERROR_MESSAGE_80510 =
             "Annotation '%1$s' contains a syntax error.";
 
-    private final static String ERROR_MESSAGE_80520 =
+    private static final String ERROR_MESSAGE_80520 =
             "Annotation in '%1$s' contains a syntax error. Annotations cannot be " +
                     "retrieved and are ignored. %2$s";
 
-    private final static String ERROR_MESSAGE_80530 =
+    private static final String ERROR_MESSAGE_80530 =
             "No annotation files were found in directory and subdirectories of '%1$s'.";
 
-    private final static String ERROR_MESSAGE_80531 =
+    private static final String ERROR_MESSAGE_80531 =
             "The xml directory '%1$s' does not contain annotation files.";
 
-    private final static String ERROR_MESSAGE_80550 =
+    private static final String ERROR_MESSAGE_80550 =
             "Annotation in '%1$s' does not contain the required 'Name' key in one " +
                     "of its objects. The invalid object is located after the element " +
                     "named '%2$s'. Please correct annotation before proceeding.";
 
-    private final static String ERROR_MESSAGE_80560 =
+    private static final String ERROR_MESSAGE_80560 =
             "Annotation in '%1$s' does not contain the required value for the 'Name' " +
                     "key in one of its objects. The invalid object is located after the " +
                     "element named '%2$s'. Please correct annotation before proceeding.";
 
-    private final static String ERROR_MESSAGE_80570 =
+    private static final String ERROR_MESSAGE_80570 =
             "Duplicate column name '%1$s' accessed in table '%2$s' in schema name '%4$s' within file name '%3$s'.";
 
-    private final static String ERROR_MESSAGE_80580 =
+    private static final String ERROR_MESSAGE_80580 =
             "Duplicate table '%2$s' annotation found in schema '%1$s' within files '%3$s'.";
 
     private static final String ERROR_MESSAGE_80582 =

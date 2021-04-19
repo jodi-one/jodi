@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 public class DistinctBuilderImpl implements DistinctBuilder {
-    private final static Logger logger = LogManager.getLogger(DistinctBuilderImpl.class);
+    private static final Logger logger = LogManager.getLogger(DistinctBuilderImpl.class);
     private final OdiCommon odiCommon;
 
 

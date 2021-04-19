@@ -40,7 +40,7 @@ public abstract class AbstactConfiguration {
             "The property file has not been found.";
     private static final String ERROR_MESSAGE_80110 =
             "Errors encountered attempting to load properties file: %s";
-    private final static String ERROR_MESSAGE_01110 =
+    private static final String ERROR_MESSAGE_01110 =
             "Unsuccessful attempt to parse name value pair from list using odi " +
                     "property: %s (as a Map)";
     private static final String FRIENDLY_MESSAGE =

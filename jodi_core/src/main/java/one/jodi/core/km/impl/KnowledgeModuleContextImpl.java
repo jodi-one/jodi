@@ -25,7 +25,12 @@ import one.jodi.core.metadata.DatabaseMetadataService;
 import one.jodi.core.metadata.ETLSubsystemService;
 import one.jodi.core.metadata.types.KnowledgeModule;
 import one.jodi.core.validation.etl.ETLValidator;
-import one.jodi.etl.internalmodel.*;
+import one.jodi.etl.internalmodel.Dataset;
+import one.jodi.etl.internalmodel.KmType;
+import one.jodi.etl.internalmodel.Lookup;
+import one.jodi.etl.internalmodel.Mappings;
+import one.jodi.etl.internalmodel.Source;
+import one.jodi.etl.internalmodel.Transformation;
 import one.jodi.etl.internalmodel.impl.KmTypeImpl;
 import one.jodi.etl.internalmodel.impl.MappingsImpl;
 import one.jodi.etl.internalmodel.impl.SourceImpl;
@@ -48,47 +53,41 @@ import java.util.Map;
  */
 public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
-    private final static Logger logger = LogManager.getLogger(KnowledgeModuleContextImpl.class);
-    private final static String newLine = System.getProperty("line.separator");
+    private static final Logger logger = LogManager.getLogger(KnowledgeModuleContextImpl.class);
+    private static final String newLine = System.getProperty("line.separator");
 
-    private final static String ERROR_MESSAGE_03200 =
-            "An unknown exception was raised in KM strategy '%2$s' while " +
-                    "determining model for data store '%1$s'.";
-    private final static String ERROR_MESSAGE_03201 =
+    private static final String ERROR_MESSAGE_03200 =
+            "An unknown exception was raised in KM strategy '%2$s' while " + "determining model for data store '%1$s'.";
+    private static final String ERROR_MESSAGE_03201 =
             "Illegal KM reference %s with KM code %s and type %s: rule cannot be global";
-    private final static String ERROR_MESSAGE_03202 =
+    private static final String ERROR_MESSAGE_03202 =
             "Illegal KM reference found in transformation %s with KM code %s " +
                     "and type %s: code appears to point to rule of differing KM type.";
-    private final static String ERROR_MESSAGE_03203 =
+    private static final String ERROR_MESSAGE_03203 =
             "Illegal KM reference found in transformation %s with KM code %s and " +
                     "type %s: code appears to point to undefined rule.";
-    private final static String ERROR_MESSAGE_03210 = "Errors found in LKM";
-    private final static String ERROR_MESSAGE_03220 =
-            "CKM Validation Errors in package sequence %d. See error report.";
-    private final static String ERROR_MESSAGE_03230 =
-            "IKM Validation Errors.  See error report of packageSequence %s.";
-    private final static String ERROR_MESSAGE_03240 =
-            "KnowledgeModuleConfiguration can't be null.";
+    private static final String ERROR_MESSAGE_03210 = "Errors found in LKM";
+    private static final String ERROR_MESSAGE_03220 = "CKM Validation Errors in package sequence %d. See error report.";
+    private static final String ERROR_MESSAGE_03230 = "IKM Validation Errors.  See error report of packageSequence %s.";
+    private static final String ERROR_MESSAGE_03240 = "KnowledgeModuleConfiguration can't be null.";
 
     private final DatabaseMetadataService databaseMetadataService;
     private final ETLSubsystemService etlSubsystemService;
     private final KnowledgeModulePropertiesProvider provider;
     private final ETLValidator validator;
     private final ErrorWarningMessageJodi errorWarningMessages;
-    private KnowledgeModuleStrategy defaultStrategy;
-    private KnowledgeModuleStrategy customStrategy;
-    private JodiProperties jodiProperties;
+    private final KnowledgeModuleStrategy defaultStrategy;
+    private final KnowledgeModuleStrategy customStrategy;
+    private final JodiProperties jodiProperties;
 
     @Inject
-    public KnowledgeModuleContextImpl(
-            final DatabaseMetadataService databaseMetadataService,
-            final ETLSubsystemService etlSubsystemService,
-            final @DefaultStrategy KnowledgeModuleStrategy defaultStrategy,
-            final KnowledgeModulePropertiesProvider provider,
-            final KnowledgeModuleStrategy customStrategy,
-            final JodiProperties jodiProperties,
-            final ETLValidator validator,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    public KnowledgeModuleContextImpl(final DatabaseMetadataService databaseMetadataService,
+                                      final ETLSubsystemService etlSubsystemService,
+                                      final @DefaultStrategy KnowledgeModuleStrategy defaultStrategy,
+                                      final KnowledgeModulePropertiesProvider provider,
+                                      final KnowledgeModuleStrategy customStrategy, final JodiProperties jodiProperties,
+                                      final ETLValidator validator,
+                                      final ErrorWarningMessageJodi errorWarningMessages) {
         this.databaseMetadataService = databaseMetadataService;
         this.etlSubsystemService = etlSubsystemService;
         this.defaultStrategy = defaultStrategy;
@@ -114,8 +113,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
         if (foundRule != null) {
             if (foundRule.isGlobal()) {
                 String transformationSpecific = "found in transformation" + transformation.getName();
-                String msg = errorWarningMessages.formatMessage(3201,
-                        ERROR_MESSAGE_03201, this.getClass(), transformationSpecific, code, type);
+                String msg = errorWarningMessages.formatMessage(3201, ERROR_MESSAGE_03201, this.getClass(),
+                                                                transformationSpecific, code, type);
                 logger.debug(msg);
 //				errorWarningMessages.addMessage(
 //						transformation.getPackageSequence(), msg, 
@@ -127,20 +126,16 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             // TODO can we refactor to get rid of the .name?
             String s = jodiProperties.getProperty(code + ".name");
             if (s != null && s.length() > 0) {
-                String msg = errorWarningMessages.formatMessage(3202,
-                        ERROR_MESSAGE_03202, this.getClass(), transformation.getName(), code, type);
-                errorWarningMessages.addMessage(
-                        transformation.getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(3202, ERROR_MESSAGE_03202, this.getClass(),
+                                                                transformation.getName(), code, type);
+                errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 throw new RuntimeException(msg);
             } else {
-                String msg = errorWarningMessages.formatMessage(3203,
-                        ERROR_MESSAGE_03203, this.getClass(), transformation.getName(), code, type);
+                String msg = errorWarningMessages.formatMessage(3203, ERROR_MESSAGE_03203, this.getClass(),
+                                                                transformation.getName(), code, type);
                 logger.error(msg);
-                errorWarningMessages.addMessage(
-                        transformation.getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 throw new RuntimeException(msg);
             }
         }
@@ -150,15 +145,18 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
 
     private KnowledgeModuleConfigurationImpl putModelOptions(
-            KnowledgeModuleConfigurationImpl knowledgeModuleConfiguration,
-            Map<String, String> options) {
+            KnowledgeModuleConfigurationImpl knowledgeModuleConfiguration, Map<String, String> options) {
 
         for (String key : options.keySet()) {
             String value = options.get(key);
 
-            if (value.toLowerCase().trim().equals("false")) {
+            if (value.toLowerCase()
+                     .trim()
+                     .equals("false")) {
                 knowledgeModuleConfiguration.putOption(key, false);
-            } else if (value.toLowerCase().trim().equals("true")) {
+            } else if (value.toLowerCase()
+                            .trim()
+                            .equals("true")) {
                 knowledgeModuleConfiguration.putOption(key, true);
             } else {
                 knowledgeModuleConfiguration.putOption(key, value);
@@ -169,46 +167,47 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
     }
 
     @Override
-    public KnowledgeModuleConfiguration getLKMConfig(
-            final Source source,
-            final String dataSetName) {
+    public KnowledgeModuleConfiguration getLKMConfig(final Source source, final String dataSetName) {
 
         KnowledgeModuleConfigurationImpl explicitKmConfiguration = null;
 
         if (source.getLkm() != null) {
             if (validator.validateLKM(source)) {
-                preValidate(source.getLkm().getName(), KnowledgeModuleType.Loading, source.getParent().getParent());
+                preValidate(source.getLkm()
+                                  .getName(), KnowledgeModuleType.Loading, source.getParent()
+                                                                                 .getParent());
 
                 explicitKmConfiguration = new KnowledgeModuleConfigurationImpl();
                 explicitKmConfiguration.setType(KnowledgeModuleType.Loading);
-                explicitKmConfiguration.setName(source.getLkm().getName());
-                putModelOptions(explicitKmConfiguration, source.getLkm().getOptions());
+                explicitKmConfiguration.setName(source.getLkm()
+                                                      .getName());
+                putModelOptions(explicitKmConfiguration, source.getLkm()
+                                                               .getOptions());
             } else {
-                String msg = errorWarningMessages.formatMessage(3210,
-                        ERROR_MESSAGE_03210, this.getClass());
+                String msg = errorWarningMessages.formatMessage(3210, ERROR_MESSAGE_03210, this.getClass());
                 logger.error(msg);
                 throw new UnRecoverableException(msg);
             }
         }
 
-        final Mappings mappings = source.getParent().getParent().getMappings();
+        final Mappings mappings = source.getParent()
+                                        .getParent()
+                                        .getMappings();
 
         // This is a hack but works for now, grouping needs to occur
-        final DataStore sourceDataStore = databaseMetadataService.getSourceDataStoreInModel(source.getName(), source.getModel());
+        final DataStore sourceDataStore =
+                databaseMetadataService.getSourceDataStoreInModel(source.getName(), source.getModel());
 
         final DataStore targetDataStore = databaseMetadataService.getTargetDataStoreInModel(mappings);
 
-        LoadKnowledgeModuleExecutionContext executionContext = this.createLoadExecutionContext(sourceDataStore, targetDataStore, dataSetName, source);
+        LoadKnowledgeModuleExecutionContext executionContext =
+                this.createLoadExecutionContext(sourceDataStore, targetDataStore, dataSetName, source);
 
         KnowledgeModuleConfiguration knowledgeModuleConfiguration;
         try {
-            knowledgeModuleConfiguration = defaultStrategy.getLKMConfig(
-                    explicitKmConfiguration,
-                    executionContext);
+            knowledgeModuleConfiguration = defaultStrategy.getLKMConfig(explicitKmConfiguration, executionContext);
 
-            knowledgeModuleConfiguration = customStrategy.getLKMConfig(
-                    knowledgeModuleConfiguration,
-                    executionContext);
+            knowledgeModuleConfiguration = customStrategy.getLKMConfig(knowledgeModuleConfiguration, executionContext);
             if (knowledgeModuleConfiguration != null) {
                 ((SourceImpl) source).setLkm(generateKMType(knowledgeModuleConfiguration));
             } else {
@@ -237,7 +236,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
     public KnowledgeModuleConfiguration getCKMConfig(final Transformation transformation) {
         KnowledgeModuleConfigurationImpl explicitKmConfiguration = null;
 
-        KmType kmType = transformation.getMappings().getCkm();
+        KmType kmType = transformation.getMappings()
+                                      .getCkm();
         if (kmType != null) {
             if (validator.validateCKM(transformation.getMappings())) {
                 explicitKmConfiguration = new KnowledgeModuleConfigurationImpl();
@@ -245,9 +245,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
                 explicitKmConfiguration.setName(kmType.getName());
                 putModelOptions(explicitKmConfiguration, kmType.getOptions());
             } else {
-                String msg = errorWarningMessages.formatMessage(3220,
-                        ERROR_MESSAGE_03220, this.getClass(),
-                        transformation.getPackageSequence());
+                String msg = errorWarningMessages.formatMessage(3220, ERROR_MESSAGE_03220, this.getClass(),
+                                                                transformation.getPackageSequence());
                 logger.error(msg);
                 throw new UnRecoverableException(msg);
             }
@@ -255,19 +254,17 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
         final Mappings mappings = transformation.getMappings();
         final DataStore targetDataStore = databaseMetadataService.getTargetDataStoreInModel(mappings);
 
-        CheckKnowledgeModuleExecutionContext executionContext = createCheckExecutionContext(targetDataStore, transformation);
+        CheckKnowledgeModuleExecutionContext executionContext =
+                createCheckExecutionContext(targetDataStore, transformation);
 
         KnowledgeModuleConfiguration knowledgeModuleConfiguration = null;
 
         try {
-            knowledgeModuleConfiguration = defaultStrategy.getCKMConfig(
-                    explicitKmConfiguration,
-                    executionContext);
+            knowledgeModuleConfiguration = defaultStrategy.getCKMConfig(explicitKmConfiguration, executionContext);
 
             if (customStrategy != null) {
-                knowledgeModuleConfiguration = customStrategy.getCKMConfig(
-                        knowledgeModuleConfiguration,
-                        executionContext);
+                knowledgeModuleConfiguration =
+                        customStrategy.getCKMConfig(knowledgeModuleConfiguration, executionContext);
             }
 
             if (knowledgeModuleConfiguration != null && generateKMType(knowledgeModuleConfiguration) != null) {
@@ -287,7 +284,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
         KnowledgeModuleConfigurationImpl explicitKmConfiguration = null;
 
         //determine explicitly defined KM if exists
-        KmType kmType = transformation.getMappings().getIkm();
+        KmType kmType = transformation.getMappings()
+                                      .getIkm();
         if (kmType != null) {
 
             //preValidate(kmType.getName(), KnowledgeModuleType.Integration, transformation);
@@ -297,9 +295,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
                 explicitKmConfiguration.setName(kmType.getName());
                 putModelOptions(explicitKmConfiguration, kmType.getOptions());
             } else {
-                String msg = errorWarningMessages.formatMessage(3230,
-                        ERROR_MESSAGE_03230, this.getClass(),
-                        transformation.getPackageSequence());
+                String msg = errorWarningMessages.formatMessage(3230, ERROR_MESSAGE_03230, this.getClass(),
+                                                                transformation.getPackageSequence());
                 logger.error(msg);
                 throw new UnRecoverableException(msg);
             }
@@ -308,7 +305,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
         final Mappings mappings = transformation.getMappings();
         final DataStore targetDataStore = databaseMetadataService.getTargetDataStoreInModel(mappings);
 
-        KnowledgeModuleExecutionContext executionContext = createIntegrationExecutionContext(targetDataStore, transformation);
+        KnowledgeModuleExecutionContext executionContext =
+                createIntegrationExecutionContext(targetDataStore, transformation);
 
         KnowledgeModuleConfiguration kmConfiguration = null;
 
@@ -332,19 +330,18 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
         StagingKnowledgeModuleExecutionContext executionContext = createStagingExecutionContext(transformation);
 
-        String explicitStagingModel = transformation.getMappings().getStagingModel();
+        String explicitStagingModel = transformation.getMappings()
+                                                    .getStagingModel();
         String stagingModel = null;
 
         try {
             stagingModel = defaultStrategy.getStagingModel(explicitStagingModel, executionContext);
         } catch (RuntimeException ex) {
-            String msg = errorWarningMessages.formatMessage(3200,
-                    ERROR_MESSAGE_03200, this.getClass(),
-                    databaseMetadataService.getTargetDataStoreInModel(transformation.getMappings()),
-                    defaultStrategy.toString());
-            errorWarningMessages.addMessage(
-                    transformation.getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3200, ERROR_MESSAGE_03200, this.getClass(),
+                                                            databaseMetadataService.getTargetDataStoreInModel(
+                                                                    transformation.getMappings()),
+                                                            defaultStrategy.toString());
+            errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             throw new RuntimeException(msg, ex);
         }
@@ -355,13 +352,11 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             try {
                 stagingModel = customStrategy.getStagingModel(stagingModel, executionContext);
             } catch (RuntimeException ex) {
-                String msg = errorWarningMessages.formatMessage(3200,
-                        ERROR_MESSAGE_03200, this.getClass(),
-                        databaseMetadataService.getTargetDataStoreInModel(transformation.getMappings()),
-                        defaultStrategy.toString());
-                errorWarningMessages.addMessage(
-                        transformation.getPackageSequence(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(3200, ERROR_MESSAGE_03200, this.getClass(),
+                                                                databaseMetadataService.getTargetDataStoreInModel(
+                                                                        transformation.getMappings()),
+                                                                defaultStrategy.toString());
+                errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 throw new IncorrectCustomStrategyException(msg, ex);
             }
@@ -373,7 +368,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
     }
 
 
-    private KnowledgeModuleExecutionContext createIntegrationExecutionContext(final DataStore targetDataStore, final Transformation transformation) {
+    private KnowledgeModuleExecutionContext createIntegrationExecutionContext(final DataStore targetDataStore,
+                                                                              final Transformation transformation) {
         return new KnowledgeModuleExecutionContext() {
 
             @Override
@@ -391,8 +387,7 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             public TransformationExtension getTransformationExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(transformation.getExtension());
             }
 
@@ -400,9 +395,9 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             public MappingsExtension getMappingsExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<MappingsExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
-                return cloner.clone(transformation.getMappings().getExtension());
+                ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
+                return cloner.clone(transformation.getMappings()
+                                                  .getExtension());
             }
 
             @Override
@@ -414,7 +409,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
                     // in the KnowledgeModuleProperties object
                     StringBuilder sb = new StringBuilder();
                     for (String error : provider.getErrorMessages()) {
-                        sb.append(error).append(newLine);
+                        sb.append(error)
+                          .append(newLine);
                     }
                     logger.debug(sb.toString());
                     throw e;
@@ -428,7 +424,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
         };
     }
 
-    private CheckKnowledgeModuleExecutionContext createCheckExecutionContext(final DataStore targetDataStore, final Transformation transformation) {
+    private CheckKnowledgeModuleExecutionContext createCheckExecutionContext(final DataStore targetDataStore,
+                                                                             final Transformation transformation) {
         return new CheckKnowledgeModuleExecutionContext() {
 
             @Override
@@ -445,8 +442,7 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             public TransformationExtension getTransformationExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(transformation.getExtension());
             }
 
@@ -454,9 +450,9 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             public MappingsExtension getMappingsExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<MappingsExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
-                return cloner.clone(transformation.getMappings().getExtension());
+                ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
+                return cloner.clone(transformation.getMappings()
+                                                  .getExtension());
             }
 
             @Override
@@ -471,14 +467,18 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
             @Override
             public DataModel getStagingDataModel() {
-                String stagingModel = transformation.getMappings().getStagingModel();
+                String stagingModel = transformation.getMappings()
+                                                    .getStagingModel();
                 return stagingModel != null ? databaseMetadataService.getDataModel(stagingModel) : null;
             }
         };
     }
 
 
-    private LoadKnowledgeModuleExecutionContext createLoadExecutionContext(final DataStore sourceDataStore, final DataStore targetDataStore, final String dataSetName, final Source source) {
+    private LoadKnowledgeModuleExecutionContext createLoadExecutionContext(final DataStore sourceDataStore,
+                                                                           final DataStore targetDataStore,
+                                                                           final String dataSetName,
+                                                                           final Source source) {
         return new LoadKnowledgeModuleExecutionContext() {
 
             @Override
@@ -506,18 +506,21 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
             public TransformationExtension getTransformationExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
-                return cloner.clone(source.getParent().getParent().getExtension());
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
+                return cloner.clone(source.getParent()
+                                          .getParent()
+                                          .getExtension());
             }
 
             @Override
             public MappingsExtension getMappingsExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<MappingsExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
-                return cloner.clone(source.getParent().getParent().getMappings().getExtension());
+                ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
+                return cloner.clone(source.getParent()
+                                          .getParent()
+                                          .getMappings()
+                                          .getExtension());
             }
 
             @Override
@@ -532,7 +535,10 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
             @Override
             public DataModel getStagingDataModel() {
-                String stagingModel = source.getParent().getParent().getMappings().getStagingModel();
+                String stagingModel = source.getParent()
+                                            .getParent()
+                                            .getMappings()
+                                            .getStagingModel();
                 return stagingModel != null ? databaseMetadataService.getDataModel(stagingModel) : null;
             }
         };
@@ -553,15 +559,14 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
             @Override
             public MappingsExtension getMappingsExtension() {
-                ClonerUtil<MappingsExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
-                return cloner.clone(transformation.getMappings().getExtension());
+                ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
+                return cloner.clone(transformation.getMappings()
+                                                  .getExtension());
             }
 
             @Override
             public TransformationExtension getTransformationExtension() {
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(transformation.getExtension());
             }
 
@@ -576,7 +581,8 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
                 for (Dataset dataset : transformation.getDatasets()) {
                     for (final Source source : dataset.getSources()) {
-                        final DataStore sourceDataStore = databaseMetadataService.getSourceDataStoreInModel(source.getName(), source.getModel());
+                        final DataStore sourceDataStore =
+                                databaseMetadataService.getSourceDataStoreInModel(source.getName(), source.getModel());
                         list.add(new DataStoreWithAlias() {
 
                             @Override
@@ -596,13 +602,14 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
                             @Override
                             public SourceExtension getSourceExtension() {
-                                ClonerUtil<SourceExtension> cloner =
-                                        new ClonerUtil<>(errorWarningMessages);
+                                ClonerUtil<SourceExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                                 return cloner.clone(source.getExtension());
                             }
                         });
                         for (final Lookup lookup : source.getLookups()) {
-                            final DataStore lookupDataStore = databaseMetadataService.getSourceDataStoreInModel(lookup.getLookupDataStore(), lookup.getModel());
+                            final DataStore lookupDataStore =
+                                    databaseMetadataService.getSourceDataStoreInModel(lookup.getLookupDataStore(),
+                                                                                      lookup.getModel());
                             list.add(new DataStoreWithAlias() {
 
                                 @Override
@@ -622,8 +629,7 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
                                 @Override
                                 public SourceExtension getSourceExtension() {
-                                    ClonerUtil<SourceExtension> cloner =
-                                            new ClonerUtil<>(errorWarningMessages);
+                                    ClonerUtil<SourceExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                                     return cloner.clone(source.getExtension());
                                 }
                             });
@@ -641,7 +647,9 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
             @Override
             public String getIKMCode() {
-                return transformation.getMappings().getIkm().getName();
+                return transformation.getMappings()
+                                     .getIkm()
+                                     .getName();
             }
         };
     }
@@ -649,8 +657,7 @@ public class KnowledgeModuleContextImpl implements KnowledgeModuleContext {
 
     private KmType generateKMType(KnowledgeModuleConfiguration kmc) {
         if (kmc == null) {
-            String msg = errorWarningMessages.formatMessage(3240,
-                    ERROR_MESSAGE_03240, this.getClass());
+            String msg = errorWarningMessages.formatMessage(3240, ERROR_MESSAGE_03240, this.getClass());
             logger.error(msg);
             throw new UnRecoverableException(msg);
         }

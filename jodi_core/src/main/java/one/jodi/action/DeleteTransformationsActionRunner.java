@@ -18,13 +18,13 @@ import one.jodi.core.service.TransformationService;
  */
 public class DeleteTransformationsActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
+    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
             + "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n"
             + "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n"
             + "or this could be due to an invalid XML file.";
 
-    private final static String ERROR_MESSAGE_01059 = "The metadata directory is required to run Transformation delete";
-    private final static String ERROR_MESSAGE_01060 = "The configuration property file is required to run Transformation delete";
+    private static final String ERROR_MESSAGE_01059 = "The metadata directory is required to run Transformation delete";
+    private static final String ERROR_MESSAGE_01060 = "The configuration property file is required to run Transformation delete";
 
     private final TransformationService transformationService;
     private final ErrorWarningMessageJodi errorWarningMessages;

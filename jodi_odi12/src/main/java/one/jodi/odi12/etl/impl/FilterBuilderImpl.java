@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class FilterBuilderImpl implements FilterBuilder {
 
     @SuppressWarnings("unused")
-    private final static Logger logger = LogManager.getLogger(FilterBuilderImpl.class);
+    private static final Logger logger = LogManager.getLogger(FilterBuilderImpl.class);
     private final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy;
 
     @Inject

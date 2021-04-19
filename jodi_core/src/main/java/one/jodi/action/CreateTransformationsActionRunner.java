@@ -17,9 +17,12 @@ import one.jodi.core.service.TransformationService;
  */
 public class CreateTransformationsActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01050 = "The metadata directory is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_01051 = "The configuration property file is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_01052 = "The prefix configuration is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01050 =
+            "The metadata directory is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01051 =
+            "The configuration property file is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01052 =
+            "The prefix configuration is required to run Transformation creation";
 
     private final TransformationService transformationService;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -30,9 +33,8 @@ public class CreateTransformationsActionRunner implements ActionRunner {
      * @param transformationService
      */
     @Inject
-    protected CreateTransformationsActionRunner(
-            final TransformationService transformationService,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    protected CreateTransformationsActionRunner(final TransformationService transformationService,
+                                                final ErrorWarningMessageJodi errorWarningMessages) {
         this.transformationService = transformationService;
         this.errorWarningMessages = errorWarningMessages;
     }
@@ -43,8 +45,7 @@ public class CreateTransformationsActionRunner implements ActionRunner {
     @Override
     public void run(final RunConfig config) {
         final EtlRunConfig etlConfig = (EtlRunConfig) config;
-        transformationService.createOrReplaceTransformations(
-                etlConfig.isJournalized());
+        transformationService.createOrReplaceTransformations(etlConfig.isJournalized());
     }
 
     /* (non-Javadoc)
@@ -55,29 +56,20 @@ public class CreateTransformationsActionRunner implements ActionRunner {
         final EtlRunConfig etlConfig = (EtlRunConfig) config;
 
         if (!StringUtils.hasLength(etlConfig.getPrefix())) {
-            String msg = errorWarningMessages.formatMessage(1052,
-                    ERROR_MESSAGE_01052, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1052, ERROR_MESSAGE_01052, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
 
         if (!StringUtils.hasLength(config.getMetadataDirectory())) {
-            String msg = errorWarningMessages.formatMessage(1050,
-                    ERROR_MESSAGE_01050, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1050, ERROR_MESSAGE_01050, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
 
         if (!StringUtils.hasLength(config.getPropertyFile())) {
-            String msg = errorWarningMessages.formatMessage(1051,
-                    ERROR_MESSAGE_01051, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1051, ERROR_MESSAGE_01051, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
     }

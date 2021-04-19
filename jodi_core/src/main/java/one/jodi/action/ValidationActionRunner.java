@@ -12,9 +12,9 @@ import one.jodi.core.service.ValidationService;
 
 public class ValidationActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_02050 = "The metadata directory is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_02051 = "The configuration property file is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_02052 = "The prefix configuration is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_02050 = "The metadata directory is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_02051 = "The configuration property file is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_02052 = "The prefix configuration is required to run Transformation creation";
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final ValidationService validationService;
 

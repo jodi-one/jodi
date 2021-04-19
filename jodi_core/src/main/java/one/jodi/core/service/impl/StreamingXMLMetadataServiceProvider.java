@@ -29,12 +29,10 @@ import java.util.List;
  */
 public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvider {
 
-    private final static Logger logger =
-            LogManager.getLogger(StreamingXMLMetadataServiceProvider.class);
+    private static final Logger logger = LogManager.getLogger(StreamingXMLMetadataServiceProvider.class);
 
-    private final static String ERROR_MESSAGE_02060 = "NotImplementedException";
-    private final static String ERROR_MESSAGE_02070 =
-            "Error parsing transformation from stream %s";
+    private static final String ERROR_MESSAGE_02060 = "NotImplementedException";
+    private static final String ERROR_MESSAGE_02070 = "Error parsing transformation from stream %s";
 
     private final XMLStreamProvider streamProvider;
     private final TransformationBuilder transformationBuilder;
@@ -48,8 +46,7 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
      * @param properties     the properties
      */
     @Inject
-    public StreamingXMLMetadataServiceProvider(final XMLStreamProvider streamProvider,
-                                               final JodiProperties properties,
+    public StreamingXMLMetadataServiceProvider(final XMLStreamProvider streamProvider, final JodiProperties properties,
                                                final TransformationBuilder transformationBuilder,
                                                final ErrorWarningMessageJodi errorWarningMessages) {
         this.properties = properties;
@@ -66,10 +63,8 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
      */
     @Override
     public List<ETLPackage> getPackages(final boolean journalized) {
-        String msg = errorWarningMessages.formatMessage(2060, ERROR_MESSAGE_02060,
-                this.getClass());
-        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
-                MESSAGE_TYPE.ERRORS);
+        String msg = errorWarningMessages.formatMessage(2060, ERROR_MESSAGE_02060, this.getClass());
+        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
         logger.error(msg);
         throw new NotImplementedException(msg);
     }
@@ -82,9 +77,7 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
     @Override
     public void provideTransformationMetadata(final TransformationMetadataHandler handler) {
         XMLParserUtil<Transformation, ObjectFactory> parser =
-                new XMLParserUtil<>(ObjectFactory.class,
-                        JodiConstants.getEmbeddedXSDFileNames(),
-                        errorWarningMessages);
+                new XMLParserUtil<>(ObjectFactory.class, JodiConstants.getEmbeddedXSDFileNames(), errorWarningMessages);
         while (true) {
             try (InputStream stream = streamProvider.getNextTransformationStream()) {
                 if (stream == null) {
@@ -95,17 +88,13 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
                         transformationBuilder.transmute(transformation, 0);
                 handler.handleTransformation(internalTransformation);
             } catch (ConfigurationException e) {
-                String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070,
-                        this.getClass(), e);
-                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
-                        msg, MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070, this.getClass(), e);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 break;
             } catch (IOException e1) {
-                String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070,
-                        this.getClass(), e1);
-                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
-                        msg, MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070, this.getClass(), e1);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 logger.error(msg);
                 break;
             }
@@ -118,21 +107,16 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
      * @param xmlFile the xml stream containing the transformation.
      * @return the transformation parsed from the stream
      */
-    public one.jodi.etl.internalmodel.Transformation getTransformation(
-            final InputStream xmlFile,
-            final int packageSequence) {
+    public one.jodi.etl.internalmodel.Transformation getTransformation(final InputStream xmlFile,
+                                                                       final int packageSequence) {
         XMLParserUtil<Transformation, ObjectFactory> parser =
-                new XMLParserUtil<>(ObjectFactory.class,
-                        JodiConstants.getEmbeddedXSDFileNames(),
-                        errorWarningMessages);
+                new XMLParserUtil<>(ObjectFactory.class, JodiConstants.getEmbeddedXSDFileNames(), errorWarningMessages);
         try {
             Transformation transformation = parseEntity(parser, xmlFile);
             return transformationBuilder.transmute(transformation, packageSequence);
         } catch (ConfigurationException e) {
-            String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070,
-                    this.getClass(), e);
-            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
-                    msg, MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(2070, ERROR_MESSAGE_02070, this.getClass(), e);
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             throw new RuntimeException(msg, e);
         }
@@ -146,19 +130,15 @@ public class StreamingXMLMetadataServiceProvider implements MetadataServiceProvi
      * @return the parsed entity
      * @throws ConfigurationException
      */
-    protected <T, O> T parseEntity(final XMLParserUtil<T, O> parser,
-                                   final InputStream stream)
-            throws ConfigurationException {
-        return parser.loadObjectFromXMLAndValidate(stream,
-                properties.getProperty("xml.xsd.interfaces"));
+    protected <T, O> T parseEntity(final XMLParserUtil<T, O> parser, final InputStream stream) throws
+            ConfigurationException {
+        return parser.loadObjectFromXMLAndValidate(stream, properties.getProperty("xml.xsd.interfaces"));
     }
 
     @Override
     public List<ETLPackageHeader> getPackageHeaders(boolean journalized) {
-        String msg = errorWarningMessages.formatMessage(2060, ERROR_MESSAGE_02060,
-                this.getClass());
-        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
-                MESSAGE_TYPE.ERRORS);
+        String msg = errorWarningMessages.formatMessage(2060, ERROR_MESSAGE_02060, this.getClass());
+        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
         logger.error(msg);
         throw new NotImplementedException(msg);
     }

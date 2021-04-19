@@ -48,9 +48,9 @@ import static one.jodi.base.util.StringUtils.endsWithIgnoreCase;
 public class DatabaseMetadataServiceImpl extends DatabaseSchemaServiceImpl
         implements DatabaseMetadataService, LazyCreation {
 
-    private final static Logger LOGGER = LogManager.getLogger(DatabaseMetadataServiceImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(DatabaseMetadataServiceImpl.class);
 
-    private final static String ERROR_MESSAGE_00030 = "Unknown data model %s.";
+    private static final String ERROR_MESSAGE_00030 = "Unknown data model %s.";
 
     private final SchemaMetaDataProvider etlProvider;
     private final SubsystemServiceProvider subsystemServiceProvider;

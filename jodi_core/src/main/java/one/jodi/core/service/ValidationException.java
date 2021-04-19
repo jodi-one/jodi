@@ -8,7 +8,7 @@ public class ValidationException extends RuntimeException {
     /**
      * Use serialVersionUID for interoperability.
      */
-    private final static long serialVersionUID = -1866926226888752836L;
+    private static final long serialVersionUID = -1866926226888752836L;
 
     /**
      * Creates a new ValidationException instance.

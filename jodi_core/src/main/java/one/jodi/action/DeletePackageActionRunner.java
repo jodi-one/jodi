@@ -18,13 +18,13 @@ import one.jodi.core.service.PackageService;
  */
 public class DeletePackageActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01054 =
+    private static final String ERROR_MESSAGE_01054 =
             "The configuration property file is required to run Package delete";
-    private final static String ERROR_MESSAGE_01055 =
+    private static final String ERROR_MESSAGE_01055 =
             "The target package is required in form to run package delete";
-    private final static String ERROR_MESSAGE_01056 =
+    private static final String ERROR_MESSAGE_01056 =
             "The folder name is required to run package delete";
-    private final static String ERROR_MESSAGE_01504 =
+    private static final String ERROR_MESSAGE_01504 =
             "The Jodi properties file sets jodi.update to true. " +
                     "Packages will not be truncated and not deleted.";
 

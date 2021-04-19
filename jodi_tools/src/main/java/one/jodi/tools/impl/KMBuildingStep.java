@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 public class KMBuildingStep implements ModelBuildingStep {
 
-    private final static String IKM_OPTION = "tools.explicit_ikm";
+    private static final String IKM_OPTION = "tools.explicit_ikm";
     private final KnowledgeModulePropertiesProvider knowledgeModulePropertiesProvider;
     private final JodiProperties properties;
     private final Logger logger = LogManager.getLogger(KMBuildingStep.class);

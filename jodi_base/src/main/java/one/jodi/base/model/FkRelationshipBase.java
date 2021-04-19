@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class FkRelationshipBase {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(FkRelationshipBase.class);
 
     private static final String ERROR_MESSAGE_84300 =

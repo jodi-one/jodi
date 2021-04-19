@@ -16,23 +16,23 @@ import java.util.regex.Pattern;
  */
 public class TableReferenceHelper {
 
-    private final static Logger logger = LogManager.getLogger(TableReferenceHelper.class);
+    private static final Logger logger = LogManager.getLogger(TableReferenceHelper.class);
 
-    private final static String TABLE_REFERENCE = "((\\w+)\\.)?(\\w+)";
+    private static final String TABLE_REFERENCE = "((\\w+)\\.)?(\\w+)";
 
-    private final static Pattern EXPR_PATTERN = Pattern.compile(TABLE_REFERENCE);
+    private static final Pattern EXPR_PATTERN = Pattern.compile(TABLE_REFERENCE);
 
-    private final static String ERROR_MSG_BASE =
+    private static final String ERROR_MSG_BASE =
             "Table '%1$s' of schema '%2$s' contains annotation key '%3$s' " +
                     "with value '%4$s'. ";
 
-    private final static String ERROR_MESSAGE_72010 = ERROR_MSG_BASE +
+    private static final String ERROR_MESSAGE_72010 = ERROR_MSG_BASE +
             "The annotation value is malformed and will be ignored.";
 
-    private final static String ERROR_MESSAGE_72020 = ERROR_MSG_BASE +
+    private static final String ERROR_MESSAGE_72020 = ERROR_MSG_BASE +
             "A schema with name '%5$s' does not exist.";
 
-    private final static String ERROR_MESSAGE_72030 = ERROR_MSG_BASE +
+    private static final String ERROR_MESSAGE_72030 = ERROR_MSG_BASE +
             "A table with name '%5$s' does not exist in schema '%6$s'.";
 
     private final ErrorWarningMessageJodi errorWarningMessages;

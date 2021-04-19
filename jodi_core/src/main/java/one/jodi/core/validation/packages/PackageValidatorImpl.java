@@ -27,68 +27,68 @@ import java.util.*;
  * PackageValidator interface.
  */
 public class PackageValidatorImpl implements PackageValidator {
-    private final static String ERROR_MESSAGE_80000 =
+    private static final String ERROR_MESSAGE_80000 =
             "Package with name %s was already defined in folder %s. "
                     + "Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80100 =
+    private static final String ERROR_MESSAGE_80100 =
             "Variable definition with name %s that is referenced in package %s"
                     + " located in folder %s is not found. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80110 =
+    private static final String ERROR_MESSAGE_80110 =
             "Variable definition with name %s in package %s located in folder %s "
                     + "is incorrect: Variable Type Code \"REFRESH\" was selected but "
                     + "options %s are set as well. The additional options are ignored. (%s)";
 
-    private final static String ERROR_MESSAGE_80111 =
+    private static final String ERROR_MESSAGE_80111 =
             "Variable definition with name %s in package %s located in folder %s "
                     + "is incorrect: Variable Type Code \"DECLARE\" was selected but "
                     + "options %s are set as well. The additional options are ignored. (%s)";
 
-    private final static String ERROR_MESSAGE_80120 =
+    private static final String ERROR_MESSAGE_80120 =
             "Variable definition with name %s in package %s located in folder %s"
                     + " is incorrect: Variable Type Code \"EVALUATE\" was selected but "
                     + "required options %s are missing. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80121 = "Variable definition with"
+    private static final String ERROR_MESSAGE_80121 = "Variable definition with"
             + " name %s in package %s located in folder %s is incorrect: Variable"
             + " Type Code \"EVALUATE\" was selected but options %s are set as well."
             + " The additional options are ignored. (%s)";
 
-    private final static String ERROR_MESSAGE_80130 =
+    private static final String ERROR_MESSAGE_80130 =
             "Variable definition with name %s in package %s located in folder %s"
                     + " is incorrect: Variable Type Code \"SET\" was selected but required"
                     + " options %s are missing. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80140 = "Variable definition with name"
+    private static final String ERROR_MESSAGE_80140 = "Variable definition with name"
             + " %s in package %s located in folder %s is incorrect: Variable "
             + "Type Code \"SET\" was selected but options %s are set as well."
             + " The additional options are ignored. (%s)";
 
-    private final static String ERROR_MESSAGE_80200 =
+    private static final String ERROR_MESSAGE_80200 =
             "Package with name %s is called within package %s located in folder "
                     + "%s that is not found. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80300 =
+    private static final String ERROR_MESSAGE_80300 =
             "Procedure with name %s is called within package %s located in folder"
                     + " %s that is not found in ODI. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80310 =
+    private static final String ERROR_MESSAGE_80310 =
             "Procedure with name %s is called within package %s located in folder"
                     + " %s with unknown parameter name %s. Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80500 =
+    private static final String ERROR_MESSAGE_80500 =
             "Model Check (a.k.a. KnowledgeModule) for model %s is called within "
                     + "package %s located in folder %s with unknown model parameter."
                     + " Package %s was not created. (%s)";
 
-    private final static String ERROR_MESSAGE_80600 =
+    private static final String ERROR_MESSAGE_80600 =
             "No transformation definition was found that targets package %s in project " +
                     "folder %s with PackageListItem value %s. Its definition in file '%s' " +
                     "is either not used or the values of PackageListItem or FolderCode " +
                     "elements do not align with the values set in Transformation defintions " +
                     "that are intended to target this package.";
-    private final static Logger logger = LogManager.getLogger(PackageValidatorImpl.class);
+    private static final Logger logger = LogManager.getLogger(PackageValidatorImpl.class);
     private final JournalizingContext journalizingContext;
     private final JodiProperties properties;
     private final PackageServiceProvider packageService;

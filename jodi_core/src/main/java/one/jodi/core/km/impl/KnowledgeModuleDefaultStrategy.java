@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
  */
 public class KnowledgeModuleDefaultStrategy implements KnowledgeModuleStrategy {
 
-    private final static Logger log = LogManager.getLogger(KnowledgeModuleDefaultStrategy.class);
-    private final static String ERROR_MESSAGE_03250 = "Null name property.";
+    private static final Logger log = LogManager.getLogger(KnowledgeModuleDefaultStrategy.class);
+    private static final String ERROR_MESSAGE_03250 = "Null name property.";
     private final ErrorWarningMessageJodi errorWarningMessages;
     private JodiProperties properties;
 

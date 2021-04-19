@@ -30,13 +30,13 @@ import java.util.List;
 
 public class VariableServiceImpl implements VariableService {
 
-    private final static Logger logger = LogManager.getLogger(VariableServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(VariableServiceImpl.class);
 
-    private final static String VARIABLES_FILE = "Variables";
+    private static final String VARIABLES_FILE = "Variables";
 
-    private final static String ERROR_MESSAGE_6001 =
+    private static final String ERROR_MESSAGE_6001 =
             "Exception in serializing sequences details %s.";
-    private final static String ERROR_MESSAGE_6002 = "Can't delete %s in directory %s.";
+    private static final String ERROR_MESSAGE_6002 = "Can't delete %s in directory %s.";
 
     private final VariableServiceProvider serviceProvider;
     private final VariableEnrichmentBuilder enrichmentService;

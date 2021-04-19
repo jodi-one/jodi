@@ -21,10 +21,10 @@ import java.util.Map;
  */
 public class OneToOneMappingGenerationImpl implements ExtractionTables {
 
-    private final static String ERROR_MESSAGE_03251 = "The ODI target data "
+    private static final String ERROR_MESSAGE_03251 = "The ODI target data "
             + "model %1$s is not declared in the Jodi properties file.";
 
-    private final static Logger logger = LogManager.getLogger(OneToOneMappingGenerationImpl.class);
+    private static final Logger logger = LogManager.getLogger(OneToOneMappingGenerationImpl.class);
 
     private final DatabaseMetadataService databaseMetadataService;
     private final ModelPropertiesProvider modelPropertiesProvider;
