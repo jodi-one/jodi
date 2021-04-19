@@ -15,31 +15,93 @@ See [one.jodi.base.bootstrap.BaseCmdlineArgumentProcessor](jodi_base/src/main/ja
 
 Below is an incomplete list, for the complete list see link above.
 
-| Name | Description | Action for JodiController | 
-                | --- | --- | --- |
-| OdiController | General command line wrapper around the jodi controller (see list of command above). The scripts below execute specific actions (e.g. -a action) of this script. | | 
-| OdiAlterTable | Executes alter tables in ODI, a step in the ETLS process. Alters keys if not defined in DB, sets OLAP type of table, alters ROWID columns. | -a atb -c odi.properties |
-| OdiCheckTable | Executes check tables, a step in the ETLS process. Check alternate key (column of name W_TABLENAME_D_U1) is declared in target data store. | > -a cktb -c odi.properties |
-| OdiCreateEtls | Generate complete ETLs. This includes the full functionality that includes deletion and creation (or update) of mappings, package and scenario deletion and recreation | -a etls -c odi.properties -m directory -p prefix -includeConstraints true/false |
-| OdiCreateInterface | Generate mappings in ODI as defined in XML specifications; this is a step in the complete ETLS process. | -a ct -c odi.properties -m directory |
-| OdiCreatePackage | Generate packages in ODI defined in XML specification; this is a step in the ETLS process. The assumption is that all mappings include accurate sequence numbers in a flexfield "Package Sequence". | -a cp -c odi.properties -m  directory
-| OdiSCD | Sets tables with EFFECTIVE_DATE to OLAP type SCD; this is a step in the ETLS process. | -a atbs -c odi.properties
-| OdiDeleteReferences | Deletes foreign key references from a model From command line | -a dr -c odi.properties -p "Inf " -m "xml" -srcmdl "JODI_DMT" |
-| OdiExportLoadPlan | Export ODI load plan to an external XML-formatted file to the specified directory. <br> The parameter defaultscenarionames determines the names of the scenarios exported. jodi 1.4 creates scenarios for mappings (not generated in ODI 11), packages, procedures and variables with their default names. <br> To reference scenarios from mappings, packages, procedures and variables, the default name for the scenarios must be specified. The loadplan export service can optionally translate scenarios named with non-default names and allow re-creation. | -a lpi -m directory -defaultscenarionames true/false -c properties |
-| OdiCreateLoadPlan | Create (import) ODI Load Plan from jodi's Load Plan specification. | -a lp -m directory -c properties |
-| OdiPrintLoadPlan | Print out ODI Load Plan. <br> Output is written to the Java logger. In order to view the output the conf/log4j.properties file in the jodi distribution will need to be configured from default as follows: <br> `log4j.rootLogger= INFO, jodi, warnfile` | -a lpp -c propertie |
-| OdiExportConstraints | Export all constraints found in ODI repository. Constraints will be externalized to the Constraints.xml file found at the root of metadata directory. If the file is present it will be overwritten. The export DBConstraints option is used to prevent externalization of constraints that have the "In DB" option set; by default it is set to false. | -a expcon -m directory -exportDBConstraints true/false< | 
-| OdiDeleteConstraints | Delete all constraints specified by one or more constraint files found in the metadata directory. Note that constraints not specified by the file will not be deleted. | -a delcon -m directory | 
-| OdiCreateContraints | Create (import) condition, key and reference constraints from one or more constraint files found in the metadata directory. | -a crtcon -m directory | 
-| OdiCreateSequences | Create (import) sequences from one or more constraint files found in metadata directory. | -a crtseq -c properties -p "Init " -m directory |
-| OdiDeleteSequences | Delete sequences specified by one more sequences files found in metadata directory. | -a delseq -c properties -p "Init " -m directory |
-| OdiExportSequences | Export all sequences found in ODI to XML | -a expseq -c properties -p "Init " -m directory | 
-| OdiCreateVariables | Create (import) variables from one or more variable files found in metadata directory | -a crtvar | 
-| OdiDeleteVariables | Delete all variables described by one or more variables files found in metadata directory. | -a delvar -c properties -p "Init " -m directory | 
-| OdiExportVariables | Export all variables in ODI to XML | -a expvar -c properties -p "Init " -m directory | 
-| OdiCreateProcedures | Create procedures from one or more procedure files found in metadata directory | -a crtproc -c properties -p "Init " -m directory | 
-| OdiDeleteProcedures | Delete all procedures described by one or more procedure files found in metadata directory. | -a delproc -c properties -p " Init " -m directory | 
-| OdiValidate | Validates the transformation specifications without creating or deleting Mappings in ODI 12c. Warnings and error messages are printed to log4j logs. | -a vldt |
+<table><tr><td>Name</td><td>Description</td><td>Action for JodiController</td></tr>
+<tr><td>OdiController</td><td>General command line wrapper around the jodi controller (see list of
+                              command above). The scripts below execute specific actions (e.g. -a action)
+                              of this script.</td><td></td></tr>
+<tr><td>OdiAlterTable</td><td>Executes alter tables in ODI, a step in the ETLS process. Alters keys if not
+                              defined in DB, sets OLAP type of table, alters ROWID columns.
+                              </td><td>-a atb -c odi.properties</td></tr>
+<tr><td>OdiCheckTable</td><td>Executes check tables, a step in the ETLS process. Check alternate key
+                              (column of name W_TABLENAME_D_U1) is declared in target data store.
+                              </td><td>-a cktb -c odi.properties</td></tr>
+<tr><td>OdiCreateEtls</td><td>Generate complete ETLs. This includes the full functionality that includes
+                              deletion and creation (or update) of mappings, package and scenario deletion
+                              and recreation</td><td>-a etls -c odi.properties -m directory -p prefix -includeConstraints true/false</td></tr>
+<tr><td>OdiCreateInterface</td><td>Generate mappings in ODI as defined in XML specifications; this is a step in
+                                   the complete ETLS process.
+                              </td><td>-a ct -c odi.properties -m directory</td></tr>
+<tr><td>OdiCreatePackage</td><td>Generate packages in ODI defined in XML specification; this is a step in the
+                                 ETLS process. The assumption is that all mappings include accurate
+                                 sequence numbers in a flexfield "Package Sequence".
+                              </td><td>-a cp -c odi.properties -m  directory</td></tr>
+<tr><td>OdiSCD</td><td>Sets tables with EFFECTIVE_DATE to OLAP type SCD; this is a step in the
+                       ETLS process.
+                    </td><td>-a atbs -c odi.properties</td></tr>
+<tr><td>OdiDeleteReferences</td><td>Deletes foreign key references from a model From command line</td><td>-a dr -c odi.properties -p "Inf " -m "xml" -srcmdl
+                                                                                                                                              "JODI_DMT"</td></tr>
+<tr><td>OdiExportLoadPlan</td><td>Export ODI load plan to an external XML-formatted file to the specified
+                                  directory.
+                                  The parameter defaultscenarionames determines the names of the
+                                  scenarios exported. jodi 1.4 creates scenarios for mappings (not generated
+                                  in ODI 11), packages, procedures and variables with their default names. To
+                                  reference scenarios from mappings, packages, procedures and variables, the
+                                  default name for the scenarios must be specified. The loadplan export service
+                                  can optionally translate scenarios named with non-default names and allow
+                                  re-creation.</td><td>-a lpi -m directory -defaultscenarionames
+                                                                                         true/false -c properties</td></tr>
+<tr><td>OdiCreateLoadPlan</td><td>Create (import) ODI Load Plan from jodi's Load Plan specification.
+                                  </td><td>-a lp -m directory -c properties</td></tr>
+<tr><td>OdiPrintLoadPlan</td><td>Print out ODI Load Plan.
+                                 Output is written to the Java logger. In order to view the output the
+                                 conf/log4j.properties file in the jodi distribution will need to be configured from
+                                 default as follows
+                                 log4j.rootLogger= INFO, jodi, warnfile</td><td>-a lpp -c propertie</td></tr>
+<tr><td>OdiExportConstraints</td><td>Export all constraints found in ODI repository. Constraints will be externalized
+                                     to the Constraints.xml file found at the root of metadata directory. If the file is
+                                     present it will be overwritten. The export DBConstraints option is used to
+                                     prevent externalization of constraints that have the "In DB" option set; by
+                                     default it is set to false.
+                                     </td><td>-a expcon -m directory -exportDBConstraints
+                                                                                                       true/false<</td></tr>
+<tr><td>OdiDeleteConstraints</td><td>Delete all constraints specified by one or more constraint files found in the
+                                     metadata directory. Note that constraints not specified by the file will not be
+                                     deleted.
+                                    </td><td>-a delcon -m directory</td></tr>
+<tr><td>OdiCreateContraints</td><td>Create (import) condition, key and reference constraints from one or more
+                                    constraint files found in the metadata directory.
+                                    </td><td>-a crtcon -m directory</td></tr>
+<tr><td>OdiCreateSequences</td><td>Create (import) sequences from one or more constraint files found in metadata
+                                   directory.
+                                  </td><td>-a crtseq -c properties -p "Init " -m directory</td></tr>
+<tr><td>OdiDeleteSequences</td><td>Delete sequences specified by one more sequences files found in metadata
+                                   directory.
+                                   </td><td>-a delseq -c properties
+                                                                               -p "Init " -m directory</td></tr>
+<tr><td>OdiExportSequences</td><td>Export all sequences found in ODI to XML
+                                   </td><td>-a expseq -c properties
+                                                                               -p "Init " -m directory</td></tr>
+<tr><td>OdiCreateVariables</td><td>Create (import) variables from one or more variable files found in metadata
+                                   directory
+                                  </td><td>-a crtvar</td></tr>
+<tr><td>OdiDeleteVariables</td><td>Delete all variables described by one or more variables files found in metadata
+                                   directory.
+                                   </td><td>-a delvar -c properties
+                                                                               -p "Init " -m directory</td></tr>
+<tr><td>OdiExportVariables</td><td>Export all variables in ODI to XML
+                                   </td><td>-a expvar -c properties
+                                                                               -p "Init " -m directory</td></tr>
+<tr><td>OdiCreateProcedures</td><td>Create procedures from one or more procedure files found in metadata
+                                    directory
+                                    </td><td>-a crtproc -c properties
+                                                                                 -p "Init " -m directory</td></tr>
+<tr><td>OdiDeleteProcedures</td><td>Delete all procedures described by one or more procedure files found in
+                                    metadata directory.
+                                   </td><td>-a delproc -c properties
+                                                                                -p "Init " -m directory</td></tr>
+<tr><td>OdiValidate</td><td>Validates the transformation specifications without creating or deleting
+                            Mappings in ODI 12c. Warnings and error messages are printed to log4j logs.</td><td>-a vldt</td></tr>
+</table>
 
 ### Actions
 
