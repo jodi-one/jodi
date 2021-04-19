@@ -36,10 +36,10 @@ import java.util.regex.PatternSyntaxException;
  */
 public class ColumnMappingDefaultStrategy implements ColumnMappingStrategy {
 
-    private final static Logger LOGGER = LogManager.getLogger(ColumnMappingDefaultStrategy.class);
+    private static final Logger LOGGER = LogManager.getLogger(ColumnMappingDefaultStrategy.class);
 
     private static final Pattern IDENTITY_REGEX = Pattern.compile(".*");
-    private final static String ERROR_MESSAGE_01080 = "The Jodi properties file property '" + JodiConstants.COLUMN_MATCH_REGEX + "' contains invalid regex /%s/.";
+    private static final String ERROR_MESSAGE_01080 = "The Jodi properties file property '" + JodiConstants.COLUMN_MATCH_REGEX + "' contains invalid regex /%s/.";
 
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;

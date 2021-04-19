@@ -41,42 +41,37 @@ import java.io.InputStream;
  */
 @Singleton
 public class TransformationServiceImpl implements TransformationService {
-    private final static Logger logger = LogManager.getLogger(
-            TransformationServiceImpl.class);
-    private final static String newLine = System.getProperty("line.separator");
+    private static final Logger logger = LogManager.getLogger(TransformationServiceImpl.class);
+    private static final String newLine = System.getProperty("line.separator");
 
-    private final static String ERROR_MESSAGE_00240 = "Fatal error: %s";
+    private static final String ERROR_MESSAGE_00240 = "Fatal error: %s";
 
-    private final static String ERROR_MESSAGE_03270 = JodiConstants.VERSION_HEADER;
+    private static final String ERROR_MESSAGE_03270 = JodiConstants.VERSION_HEADER;
 
-    private final static String ERROR_MESSAGE_03290 = "The transformation "
-            + "'%1$s' could not be deleted, try deleting any packages that "
-            + "refer to these interfaces.";
+    private static final String ERROR_MESSAGE_03290 =
+            "The transformation " + "'%1$s' could not be deleted, try deleting any packages that " +
+                    "refer to these interfaces.";
 
-    private final static String ERROR_MESSAGE_03300 = "The configured project"
-            + " '%1$s' is not found. Please consult the user manual to define"
-            + " the correct project code.";
+    private static final String ERROR_MESSAGE_03300 =
+            "The configured project" + " '%1$s' is not found. Please consult the user manual to define" +
+                    " the correct project code.";
 
-    private final static String ERROR_MESSAGE_03310 = JodiConstants.ERROR_FOOTER;
+    private static final String ERROR_MESSAGE_03310 = JodiConstants.ERROR_FOOTER;
 
-    private final static String ERROR_MESSAGE_03320 = "An unknown error "
-            + "occurred, please review warning validation messages. %s";
+    private static final String ERROR_MESSAGE_03320 =
+            "An unknown error " + "occurred, please review warning validation messages. %s";
 
-    private final static String ERROR_MESSAGE_03330 = "Runtime exception: %s";
+    private static final String ERROR_MESSAGE_03330 = "Runtime exception: %s";
 
-    private final static String ERROR_MESSAGE_03340 = "A jodi.property "
-            + "jodi.update is required while updating.";
+    private static final String ERROR_MESSAGE_03340 = "A jodi.property " + "jodi.update is required while updating.";
 
-    private final static String ERROR_MESSAGE_03350 = "The properties "
-            + JodiConstants.INITIAL_LOAD_FOLDER + " and "
-            + JodiConstants.INCREMENTALL_LOAD_FOLDER
-            + " cannot have the same prefix '%1$s'.";
+    private static final String ERROR_MESSAGE_03350 =
+            "The properties " + JodiConstants.INITIAL_LOAD_FOLDER + " and " + JodiConstants.INCREMENTALL_LOAD_FOLDER +
+                    " cannot have the same prefix '%1$s'.";
 
-    private final static String ERROR_MESSAGE_08000 =
-            "Property " + JodiConstants.INCREMENTALL_LOAD_FOLDER +
-                    " not found. Default value " +
-                    JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT +
-                    " will be selected as a folder prefix.";
+    private static final String ERROR_MESSAGE_08000 =
+            "Property " + JodiConstants.INCREMENTALL_LOAD_FOLDER + " not found. Default value " +
+                    JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT + " will be selected as a folder prefix.";
 
     private final DatabaseMetadataService databaseMetadataService;
     private final TransformationServiceProvider transformationService;
@@ -94,18 +89,16 @@ public class TransformationServiceImpl implements TransformationService {
     private Boolean projectExists = null;
 
     @Inject
-    protected TransformationServiceImpl(
-            final TransformationServiceProvider transformationService,
-            final TransformationBuilder transformationBuilder,
-            final DatastoreServiceProvider dataStoreService,
-            final MetadataServiceProvider metadataProvider,
-            final SchemaMetaDataProvider etlProvider,
-            final JodiProperties properties,
-            final EnrichingBuilder enrichingBuilder,
-            final DatabaseMetadataService databaseMetadataService,
-            final ErrorWarningMessageJodi errorWarningMessages,
-            final ScenarioServiceProvider scenarioServiceProvider,
-            final EtlSubSystemVersion etlSubSystemVersion) {
+    protected TransformationServiceImpl(final TransformationServiceProvider transformationService,
+                                        final TransformationBuilder transformationBuilder,
+                                        final DatastoreServiceProvider dataStoreService,
+                                        final MetadataServiceProvider metadataProvider,
+                                        final SchemaMetaDataProvider etlProvider, final JodiProperties properties,
+                                        final EnrichingBuilder enrichingBuilder,
+                                        final DatabaseMetadataService databaseMetadataService,
+                                        final ErrorWarningMessageJodi errorWarningMessages,
+                                        final ScenarioServiceProvider scenarioServiceProvider,
+                                        final EtlSubSystemVersion etlSubSystemVersion) {
         this.transformationService = transformationService;
         this.transformationBuilder = transformationBuilder;
         this.dataStoreService = dataStoreService;
@@ -117,11 +110,17 @@ public class TransformationServiceImpl implements TransformationService {
         this.errorWarningMessages = errorWarningMessages;
         this.scenarioServiceProvider = scenarioServiceProvider;
         this.etlSubSystemVersion = etlSubSystemVersion;
-        this.useScenario = this.properties.getPropertyKeys().contains(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS) ?
-                Boolean.valueOf(this.properties.getProperty(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS)).booleanValue() : false;
+        this.useScenario = this.properties.getPropertyKeys()
+                                          .contains(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS) ? Boolean.valueOf(
+                this.properties.getProperty(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS))
+                                                                                                              .booleanValue()
+                                                                                                     : false;
 
         this.ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS = this.properties.getPropertyKeys()
-                .contains(JodiConstants.ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS) ? Boolean.valueOf(this.properties.getProperty(JodiConstants.ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS)) : false;
+                                                                    .contains(
+                                                                            JodiConstants.ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS)
+                                                     ? Boolean.valueOf(
+                this.properties.getProperty(JodiConstants.ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS)) : false;
 
     }
 
@@ -134,85 +133,80 @@ public class TransformationServiceImpl implements TransformationService {
         validateProjectExists();
         validateJKM();
         ErrorReport.reset();
-        metadataProvider.provideTransformationMetadata(
-                new TransformationMetadataHandler() {
-                    @Override
-                    public void handleTransformationASC(
-                            final Transformation transformation,
-                            final int packageSequence) {
-                        logger.debug("Journalized: " + journalized);
-                        logger.debug("Transformation is asynchronous: " + transformation.isAsynchronous() + " or useScenario " + useScenario);
-                        createTransformation(transformation, packageSequence, journalized);
-                        if (!transformation.isTemporary() && (transformation.isAsynchronous() || useScenario || ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS)) {
-                            createScenarioForMapping(transformation);
-                        }
-                    }
+        metadataProvider.provideTransformationMetadata(new TransformationMetadataHandler() {
+            @Override
+            public void handleTransformationASC(final Transformation transformation, final int packageSequence) {
+                logger.debug("Journalized: " + journalized);
+                logger.debug("Transformation is asynchronous: " + transformation.isAsynchronous() + " or useScenario " +
+                                     useScenario);
+                createTransformation(transformation, packageSequence, journalized);
+                if (!transformation.isTemporary() &&
+                        (transformation.isAsynchronous() || useScenario || ODI12_GENERATE_SCENARIOS_FOR_MAPPINGS)) {
+                    createScenarioForMapping(transformation);
+                }
+            }
 
-                    private void createScenarioForMapping(Transformation transformation) {
-                        scenarioServiceProvider.generateScenarioForMapping(transformation.getName(), transformation.getFolderName());
-                    }
+            private void createScenarioForMapping(Transformation transformation) {
+                scenarioServiceProvider.generateScenarioForMapping(transformation.getName(),
+                                                                   transformation.getFolderName());
+            }
 
-                    @Override
-                    public void handleTransformationDESC(
-                            final Transformation transformation) {
-                        if (properties.isUpdateable()) {
-                            truncateTransformations(transformation, journalized);
-                        } else {
-                            deleteTransformation(transformation, journalized);
-                        }
-                    }
+            @Override
+            public void handleTransformationDESC(final Transformation transformation) {
+                if (properties.isUpdateable()) {
+                    truncateTransformations(transformation, journalized);
+                } else {
+                    deleteTransformation(transformation, journalized);
+                }
+            }
 
-                    @Override
-                    public void preDESC() {
-                        logger.info("Delete transformations: started");
-                    }
+            @Override
+            public void preDESC() {
+                logger.info("Delete transformations: started");
+            }
 
-                    @Override
-                    public void postDESC() {
-                        logger.info("Delete transformations: completed");
-                    }
+            @Override
+            public void postDESC() {
+                logger.info("Delete transformations: completed");
+            }
 
-                    @Override
-                    public void preASC() {
-                        logger.info("Create transformations: started");
-                    }
+            @Override
+            public void preASC() {
+                logger.info("Create transformations: started");
+            }
 
-                    @Override
-                    public void postASC() {
-                        logger.info("Create transformations: completed");
-                    }
+            @Override
+            public void postASC() {
+                logger.info("Create transformations: completed");
+            }
 
-                    @Override
-                    public void pre() {
-                    }
+            @Override
+            public void pre() {
+            }
 
-                    @Override
-                    public void post() {
-                    }
+            @Override
+            public void post() {
+            }
 
-                    @Override
-                    public void handleTransformation(
-                            final Transformation transformation) {
-                    }
-                });
+            @Override
+            public void handleTransformation(final Transformation transformation) {
+            }
+        });
 
-        if (ErrorReport.getErrorReport().length() > 1) {
-            String msg = errorWarningMessages.formatMessage(3270,
-                    ERROR_MESSAGE_03270, this.getClass(),
-                    Version.getProductVersion());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+        if (ErrorReport.getErrorReport()
+                       .length() > 1) {
+            String msg = errorWarningMessages.formatMessage(3270, ERROR_MESSAGE_03270, this.getClass(),
+                                                            Version.getProductVersion());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
 
-            String errorReport = ErrorReport.getErrorReport().toString();
-            logger.debug("------- ErrorReport:" + newLine +
-                    errorReport + newLine +
-                    "------- End ErrorReport");
+            String errorReport = ErrorReport.getErrorReport()
+                                            .toString();
+            logger.debug("------- ErrorReport:" + newLine + errorReport + newLine + "------- End ErrorReport");
             ErrorReport.reset();
 
             throw new UnRecoverableException(
-                    errorWarningMessages.formatMessage(3310,
-                            ERROR_MESSAGE_03310 + "\n" + errorReport, this.getClass()));
+                    errorWarningMessages.formatMessage(3310, ERROR_MESSAGE_03310 + "\n" + errorReport,
+                                                       this.getClass()));
         }
         ErrorReport.reset();
     }
@@ -225,8 +219,8 @@ public class TransformationServiceImpl implements TransformationService {
      * @throws Exception
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    protected void createTransformation(final Transformation transformation,
-                                        final int packageSequence, final boolean isJournalizedData) {
+    protected void createTransformation(final Transformation transformation, final int packageSequence,
+                                        final boolean isJournalizedData) {
         //ignoreValuesWhenNotApplicable(transformation);
         try {
             logger.debug(packageSequence + " applying transformation name and folder name");
@@ -258,8 +252,8 @@ public class TransformationServiceImpl implements TransformationService {
             String msg = errorWarningMessages.formatMessage(240, ERROR_MESSAGE_00240, this.getClass(), message);
             errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
         } catch (Throwable e) {
-            String friendly = ">>>> Failed to create ODI interface \"" +
-                    packageSequence + " " + transformation.getName();
+            String friendly =
+                    ">>>> Failed to create ODI interface \"" + packageSequence + " " + transformation.getName();
             if (e.getCause() != null) {
                 friendly = friendly + " " + e.getCause();
             }
@@ -281,51 +275,46 @@ public class TransformationServiceImpl implements TransformationService {
      */
     @Override
     public void createTransformations(final boolean journalized) {
-        metadataProvider.provideTransformationMetadata(
-                new TransformationMetadataHandler() {
-                    @Override
-                    public void preASC() {
-                        logger.info("Create transformations: started");
-                    }
+        metadataProvider.provideTransformationMetadata(new TransformationMetadataHandler() {
+            @Override
+            public void preASC() {
+                logger.info("Create transformations: started");
+            }
 
-                    @Override
-                    public void handleTransformationASC(
-                            final Transformation transformation,
-                            final int packageSequence) {
-                        createTransformation(transformation, packageSequence, journalized);
-                    }
+            @Override
+            public void handleTransformationASC(final Transformation transformation, final int packageSequence) {
+                createTransformation(transformation, packageSequence, journalized);
+            }
 
-                    @Override
-                    public void postASC() {
-                        logger.info("Create transformations: completed");
-                    }
+            @Override
+            public void postASC() {
+                logger.info("Create transformations: completed");
+            }
 
-                    @Override
-                    public void handleTransformationDESC(
-                            final Transformation transformation) {
-                    }
+            @Override
+            public void handleTransformationDESC(final Transformation transformation) {
+            }
 
-                    @Override
-                    public void preDESC() {
-                    }
+            @Override
+            public void preDESC() {
+            }
 
-                    @Override
-                    public void postDESC() {
-                    }
+            @Override
+            public void postDESC() {
+            }
 
-                    @Override
-                    public void pre() {
-                    }
+            @Override
+            public void pre() {
+            }
 
-                    @Override
-                    public void post() {
-                    }
+            @Override
+            public void post() {
+            }
 
-                    @Override
-                    public void handleTransformation(
-                            final Transformation transformation) {
-                    }
-                });
+            @Override
+            public void handleTransformation(final Transformation transformation) {
+            }
+        });
 
     }
 
@@ -341,20 +330,18 @@ public class TransformationServiceImpl implements TransformationService {
      * @see TransformationService#deleteTransformation(String, String)
      */
     //@TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void deleteTransformation(final Transformation transformation,
-                                     boolean isJournalizedData) {
+    public void deleteTransformation(final Transformation transformation, boolean isJournalizedData) {
         if (properties.isUpdateable()) {
             return;
         }
-        DeleteTransformationContext context =
-                enrichingBuilder.createDeleteContext(transformation, isJournalizedData);
+        DeleteTransformationContext context = enrichingBuilder.createDeleteContext(transformation, isJournalizedData);
         // enrichingBuilder.enrichTransformationNameAndModelAndFolder(transformation,
         // false);
 
-        assert (context.getName() != null) : context.getPackageSequence() +
-                " Fatal error: table name must be defined at this point.";
-        logger.info(context.getPackageSequence() + " Attempting to delete:" +
-                context.getName() + " in folder: " + context.getFolderName() + ".");
+        assert (context.getName() != null) :
+                context.getPackageSequence() + " Fatal error: table name must be defined at this point.";
+        logger.info(context.getPackageSequence() + " Attempting to delete:" + context.getName() + " in folder: " +
+                            context.getFolderName() + ".");
         try {
             doDeleteTransformation(context.getName(), context.getFolderName());
             if (etlSubSystemVersion.isVersion11()) {
@@ -367,10 +354,8 @@ public class TransformationServiceImpl implements TransformationService {
             // deletedJodi10TempTransformation(transformation);
         } catch (Exception ole) {
             String msg =
-                    errorWarningMessages.formatMessage(3290, ERROR_MESSAGE_03290,
-                            this.getClass(), context.getName());
-            errorWarningMessages.addMessage(transformation.getPackageSequence(), msg,
-                    MESSAGE_TYPE.ERRORS);
+                    errorWarningMessages.formatMessage(3290, ERROR_MESSAGE_03290, this.getClass(), context.getName());
+            errorWarningMessages.addMessage(transformation.getPackageSequence(), msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg, ole);
             throw new RuntimeException(msg, ole);
         }
@@ -391,51 +376,46 @@ public class TransformationServiceImpl implements TransformationService {
      */
     @Override
     public void deleteTransformations(final boolean journalized) {
-        metadataProvider.provideTransformationMetadata(
-                new TransformationMetadataHandler() {
-                    @Override
-                    public void preDESC() {
-                        logger.info("Delete transformations: started");
-                    }
+        metadataProvider.provideTransformationMetadata(new TransformationMetadataHandler() {
+            @Override
+            public void preDESC() {
+                logger.info("Delete transformations: started");
+            }
 
-                    @Override
-                    public void handleTransformationDESC(
-                            final Transformation transformation) {
-                        deleteTransformation(transformation, journalized);
-                    }
+            @Override
+            public void handleTransformationDESC(final Transformation transformation) {
+                deleteTransformation(transformation, journalized);
+            }
 
-                    @Override
-                    public void postDESC() {
-                        logger.info("Delete transformations: completed");
-                    }
+            @Override
+            public void postDESC() {
+                logger.info("Delete transformations: completed");
+            }
 
-                    @Override
-                    public void handleTransformationASC(
-                            final Transformation transformation,
-                            final int packageSequence) {
-                    }
+            @Override
+            public void handleTransformationASC(final Transformation transformation, final int packageSequence) {
+            }
 
-                    @Override
-                    public void preASC() {
-                    }
+            @Override
+            public void preASC() {
+            }
 
-                    @Override
-                    public void postASC() {
-                    }
+            @Override
+            public void postASC() {
+            }
 
-                    @Override
-                    public void pre() {
-                    }
+            @Override
+            public void pre() {
+            }
 
-                    @Override
-                    public void post() {
-                    }
+            @Override
+            public void post() {
+            }
 
-                    @Override
-                    public void handleTransformation(
-                            final Transformation transformation) {
-                    }
-                });
+            @Override
+            public void handleTransformation(final Transformation transformation) {
+            }
+        });
     }
 
     public void doDeleteTransformation(final String name, final String folder) throws Exception {
@@ -460,11 +440,9 @@ public class TransformationServiceImpl implements TransformationService {
     @Override
     public void createTransformation(InputStream xmlFile, int packageSequence, boolean isJournalizedData) {
         StreamingXMLMetadataServiceProvider streamingXMLMetadataServiceProvider =
-                new StreamingXMLMetadataServiceProvider(null, properties,
-                        this.transformationBuilder,
-                        errorWarningMessages);
-        Transformation transformation = streamingXMLMetadataServiceProvider
-                .getTransformation(xmlFile, packageSequence);
+                new StreamingXMLMetadataServiceProvider(null, properties, this.transformationBuilder,
+                                                        errorWarningMessages);
+        Transformation transformation = streamingXMLMetadataServiceProvider.getTransformation(xmlFile, packageSequence);
 
         createTransformation(transformation, packageSequence, isJournalizedData);
 
@@ -473,11 +451,9 @@ public class TransformationServiceImpl implements TransformationService {
     @Override
     public void deleteTransformation(InputStream xmlFile) {
         StreamingXMLMetadataServiceProvider streamingXMLMetadataServiceProvider =
-                new StreamingXMLMetadataServiceProvider(null, properties,
-                        this.transformationBuilder,
-                        errorWarningMessages);
-        Transformation transformation = streamingXMLMetadataServiceProvider
-                .getTransformation(xmlFile, 0);
+                new StreamingXMLMetadataServiceProvider(null, properties, this.transformationBuilder,
+                                                        errorWarningMessages);
+        Transformation transformation = streamingXMLMetadataServiceProvider.getTransformation(xmlFile, 0);
         deleteTransformation(transformation, false);
     }
 
@@ -486,28 +462,26 @@ public class TransformationServiceImpl implements TransformationService {
     @Override
     public void mergeTransformations(InputStream xmlFile, final int packageSequence, final boolean journalized) {
         StreamingXMLMetadataServiceProvider streamingXMLMetadataServiceProvider =
-                new StreamingXMLMetadataServiceProvider(null, properties,
-                        this.transformationBuilder,
-                        errorWarningMessages);
-        Transformation transformation = streamingXMLMetadataServiceProvider
-                .getTransformation(xmlFile, packageSequence);
+                new StreamingXMLMetadataServiceProvider(null, properties, this.transformationBuilder,
+                                                        errorWarningMessages);
+        Transformation transformation = streamingXMLMetadataServiceProvider.getTransformation(xmlFile, packageSequence);
         mergeTransformations(transformation, packageSequence, journalized);
     }
 
-    public void mergeTransformations(final Transformation transformation, final int packageSequence, final boolean journalized) {
+    public void mergeTransformations(final Transformation transformation, final int packageSequence,
+                                     final boolean journalized) {
         validateMerge();
         truncateTransformations(transformation, journalized);
         createTransformation(transformation, packageSequence, journalized);
     }
 
     //@TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void truncateTransformations(final Transformation transformation,
-                                        final boolean journalized) {
-        logger.debug(transformation.getPackageSequence() +
-                " enriched in truncate transfromationserviceimpl.");
+    public void truncateTransformations(final Transformation transformation, final boolean journalized) {
+        logger.debug(transformation.getPackageSequence() + " enriched in truncate transfromationserviceimpl.");
         try {
 
-            DeleteTransformationContext deleteContext = enrichingBuilder.createDeleteContext(transformation, journalized);
+            DeleteTransformationContext deleteContext =
+                    enrichingBuilder.createDeleteContext(transformation, journalized);
 
             transformationService.truncateInterfaces(deleteContext.getName(), deleteContext.getFolderName());
 
@@ -517,8 +491,7 @@ public class TransformationServiceImpl implements TransformationService {
                 pckSequence = errorWarningMessages.assignSequenceNumber();
             }
 
-            String msg = errorWarningMessages.formatMessage(3330, ERROR_MESSAGE_03330,
-                    this.getClass(), e);
+            String msg = errorWarningMessages.formatMessage(3330, ERROR_MESSAGE_03330, this.getClass(), e);
             errorWarningMessages.addMessage(pckSequence, msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             throw new RuntimeException(msg);
@@ -527,11 +500,8 @@ public class TransformationServiceImpl implements TransformationService {
 
     private void validateMerge() {
         if (!properties.isUpdateable()) {
-            String msg = errorWarningMessages.formatMessage(3340,
-                    ERROR_MESSAGE_03340, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3340, ERROR_MESSAGE_03340, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new ValidationException(msg);
         }
     }
@@ -542,11 +512,9 @@ public class TransformationServiceImpl implements TransformationService {
             projectExists = etlProvider.existsProject(properties.getProjectCode());
         }
         if (!projectExists) {
-            String msg = errorWarningMessages.formatMessage(3300,
-                    ERROR_MESSAGE_03300, this.getClass(), properties.getProjectCode());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3300, ERROR_MESSAGE_03300, this.getClass(),
+                                                            properties.getProjectCode());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new RuntimeException(msg);
         }
     }
@@ -558,24 +526,21 @@ public class TransformationServiceImpl implements TransformationService {
             prefixIncremental = properties.getProperty(JodiConstants.INCREMENTALL_LOAD_FOLDER);
         } catch (RuntimeException e) {
             prefixIncremental = JodiConstants.INCREMENTALL_LOAD_FOLDER_DEFAULT;
-            String msg = errorWarningMessages.formatMessage(8000,
-                    ERROR_MESSAGE_08000, this.getClass());
+            String msg = errorWarningMessages.formatMessage(8000, ERROR_MESSAGE_08000, this.getClass());
             logger.error(msg);
-            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
-                    msg, MESSAGE_TYPE.WARNINGS);
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.WARNINGS);
         }
         if (prefixBulk == null) {
             return;
         }
-        if (prefixBulk.length() > 0 && prefixIncremental.length() > 0 &&
-                prefixBulk.substring(0, 1).equalsIgnoreCase(prefixIncremental.substring(0, 1))) {
+        if (prefixBulk.length() > 0 && prefixIncremental.length() > 0 && prefixBulk.substring(0, 1)
+                                                                                   .equalsIgnoreCase(
+                                                                                           prefixIncremental.substring(
+                                                                                                   0, 1))) {
 
-            String msg = errorWarningMessages.formatMessage(3350,
-                    ERROR_MESSAGE_03350, this.getClass(),
-                    prefixBulk.substring(0, 1));
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3350, ERROR_MESSAGE_03350, this.getClass(),
+                                                            prefixBulk.substring(0, 1));
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new RuntimeException(msg);
         }
     }

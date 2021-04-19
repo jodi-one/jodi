@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class DbConnectionUtil {
 
-    private final static Logger LOGGER = LogManager.getLogger(DbConnectionUtil.class);
+    private static final Logger LOGGER = LogManager.getLogger(DbConnectionUtil.class);
 
     private static final String ERROR_MESSAGE_80800 =
             "Database connection failed for '%s'. Verify the connection string. %s";

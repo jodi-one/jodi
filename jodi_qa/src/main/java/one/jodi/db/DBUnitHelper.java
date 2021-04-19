@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class DBUnitHelper extends DBTestCase {
-    private final static Logger logger = LogManager.getLogger(DBUnitHelper.class);
+    private static final Logger logger = LogManager.getLogger(DBUnitHelper.class);
     private final String dir;
     private final String dumpFile;
     private final String jdbcDBConnection;

@@ -18,10 +18,10 @@ import javax.inject.Inject;
  */
 public class TransactionInterceptor implements MethodInterceptor {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(TransactionInterceptor.class);
 
-    private final static String ERROR_MESSAGE_01068 =
+    private static final String ERROR_MESSAGE_01068 =
             "Unknown TransactionAttributeType %s";
 
     @Inject

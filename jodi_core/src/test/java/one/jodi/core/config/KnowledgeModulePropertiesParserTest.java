@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class KnowledgeModulePropertiesParserTest {
 
-    private final static String BEAN_ID_FIELD = "id";
-    private final static String TOPIC = "km";
+    private static final String BEAN_ID_FIELD = "id";
+    private static final String TOPIC = "km";
     private final String[] PARAMETER_DEFS = new String[]{"name[]!", "order", "global", "options{}", "trg_technology!", "src_technology", "default", "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]", "src_regex", "src_layer[]", "src_tabletype[]"};
     // Infrastructure
     @Rule

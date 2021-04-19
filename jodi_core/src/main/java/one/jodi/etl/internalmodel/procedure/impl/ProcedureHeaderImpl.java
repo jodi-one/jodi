@@ -11,18 +11,17 @@ import java.util.List;
 
 public class ProcedureHeaderImpl implements ProcedureHeader, Validate {
 
-    private final static Logger logger =
-            LogManager.getLogger(ProcedureHeaderImpl.class);
+    private static final Logger logger = LogManager.getLogger(ProcedureHeaderImpl.class);
 
-    private final static String ERROR_MESSAGE_62100 =
+    private static final String ERROR_MESSAGE_62100 =
             "Procedure must define a non-empty name in its definition file %1$s. " +
                     "This procedure specification will be ignored.";
 
-    private final static String ERROR_MESSAGE_62110 =
+    private static final String ERROR_MESSAGE_62110 =
             "Procedure '%1$s' must define a non-empty folder name in its definition " +
                     "file %2$s. This procedure specification will be ignored.";
 
-    private final static String ERROR_MESSAGE_62120 =
+    private static final String ERROR_MESSAGE_62120 =
             "Procedure '%1$s' defines an incorrect folder name in its definition " +
                     "file %2$s. This procedure specification will be ignored.";
 
@@ -32,8 +31,7 @@ public class ProcedureHeaderImpl implements ProcedureHeader, Validate {
     // supplemental information
     private final String filePath;
 
-    public ProcedureHeaderImpl(final List<String> folderPath, final String name,
-                               final String filePath) {
+    public ProcedureHeaderImpl(final List<String> folderPath, final String name, final String filePath) {
         super();
         this.name = name;
         this.folderPath = folderPath;
@@ -59,29 +57,25 @@ public class ProcedureHeaderImpl implements ProcedureHeader, Validate {
     public boolean validate(final ErrorWarningMessageJodi errorWarningMessages) {
         boolean isValid = true;
         if (this.name == null || this.name.isEmpty()) {
-            String msg = errorWarningMessages.formatMessage(62100, ERROR_MESSAGE_62100,
-                    this.getClass(), this.filePath);
-            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
-                    .ERRORS);
+            String msg = errorWarningMessages.formatMessage(62100, ERROR_MESSAGE_62100, this.getClass(), this.filePath);
+            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             isValid = false;
         }
 
         if (this.folderPath == null || this.folderPath.isEmpty()) {
-            String msg = errorWarningMessages.formatMessage(62110, ERROR_MESSAGE_62110,
-                    this.getClass(), this.name,
-                    this.filePath);
-            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
-                    .ERRORS);
+            String msg = errorWarningMessages.formatMessage(62110, ERROR_MESSAGE_62110, this.getClass(), this.name,
+                                                            this.filePath);
+            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             isValid = false;
-        } else if (this.folderPath.stream().filter(n -> n == null || n.isEmpty())
-                .findFirst().isPresent()) {
-            String msg = errorWarningMessages.formatMessage(62120, ERROR_MESSAGE_62120,
-                    this.getClass(), this.name,
-                    this.filePath);
-            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE
-                    .ERRORS);
+        } else if (this.folderPath.stream()
+                                  .filter(n -> n == null || n.isEmpty())
+                                  .findFirst()
+                                  .isPresent()) {
+            String msg = errorWarningMessages.formatMessage(62120, ERROR_MESSAGE_62120, this.getClass(), this.name,
+                                                            this.filePath);
+            errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             isValid = false;
         }

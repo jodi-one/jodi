@@ -43,9 +43,9 @@ public class MockTableBaseHelper {
             "([NV]_){0,1}([a-z-]+[0-9]{0,1}(_[a-z]{1,2}){0,1})(_[0-9]){0,1}(_[a-z]{2}){0,1}";
     private static final Pattern COLUMN_PATTERN = Pattern.compile(COLUMN_STRUCTURE,
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private final static String[] SYSTEM_COLUMNS =
+    private static final String[] SYSTEM_COLUMNS =
             new String[]{"n_SYS_A", "v_SYS_B"};
-    private final static ErrorWarningMessageJodi errorWarningMessages =
+    private static final ErrorWarningMessageJodi errorWarningMessages =
             ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
     private SchemaBase schema;
 

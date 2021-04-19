@@ -20,7 +20,7 @@ import java.util.List;
 
 public class CreateScenariosActionRunner implements ActionRunner {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(CreateScenariosActionRunner.class);
 
     private final ScenarioService scenarioService;

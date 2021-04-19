@@ -11,8 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GradleTests {
-    private final static Logger logger = LogManager.getLogger(
-            GradleTests.class);
+    private static final Logger logger = LogManager.getLogger(GradleTests.class);
 
     @Test
     public void testGradleStartScript() throws FileNotFoundException {
@@ -30,9 +29,11 @@ public class GradleTests {
     }
 
     private void testLog4j(final String path) throws FileNotFoundException {
-        String windowsCheckString = "writer.println \"set DEFAULT_JVM_OPTS=\\\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\\\"\"";
+        String windowsCheckString =
+                "writer.println \"set DEFAULT_JVM_OPTS=\\\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\\\"\"";
         testPresenceOfString(path, windowsCheckString);
-        String linuxCheckString = "writer.println \"DEFAULT_JVM_OPTS=\\\"-Dlog4j.configurationFile=\\${0%/*}/../conf/log4j2.xml\\\"\"";
+        String linuxCheckString =
+                "writer.println \"DEFAULT_JVM_OPTS=\\\"-Dlog4j.configurationFile=\\${0%/*}/../conf/log4j2.xml\\\"\"";
         testPresenceOfString(path, linuxCheckString);
     }
 
@@ -51,17 +52,19 @@ public class GradleTests {
         Scanner scannner = null;
         try {
             scannner = new Scanner(buildFilePath, "UTF-8");
-            String content = scannner.useDelimiter("\\Z").next();
+            String content = scannner.useDelimiter("\\Z")
+                                     .next();
             Pattern p = Pattern.compile(pattern);
             Matcher m = p.matcher(content);
             if (m.find()) {
                 throw new RuntimeException(
-                        "Found $: $od in the starter script this should be corrected in '$$od.... etc' in file "
-                                + path);
+                        "Found $: $od in the starter script this should be corrected in '$$od.... etc' in file " +
+                                path);
             }
         } finally {
-            if (scannner != null)
+            if (scannner != null) {
                 scannner.close();
+            }
         }
     }
 
@@ -71,14 +74,17 @@ public class GradleTests {
         boolean found = false;
         try {
             scannner = new Scanner(buildFilePath, "UTF-8");
-            String content = scannner.useDelimiter("\\Z").next();
+            String content = scannner.useDelimiter("\\Z")
+                                     .next();
             logger.info(content);
-            if (content.trim().contains(windowsCheckString)) {
+            if (content.trim()
+                       .contains(windowsCheckString)) {
                 found = true;
             }
         } finally {
-            if (scannner != null)
+            if (scannner != null) {
                 scannner.close();
+            }
         }
         if (!found) {
             throw new RuntimeException(

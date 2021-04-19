@@ -38,10 +38,10 @@ import java.util.stream.Collectors;
  */
 public class JournalizingContextImpl implements JournalizingContext {
 
-    private final static Logger logger = LogManager.getLogger(JournalizingContextImpl.class);
-    private final static String ERROR_MESSAGE_02031 = "An unknown exception was raised in journalizing strategy '%1$s'.";
-    private final static String ERROR_MESSAGE_02040 = "Error initializing JournalizingExecutonContext %1$s.";
-    private final static String ERROR_MESSAGE_02050 = "Unsuccessful attempt to parse name value pair";
+    private static final Logger logger = LogManager.getLogger(JournalizingContextImpl.class);
+    private static final String ERROR_MESSAGE_02031 = "An unknown exception was raised in journalizing strategy '%1$s'.";
+    private static final String ERROR_MESSAGE_02040 = "Error initializing JournalizingExecutonContext %1$s.";
+    private static final String ERROR_MESSAGE_02050 = "Unsuccessful attempt to parse name value pair";
     // default strategy is created without DI because it is
     // considered to be hard-coded and is not designed to be
     // modified or extended at this time

@@ -9,24 +9,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class ErrorWarningMessageJodiImplTest<Field> {
 
-    private final static Logger logger =
-            LogManager.getLogger(ErrorWarningMessageJodiImplTest.class);
-    private final static String EOL = System.getProperty("line.separator");
-    ErrorWarningMessageJodi fixture = ErrorWarningMessageJodiHelper
-            .getTestErrorWarningMessages();
+    private static final Logger logger = LogManager.getLogger(ErrorWarningMessageJodiImplTest.class);
+    private static final String EOL = System.getProperty("line.separator");
+    ErrorWarningMessageJodi fixture = ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
     ErrorWarningMessageJodiTracker tracker = ErrorWarningMessageJodiTrackerImpl.getInstance();
     Class<?> testClass = ErrorWarningMessageJodiImpl.class;
     int messageCode = 0;
@@ -45,24 +55,25 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testErrorWarningMessageJodiImpl() {
-        assertEquals(0, fixture.getErrorMessages().size());
-        assertEquals(0, fixture.getWarningMessages().size());
+        assertEquals(0, fixture.getErrorMessages()
+                               .size());
+        assertEquals(0, fixture.getWarningMessages()
+                               .size());
     }
 
     @Test
     public void testCopyMessages() {
         fixture.clear();
-        String expected = ErrorWarningMessageJodi.messageHeader + EOL
-                + "----  ERRORS  ----------------------------" + EOL
-                + "[00001] This is a test message." + EOL
-                + "----  WARNINGS  ----------------------------" + EOL
-                + "[00201] This is a test message.(warning)" + EOL
-                + "-------------------------------------------------------" + EOL + EOL;
+        String expected =
+                ErrorWarningMessageJodi.messageHeader + EOL + "----  ERRORS  ----------------------------" + EOL +
+                        "[00001] This is a test message." + EOL + "----  WARNINGS  ----------------------------" + EOL +
+                        "[00201] This is a test message.(warning)" + EOL +
+                        "-------------------------------------------------------" + EOL + EOL;
 
         // add messages
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "This is a test message.";
         value.add("[00001] " + testMessage);
         expectedMessages.put(key, value);
@@ -70,8 +81,8 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
         fixture.addMessage(formattedMessage, MESSAGE_TYPE.ERRORS);
 
-        SortedMap<Integer, List<String>> expectedMessages1 = new TreeMap<Integer, List<String>>();
-        value = new ArrayList<String>();
+        SortedMap<Integer, List<String>> expectedMessages1 = new TreeMap<>();
+        value = new ArrayList<>();
         testMessage = "This is a test message.";
         value.add("[00201] " + testMessage);
         expectedMessages1.put(key, value);
@@ -92,8 +103,7 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
         for (int i = 0; i < expected.length(); i++) {
             if (expected.charAt(i) != (message.charAt(i))) {
-                System.err.println(i + ": " + expected.charAt(i) + " "
-                        + message.charAt(i));
+                System.err.println(i + ": " + expected.charAt(i) + " " + message.charAt(i));
             }
         }
 
@@ -104,9 +114,9 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testGetErrorMessages() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "This is a test message.";
         value.add("[00001] " + testMessage);
         expectedMessages.put(key, value);
@@ -114,17 +124,19 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
         fixture.addMessage(formattedMessage, MESSAGE_TYPE.ERRORS);
         assertEquals(expectedMessages, fixture.getErrorMessages());
-        assertEquals(1, fixture.getErrorMessages().size());
+        assertEquals(1, fixture.getErrorMessages()
+                               .size());
 
     }
 
     @Test
     public void testGetWarningMessages() {
-        assertEquals(0, fixture.getWarningMessages().size());
+        assertEquals(0, fixture.getWarningMessages()
+                               .size());
 
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "This is a test message.";
         value.add("[00002] " + testMessage);
         messageCode = 2;
@@ -134,13 +146,14 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         fixture.printMessages(MESSAGE_TYPE.ERRORS);
         assertEquals(expectedMessages, fixture.getWarningMessages());
 
-        assertEquals(1, fixture.getWarningMessages().size());
+        assertEquals(1, fixture.getWarningMessages()
+                               .size());
     }
 
     @Test
     public void testPrintAllMessages() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
-        List<String> value = new ArrayList<String>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
+        List<String> value = new ArrayList<>();
         messageCode += 10;
         String testMessage = "Print all messages.";
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
@@ -148,7 +161,7 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         value.add(formattedMessage);
         expectedMessages.put(1, value);
 
-        value = new ArrayList<String>();
+        value = new ArrayList<>();
         testMessage = "Print all messages.";
         messageCode += 10;
         formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
@@ -157,7 +170,7 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         expectedMessages.put(2, value);
         fixture.printMessages();
 
-        SortedMap<Integer, List<String>> actualResults = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> actualResults = new TreeMap<>();
         actualResults.putAll(fixture.getErrorMessages());
         actualResults.putAll(fixture.getWarningMessages());
         assertEquals(expectedMessages, actualResults);
@@ -165,10 +178,10 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testPrintErrorMessages() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
         messageCode += 11;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "Print error message.";
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
         fixture.addMessage(formattedMessage, MESSAGE_TYPE.ERRORS);
@@ -180,13 +193,12 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testPrintWarningMessages() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         messageCode += 12;
         String testMessage = "Print warning message.";
-        String formattedMessage = fixture.formatMessage(messageCode,
-                testMessage, testClass);
+        String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
         fixture.addMessage(formattedMessage, MESSAGE_TYPE.WARNINGS);
         value.add(formattedMessage);
         expectedMessages.put(key, value);
@@ -197,9 +209,9 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testAddMessageWithoutPackageSequence() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         messageCode += 13;
         String testMessage = "Adding a message message without a package sequence.";
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, this.getClass(), key);
@@ -211,9 +223,9 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testAddMessageWithPackageSequence() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = 25;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         messageCode += 14;
         String testMessage = "Adding a message with package sequence %s.";
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass, key);
@@ -225,14 +237,16 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testParameterCount() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = 25;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         messageCode += 14;
         String testMessage = "Adding a message with package sequence %s.";
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass, key, 0);
         logger.info(formattedMessage);
-        assertEquals(formattedMessage.contains("Message code string contains 1 parameters while 2 parameters are entered"), true);
+        assertEquals(
+                formattedMessage.contains("Message code string contains 1 parameters while 2 parameters are entered"),
+                true);
         //assertEquals("[99996] Error in construction error message from string 'Adding a message with package sequence s.'. Message code string contains 1 parameters while 2 parameters are entered.")
         //assertEquals("[99996] Message code string contains 1 parameters while 2 parameters are entered.", formattedMessage);
         fixture.addMessage(25, formattedMessage, MESSAGE_TYPE.ERRORS);
@@ -245,9 +259,9 @@ public class ErrorWarningMessageJodiImplTest<Field> {
     @Test
     public void testAddMessageUsingDecimalInput() {
         fixture.clear();
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = 25;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         messageCode = 9;
         String testMessage = "Adding a message with package sequence %d.";
         logger.info(testMessage);
@@ -260,9 +274,9 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testFormatMessageLessThanTenThousand() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "This is a test message for code less than 10000.";
         messageCode += 15;
         String formattedMessage = fixture.formatMessage(messageCode, testMessage, testClass);
@@ -274,12 +288,11 @@ public class ErrorWarningMessageJodiImplTest<Field> {
 
     @Test
     public void testFormatMessageTenThousandOrGreater() {
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = -1;
-        List<String> value = new ArrayList<String>();
+        List<String> value = new ArrayList<>();
         String testMessage = "This is a test message for code greatter than 10000.";
-        String formattedMessage = fixture.formatMessage(100010, testMessage,
-                this.getClass());
+        String formattedMessage = fixture.formatMessage(100010, testMessage, this.getClass());
         fixture.addMessage(formattedMessage, MESSAGE_TYPE.ERRORS);
         value.add(formattedMessage);
         expectedMessages.put(key, value);
@@ -289,22 +302,24 @@ public class ErrorWarningMessageJodiImplTest<Field> {
     @Test
     public void testFlush() {
         int expectedMessageCode = 10001;
-        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<Integer, List<String>>();
+        SortedMap<Integer, List<String>> expectedMessages = new TreeMap<>();
         int key = expectedMessageCode;
-        List<String> value = new ArrayList<String>();
-        String testMessage = "[" + expectedMessageCode
-                + "] This is a test message.";
+        List<String> value = new ArrayList<>();
+        String testMessage = "[" + expectedMessageCode + "] This is a test message.";
         value.add(testMessage);
         expectedMessages.put(key, value);
-        fixture.addMessage(expectedMessageCode, testMessage,
-                MESSAGE_TYPE.ERRORS);
+        fixture.addMessage(expectedMessageCode, testMessage, MESSAGE_TYPE.ERRORS);
         assertEquals(0, fixture.getLastSequenceNumber());
-        assertEquals(1, fixture.getErrorMessages().size());
-        assertEquals(0, fixture.getWarningMessages().size());
+        assertEquals(1, fixture.getErrorMessages()
+                               .size());
+        assertEquals(0, fixture.getWarningMessages()
+                               .size());
         fixture.clear();
         assertEquals(0, fixture.getLastSequenceNumber());
-        assertEquals(0, fixture.getErrorMessages().size());
-        assertEquals(0, fixture.getWarningMessages().size());
+        assertEquals(0, fixture.getErrorMessages()
+                               .size());
+        assertEquals(0, fixture.getWarningMessages()
+                               .size());
     }
 
     @Test
@@ -337,8 +352,8 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         List<String> files = getFiles(directoryToTest, initialSearchString);
 
         // verify usage of message codes within each file
-        List<String> messageCodes = new ArrayList<String>();
-        List<Integer> mismatches = new ArrayList<Integer>();
+        List<String> messageCodes = new ArrayList<>();
+        List<Integer> mismatches = new ArrayList<>();
         for (String file : files) {
             messageCodes = getMessageCodes(file, initialSearchString);
             mismatches.addAll(lookupUsage(file, messageCodes));
@@ -349,18 +364,17 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         assertEquals(0, mismatches.size());
     }
 
-    private int countMessageUsage(String file, String messageCode)
-            throws FileNotFoundException {
+    private int countMessageUsage(String file, String messageCode) throws FileNotFoundException {
         int countMatches = 0;
-        try (
-                Scanner s = new Scanner(new File(file))) {
+        try (Scanner s = new Scanner(new File(file))) {
             String fileContents = s.useDelimiter("\\Z")
-                    .next();
+                                   .next();
             Pattern pattern = Pattern.compile(messageCode.trim());
             Matcher matcher = pattern.matcher(fileContents);
 
-            //if (!messageCode.trim().contains("private final static String")) {
-            if (!messageCode.trim().contains("String ERROR_MESSAGE_")) {
+            //if (!messageCode.trim().contains("private static final String")) {
+            if (!messageCode.trim()
+                            .contains("String ERROR_MESSAGE_")) {
                 while (matcher.find()) {
                     countMatches++;
                 }
@@ -369,13 +383,11 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         return countMatches;
     }
 
-    List<Integer> lookupUsage(String file, List<String> messageCodes)
-            throws FileNotFoundException {
-        List<Integer> mismatchListing = new ArrayList<Integer>();
-        try (
-                Scanner s = new Scanner(new File(file))) {
+    List<Integer> lookupUsage(String file, List<String> messageCodes) throws FileNotFoundException {
+        List<Integer> mismatchListing = new ArrayList<>();
+        try (Scanner s = new Scanner(new File(file))) {
             String fileContents = s.useDelimiter("\\Z")
-                    .next();
+                                   .next();
             for (String messageCode : messageCodes) {
                 try {
                     messageCode = messageCode.trim();
@@ -396,9 +408,8 @@ public class ErrorWarningMessageJodiImplTest<Field> {
                      countMessageUsage(file, messageCode) +
                      " message code: " + messageCode + " counter:  " + counter);
                      }*/
-                    assertEquals("unexpected use of error message detected in file " +
-                                    file + "\n for message code " + messageCode,
-                            countMessageUsage(file, messageCode) - 1, counter);
+                    assertEquals("unexpected use of error message detected in file " + file + "\n for message code " +
+                                         messageCode, countMessageUsage(file, messageCode) - 1, counter);
                 } catch (NumberFormatException e) {
                     // ignore this message as it is not conforming to the expected format
                 }
@@ -412,7 +423,8 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         String temp = null;
         for (int i = 0; i < 5; i++) {
             if (code.charAt(i) != '0') {
-                temp = code.substring(i).trim();
+                temp = code.substring(i)
+                           .trim();
                 break;
             }
         }
@@ -420,7 +432,7 @@ public class ErrorWarningMessageJodiImplTest<Field> {
     }
 
     List<String> getMessageCodes(String file, String searchString) {
-        List<String> messageCodes = new ArrayList<String>();
+        List<String> messageCodes = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             try {
@@ -447,29 +459,29 @@ public class ErrorWarningMessageJodiImplTest<Field> {
         return messageCodes;
     }
 
-    public List<String> getFiles(final File directoryToTest,
-                                 final String initialSearchString) throws IOException {
+    public List<String> getFiles(final File directoryToTest, final String initialSearchString) throws IOException {
 
-        List<String> classesToTest =
-                Files.walk(directoryToTest.toPath())
-                        .filter(p -> p.getFileName().toString().endsWith("java"))
-                        .filter(p -> !new File(p.toAbsolutePath().toString())
-                                .isDirectory() &&
-                                !p.getFileName().toString().contains("Test") &&
-                                errorWarningFrameworkUtilizedInThisFile(p,
-                                        initialSearchString))
-                        .map(p -> p.toAbsolutePath().toString())
-                        .collect(Collectors.toList());
+        List<String> classesToTest = Files.walk(directoryToTest.toPath())
+                                          .filter(p -> p.getFileName()
+                                                        .toString()
+                                                        .endsWith("java"))
+                                          .filter(p -> !new File(p.toAbsolutePath()
+                                                                  .toString()).isDirectory() && !p.getFileName()
+                                                                                                  .toString()
+                                                                                                  .contains("Test") &&
+                                                  errorWarningFrameworkUtilizedInThisFile(p, initialSearchString))
+                                          .map(p -> p.toAbsolutePath()
+                                                     .toString())
+                                          .collect(Collectors.toList());
 
         return classesToTest;
     }
 
-    private boolean errorWarningFrameworkUtilizedInThisFile(
-            final Path path,
-            final String searchString) {
+    private boolean errorWarningFrameworkUtilizedInThisFile(final Path path, final String searchString) {
         boolean used = false;
         try {
-            used = Files.lines(path).anyMatch(s -> s.contains(searchString));
+            used = Files.lines(path)
+                        .anyMatch(s -> s.contains(searchString));
 
         } catch (IOException e) {
             // TODO Auto-generated catch block

@@ -33,17 +33,15 @@ import java.util.Locale;
 
 public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
 
-    private static final Logger logger =
-            LogManager.getLogger(Odi12VariableAccessStrategy.class);
-    private final static String newLine = System.getProperty("line.separator");
+    private static final Logger logger = LogManager.getLogger(Odi12VariableAccessStrategy.class);
+    private static final String newLine = System.getProperty("line.separator");
     private final OdiInstance odiInstance;
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final String projectCode;
     private final JodiProperties jodiProperties;
 
     @Inject
-    public Odi12VariableAccessStrategy(final OdiInstance odiInstance,
-                                       final JodiProperties jodiProperties,
+    public Odi12VariableAccessStrategy(final OdiInstance odiInstance, final JodiProperties jodiProperties,
                                        final ErrorWarningMessageJodi errorWarningMessageJodi) {
         this.odiInstance = odiInstance;
         this.projectCode = jodiProperties.getProjectCode();
@@ -51,74 +49,71 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
         this.jodiProperties = jodiProperties;
     }
 
-    public OdiVariable findProjectVariable(final String projectVariableName,
-                                           final String projectCode) {
+    @Override
+    public OdiVariable findProjectVariable(final String projectVariableName, final String projectCode) {
         return ((IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiVariable.class))
-                .findByName(projectVariableName,
-                        projectCode);
+                                                .getFinder(OdiVariable.class)).findByName(projectVariableName,
+                                                                                          projectCode);
     }
 
     @Override
     public Collection<OdiVariable> findAllVariables() {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         Collection<OdiVariable> all = finder.findByProject(this.projectCode);
         return all;
     }
 
     @Override
     public Collection<OdiVariable> findAllGlobalVariables() {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         return finder.findAllGlobals();
     }
 
     @Override
     public Collection<OdiVariable> findAllProjectVariables(final String projectCode) {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         return finder.findByProject(projectCode);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void create(final Variable internalVar, final String projectCode,
-                       final String dateFormat) {
+    public void create(final Variable internalVar, final String projectCode, final String dateFormat) {
         OdiProject project = internalVar.getGlobal() ? null : findProject(projectCode);
         boolean exists = variableExist(project, internalVar.getName());
         OdiVariable odiVariable = findOrCreateVariable(project, internalVar.getName());
         odiVariable.setDataType(mapFrom(internalVar.getDataType()));
-        if (internalVar.getDataType().equals(Variable.Datatype.TEXT)) {
+        if (internalVar.getDataType()
+                       .equals(Variable.Datatype.TEXT)) {
             odiVariable.setDefaultValue(internalVar.getDefaultValue());
-        } else if (internalVar.getDataType().equals(Variable.Datatype.ALPHANUMERIC)) {
+        } else if (internalVar.getDataType()
+                              .equals(Variable.Datatype.ALPHANUMERIC)) {
             odiVariable.setDefaultValue(internalVar.getDefaultValue());
-        } else if (internalVar.getDataType().equals(Variable.Datatype.NUMERIC)) {
-            if (internalVar.getDefaultValue() != null)
-                odiVariable.setDefaultValue(Long.parseLong(internalVar.getDefaultValue()));
-        } else if (internalVar.getDataType().equals(Variable.Datatype.DATE)) {
+        } else if (internalVar.getDataType()
+                              .equals(Variable.Datatype.NUMERIC)) {
             if (internalVar.getDefaultValue() != null) {
-                SimpleDateFormat formatter =
-                        new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+                odiVariable.setDefaultValue(Long.parseLong(internalVar.getDefaultValue()));
+            }
+        } else if (internalVar.getDataType()
+                              .equals(Variable.Datatype.DATE)) {
+            if (internalVar.getDefaultValue() != null) {
+                SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
                 try {
                     odiVariable.setDefaultValue(formatter.parse(internalVar.getDefaultValue()));
                 } catch (ParseException e) {
-                    String msg = "Can't parse default value of date format of " +
-                            "VariableImpl " + internalVar.getName();
+                    String msg =
+                            "Can't parse default value of date format of " + "VariableImpl " + internalVar.getName();
                     logger.error(msg, e);
-                    this.errorWarningMessages.addMessage(msg,
-                            ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
+                    this.errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
                     throw new VariableServiceException(msg, e);
                 }
             }
         } else {
             String msg = "Can't determine datatype for variable." + internalVar.getName();
             logger.error(msg);
-            this.errorWarningMessages.addMessage(msg,
-                    ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
+            this.errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             throw new VariableServiceException(msg);
         }
         String originalDescription = internalVar.getDescription() != null ? internalVar.getDescription() : "";
@@ -144,22 +139,23 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
         odiVariable.setDescription(internalVar.getDescription());
         odiVariable.setLogicalSchema(findLogicalSchema(internalVar.getSchema()));
         odiVariable.setName(internalVar.getName());
-        odiVariable.setRefreshQuery(new Expression(internalVar.getQuery(), null,
-                Expression.SqlGroupType.NONE));
+        odiVariable.setRefreshQuery(new Expression(internalVar.getQuery(), null, Expression.SqlGroupType.NONE));
         odiVariable.setValuePersistence(mapFrom(internalVar.getKeephistory()));
         if (exists) {
-            odiInstance.getTransactionalEntityManager().merge(odiVariable);
+            odiInstance.getTransactionalEntityManager()
+                       .merge(odiVariable);
         } else {
-            odiInstance.getTransactionalEntityManager().persist(odiVariable);
+            odiInstance.getTransactionalEntityManager()
+                       .persist(odiVariable);
         }
-        logger.info("Created " + (odiVariable.isGlobal() ? "global " : " ") + "variable:" + internalVar.getName() + ".");
+        logger.info(
+                "Created " + (odiVariable.isGlobal() ? "global " : " ") + "variable:" + internalVar.getName() + ".");
     }
 
 
     private OdiVariable findOrCreateVariable(OdiProject project, String variableName) {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         final OdiVariable var;
         if (project == null) {
             var = finder.findGlobalByName(variableName);
@@ -173,9 +169,8 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
     }
 
     private boolean variableExist(OdiProject project, String variableName) {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         final OdiVariable var;
         if (project == null) {
             var = finder.findGlobalByName(variableName);
@@ -187,29 +182,29 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
 
     // transaction semantics defined in calling method
     private void deleteVariableScenario(final OdiVariable variable) {
-        assert (odiInstance.getTransactionalEntityManager().isOpen());
+        assert (odiInstance.getTransactionalEntityManager()
+                           .isOpen());
         assert (variable != null);
         Number variableId = variable.getVariableId();
-        Collection<OdiScenario> odiScenarios =
-                ((IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiScenario.class))
-                        .findBySourceVariable(variableId);
+        Collection<OdiScenario> odiScenarios = ((IOdiScenarioFinder) odiInstance.getTransactionalEntityManager()
+                                                                                .getFinder(
+                                                                                        OdiScenario.class)).findBySourceVariable(
+                variableId);
         assert (odiScenarios != null);
         if (!odiScenarios.isEmpty()) {
-            logger.debug("Attempt to remove " + odiScenarios.size() + " scenario for: " +
-                    variable.getName());
+            logger.debug("Attempt to remove " + odiScenarios.size() + " scenario for: " + variable.getName());
         }
         odiScenarios.stream()
-                .peek(s -> logger.debug("deleted scenario '" + s.getName()))
-                .forEach(s -> odiInstance.getTransactionalEntityManager().remove(s));
+                    .peek(s -> logger.debug("deleted scenario '" + s.getName()))
+                    .forEach(s -> odiInstance.getTransactionalEntityManager()
+                                             .remove(s));
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void delete(final Variable internalVar, final String projectCode) {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         final OdiVariable var;
         if (internalVar.getGlobal()) {
             var = finder.findGlobalByName(internalVar.getName());
@@ -220,7 +215,8 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
             return;
         }
         deleteVariableScenario(var);
-        odiInstance.getTransactionalEntityManager().remove(var);
+        odiInstance.getTransactionalEntityManager()
+                   .remove(var);
         logger.info("Removed variable:" + internalVar.getName());
     }
 
@@ -234,11 +230,9 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
         } else if (dataType.equals(Variable.Datatype.TEXT)) {
             return OdiVariable.DataType.LONG_TEXT;
         } else {
-            String msg = "Can't map Odi model for variable datatype into GBU " +
-                    "model for variable datatype.";
+            String msg = "Can't map Odi model for variable datatype into GBU " + "model for variable datatype.";
             logger.error(msg);
-            this.errorWarningMessages.addMessage(msg,
-                    ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
+            this.errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             throw new UnsupportedOperationException(msg);
         }
     }
@@ -251,11 +245,9 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
         } else if (keephistory.equals(Variable.Keephistory.NO_HISTORY)) {
             return OdiVariable.ValuePersistence.NON_PERSISTENT;
         } else { // VariableImpl.Keephistory.NONE and others
-            String msg = "Can't map Odi model for variable keephistory into GBU " +
-                    "model for variable keephistory.";
+            String msg = "Can't map Odi model for variable keephistory into GBU " + "model for variable keephistory.";
             logger.error(msg);
-            this.errorWarningMessages.addMessage(msg,
-                    ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
+            this.errorWarningMessages.addMessage(msg, ErrorWarningMessageJodi.MESSAGE_TYPE.ERRORS);
             throw new UnsupportedOperationException(msg);
         }
     }
@@ -263,9 +255,8 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
 
     @Cached
     protected OdiLogicalSchema findLogicalSchema(String schema) {
-        IOdiLogicalSchemaFinder finder =
-                (IOdiLogicalSchemaFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLogicalSchema.class);
+        IOdiLogicalSchemaFinder finder = (IOdiLogicalSchemaFinder) odiInstance.getTransactionalEntityManager()
+                                                                              .getFinder(OdiLogicalSchema.class);
         OdiLogicalSchema lSchema = finder.findByName(schema);
         assert (lSchema != null);
         return lSchema;
@@ -273,9 +264,8 @@ public class Odi12VariableAccessStrategy implements OdiVariableAccessStrategy {
 
     @Cached
     protected OdiProject findProject(String projectCode) {
-        IOdiProjectFinder finder =
-                (IOdiProjectFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiProject.class);
+        IOdiProjectFinder finder = (IOdiProjectFinder) odiInstance.getTransactionalEntityManager()
+                                                                  .getFinder(OdiProject.class);
         OdiProject project = finder.findByCode(projectCode);
         assert (project != null);
         return project;

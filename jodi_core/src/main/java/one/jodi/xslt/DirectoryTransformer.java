@@ -3,7 +3,12 @@ package one.jodi.xslt;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.error.ErrorWarningMessageJodiImpl;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -12,7 +17,11 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -26,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class DirectoryTransformer {
 
-    private final static String ERROR_MESSAGE_00730 = "IOException: %s";
+    private static final String ERROR_MESSAGE_00730 = "IOException: %s";
     private static final String OPTION_HELP = "help";
     private static final String DEFAULT_FILTER = ".*\\.xml$";
     private static final String OPTION_FILTER = "filter";
@@ -34,8 +43,8 @@ public class DirectoryTransformer {
     private static final String OPTION_SOURCE = "input";
     private static final String OPTION_STYLESHEET = "stylesheet";
     private static final String OPTION_DEBUG = "debug";
-    private static ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
-    private static Logger logger = LogManager.getLogger(DirectoryTransformer.class);
+    private static final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
+    private static final Logger logger = LogManager.getLogger(DirectoryTransformer.class);
 
     public static void main(String[] args) {
 
@@ -64,8 +73,7 @@ public class DirectoryTransformer {
         opts.addOption("o", OPTION_OUTPUT, true, "output directory path");
         opts.addOption("s", OPTION_STYLESHEET, true, "styleshet file path");
 
-        opts.addOption("f", OPTION_FILTER, true,
-                "file match regular expression filter. Defaults to " + DEFAULT_FILTER);
+        opts.addOption("f", OPTION_FILTER, true, "file match regular expression filter. Defaults to " + DEFAULT_FILTER);
 
         return opts;
     }
@@ -132,12 +140,12 @@ public class DirectoryTransformer {
         logger.info("Directorytransformer exited with exit code; " + exitCode);
     }
 
-    public void transformFiles(RunConfig runConfig) throws IOException,
-            TransformerConfigurationException, ParserConfigurationException {
+    public void transformFiles(RunConfig runConfig) throws IOException, TransformerConfigurationException,
+            ParserConfigurationException {
         XslTransformer transformer = new XslTransformer(runConfig.styleSheet);
-        JodiDirectoryWalker walker = new JodiDirectoryWalker(
-                runConfig.sourceDirectory, runConfig.outputDirectory,
-                runConfig.fileMatchPattern, transformer, runConfig.verbose);
+        JodiDirectoryWalker walker = new JodiDirectoryWalker(runConfig.sourceDirectory, runConfig.outputDirectory,
+                                                             runConfig.fileMatchPattern, transformer,
+                                                             runConfig.verbose);
         walker.walk();
     }
 
@@ -156,8 +164,8 @@ public class DirectoryTransformer {
         private final boolean debug;
         private final String fileFilterRegExp;
 
-        public JodiDirectoryWalker(File baseDirectory, File outputDirectory,
-                                   String fileFilter, XslTransformer xslTransformer, boolean debug) {
+        public JodiDirectoryWalker(File baseDirectory, File outputDirectory, String fileFilter,
+                                   XslTransformer xslTransformer, boolean debug) {
             this.fileFilterRegExp = fileFilter;//super(fileFilter, -1);
             this.baseDirectory = baseDirectory;
             this.outputDirectory = outputDirectory;
@@ -194,31 +202,29 @@ public class DirectoryTransformer {
         }
 
 
-        protected void handleFile(File file, int depth, Collection<File> results)
-                throws IOException {
-            String relativePath = baseDirectory.toURI().relativize(file.toURI())
-                    .getPath();
+        protected void handleFile(File file, int depth, Collection<File> results) throws IOException {
+            String relativePath = baseDirectory.toURI()
+                                               .relativize(file.toURI())
+                                               .getPath();
 
             File outputFile = new File(outputDirectory, relativePath);
 
             if (debug) {
                 logger.info("----------------");
                 logger.info("Source file: " + file.getAbsolutePath());
-                logger.info("Destination file: "
-                        + outputFile.getAbsolutePath());
+                logger.info("Destination file: " + outputFile.getAbsolutePath());
             }
 
-            if (!outputFile.getParentFile().exists() && !outputFile.getParentFile().mkdirs()) {
+            if (!outputFile.getParentFile()
+                           .exists() && !outputFile.getParentFile()
+                                                   .mkdirs()) {
                 logger.info("Couldn't create directory.");
             }
             try {
                 xslTransformer.transformFile(file, outputFile);
             } catch (SAXException | TransformerException e) {
-                String msg = errorWarningMessages.formatMessage(730,
-                        ERROR_MESSAGE_00730, this.getClass(), e);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg = errorWarningMessages.formatMessage(730, ERROR_MESSAGE_00730, this.getClass(), e);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 throw new IOException(msg);
             }
         }
@@ -228,26 +234,22 @@ public class DirectoryTransformer {
         DocumentBuilder builder;
         Transformer transformer;
 
-        public XslTransformer(File stylesheet)
-                throws ParserConfigurationException,
-                TransformerConfigurationException {
-            DocumentBuilderFactory factory = DocumentBuilderFactory
-                    .newInstance();
+        public XslTransformer(File stylesheet) throws ParserConfigurationException, TransformerConfigurationException {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             builder = factory.newDocumentBuilder();
             TransformerFactory tFactory = TransformerFactory.newInstance();
             StreamSource styleSource = new StreamSource(stylesheet);
             transformer = tFactory.newTransformer(styleSource);
 
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
-                    "2");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             //transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS,
             //                              "Expression Join Filter Comments IkmOptionValue");
         }
 
-        public void transformFile(File sourceFile, File targetFile)
-                throws SAXException, IOException, TransformerException {
+        public void transformFile(File sourceFile, File targetFile) throws SAXException, IOException,
+                TransformerException {
             Document document = builder.parse(sourceFile);
 
             DOMSource source = new DOMSource(document);

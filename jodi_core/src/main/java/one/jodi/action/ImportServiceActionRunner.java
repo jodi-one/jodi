@@ -18,7 +18,7 @@ import java.io.File;
 
 public class ImportServiceActionRunner implements ActionRunner {
 
-    public final static String EXPORTMPORTDIR = "DeploymentService";
+    public static final String EXPORTMPORTDIR = "DeploymentService";
     private final OdiRepositoryImportService importService;
     private final Logger logger = LogManager.getLogger(ImportServiceActionRunner.class);
     private final ProjectService projectService;
@@ -28,11 +28,8 @@ public class ImportServiceActionRunner implements ActionRunner {
 
     @Inject
     protected ImportServiceActionRunner(final OdiRepositoryImportService importService,
-                                        final ProjectService projectService,
-                                        final ScenarioService scenarioService,
-                                        final JodiProperties jodiProperties,
-                                        final LoadPlanService loadPlanService
-    ) {
+                                        final ProjectService projectService, final ScenarioService scenarioService,
+                                        final JodiProperties jodiProperties, final LoadPlanService loadPlanService) {
         this.importService = importService;
         this.projectService = projectService;
         this.scenarioService = scenarioService;
@@ -65,9 +62,8 @@ public class ImportServiceActionRunner implements ActionRunner {
                 }
             }
             final OdiRepositoryImportService.DA_TYPE pDAType;
-            java.lang.String pFilename = exportImport.getAbsolutePath() + File.separator +
-                    jodiProperties
-                            .getProjectCode() + ".zip";
+            java.lang.String pFilename =
+                    exportImport.getAbsolutePath() + File.separator + jodiProperties.getProjectCode() + ".zip";
             if (pFilename.contains("PATCH_ER")) {
                 pDAType = OdiRepositoryImportService.DA_TYPE.DA_PATCH_EXEC_REPOS;
             } else if (pFilename.contains("PATCH_DR")) {

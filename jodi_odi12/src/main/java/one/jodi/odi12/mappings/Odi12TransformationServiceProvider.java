@@ -58,10 +58,10 @@ import java.util.logging.Level;
  */
 @Singleton
 public class Odi12TransformationServiceProvider<T extends MapRootContainer> implements TransformationServiceProvider {
-    private final static String ERROR_MESSAGE_09999 = "Interface: %1$d %2$s: Validation reported '%3$s' with message '%4$s' with description '%5$s' with key '%6$s'.";
+    private static final String ERROR_MESSAGE_09999 = "Interface: %1$d %2$s: Validation reported '%3$s' with message '%4$s' with description '%5$s' with key '%6$s'.";
 
-    private final static String UseUniqueTemporaryObjectNames = "odi12.useUniqueTemporaryObjectNames";
-    private final static Logger logger = LogManager.getLogger(Odi12TransformationServiceProvider.class);
+    private static final String UseUniqueTemporaryObjectNames = "odi12.useUniqueTemporaryObjectNames";
+    private static final Logger logger = LogManager.getLogger(Odi12TransformationServiceProvider.class);
     private final OdiInstance odiInstance;
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;

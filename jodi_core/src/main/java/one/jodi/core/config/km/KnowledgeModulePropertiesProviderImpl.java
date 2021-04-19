@@ -20,7 +20,15 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -36,69 +44,62 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
      */
     public static final String TOPIC = "km";
 
-    private final static Logger logger =
-            LogManager.getLogger(KnowledgeModulePropertiesProviderImpl.class);
+    private static final Logger logger = LogManager.getLogger(KnowledgeModulePropertiesProviderImpl.class);
     private static final String newLine = System.getProperty("line.separator");
-    private static final String ERROR_MESSAGE_00100 =
-            "Errors found in Knowledge Module Configuration Rules %s";
+    private static final String ERROR_MESSAGE_00100 = "Errors found in Knowledge Module Configuration Rules %s";
     private static final String ERROR_MESSAGE_00110 =
-            "Cannot map name(s) %s to KM loaded in ODI.  Please check that your"
-                    + " ODI instance is loaded with KM names referred to in Jodi "
-                    + "properties file.";
-    private static final String ERROR_MESSAGE_00120 =
-            "Runtime exception on %s %s";
-    private static final String ERROR_MESSAGE_00130 =
-            "The KM properties contain %1$s configuration errors.";
-    private static final String ERROR_MESSAGE_00140 =
-            "Knowledge Module Configuration contains no %s rules.";
+            "Cannot map name(s) %s to KM loaded in ODI.  Please check that your" +
+                    " ODI instance is loaded with KM names referred to in Jodi " + "properties file.";
+    private static final String ERROR_MESSAGE_00120 = "Runtime exception on %s %s";
+    private static final String ERROR_MESSAGE_00130 = "The KM properties contain %1$s configuration errors.";
+    private static final String ERROR_MESSAGE_00140 = "Knowledge Module Configuration contains no %s rules.";
     private static final String ERROR_MESSAGE_00150 =
             "Invalid trg_temporary specification %s.  This must be {-1,0,-1}.";
     private static final String ERROR_MESSAGE_00160 =
-            "Invalid name specification.  Multiple names are not permitted "
-                    + "for rules.";
-    private static final String ERROR_MESSAGE_00170 =
-            "Duplicated default rule found for technology %s";
-    private static final String ERROR_MESSAGE_00180 =
-            "Duplicated or missing order number %s";
-    private static final String ERROR_MESSAGE_00190 =
-            "KM '%s' is loaded in ODI as a multi-technology KM.  Rules for "
-                    + "multi-technology KMs must specify both src_technology and"
-                    + " trg_technology.";
+            "Invalid name specification.  Multiple names are not permitted " + "for rules.";
+    private static final String ERROR_MESSAGE_00170 = "Duplicated default rule found for technology %s";
+    private static final String ERROR_MESSAGE_00180 = "Duplicated or missing order number %s";
+    private static final String ERROR_MESSAGE_00190 = "KM '%s' is loaded in ODI as a multi-technology KM.  Rules for " +
+            "multi-technology KMs must specify both src_technology and" + " trg_technology.";
     private static final String ERROR_MESSAGE_00200 =
-            "Rule specifies src_technology however KM '%s' is not loaded in"
-                    + " ODI as multi-technology.";
+            "Rule specifies src_technology however KM '%s' is not loaded in" + " ODI as multi-technology.";
     private static final String ERROR_MESSAGE_00210 =
-            "Invalid DataStoreType specification (%s). DataType must be one"
-                    + " of %s";
-    private static final String ERROR_MESSAGE_00220 =
-            "Invalid field (%s) for rule of type %s";
-    private static final String ERROR_MESSAGE_00230 =
-            "Missing required field (%s for rule of type %s";
+            "Invalid DataStoreType specification (%s). DataType must be one" + " of %s";
+    private static final String ERROR_MESSAGE_00220 = "Invalid field (%s) for rule of type %s";
+    private static final String ERROR_MESSAGE_00230 = "Missing required field (%s for rule of type %s";
     private final JodiProperties jodiProperties;
     private final ETLSubsystemService etlSubsystemService;
     private final ErrorWarningMessageJodi errorWarningMessages;
-    private final String[] PARAMETER_DEFS = new String[]{"name[]!", "order", "global", "options{}", "trg_technology!", "src_technology", "default", "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]", "src_regex", "src_layer[]", "src_tabletype[]"};
-    private final String[] LOAD_PARAMETER_DEFS = new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "src_technology!", "default", "trg_regex", "trg_layer[]", "trg_tabletype[]", "src_regex", "src_layer[]", "src_tabletype[]"};
-    private final String[] CHECK_PARAMETER_DEFS = new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "default", "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]"};
-    private final String[] INTEGRATION_PARAMETER_DEFS = new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "src_technology", "default", "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]"};
+    private final String[] PARAMETER_DEFS =
+            new String[]{"name[]!", "order", "global", "options{}", "trg_technology!", "src_technology", "default",
+                         "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]", "src_regex", "src_layer[]",
+                         "src_tabletype[]"};
+    private final String[] LOAD_PARAMETER_DEFS =
+            new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "src_technology!",
+                         "default", "trg_regex", "trg_layer[]", "trg_tabletype[]", "src_regex", "src_layer[]",
+                         "src_tabletype[]"};
+    private final String[] CHECK_PARAMETER_DEFS =
+            new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "default", "trg_temporary",
+                         "trg_regex", "trg_layer[]", "trg_tabletype[]"};
+    private final String[] INTEGRATION_PARAMETER_DEFS =
+            new String[]{"id", "name[]!", "order", "global", "options{}", "trg_technology!", "src_technology",
+                         "default", "trg_temporary", "trg_regex", "trg_layer[]", "trg_tabletype[]"};
     private final Integer[] TRG_TEMPORARY_VALUES = {-1, 0, 1};
-    private HashMap<KnowledgeModuleType, List<KnowledgeModuleProperties>> propertiesMapList =
-            new HashMap<>();
+    private final HashMap<KnowledgeModuleType, List<KnowledgeModuleProperties>> propertiesMapList = new HashMap<>();
     private List<KnowledgeModule> constraints;
 
     private boolean built = false;
 
     // The list of fields that the KnowledgeModulePropertiesImpl class posesses
-    private ArrayList<String> knowledgeModulePropertiesFields = new ArrayList<>();
+    private final ArrayList<String> knowledgeModulePropertiesFields = new ArrayList<>();
 
     // Key is group/id and value is error
-    private Map<String, HashSet<String>> errors = new HashMap<>();
+    private final Map<String, HashSet<String>> errors = new HashMap<>();
 
     @Inject
-    public KnowledgeModulePropertiesProviderImpl(
-            final JodiProperties jodiProperties,
-            final ETLSubsystemService etlSubsystemService,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    public KnowledgeModulePropertiesProviderImpl(final JodiProperties jodiProperties,
+                                                 final ETLSubsystemService etlSubsystemService,
+                                                 final ErrorWarningMessageJodi errorWarningMessages) {
         super();
         logger.debug("Initializing KnowledgeModulePropertiesProvider ...");
         this.jodiProperties = jodiProperties;
@@ -119,8 +120,11 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
     }
 
     private void normalizeName(KnowledgeModuleProperties p) {
-        for (ListIterator<String> iterator = p.getName().listIterator(); iterator.hasNext(); ) {
-            iterator.set(iterator.next().trim().replaceAll("\\s{2,}", " "));
+        for (ListIterator<String> iterator = p.getName()
+                                              .listIterator(); iterator.hasNext(); ) {
+            iterator.set(iterator.next()
+                                 .trim()
+                                 .replaceAll("\\s{2,}", " "));
         }
 
     }
@@ -129,29 +133,30 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
     // use default layer names to defer order information ???
     private void buildLists() {
         PropertiesParser<KnowledgeModulePropertiesImpl> parser =
-                new PropertiesParser<>(jodiProperties,
-                        errorWarningMessages);
+                new PropertiesParser<>(jodiProperties, errorWarningMessages);
 
         String ID_FIELD = "id";
-        for (KnowledgeModuleProperties kmp : parser.parseProperties(TOPIC, ID_FIELD, Arrays.asList(PARAMETER_DEFS), KnowledgeModulePropertiesImpl.class)) {
+        for (KnowledgeModuleProperties kmp : parser.parseProperties(TOPIC, ID_FIELD, Arrays.asList(PARAMETER_DEFS),
+                                                                    KnowledgeModulePropertiesImpl.class)) {
 
             normalizeName(kmp);
 
             KnowledgeModuleType kmType = type(kmp);
             if (kmType == KnowledgeModuleType.Unknown) {
-                String msg = errorWarningMessages.formatMessage(110, ERROR_MESSAGE_00110, this.getClass(), Arrays.toString(kmp.getName().toArray()));
+                String msg = errorWarningMessages.formatMessage(110, ERROR_MESSAGE_00110, this.getClass(),
+                                                                Arrays.toString(kmp.getName()
+                                                                                   .toArray()));
                 errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 addErrorMessage(kmp.getId(), msg);
             }
-            propertiesMapList.putIfAbsent(kmType,
-                    new ArrayList<>());
+            propertiesMapList.putIfAbsent(kmType, new ArrayList<>());
 
-            propertiesMapList.get(kmType).add(kmp);
+            propertiesMapList.get(kmType)
+                             .add(kmp);
 
         }
 
-        Comparator<KnowledgeModuleProperties> comp =
-                KnowledgeModuleProperties::compareOrderTo;
+        Comparator<KnowledgeModuleProperties> comp = KnowledgeModuleProperties::compareOrderTo;
 
         for (KnowledgeModuleType t : propertiesMapList.keySet()) {
             Collections.sort(propertiesMapList.get(t), comp);
@@ -168,7 +173,8 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
         // Make sure required types are represented. LKM is not required since not all ETL projects cross DB boundaries
         for (KnowledgeModuleType type : new KnowledgeModuleType[]{KnowledgeModuleType.Integration}) {
             if (!propertiesMapList.containsKey(type)) {
-                String msg = errorWarningMessages.formatMessage(140, ERROR_MESSAGE_00140, this.getClass(), type.toString());
+                String msg =
+                        errorWarningMessages.formatMessage(140, ERROR_MESSAGE_00140, this.getClass(), type.toString());
                 errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 addErrorMessage("", msg);
             }
@@ -192,52 +198,55 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
                 }
 
                 if (p.getTrg_temporary() != null && !validTemporaries.contains(p.getTrg_temporary())) {
-                    String msg = errorWarningMessages.formatMessage(150, ERROR_MESSAGE_00150, this.getClass(), p.getTrg_temporary());
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    String msg = errorWarningMessages.formatMessage(150, ERROR_MESSAGE_00150, this.getClass(),
+                                                                    p.getTrg_temporary());
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     addErrorMessage(p.getId(), msg);
                 }
 
-                if (!p.isGlobal() && p.getName().size() > 1) {
-                    String msg = errorWarningMessages.formatMessage(160, ERROR_MESSAGE_00160, this.getClass(), p.getTrg_temporary());
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                if (!p.isGlobal() && p.getName()
+                                      .size() > 1) {
+                    String msg = errorWarningMessages.formatMessage(160, ERROR_MESSAGE_00160, this.getClass(),
+                                                                    p.getTrg_temporary());
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     addErrorMessage(p.getId(), msg);
                 }
 
                 validateDataStoreType(p.getTrg_tabletype(), p.getId(), "trg_tabletype");
                 validateDataStoreType(p.getSrc_tabletype(), p.getId(), "src_tabletype");
 
-                validateMultiTechnology(p.getName(), p.getId(), p.isGlobal(), p.getSrc_technology(), p.getTrg_technology());
+                validateMultiTechnology(p.getName(), p.getId(), p.isGlobal(), p.getSrc_technology(),
+                                        p.getTrg_technology());
             }
 
 
             // make sure we dont have more than one default per technology or, for LKM, technology pair
             // we dont need to check for null because trg_technology, and for LKM src_technology, are mandatory.
             HashSet<String> defaultSet = new HashSet<>();
-            list.stream().filter(KnowledgeModuleProperties::isDefault).forEach(p -> {
-                String key = (type(p) == KnowledgeModuleType.Loading) ?
-                        p.getTrg_technology() + " " + p.getSrc_technology() :
-                        p.getTrg_technology();
-                if (!defaultSet.add(key)) {
-                    String msg = errorWarningMessages.formatMessage(170,
-                            ERROR_MESSAGE_00170,
-                            this.getClass(),
-                            key);
-                    errorWarningMessages.addMessage(errorWarningMessages
-                                    .assignSequenceNumber(),
-                            msg,
-                            MESSAGE_TYPE.ERRORS);
-                    addErrorMessage(p.getId(),
-                            msg);
-                }
-            });
+            list.stream()
+                .filter(KnowledgeModuleProperties::isDefault)
+                .forEach(p -> {
+                    String key = (type(p) == KnowledgeModuleType.Loading) ? p.getTrg_technology() + " " +
+                            p.getSrc_technology() : p.getTrg_technology();
+                    if (!defaultSet.add(key)) {
+                        String msg = errorWarningMessages.formatMessage(170, ERROR_MESSAGE_00170, this.getClass(), key);
+                        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                        MESSAGE_TYPE.ERRORS);
+                        addErrorMessage(p.getId(), msg);
+                    }
+                });
 
 
             // Make sure we have unique order values
             int previousOrder = Integer.MIN_VALUE;
             for (KnowledgeModuleProperties p : list) {
                 if (p.getOrder() == null || p.getOrder() == previousOrder) {
-                    String msg = errorWarningMessages.formatMessage(180, ERROR_MESSAGE_00180, this.getClass(), p.getOrder());
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    String msg =
+                            errorWarningMessages.formatMessage(180, ERROR_MESSAGE_00180, this.getClass(), p.getOrder());
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     addErrorMessage(p.getId(), msg);
                     break;
                 }
@@ -256,15 +265,22 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
 
         for (String name : names) {
             for (KnowledgeModule km : constraints) {
-                if (km.getName().equalsIgnoreCase(name)) {
-                    if (km.isMultiTechnology() && (src == null || src.length() < 1 || trg == null || trg.length() < 1)) {
-                        String msg = errorWarningMessages.formatMessage(190, ERROR_MESSAGE_00190, this.getClass(), name);
-                        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                if (km.getName()
+                      .equalsIgnoreCase(name)) {
+                    if (km.isMultiTechnology() &&
+                            (src == null || src.length() < 1 || trg == null || trg.length() < 1)) {
+                        String msg =
+                                errorWarningMessages.formatMessage(190, ERROR_MESSAGE_00190, this.getClass(), name);
+                        errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                        MESSAGE_TYPE.ERRORS);
                         addErrorMessage(id, msg);
-                    } else if (!km.isMultiTechnology() && km.getType().equals(KnowledgeModuleType.Integration)) {
+                    } else if (!km.isMultiTechnology() && km.getType()
+                                                            .equals(KnowledgeModuleType.Integration)) {
                         if (src != null && src.length() > 0) {
-                            String msg = errorWarningMessages.formatMessage(200, ERROR_MESSAGE_00200, this.getClass(), name);
-                            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                            String msg =
+                                    errorWarningMessages.formatMessage(200, ERROR_MESSAGE_00200, this.getClass(), name);
+                            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                            MESSAGE_TYPE.ERRORS);
                             addErrorMessage(id, msg);
                         }
                     }
@@ -280,7 +296,9 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
             try {
                 Enum.valueOf(DataStoreType.class, dataStoreType);
             } catch (IllegalArgumentException iae) {
-                String msg = errorWarningMessages.formatMessage(210, ERROR_MESSAGE_00210, this.getClass(), dataStoreType, Arrays.toString(DataStoreType.values()));
+                String msg =
+                        errorWarningMessages.formatMessage(210, ERROR_MESSAGE_00210, this.getClass(), dataStoreType,
+                                                           Arrays.toString(DataStoreType.values()));
                 logger.warn(msg);
                 errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 addErrorMessage(id, msg);
@@ -309,7 +327,8 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
             types.add(type);
         }
 
-        return types.size() != 1 ? KnowledgeModuleType.Unknown : types.iterator().next();
+        return types.size() != 1 ? KnowledgeModuleType.Unknown : types.iterator()
+                                                                      .next();
     }
 
 
@@ -324,10 +343,14 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
     private boolean fieldIsPopulated(KnowledgeModuleProperties p, String field, boolean defaultValue) {
         boolean isList = field.contains("[]");
         boolean isMap = field.contains("{}");
-        String properField = field.replace("{}", "").replace("[]", "").replace("!", "");
+        String properField = field.replace("{}", "")
+                                  .replace("[]", "")
+                                  .replace("!", "");
 
         // This is a hack but as long as we use a Java keyword this causes issues.
-        if (properField.equals("isDefault")) properField = "default";
+        if (properField.equals("isDefault")) {
+            properField = "default";
+        }
 
         try {
             PropertyDescriptor descriptor = new PropertyDescriptor(properField, KnowledgeModulePropertiesImpl.class);
@@ -352,8 +375,9 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
                         populated = false;
                     }
                 } else if (method.getReturnType() == Integer.class) {
-                    if (rv == null)
+                    if (rv == null) {
                         populated = false;
+                    }
                 } else {
                     populated = defaultValue;
                 }
@@ -361,12 +385,10 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
             return populated;
         } catch (Exception e) {
 
-            String msg = errorWarningMessages.formatMessage(120,
-                    ERROR_MESSAGE_00120, this.getClass(), field, e.getMessage());
+            String msg = errorWarningMessages.formatMessage(120, ERROR_MESSAGE_00120, this.getClass(), field,
+                                                            e.getMessage());
             logger.error(msg);
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new RuntimeException(msg);
         }
     }
@@ -380,33 +402,33 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
         // Check subtractive differences
         ArrayList<String> fieldsList = new ArrayList<>();
         for (String field : fields) {
-            fieldsList.add(field.replace("{}", "").replace("[]", "").replace("!", ""));
+            fieldsList.add(field.replace("{}", "")
+                                .replace("[]", "")
+                                .replace("!", ""));
         }
 
 
-        knowledgeModulePropertiesFields.stream().filter(field ->
-                !fieldsList.contains(field) && fieldIsPopulated(p,
-                        field,
-                        false)).forEach(field -> {
-            String msg = errorWarningMessages.formatMessage(220,
-                    ERROR_MESSAGE_00220,
-                    this.getClass(),
-                    field,
-                    type(p));
-            errorWarningMessages
-                    .addMessage(errorWarningMessages.assignSequenceNumber(),
-                            msg,
-                            MESSAGE_TYPE.ERRORS);
-            addErrorMessage(p.getId(),
-                    msg);
-        });
+        knowledgeModulePropertiesFields.stream()
+                                       .filter(field -> !fieldsList.contains(field) &&
+                                               fieldIsPopulated(p, field, false))
+                                       .forEach(field -> {
+                                           String msg = errorWarningMessages.formatMessage(220, ERROR_MESSAGE_00220,
+                                                                                           this.getClass(), field,
+                                                                                           type(p));
+                                           errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
+                                                                           msg, MESSAGE_TYPE.ERRORS);
+                                           addErrorMessage(p.getId(), msg);
+                                       });
 
         // Check additive differences - at this point only for required fields as we cant add to bean,
         // only require that certain fields are present
         for (String field : fields) {
             if (field.endsWith("!") && !fieldIsPopulated(p, field, true)) {
-                String param = field.replace("!", "").replace("{}", "").replace("[]", "");
-                String msg = errorWarningMessages.formatMessage(230, ERROR_MESSAGE_00230, this.getClass(), param, type(p));
+                String param = field.replace("!", "")
+                                    .replace("{}", "")
+                                    .replace("[]", "");
+                String msg =
+                        errorWarningMessages.formatMessage(230, ERROR_MESSAGE_00230, this.getClass(), param, type(p));
                 errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 addErrorMessage(p.getId(), msg);
             }
@@ -414,6 +436,7 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
     }
 
 
+    @Override
     public List<KnowledgeModuleProperties> getProperties(KnowledgeModuleType type) {
         if (!built) {
             built = true;
@@ -431,7 +454,8 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
                     }
 
                 } catch (IntrospectionException e) {
-                    logger.debug("Cannot find method on KnowledgeModulePropertiesImpl.class, this method will be ignored.");
+                    logger.debug(
+                            "Cannot find method on KnowledgeModulePropertiesImpl.class, this method will be ignored.");
                 }
 
 
@@ -444,8 +468,7 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
                 //sb.append("Errors found in Knowledge Module Configuration Rules %s"+ newLine);
                 for (String id : errors.keySet()) {
                     if (StringUtils.hasLength(id)) {
-                        sb.append("Knowledge Module configuration rule (" + id +
-                                ") contains errors." + newLine);
+                        sb.append("Knowledge Module configuration rule (" + id + ") contains errors." + newLine);
                     }
                     for (String error : errors.get(id)) {
                         if (StringUtils.hasLength(id)) {
@@ -454,37 +477,33 @@ public class KnowledgeModulePropertiesProviderImpl implements KnowledgeModulePro
                         sb.append(error + newLine);
                     }
                 }
-                String msg = errorWarningMessages.formatMessage(100,
-                        ERROR_MESSAGE_00100, this.getClass(),
-                        sb.toString());
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg =
+                        errorWarningMessages.formatMessage(100, ERROR_MESSAGE_00100, this.getClass(), sb.toString());
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             }
 
         }
 
         if (!errors.isEmpty()) {
-            String msg = errorWarningMessages.formatMessage(130,
-                    ERROR_MESSAGE_00130, this.getClass(), getErrorMessages().size());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(130, ERROR_MESSAGE_00130, this.getClass(),
+                                                            getErrorMessages().size());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
 
             throw new KnowledgeModulePropertiesException(getErrorMessages());
         }
-        return propertiesMapList.get(type) != null ? propertiesMapList.get(type) : Collections.<KnowledgeModuleProperties>emptyList();
+        return propertiesMapList.get(type) != null ? propertiesMapList.get(type)
+                                                   : Collections.<KnowledgeModuleProperties>emptyList();
     }
 
     @Override
     public List<String> getErrorMessages() {
         ArrayList<String> list = new ArrayList<>();
         for (String key : errors.keySet()) {
-            list.addAll(errors.get(key).stream()
-                    .map(error -> "Knowledge Module rule " +
-                            (StringUtils.isEmpty(key) ? "" :
-                                    "(" + key + ") ") + "error.  " +
-                            error).collect(Collectors.toList()));
+            list.addAll(errors.get(key)
+                              .stream()
+                              .map(error -> "Knowledge Module rule " +
+                                      (StringUtils.isEmpty(key) ? "" : "(" + key + ") ") + "error.  " + error)
+                              .collect(Collectors.toList()));
         }
         return list;
     }

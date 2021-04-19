@@ -34,14 +34,14 @@ import java.util.stream.Collectors;
 
 public class ConstraintServiceImpl implements ConstraintService {
 
-    private final static Logger logger = LogManager.getLogger(ConstraintServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(ConstraintServiceImpl.class);
 
-    private final static String CONSTRAINT_FILE = "Constraints";
+    private static final String CONSTRAINT_FILE = "Constraints";
 
-    private final static String ERROR_MESSAGE_8001 =
+    private static final String ERROR_MESSAGE_8001 =
             "Exception in serializing constraints.";
-    private final static String ERROR_MESSAGE_8002 = "Can't delete %s in directory %s.";
-    private final static String ERROR_MESSAGE_8003 =
+    private static final String ERROR_MESSAGE_8002 = "Can't delete %s in directory %s.";
+    private static final String ERROR_MESSAGE_8003 =
             "No Constraint files were discovered in metadata directory; files must be " +
                     "named either Constraints.xml or Constraints-*.xml";
 

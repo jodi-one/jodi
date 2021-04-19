@@ -16,9 +16,9 @@ import org.apache.logging.log4j.Logger;
  * An {@link ActionRunner} implementation that invokes the {@link DeleteReferencesActionRunner} method.
  */
 public class DeleteReferencesActionRunner implements ActionRunner {
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(DeleteReferencesActionRunner.class);
-    private final static String ERROR_MESSAGE_01056 = "The configuration property model code is required to run Delete References.";
+    private static final String ERROR_MESSAGE_01056 = "The configuration property model code is required to run Delete References.";
 
     private final TableServiceProvider tableService;
     private final ErrorWarningMessageJodi errorWarningMessages;

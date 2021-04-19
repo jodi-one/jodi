@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 public class KeyBase implements ModelNode {
 
-    private final static Logger logger = LogManager.getLogger(KeyBase.class);
+    private static final Logger logger = LogManager.getLogger(KeyBase.class);
 
-    private final static String ERROR_MESSAGE_84200 =
+    private static final String ERROR_MESSAGE_84200 =
             "Operation only applies to key of type %s or %s.";
 
     protected final ErrorWarningMessageJodi errorWarningMessages;

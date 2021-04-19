@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class FlowsBuilderImpl implements FlowsBuilder {
-    private final static Logger logger = LogManager.getLogger(FlowsBuilderImpl.class);
+    private static final Logger logger = LogManager.getLogger(FlowsBuilderImpl.class);
     private final OdiTransformationAccessStrategy<MapRootContainer, Dataset, DatastoreComponent, ReusableMappingComponent, IMapComponent, OdiContext, ILogicalSchema> odiAccessStrategy;
     private final JodiProperties properties;
     private final DatastoreBuilder datastoreBuilder;

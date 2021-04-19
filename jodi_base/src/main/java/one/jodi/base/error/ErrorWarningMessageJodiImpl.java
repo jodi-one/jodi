@@ -21,389 +21,392 @@ import java.util.stream.Collectors;
  */
 public class ErrorWarningMessageJodiImpl implements ErrorWarningMessageJodi {
 
-    public final static int PackageSequenceGlobal = -1;
+   public static final int PackageSequenceGlobal = -1;
 
-    private final static Logger LOGGER =
-            LogManager.getLogger(ErrorWarningMessageJodiImpl.class);
-    private static final String FORMAT_HEADER = "[%05d] ";
-    private static final String ERROR_MESSAGE_99996 =
-            "Error in construction error message from string '%s'. Message code string " +
-                    "contains %d parameters while %s parameters are entered.";
-    private static ErrorWarningMessageJodi error = null;
+   private static final Logger LOGGER = LogManager.getLogger(ErrorWarningMessageJodiImpl.class);
+   private static final String FORMAT_HEADER = "[%05d] ";
+   private static final String ERROR_MESSAGE_99996 =
+           "Error in construction error message from string '%s'. Message code string " +
+                   "contains %d parameters while %s parameters are entered.";
+   private static ErrorWarningMessageJodi error = null;
 
-    private final SortedMap<Integer, List<String>> errorMessages;
-    private final SortedMap<Integer, List<String>> warningMessages;
-    private final SortedMap<String, File> files = new TreeMap<>();
-    //has state
-    private int lastSequenceNumber;
-    private String metaDataDirectory;
+   private final SortedMap<Integer, List<String>> errorMessages;
+   private final SortedMap<Integer, List<String>> warningMessages;
+   private final SortedMap<String, File> files = new TreeMap<>();
+   //has state
+   private int lastSequenceNumber;
+   private String metaDataDirectory;
 
-    /**
-     * Constructor used as part of the Singleton pattern.
-     */
-    private ErrorWarningMessageJodiImpl() {
-        super();
-        errorMessages = new TreeMap<>();
-        warningMessages = new TreeMap<>();
+   /**
+    * Constructor used as part of the Singleton pattern.
+    */
+   private ErrorWarningMessageJodiImpl() {
+      super();
+      errorMessages = new TreeMap<>();
+      warningMessages = new TreeMap<>();
 
-        if (EOL.length() > 10) {
-            throw new UnRecoverableException("Possible DoS Attack via method call " +
-                    "System.getProperty(\"line.separator\")");
-        }
-    }
+      if (EOL.length() > 10) {
+         throw new UnRecoverableException(
+                 "Possible DoS Attack via method call " + "System.getProperty(\"line.separator\")");
+      }
+   }
 
-    /**
-     * Singleton pattern
-     * <p>
-     * A singleton instance is created before Guice-based injection is enabled.
-     * This instance will be handed over to the Guice framework as part of the
-     * bootstrapping mechanism and is subsequently injected in all other services
-     * when requested.
-     *
-     * @return errorWarningMessageJodi instance of the error / warning system
-     */
-    public synchronized static ErrorWarningMessageJodi getInstance() {
-        if (error == null) {
-            error = new ErrorWarningMessageJodiImpl();
-        }
-        return error;
-    }
+   /**
+    * Singleton pattern
+    * <p>
+    * A singleton instance is created before Guice-based injection is enabled.
+    * This instance will be handed over to the Guice framework as part of the
+    * bootstrapping mechanism and is subsequently injected in all other services
+    * when requested.
+    *
+    * @return errorWarningMessageJodi instance of the error / warning system
+    */
+   public synchronized static ErrorWarningMessageJodi getInstance() {
+      if (error == null) {
+         error = new ErrorWarningMessageJodiImpl();
+      }
+      return error;
+   }
 
-    private void initializeFiles(final String metadataFolder) {
-        File dir = new File(metadataFolder);
-        if (dir.isDirectory()) {
-            File[] xmlFiles = dir.listFiles();
-            if (xmlFiles == null) {
-                return;
+   private void initializeFiles(final String metadataFolder) {
+      File dir = new File(metadataFolder);
+      if (dir.isDirectory()) {
+         File[] xmlFiles = dir.listFiles();
+         if (xmlFiles == null) {
+            return;
+         }
+         for (File f : xmlFiles) {
+            if (f.isFile()) {
+               files.put(f.getName(), f);
+            } else {
+               // recurse
+               initializeFiles(f.getAbsolutePath());
             }
-            for (File f : xmlFiles) {
-                if (f.isFile()) {
-                    files.put(f.getName(),
-                            f);
-                } else {
-                    // recurse
-                    initializeFiles(f.getAbsolutePath());
-                }
+         }
+      }
+   }
+
+   @Override
+   public SortedMap<Integer, List<String>> getErrorMessages() {
+      return Collections.unmodifiableSortedMap(errorMessages);
+   }
+
+   @Override
+   public SortedMap<Integer, List<String>> getWarningMessages() {
+      return Collections.unmodifiableSortedMap(warningMessages);
+   }
+
+   @Override
+   public synchronized String printMessages(final MESSAGE_TYPE... messagesToSuppress) {
+      StringBuilder report = new StringBuilder();
+      List<MESSAGE_TYPE> amessagesToSuppress = Arrays.asList(messagesToSuppress);
+      String wString = null;
+      if (messagesToSuppress.length == 0) {
+         // default
+         if (errorMessages.size() > 0 || warningMessages.size() > 0) {
+            report.append(messageHeader)
+                  .append(EOL);
+            LOGGER.warn(messageHeader);
+            if (errorMessages.size() > 0) {
+               report.append("----  ERRORS  ----------------------------")
+                     .append(EOL);
+               LOGGER.error("----  ERRORS  ----------------------------");
+               report.append(printByMessageType(Level.ERROR, errorMessages, wString));
             }
-        }
-    }
-
-    @Override
-    public SortedMap<Integer, List<String>> getErrorMessages() {
-        return Collections.unmodifiableSortedMap(errorMessages);
-    }
-
-    @Override
-    public SortedMap<Integer, List<String>> getWarningMessages() {
-        return Collections.unmodifiableSortedMap(warningMessages);
-    }
-
-    @Override
-    public synchronized String printMessages(final MESSAGE_TYPE... messagesToSuppress) {
-        StringBuilder report = new StringBuilder();
-        List<MESSAGE_TYPE> amessagesToSuppress = Arrays.asList(messagesToSuppress);
-        String wString = null;
-        if (messagesToSuppress.length == 0) {
-            // default
-            if (errorMessages.size() > 0 || warningMessages.size() > 0) {
-                report.append(messageHeader).append(EOL);
-                LOGGER.warn(messageHeader);
-                if (errorMessages.size() > 0) {
-                    report.append("----  ERRORS  ----------------------------").append(EOL);
-                    LOGGER.error("----  ERRORS  ----------------------------");
-                    report.append(printByMessageType(Level.ERROR, errorMessages, wString));
-                }
-                if (warningMessages.size() > 0) {
-                    wString = "(warning)";
-                    report.append("----  WARNINGS  ----------------------------").append(EOL);
-                    LOGGER.warn("----  WARNINGS  ----------------------------");
-                    report.append(printByMessageType(Level.WARN, warningMessages, wString
-                    ));
-                }
-                LOGGER.warn("-------------------------------------------------------" + EOL);
+            if (warningMessages.size() > 0) {
+               wString = "(warning)";
+               report.append("----  WARNINGS  ----------------------------")
+                     .append(EOL);
+               LOGGER.warn("----  WARNINGS  ----------------------------");
+               report.append(printByMessageType(Level.WARN, warningMessages, wString));
             }
-        } else {
-            if (!amessagesToSuppress.contains(MESSAGE_TYPE.ERRORS)) {
-                // suppress warnings and only print errors
-                if (errorMessages.size() > 0) {
-                    report.append(messageHeader).append(EOL);
-                    LOGGER.error(messageHeader);
-                    report.append("----  ERRORS  ----------------------------").append(EOL);
-                    LOGGER.error("----  ERRORS  ----------------------------");
-                    report.append(printByMessageType(Level.ERROR, getErrorMessages(),
-                            wString));
-                    if (warningMessages.size() == 0) {
-                        report.append("-------------------------------------------------------").append(EOL);
-                        LOGGER.error("-------------------------------------------------------" + EOL);
-                    }
-                }
+            LOGGER.warn("-------------------------------------------------------" + EOL);
+         }
+      } else {
+         if (!amessagesToSuppress.contains(MESSAGE_TYPE.ERRORS)) {
+            // suppress warnings and only print errors
+            if (errorMessages.size() > 0) {
+               report.append(messageHeader)
+                     .append(EOL);
+               LOGGER.error(messageHeader);
+               report.append("----  ERRORS  ----------------------------")
+                     .append(EOL);
+               LOGGER.error("----  ERRORS  ----------------------------");
+               report.append(printByMessageType(Level.ERROR, getErrorMessages(), wString));
+               if (warningMessages.size() == 0) {
+                  report.append("-------------------------------------------------------")
+                        .append(EOL);
+                  LOGGER.error("-------------------------------------------------------" + EOL);
+               }
             }
-            if (!amessagesToSuppress.contains(MESSAGE_TYPE.WARNINGS)) {
-                // suppress errors and only print warnings
-                if (warningMessages.size() > 0) {
-                    wString = "(warning)";
-                    if (errorMessages.size() < 1) {
-                        report.append(messageHeader).append(EOL);
-                        LOGGER.warn(messageHeader);
-                    }
-                    report.append("----  WARNINGS  ----------------------------").append(EOL);
-                    LOGGER.warn("----  WARNINGS  ----------------------------");
-                    report.append(printByMessageType(Level.WARN, getWarningMessages(),
-                            wString));
-                    LOGGER.warn("-------------------------------------------------------" + EOL);
-                    report.append("-------------------------------------------------------").append(EOL).append(EOL);
-                }
+         }
+         if (!amessagesToSuppress.contains(MESSAGE_TYPE.WARNINGS)) {
+            // suppress errors and only print warnings
+            if (warningMessages.size() > 0) {
+               wString = "(warning)";
+               if (errorMessages.size() < 1) {
+                  report.append(messageHeader)
+                        .append(EOL);
+                  LOGGER.warn(messageHeader);
+               }
+               report.append("----  WARNINGS  ----------------------------")
+                     .append(EOL);
+               LOGGER.warn("----  WARNINGS  ----------------------------");
+               report.append(printByMessageType(Level.WARN, getWarningMessages(), wString));
+               LOGGER.warn("-------------------------------------------------------" + EOL);
+               report.append("-------------------------------------------------------")
+                     .append(EOL)
+                     .append(EOL);
             }
-        }
-        return report.toString();
-    }
+         }
+      }
+      return report.toString();
+   }
 
-    private synchronized String printByMessageType(final Level level,
-                                                   final Map<Integer, List<String>> map,
-                                                   final String warning) {
-        StringBuilder report = new StringBuilder();
-        SortedMap<Integer, List<String>> updatedMap = new TreeMap<>();
-        for (Integer packageSequence : map.keySet()) {
-            for (String message : map.get(packageSequence)) {
-                int messageCode = getMessageIdFromErrorMessage(message);
-                String packageSequenceString = (packageSequence == PackageSequenceGlobal) ? ""
-                        : packageSequence + " - ";
-                if (warning == null) {
-                    List<String> messages;
-                    if (!updatedMap.containsKey(messageCode)) {
-                        messages = new ArrayList<>();
-                    } else {
-                        messages = updatedMap.get(messageCode);
-                    }
-                    messages.add(packageSequenceString.concat(message));
-                    updatedMap.put(messageCode, messages);
-                } else {
-                    List<String> messages;
-                    if (!updatedMap.containsKey(messageCode)) {
-                        messages = new ArrayList<>();
-                    } else {
-                        messages = updatedMap.get(messageCode);
-                    }
-                    messages.add(packageSequenceString.concat(message)
-                            .concat(warning));
-                    updatedMap.put(messageCode, messages);
-                }
+   private synchronized String printByMessageType(final Level level, final Map<Integer, List<String>> map,
+                                                  final String warning) {
+      StringBuilder report = new StringBuilder();
+      SortedMap<Integer, List<String>> updatedMap = new TreeMap<>();
+      for (Integer packageSequence : map.keySet()) {
+         for (String message : map.get(packageSequence)) {
+            int messageCode = getMessageIdFromErrorMessage(message);
+            String packageSequenceString = (packageSequence == PackageSequenceGlobal) ? "" : packageSequence + " - ";
+            if (warning == null) {
+               List<String> messages;
+               if (!updatedMap.containsKey(messageCode)) {
+                  messages = new ArrayList<>();
+               } else {
+                  messages = updatedMap.get(messageCode);
+               }
+               messages.add(packageSequenceString.concat(message));
+               updatedMap.put(messageCode, messages);
+            } else {
+               List<String> messages;
+               if (!updatedMap.containsKey(messageCode)) {
+                  messages = new ArrayList<>();
+               } else {
+                  messages = updatedMap.get(messageCode);
+               }
+               messages.add(packageSequenceString.concat(message)
+                                                 .concat(warning));
+               updatedMap.put(messageCode, messages);
             }
-        }
-        for (List<String> messages : updatedMap.values()) {
-            for (String message : messages) {
-                if (level.equals(Level.WARN)) {
-                    LOGGER.warn(message);
-                } else {
-                    LOGGER.error(message);
-                }
-                report.append(message).append(EOL);
+         }
+      }
+      for (List<String> messages : updatedMap.values()) {
+         for (String message : messages) {
+            if (level.equals(Level.WARN)) {
+               LOGGER.warn(message);
+            } else {
+               LOGGER.error(message);
             }
-        }
-        return report.toString();
-    }
+            report.append(message)
+                  .append(EOL);
+         }
+      }
+      return report.toString();
+   }
 
-    @Override
-    public void addMessage(final String errorMessage, final MESSAGE_TYPE messageType) {
-        addMessage(PackageSequenceGlobal, errorMessage, messageType);
-    }
+   @Override
+   public void addMessage(final String errorMessage, final MESSAGE_TYPE messageType) {
+      addMessage(PackageSequenceGlobal, errorMessage, messageType);
+   }
 
-    private boolean checkIfMessageAlreadyExist(String errorMessage,
-                                               MESSAGE_TYPE messageType) {
-        boolean messageAlreadyExist = false;
-        if (messageType.equals(MESSAGE_TYPE.ERRORS)) {
-            // search errorMessages for an occurrence of errorMessage
-            if (searchMessageMap(errorMessages, errorMessage)) {
-                messageAlreadyExist = true;
+   private boolean checkIfMessageAlreadyExist(String errorMessage, MESSAGE_TYPE messageType) {
+      boolean messageAlreadyExist = false;
+      if (messageType.equals(MESSAGE_TYPE.ERRORS)) {
+         // search errorMessages for an occurrence of errorMessage
+         if (searchMessageMap(errorMessages, errorMessage)) {
+            messageAlreadyExist = true;
+         }
+      } else if (messageType.equals(MESSAGE_TYPE.WARNINGS)) {
+         // search warningMessages for an occurrence of errorMessage
+         if (searchMessageMap(warningMessages, errorMessage)) {
+            messageAlreadyExist = true;
+         }
+      }
+
+      return messageAlreadyExist;
+   }
+
+   private boolean searchMessageMap(final SortedMap<Integer, List<String>> messageMap, final String errorMessage) {
+      for (List<String> messages : messageMap.values()) {
+         for (String message : messages) {
+            if (message.equals(errorMessage)) {
+               return true;
             }
-        } else if (messageType.equals(MESSAGE_TYPE.WARNINGS)) {
-            // search warningMessages for an occurrence of errorMessage
-            if (searchMessageMap(warningMessages, errorMessage)) {
-                messageAlreadyExist = true;
-            }
-        }
+         }
+      }
+      return false;
+   }
 
-        return messageAlreadyExist;
-    }
+   private int getMessageIdFromErrorMessage(final String errorMessage) {
+      String temp = (errorMessage.split("]")[0]).replace("[", "");
 
-    private boolean searchMessageMap(final SortedMap<Integer, List<String>> messageMap,
-                                     final String errorMessage) {
-        for (List<String> messages : messageMap.values()) {
-            for (String message : messages) {
-                if (message.equals(errorMessage)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+      StringBuilder buf = new StringBuilder();
+      char[] tempChar = temp.toCharArray();
 
-    private int getMessageIdFromErrorMessage(final String errorMessage) {
-        String temp = (errorMessage.split("]")[0]).replace("[", "");
+      boolean firstDigitFound = false;
+      for (char c : tempChar) {
+         //i++;
+         if (c != '0' && !firstDigitFound) {
+            firstDigitFound = true;
+            buf.append(c);
 
-        StringBuilder buf = new StringBuilder();
-        char[] tempChar = temp.toCharArray();
+         } else if (firstDigitFound) {
+            buf.append(c);
+         }
+      }
 
-        boolean firstDigitFound = false;
-        for (char c : tempChar) {
-            //i++;
-            if (c != '0' && !firstDigitFound) {
-                firstDigitFound = true;
-                buf.append(c);
+      try {
+         return Integer.parseInt(buf.toString());
+      } catch (NumberFormatException nfe) {
+         return 0;
+      }
+   }
 
-            } else if (firstDigitFound) {
-                buf.append(c);
-            }
-        }
+   @Override
+   public void addMessage(final int packageSequence, String errorMessage, final MESSAGE_TYPE messageType) {
+      if (files.size() == 0 && this.metaDataDirectory != null) {
+         initializeFiles(this.metaDataDirectory);
+      }
+      if (packageSequence > 0) {
+         List<File> matching = files.values()
+                                    .stream()
+                                    .filter(file -> file.getName()
+                                                        .startsWith(packageSequence + ""))
+                                    .collect(Collectors.toList());
+         if (matching.size() == 1) {
+            errorMessage = errorMessage + "(" + matching.get(0)
+                                                        .getAbsolutePath() + ")";
+         }
+      }
+      if (messageType.equals(MESSAGE_TYPE.ERRORS)) {
+         if (!checkIfMessageAlreadyExist(errorMessage, messageType)) {
+            addMessages(errorMessages, packageSequence, errorMessage);
+         }
+      } else if (messageType.equals(MESSAGE_TYPE.WARNINGS)) {
+         if (!checkIfMessageAlreadyExist(errorMessage, messageType)) {
+            addMessages(warningMessages, packageSequence, errorMessage);
+         }
+      }
+   }
 
-        try {
-            return Integer.parseInt(buf.toString());
-        } catch (NumberFormatException nfe) {
-            return 0;
-        }
-    }
+   private void addMessages(final SortedMap<Integer, List<String>> errorMessages, final int packageSequence,
+                            final String errorMessage) {
+      List<String> list = errorMessages.computeIfAbsent(packageSequence, k -> new ArrayList<>());
+      list.add(errorMessage);
+   }
 
-    @Override
-    public void addMessage(final int packageSequence, String errorMessage,
-                           final MESSAGE_TYPE messageType) {
-        if (files.size() == 0 && this.metaDataDirectory != null) {
-            initializeFiles(this.metaDataDirectory);
-        }
-        if (packageSequence > 0) {
-            List<File> matching = files.values().stream()
-                    .filter(file -> file.getName().startsWith(packageSequence + ""))
-                    .collect(Collectors.toList());
-            if (matching.size() == 1) {
-                errorMessage = errorMessage + "(" +
-                        matching.get(0).getAbsolutePath() + ")";
-            }
-        }
-        if (messageType.equals(MESSAGE_TYPE.ERRORS)) {
-            if (!checkIfMessageAlreadyExist(errorMessage, messageType)) {
-                addMessages(errorMessages, packageSequence, errorMessage);
-            }
-        } else if (messageType.equals(MESSAGE_TYPE.WARNINGS)) {
-            if (!checkIfMessageAlreadyExist(errorMessage, messageType)) {
-                addMessages(warningMessages, packageSequence, errorMessage);
-            }
-        }
-    }
+   @Override
+   public String formatMessage(final int messageCode, final String messageFormatString, final Class<?> classLocation,
+                               final Object... args) {
+      if (validate(messageCode, messageFormatString, args)) {
+         return String.format(FORMAT_HEADER, messageCode) + String.format(messageFormatString, args);
+      } else {
+         long countVariables = messageFormatString.chars()
+                                                  .filter(ch -> ch == '%')
+                                                  .count();
+         String cleanMessage = messageFormatString.replace("%", "");
+         String msg =
+                 formatMessage(99996, ERROR_MESSAGE_99996, this.getClass(), cleanMessage, countVariables, args.length);
+         addMessage(msg, MESSAGE_TYPE.ERRORS);
+         return msg;
+      }
+   }
 
-    private void addMessages(final SortedMap<Integer, List<String>> errorMessages,
-                             final int packageSequence, final String errorMessage) {
-        List<String> list = errorMessages.computeIfAbsent(packageSequence, k -> new ArrayList<>());
-        list.add(errorMessage);
-    }
+   public boolean validate(final int messageCode, final String messageCodeString, final Object[] args) {
+      // number of occurrences of %
+      long count = messageCodeString.chars()
+                                    .filter(ch -> ch == '%')
+                                    .count();
 
-    @Override
-    public String formatMessage(final int messageCode, final String messageFormatString,
-                                final Class<?> classLocation, final Object... args) {
-        if (validate(messageCode, messageFormatString, args)) {
-            return String.format(FORMAT_HEADER, messageCode) +
-                    String.format(messageFormatString, args);
-        } else {
-            long countVariables = messageFormatString.chars()
-                    .filter(ch -> ch == '%')
-                    .count();
-            String cleanMessage = messageFormatString.replace("%", "");
-            String msg = formatMessage(99996, ERROR_MESSAGE_99996, this.getClass(),
-                    cleanMessage, countVariables, args.length);
-            addMessage(msg, MESSAGE_TYPE.ERRORS);
-            return msg;
-        }
-    }
+      // simple case the same number of parameters in args and message code string
+      if (count == args.length) {
+         return true;
+      } else {
+         // less simple case: parameters are used multiple times within message
+         String[] parameters = messageCodeString.split("\"");
+         long hits = Arrays.stream(parameters)
+                           .filter(p -> p.startsWith("%"))
+                           .map(p -> p.substring(1))
+                           .distinct()
+                           .count();
 
-    public boolean validate(final int messageCode, final String messageCodeString,
-                            final Object[] args) {
-        // number of occurrences of %
-        long count = messageCodeString.chars().filter(ch -> ch == '%').count();
+         return hits == args.length;
+      }
+   }
 
-        // simple case the same number of parameters in args and message code string
-        if (count == args.length) {
-            return true;
-        } else {
-            // less simple case: parameters are used multiple times within message
-            String[] parameters = messageCodeString.split("\"");
-            long hits = Arrays.stream(parameters)
-                    .filter(p -> p.startsWith("%"))
-                    .map(p -> p.substring(1))
-                    .distinct().count();
+   @Override
+   public void clear() {
+      setLastSequenceNumber(0);
+      if (errorMessages.isEmpty()) {
+         LOGGER.debug("No errors to be removed.");
+      } else {
+         int size = errorMessages.size();
+         errorMessages.clear();
+         LOGGER.debug("Error messages removed. " + size);
+      }
+      if (warningMessages.isEmpty()) {
+         LOGGER.debug("No warnings to be removed.");
+      } else {
+         int size = warningMessages.size();
+         warningMessages.clear();
+         LOGGER.debug("Warning messages removed. " + size);
+      }
+   }
 
-            return hits == args.length;
-        }
-    }
+   private boolean hasPrefix(final List<String> messages, final String prefix) {
+      boolean match = false;
+      for (String msg : messages) {
+         if (msg.startsWith(prefix)) {
+            match = true;
+            break;
+         }
+      }
+      return match;
+   }
 
-    @Override
-    public void clear() {
-        setLastSequenceNumber(0);
-        if (errorMessages.isEmpty()) {
-            LOGGER.debug("No errors to be removed.");
-        } else {
-            int size = errorMessages.size();
-            errorMessages.clear();
-            LOGGER.debug("Error messages removed. " + size);
-        }
-        if (warningMessages.isEmpty()) {
-            LOGGER.debug("No warnings to be removed.");
-        } else {
-            int size = warningMessages.size();
-            warningMessages.clear();
-            LOGGER.debug("Warning messages removed. " + size);
-        }
-    }
+   private boolean messageWithCodeExists(final Collection<List<String>> messages, final int code) {
+      boolean found = false;
+      String prefix = "[" + String.format("%05d", code) + "]";
 
-    private boolean hasPrefix(final List<String> messages, final String prefix) {
-        boolean match = false;
-        for (String msg : messages) {
-            if (msg.startsWith(prefix)) {
-                match = true;
-                break;
-            }
-        }
-        return match;
-    }
+      for (List<String> msgs : messages) {
+         if (hasPrefix(msgs, prefix)) {
+            found = true;
+            break;
+         }
+      }
+      return found;
+   }
 
-    private boolean messageWithCodeExists(final Collection<List<String>> messages,
-                                          final int code) {
-        boolean found = false;
-        String prefix = "[" + String.format("%05d", code) + "]";
+   @Override
+   public boolean existsErrorMessageWithCode(final int errorCode) {
+      return messageWithCodeExists(this.errorMessages.values(), errorCode);
+   }
 
-        for (List<String> msgs : messages) {
-            if (hasPrefix(msgs, prefix)) {
-                found = true;
-                break;
-            }
-        }
-        return found;
-    }
+   @Override
+   public boolean existsWarningMessageWithCode(final int warningCode) {
+      return messageWithCodeExists(this.warningMessages.values(), warningCode);
+   }
 
-    @Override
-    public boolean existsErrorMessageWithCode(final int errorCode) {
-        return messageWithCodeExists(this.errorMessages.values(), errorCode);
-    }
+   @Override
+   public int getLastSequenceNumber() {
+      return lastSequenceNumber;
+   }
 
-    @Override
-    public boolean existsWarningMessageWithCode(final int warningCode) {
-        return messageWithCodeExists(this.warningMessages.values(), warningCode);
-    }
+   @Override
+   public void setLastSequenceNumber(final int lastSequenceNumber) {
+      this.lastSequenceNumber = lastSequenceNumber;
+   }
 
-    @Override
-    public int getLastSequenceNumber() {
-        return lastSequenceNumber;
-    }
+   @Override
+   public int assignSequenceNumber() {
+      return this.lastSequenceNumber += 10;
+   }
 
-    @Override
-    public void setLastSequenceNumber(final int lastSequenceNumber) {
-        this.lastSequenceNumber = lastSequenceNumber;
-    }
-
-    @Override
-    public int assignSequenceNumber() {
-        return this.lastSequenceNumber += 10;
-    }
-
-    @Override
-    public void setMetaDataDirectory(final String metaDataDirectory) {
-        this.metaDataDirectory = metaDataDirectory;
-    }
+   @Override
+   public void setMetaDataDirectory(final String metaDataDirectory) {
+      this.metaDataDirectory = metaDataDirectory;
+   }
 }

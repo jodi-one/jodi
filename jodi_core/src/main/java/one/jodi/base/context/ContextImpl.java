@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * <b>Must be a Singleton!</b>
  */
 public class ContextImpl implements Context {
-    private final static Logger logger = LogManager.getLogger(ContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(ContextImpl.class);
 
     private GlobalContextState state = new GlobalContextState();
 

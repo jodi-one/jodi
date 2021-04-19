@@ -15,9 +15,9 @@ import java.util.Optional;
 
 public class ApplicationBase implements ModelNode {
 
-    private final static Logger logger = LogManager.getLogger(ApplicationBase.class);
+    private static final Logger logger = LogManager.getLogger(ApplicationBase.class);
 
-    private final static String ERROR_MSG =
+    private static final String ERROR_MSG =
             "Schema '%1$s' already exists in application.";
 
     private final Map<String, SchemaBase> schemas = new HashMap<>();

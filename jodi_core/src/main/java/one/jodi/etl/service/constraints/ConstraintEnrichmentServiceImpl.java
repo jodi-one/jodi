@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class ConstraintEnrichmentServiceImpl implements ConstraintEnrichmentService {
 
-    private final static String newLine = System.getProperty("line.separator");
+    private static final String newLine = System.getProperty("line.separator");
     private final JodiProperties properties;
     private final ModelPropertiesProvider modelPropertiesProvider;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -49,13 +49,17 @@ public class ConstraintEnrichmentServiceImpl implements ConstraintEnrichmentServ
 
     protected void enrich(ReferenceConstraint constraint) {
 
-        if (properties.getPropertyKeys().contains(constraint.getPrimaryModel())) {
-            ((ReferenceConstraintImpl) constraint).setPrimaryModel(properties.getProperty(constraint.getPrimaryModel()));
+        if (properties.getPropertyKeys()
+                      .contains(constraint.getPrimaryModel())) {
+            ((ReferenceConstraintImpl) constraint).setPrimaryModel(
+                    properties.getProperty(constraint.getPrimaryModel()));
         }
     }
 
+    @Override
     public void enrich(Constraint constraint) {
-        if (properties.getPropertyKeys().contains(constraint.getModel())) {
+        if (properties.getPropertyKeys()
+                      .contains(constraint.getModel())) {
             ((ConstraintImpl) constraint).setModel(properties.getProperty(constraint.getModel()));
         }
 
@@ -87,25 +91,31 @@ public class ConstraintEnrichmentServiceImpl implements ConstraintEnrichmentServ
 
     private String getModelCode(String model) {
 
-        Optional<ModelProperties> mopro = modelPropertiesProvider.getConfiguredModels().stream()
-                .filter(mp -> {
-                    return mp.getCode() != null && mp.getCode().trim().equals(model);
-                })
-                .sorted((mp1, mp2) -> Integer.compare(mp1.getOrder(), mp2.getOrder()))
-                .findFirst();
+        Optional<ModelProperties> mopro = modelPropertiesProvider.getConfiguredModels()
+                                                                 .stream()
+                                                                 .filter(mp -> {
+                                                                     return mp.getCode() != null && mp.getCode()
+                                                                                                      .trim()
+                                                                                                      .equals(model);
+                                                                 })
+                                                                 .sorted((mp1, mp2) -> Integer.compare(mp1.getOrder(),
+                                                                                                       mp2.getOrder()))
+                                                                 .findFirst();
 
         if (!mopro.isPresent()) {
             String models = modelPropertiesProvider.getConfiguredModels()
-                    .stream()
-                    .map(m -> m.getCode())
-                    .reduce((t, u) -> t + "," + u)
-                    .get();
-            String msg = "Cannot map model '" + model + "' to a model code amongst (" + models + ").  Configure Jodi Properties.";
+                                                   .stream()
+                                                   .map(m -> m.getCode())
+                                                   .reduce((t, u) -> t + "," + u)
+                                                   .get();
+            String msg = "Cannot map model '" + model + "' to a model code amongst (" + models +
+                    ").  Configure Jodi Properties.";
             logger.error(msg);
             errorWarningMessages.addMessage(msg, MESSAGE_TYPE.ERRORS);
             throw new RuntimeException(msg);
         } else {
-            return mopro.get().getModelID() + ".code";
+            return mopro.get()
+                        .getModelID() + ".code";
         }
 
     }

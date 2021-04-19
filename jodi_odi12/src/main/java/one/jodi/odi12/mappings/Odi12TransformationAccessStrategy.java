@@ -58,7 +58,7 @@ public class Odi12TransformationAccessStrategy implements
                 ReusableMappingComponent, IMapComponent,
                 OdiContext, ILogicalSchema> {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(Odi12TransformationAccessStrategy.class);
 
     private final OdiInstance odiInstance;

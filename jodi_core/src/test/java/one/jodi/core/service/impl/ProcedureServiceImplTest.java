@@ -43,7 +43,7 @@ public class ProcedureServiceImplTest {
 
     final static Logger logger =
             LogManager.getLogger(ProcedureServiceImplTest.class);
-    private final static String myLogicalModel = "myLogicalModel";
+    private static final String myLogicalModel = "myLogicalModel";
     private ErrorWarningMessageJodi errorWarningMessages =
             ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
     private List<Path> paths;

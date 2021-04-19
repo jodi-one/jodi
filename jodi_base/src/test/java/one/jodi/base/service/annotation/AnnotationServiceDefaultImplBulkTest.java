@@ -14,20 +14,28 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.MockitoAnnotations;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class AnnotationServiceDefaultImplBulkTest {
 
-    private final static String MODEL_NAME = "MODEL";
-    private final static String TABLE_NAME = "TABLE";
-    private final static String COLUMN_NAME = "THE_COLUMN";
+    private static final String MODEL_NAME = "MODEL";
+    private static final String TABLE_NAME = "TABLE";
+    private static final String COLUMN_NAME = "THE_COLUMN";
 
     private BaseConfigurations b;
     private TableBusinessRules businessRules;
@@ -41,17 +49,14 @@ public class AnnotationServiceDefaultImplBulkTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.b = BaseConfigurationsHelper.getTestBaseConfigurations();
-        errorWarningMessages = ErrorWarningMessageJodiHelper
-                .getTestErrorWarningMessages();
+        errorWarningMessages = ErrorWarningMessageJodiHelper.getTestErrorWarningMessages();
         errorWarningMessages.clear();
         businessRules = new TableBusinessRulesImpl(b);
         annotationFactory = new TestAnnotationFactory(errorWarningMessages);
-        jsAnnotation = new JsAnnotationImpl("pathToTheFolder", annotationFactory,
-                errorWarningMessages);
+        jsAnnotation = new JsAnnotationImpl("pathToTheFolder", annotationFactory, errorWarningMessages);
         keyParser = new KeyParserImpl(errorWarningMessages);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
     }
 
     private DataStoreDescriptor createMockDataStoreDescriptor(final String descr) {
@@ -64,8 +69,7 @@ public class AnnotationServiceDefaultImplBulkTest {
         return ds;
     }
 
-    private ColumnMetaData createMockColumnMetaData(final String name,
-                                                    final String descr) {
+    private ColumnMetaData createMockColumnMetaData(final String name, final String descr) {
         DataStoreDescriptor dataStore = createMockDataStoreDescriptor(null);
 
         ColumnMetaData column = mock(ColumnMetaData.class);
@@ -82,15 +86,13 @@ public class AnnotationServiceDefaultImplBulkTest {
         String descr = "";
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
 
-        Optional<TableAnnotations> result =
-                fixture.getAnnotations(ds, Collections.emptyList());
+        Optional<TableAnnotations> result = fixture.getAnnotations(ds, Collections.emptyList());
         assertFalse(result.isPresent());
     }
 
     @Test
     public void testClassicDescription() {
-        String descr = "---description {\"a\": 3, \"b\": \"string\", " +
-                "\"c\": [1, 2, null], \"d\": null} ";
+        String descr = "---description {\"a\": 3, \"b\": \"string\", " + "\"c\": [1, 2, null], \"d\": null} ";
         String cDescr = "Default Business Name---column description";
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
@@ -104,18 +106,28 @@ public class AnnotationServiceDefaultImplBulkTest {
         // table validations
         assertTrue(result.isPresent());
         TableAnnotations ta = result.get();
-        assertFalse(ta.getBusinessName().isPresent());
-        assertFalse(ta.getAbbreviatedBusinessName().isPresent());
-        assertTrue(ta.getDescription().isPresent());
-        assertEquals("description", ta.getDescription().get());
+        assertFalse(ta.getBusinessName()
+                      .isPresent());
+        assertFalse(ta.getAbbreviatedBusinessName()
+                      .isPresent());
+        assertTrue(ta.getDescription()
+                     .isPresent());
+        assertEquals("description", ta.getDescription()
+                                      .get());
 
         // column validations
-        assertFalse(ta.getColumnAnnotations().isEmpty());
-        assertEquals(1, ta.getColumnAnnotations().size());
-        assertEquals("Default Business Name",
-                ta.getColumnAnnotations().get(COLUMN_NAME).getBusinessName().get());
-        assertEquals("column description",
-                ta.getColumnAnnotations().get(COLUMN_NAME).getDescription().get());
+        assertFalse(ta.getColumnAnnotations()
+                      .isEmpty());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
+        assertEquals("Default Business Name", ta.getColumnAnnotations()
+                                                .get(COLUMN_NAME)
+                                                .getBusinessName()
+                                                .get());
+        assertEquals("column description", ta.getColumnAnnotations()
+                                             .get(COLUMN_NAME)
+                                             .getDescription()
+                                             .get());
     }
 
     @Test(expected = UnRecoverableException.class)
@@ -127,12 +139,12 @@ public class AnnotationServiceDefaultImplBulkTest {
 
     @Test
     public void testOverrideWithTableJs() {
-        String descr = "---description {\"Business Name\": \"This Name\", " +
-                "\"Description\": \"This description\", " +
-                "\"c\": [\"a\", true, null], \"d\": null} ";
+        String descr =
+                "---description {\"Business Name\": \"This Name\", " + "\"Description\": \"This description\", " +
+                        "\"c\": [\"a\", true, null], \"d\": null} ";
 
-        String cDescr = "---description {\"Business Name\": \"This Name\", " +
-                "\"Description\": \"This description\"} ";
+        String cDescr =
+                "---description {\"Business Name\": \"This Name\", " + "\"Description\": \"This description\"} ";
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         ColumnMetaData col = createMockColumnMetaData(COLUMN_NAME, cDescr);
@@ -145,27 +157,36 @@ public class AnnotationServiceDefaultImplBulkTest {
         // table validation
         assertTrue(result.isPresent());
         TableAnnotations ta = result.get();
-        assertTrue(ta.getBusinessName().isPresent());
-        assertEquals("This Name", ta.getBusinessName().get());
-        assertFalse(ta.getAbbreviatedBusinessName().isPresent());
-        assertTrue(ta.getDescription().isPresent());
-        assertEquals("This description", ta.getDescription().get());
+        assertTrue(ta.getBusinessName()
+                     .isPresent());
+        assertEquals("This Name", ta.getBusinessName()
+                                    .get());
+        assertFalse(ta.getAbbreviatedBusinessName()
+                      .isPresent());
+        assertTrue(ta.getDescription()
+                     .isPresent());
+        assertEquals("This description", ta.getDescription()
+                                           .get());
 
         // column validations
-        assertFalse(ta.getColumnAnnotations().isEmpty());
-        assertEquals(1, ta.getColumnAnnotations().size());
-        assertEquals("This Name", ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getBusinessName().get());
-        assertEquals("This description", ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getDescription().get());
+        assertFalse(ta.getColumnAnnotations()
+                      .isEmpty());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
+        assertEquals("This Name", ta.getColumnAnnotations()
+                                    .get(COLUMN_NAME)
+                                    .getBusinessName()
+                                    .get());
+        assertEquals("This description", ta.getColumnAnnotations()
+                                           .get(COLUMN_NAME)
+                                           .getDescription()
+                                           .get());
     }
 
     @Test
     public void testOnlyTableJs() {
-        String descr = "---{\"Business Name\": \"This Name\", " +
-                "\"Description\": \"This description\"} ";
-        String cDescr = "---{\"Business Name\": \"This Name\", " +
-                "\"Description\": \"This description\"} ";
+        String descr = "---{\"Business Name\": \"This Name\", " + "\"Description\": \"This description\"} ";
+        String cDescr = "---{\"Business Name\": \"This Name\", " + "\"Description\": \"This description\"} ";
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         ColumnMetaData col = createMockColumnMetaData(COLUMN_NAME, cDescr);
@@ -177,42 +198,43 @@ public class AnnotationServiceDefaultImplBulkTest {
         // table validation
         assertTrue(result.isPresent());
         TableAnnotations ta = result.get();
-        assertTrue(ta.getBusinessName().isPresent());
-        assertEquals("This Name", ta.getBusinessName().get());
-        assertFalse(ta.getAbbreviatedBusinessName().isPresent());
-        assertTrue(ta.getDescription().isPresent());
-        assertEquals("This description", ta.getDescription().get());
+        assertTrue(ta.getBusinessName()
+                     .isPresent());
+        assertEquals("This Name", ta.getBusinessName()
+                                    .get());
+        assertFalse(ta.getAbbreviatedBusinessName()
+                      .isPresent());
+        assertTrue(ta.getDescription()
+                     .isPresent());
+        assertEquals("This description", ta.getDescription()
+                                           .get());
 
         // column validations
-        assertFalse(ta.getColumnAnnotations().isEmpty());
-        assertEquals(1, ta.getColumnAnnotations().size());
-        assertEquals("This Name", ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getBusinessName().get());
-        assertEquals("This description", ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getDescription().get());
+        assertFalse(ta.getColumnAnnotations()
+                      .isEmpty());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
+        assertEquals("This Name", ta.getColumnAnnotations()
+                                    .get(COLUMN_NAME)
+                                    .getBusinessName()
+                                    .get());
+        assertEquals("This description", ta.getColumnAnnotations()
+                                           .get(COLUMN_NAME)
+                                           .getDescription()
+                                           .get());
     }
 
     @Test(expected = UnRecoverableException.class)
     public void testOverrideWithWrongJsFile() {
         String descr = "";
-        final String js =
-                "{\"Schemas\" : |" + // incorrect '|' vs. correct '['
-                        "{\"Name\" : \"MODEL\"," +
-                        "\"Tables\" : [" +
-                        "{\"Name\" : \"TABLE\"," +
-                        "\"Business Name\" : \"BN\"," +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}";
+        final String js = "{\"Schemas\" : |" + // incorrect '|' vs. correct '['
+                "{\"Name\" : \"MODEL\"," + "\"Tables\" : [" + "{\"Name\" : \"TABLE\"," + "\"Business Name\" : \"BN\"," +
+                "}" + "]" + "}" + "]" + "}";
 
-        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper
-                .createJsTestAnnotation(errorWarningMessages);
+        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper.createJsTestAnnotation(errorWarningMessages);
         jsAnnotation.setJsModel(js);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         fixture.getAnnotations(ds, Collections.emptyList());
@@ -222,29 +244,14 @@ public class AnnotationServiceDefaultImplBulkTest {
     public void testOnlyJsFile() {
         final String descr = "";
         final String cDescr = "";
-        final String js =
-                "{\"Schemas\" : [" +
-                        "{\"Name\" : \"MODEL\"," +
-                        "\"Tables\" : [" +
-                        "{\"Name\" : \"TABLE\"," +
-                        "\"Business Name\" : \"Dimension 01 Override\"," +
-                        "\"Columns\" : [" +
-                        "{\"Name\" : \"THE_COLUMN\"," +
-                        "\"Business Name\" : \"Drill Key 1 Override\"" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}";
+        final String js = "{\"Schemas\" : [" + "{\"Name\" : \"MODEL\"," + "\"Tables\" : [" + "{\"Name\" : \"TABLE\"," +
+                "\"Business Name\" : \"Dimension 01 Override\"," + "\"Columns\" : [" + "{\"Name\" : \"THE_COLUMN\"," +
+                "\"Business Name\" : \"Drill Key 1 Override\"" + "}" + "]" + "}" + "]" + "}" + "]" + "}";
 
-        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper
-                .createJsTestAnnotation(errorWarningMessages);
+        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper.createJsTestAnnotation(errorWarningMessages);
         jsAnnotation.setJsModel(js);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         ColumnMetaData col = createMockColumnMetaData(COLUMN_NAME, cDescr);
@@ -256,17 +263,26 @@ public class AnnotationServiceDefaultImplBulkTest {
         Optional<TableAnnotations> o = fixture.getAnnotations(ds, Collections.emptyList());
         assertTrue(o.isPresent());
         TableAnnotations ta = o.get();
-        assertEquals("Dimension 01 Override", ta.getBusinessName().get());
-        assertFalse(ta.getDescription().isPresent());
-        assertFalse(ta.getAbbreviatedBusinessName().isPresent());
+        assertEquals("Dimension 01 Override", ta.getBusinessName()
+                                                .get());
+        assertFalse(ta.getDescription()
+                      .isPresent());
+        assertFalse(ta.getAbbreviatedBusinessName()
+                      .isPresent());
 
         // column validations
-        assertFalse(ta.getColumnAnnotations().isEmpty());
-        assertEquals(1, ta.getColumnAnnotations().size());
-        assertEquals("Drill Key 1 Override",
-                ta.getColumnAnnotations().get(COLUMN_NAME).getBusinessName().get());
-        assertFalse(ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getDescription().isPresent());
+        assertFalse(ta.getColumnAnnotations()
+                      .isEmpty());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
+        assertEquals("Drill Key 1 Override", ta.getColumnAnnotations()
+                                               .get(COLUMN_NAME)
+                                               .getBusinessName()
+                                               .get());
+        assertFalse(ta.getColumnAnnotations()
+                      .get(COLUMN_NAME)
+                      .getDescription()
+                      .isPresent());
     }
 
     @Test(expected = UnRecoverableException.class)
@@ -284,32 +300,16 @@ public class AnnotationServiceDefaultImplBulkTest {
 
     @Test
     public void testOverrideWithJsFile() {
-        String descr = "B Name ((Abbrev)) ---" +
-                "description {\"Business Name\": \"This Name\", " +
-                "\"b\": \"string\" } ";
-        final String js =
-                "{\"Schemas\" : [" +
-                        "{\"Name\" : \"MODEL\"," +
-                        "\"Tables\" : [" +
-                        "{\"Name\" : \"TABLE\"," +
-                        "\"Business Name\" : \"Dimension 01 Override\"," +
-                        "\"Columns\" : [" +
-                        "{\"Name\" : \"THE_COLUMN\"," +
-                        "\"Business Name\" : \"Drill Key 1 Override\"" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}";
+        String descr =
+                "B Name ((Abbrev)) ---" + "description {\"Business Name\": \"This Name\", " + "\"b\": \"string\" } ";
+        final String js = "{\"Schemas\" : [" + "{\"Name\" : \"MODEL\"," + "\"Tables\" : [" + "{\"Name\" : \"TABLE\"," +
+                "\"Business Name\" : \"Dimension 01 Override\"," + "\"Columns\" : [" + "{\"Name\" : \"THE_COLUMN\"," +
+                "\"Business Name\" : \"Drill Key 1 Override\"" + "}" + "]" + "}" + "]" + "}" + "]" + "}";
 
-        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper
-                .createJsTestAnnotation(errorWarningMessages);
+        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper.createJsTestAnnotation(errorWarningMessages);
         jsAnnotation.setJsModel(js);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         ColumnMetaData col = createMockColumnMetaData(COLUMN_NAME, "");
@@ -320,42 +320,31 @@ public class AnnotationServiceDefaultImplBulkTest {
         Optional<TableAnnotations> o = fixture.getAnnotations(ds, Collections.emptyList());
         assertTrue(o.isPresent());
         TableAnnotations ta = o.get();
-        assertEquals("Dimension 01 Override", ta.getBusinessName().get());
-        assertEquals("description", ta.getDescription().get());
-        assertEquals("Abbrev", ta.getAbbreviatedBusinessName().get());
+        assertEquals("Dimension 01 Override", ta.getBusinessName()
+                                                .get());
+        assertEquals("description", ta.getDescription()
+                                      .get());
+        assertEquals("Abbrev", ta.getAbbreviatedBusinessName()
+                                 .get());
 
         assertNotNull(ta.getColumnAnnotations());
-        assertEquals(1, ta.getColumnAnnotations().size());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
     }
 
     @Test
     public void testMergeColumnAnnotationsEmbeddedAndJsFile() {
         final String descr = "";
-        String cDescr = "---{\"Business Name\": \"This embedded Name\", " +
-                "\"Description\": \"This embedded description\"} ";
-        final String js =
-                "{\"Schemas\" : [" +
-                        "{\"Name\" : \"MODEL\"," +
-                        "\"Tables\" : [" +
-                        "{\"Name\" : \"TABLE\"," +
-                        "\"Business Name\" : \"Dimension 01 Override\"," +
-                        "\"Columns\" : [" +
-                        "{\"Name\" : \"THE_COLUMN\"," +
-                        "\"Business Name\" : \"Drill Key 1 Override\"" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}";
+        String cDescr =
+                "---{\"Business Name\": \"This embedded Name\", " + "\"Description\": \"This embedded description\"} ";
+        final String js = "{\"Schemas\" : [" + "{\"Name\" : \"MODEL\"," + "\"Tables\" : [" + "{\"Name\" : \"TABLE\"," +
+                "\"Business Name\" : \"Dimension 01 Override\"," + "\"Columns\" : [" + "{\"Name\" : \"THE_COLUMN\"," +
+                "\"Business Name\" : \"Drill Key 1 Override\"" + "}" + "]" + "}" + "]" + "}" + "]" + "}";
 
-        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper
-                .createJsTestAnnotation(errorWarningMessages);
+        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper.createJsTestAnnotation(errorWarningMessages);
         jsAnnotation.setJsModel(js);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         ColumnMetaData col = createMockColumnMetaData(COLUMN_NAME, cDescr);
@@ -367,26 +356,36 @@ public class AnnotationServiceDefaultImplBulkTest {
         Optional<TableAnnotations> o = fixture.getAnnotations(ds, Collections.emptyList());
         assertTrue(o.isPresent());
         TableAnnotations ta = o.get();
-        assertEquals("Dimension 01 Override", ta.getBusinessName().get());
-        assertFalse(ta.getDescription().isPresent());
-        assertFalse(ta.getAbbreviatedBusinessName().isPresent());
+        assertEquals("Dimension 01 Override", ta.getBusinessName()
+                                                .get());
+        assertFalse(ta.getDescription()
+                      .isPresent());
+        assertFalse(ta.getAbbreviatedBusinessName()
+                      .isPresent());
 
         // column validations
-        assertFalse(ta.getColumnAnnotations().isEmpty());
-        assertEquals(1, ta.getColumnAnnotations().size());
-        assertEquals("Drill Key 1 Override",
-                ta.getColumnAnnotations().get(COLUMN_NAME).getBusinessName().get());
-        assertTrue(ta.getColumnAnnotations().get(COLUMN_NAME)
-                .getDescription().isPresent());
-        assertEquals("This embedded description",
-                ta.getColumnAnnotations().get(COLUMN_NAME)
-                        .getDescription().get());
+        assertFalse(ta.getColumnAnnotations()
+                      .isEmpty());
+        assertEquals(1, ta.getColumnAnnotations()
+                          .size());
+        assertEquals("Drill Key 1 Override", ta.getColumnAnnotations()
+                                               .get(COLUMN_NAME)
+                                               .getBusinessName()
+                                               .get());
+        assertTrue(ta.getColumnAnnotations()
+                     .get(COLUMN_NAME)
+                     .getDescription()
+                     .isPresent());
+        assertEquals("This embedded description", ta.getColumnAnnotations()
+                                                    .get(COLUMN_NAME)
+                                                    .getDescription()
+                                                    .get());
     }
 
     private List<Pattern> getPatterns(final List<String> regEx) {
         return regEx.stream()
-                .map(r -> Pattern.compile(r, Pattern.CASE_INSENSITIVE))
-                .collect(Collectors.toList());
+                    .map(r -> Pattern.compile(r, Pattern.CASE_INSENSITIVE))
+                    .collect(Collectors.toList());
     }
 
     @Test
@@ -411,48 +410,51 @@ public class AnnotationServiceDefaultImplBulkTest {
         // table validation
         Optional<TableAnnotations> o = fixture.getAnnotations(ds, getPatterns(regEx));
         assertTrue(o.isPresent());
-        assertEquals(2, o.get().getColumnAnnotations().size());
-        assertNotNull(o.get().getColumnAnnotations().get("HIER_LVL2_CODE"));
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_CODE")
-                .isHidden().isPresent());
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_CODE")
-                .isHidden().get());
+        assertEquals(2, o.get()
+                         .getColumnAnnotations()
+                         .size());
+        assertNotNull(o.get()
+                       .getColumnAnnotations()
+                       .get("HIER_LVL2_CODE"));
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_CODE")
+                    .isHidden()
+                    .isPresent());
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_CODE")
+                    .isHidden()
+                    .get());
 
-        assertNotNull(o.get().getColumnAnnotations().get("HIER_LVL2_NAME"));
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_NAME")
-                .isHidden().isPresent());
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_NAME")
-                .isHidden().get());
+        assertNotNull(o.get()
+                       .getColumnAnnotations()
+                       .get("HIER_LVL2_NAME"));
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_NAME")
+                    .isHidden()
+                    .isPresent());
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_NAME")
+                    .isHidden()
+                    .get());
     }
 
     @Test
     public void testDefaultHideOverride() {
         final String descr = "";
         String cDescr = "";
-        final String js =
-                "{\"Schemas\" : [" +
-                        "{\"Name\" : \"MODEL\"," +
-                        "\"Tables\" : [" +
-                        "{\"Name\" : \"TABLE\"," +
-                        "\"Business Name\" : \"Dimension 01 Override\"," +
-                        "\"Columns\" : [" +
-                        "{\"Name\" : \"HIER_LVL2_NAME\"," +
-                        "\"Business Name\" : \"Description Override\"," +
-                        "\"Hide\" : false" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}" +
-                        "]" +
-                        "}";
+        final String js = "{\"Schemas\" : [" + "{\"Name\" : \"MODEL\"," + "\"Tables\" : [" + "{\"Name\" : \"TABLE\"," +
+                "\"Business Name\" : \"Dimension 01 Override\"," + "\"Columns\" : [" +
+                "{\"Name\" : \"HIER_LVL2_NAME\"," + "\"Business Name\" : \"Description Override\"," +
+                "\"Hide\" : false" + "}" + "]" + "}" + "]" + "}" + "]" + "}";
 
-        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper
-                .createJsTestAnnotation(errorWarningMessages);
+        JsTestAnnotation jsAnnotation = BaseAnnotationServiceHelper.createJsTestAnnotation(errorWarningMessages);
         jsAnnotation.setJsModel(js);
-        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation,
-                keyParser, annotationFactory, b,
-                errorWarningMessages);
+        fixture = new AnnotationServiceDefaultImpl(businessRules, jsAnnotation, keyParser, annotationFactory, b,
+                                                   errorWarningMessages);
 
         DataStoreDescriptor ds = createMockDataStoreDescriptor(descr);
         Collection<ColumnMetaData> columns = new ArrayList<>();
@@ -472,18 +474,36 @@ public class AnnotationServiceDefaultImplBulkTest {
         // table validation
         Optional<TableAnnotations> o = fixture.getAnnotations(ds, getPatterns(regEx));
         assertTrue(o.isPresent());
-        assertEquals(2, o.get().getColumnAnnotations().size());
-        assertNotNull(o.get().getColumnAnnotations().get("HIER_LVL2_CODE"));
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_CODE")
-                .isHidden().isPresent());
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_CODE")
-                .isHidden().get());
+        assertEquals(2, o.get()
+                         .getColumnAnnotations()
+                         .size());
+        assertNotNull(o.get()
+                       .getColumnAnnotations()
+                       .get("HIER_LVL2_CODE"));
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_CODE")
+                    .isHidden()
+                    .isPresent());
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_CODE")
+                    .isHidden()
+                    .get());
 
-        assertNotNull(o.get().getColumnAnnotations().get("HIER_LVL2_NAME"));
-        assertTrue(o.get().getColumnAnnotations().get("HIER_LVL2_NAME")
-                .isHidden().isPresent());
-        assertFalse(o.get().getColumnAnnotations().get("HIER_LVL2_NAME")
-                .isHidden().get());
+        assertNotNull(o.get()
+                       .getColumnAnnotations()
+                       .get("HIER_LVL2_NAME"));
+        assertTrue(o.get()
+                    .getColumnAnnotations()
+                    .get("HIER_LVL2_NAME")
+                    .isHidden()
+                    .isPresent());
+        assertFalse(o.get()
+                     .getColumnAnnotations()
+                     .get("HIER_LVL2_NAME")
+                     .isHidden()
+                     .get());
     }
 
 

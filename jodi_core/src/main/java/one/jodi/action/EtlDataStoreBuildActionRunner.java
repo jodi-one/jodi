@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class EtlDataStoreBuildActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01050 = "The metadata directory is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_01051 = "The configuration property file is required to run Transformation creation";
-    private final static String ERROR_MESSAGE_01052 = "The prefix configuration is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01050 = "The metadata directory is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01051 = "The configuration property file is required to run Transformation creation";
+    private static final String ERROR_MESSAGE_01052 = "The prefix configuration is required to run Transformation creation";
     private final EtlDataStoreBuildService dataStoreBuildService;
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final FileCollector fileCollector;

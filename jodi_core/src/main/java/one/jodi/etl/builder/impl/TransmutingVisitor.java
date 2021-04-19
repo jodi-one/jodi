@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
  */
 public class TransmutingVisitor extends BaseVisitor {
 
-    private final static String ERROR_MESSAGE_02090 = "Dataset index not found";
-    private final static Logger logger = LogManager.getLogger(TransmutingVisitor.class);
+    private static final String ERROR_MESSAGE_02090 = "Dataset index not found";
+    private static final Logger logger = LogManager.getLogger(TransmutingVisitor.class);
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final Pattern tempNameTableMatcher;
     private final String prefix;

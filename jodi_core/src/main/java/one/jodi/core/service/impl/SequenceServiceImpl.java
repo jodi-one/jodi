@@ -28,13 +28,13 @@ import java.util.List;
 
 public class SequenceServiceImpl implements SequenceService {
 
-    private final static Logger logger = LogManager.getLogger(SequenceServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(SequenceServiceImpl.class);
 
-    private final static String SEQUENCES_FILE = "Sequences";
+    private static final String SEQUENCES_FILE = "Sequences";
 
-    private final static String ERROR_MESSAGE_5001 =
+    private static final String ERROR_MESSAGE_5001 =
             "Exception in serializing sequences details %s.";
-    private final static String ERROR_MESSAGE_5002 = "Can't delete %s in directory %s.";
+    private static final String ERROR_MESSAGE_5002 = "Can't delete %s in directory %s.";
 
     private final SequenceServiceProvider serviceProvider;
     private final SequenceEnrichmentBuilder enrichmentService;

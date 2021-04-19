@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
  * the class {@link OneToOneMappingGenerationImpl}
  */
 public class OneToOneMappingGenerationImplTest {
-    private final static Logger logger = LogManager.getLogger(
+    private static final Logger logger = LogManager.getLogger(
             OneToOneMappingGenerationImplTest.class);
     @Mock
     DataStore dataStore;

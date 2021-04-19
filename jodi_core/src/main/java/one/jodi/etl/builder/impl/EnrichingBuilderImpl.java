@@ -58,14 +58,14 @@ import java.util.stream.Collectors;
  */
 public class EnrichingBuilderImpl implements EnrichingBuilder {
 
-    private final static Logger LOGGER = LogManager.getLogger(EnrichingBuilderImpl.class);
-    private final static String NEW_LINE = System.getProperty("line.separator");
+    private static final Logger LOGGER = LogManager.getLogger(EnrichingBuilderImpl.class);
+    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private static final Pattern PATTERN_UDF_NUMBER = Pattern.compile("ud(\\d+)\\z",
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private final static String ERROR_MESSAGE_03240 = "KnowledgeModuleConfiguration can't be null.";
-    private final static String ERROR_MESSAGE_08070 =
+    private static final String ERROR_MESSAGE_03240 = "KnowledgeModuleConfiguration can't be null.";
+    private static final String ERROR_MESSAGE_08070 =
             "convertUDFs(Set<UserDefinedFlag>): Error parsing UDF number from name %s";
 
     private final JodiProperties properties;

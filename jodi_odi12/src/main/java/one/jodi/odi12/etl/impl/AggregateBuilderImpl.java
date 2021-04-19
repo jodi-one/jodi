@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 public class AggregateBuilderImpl implements AggregateBuilder {
-    private final static Logger logger = LogManager.getLogger(AggregateBuilderImpl.class);
+    private static final Logger logger = LogManager.getLogger(AggregateBuilderImpl.class);
     private final OdiCommon odiCommon;
 
     @Inject

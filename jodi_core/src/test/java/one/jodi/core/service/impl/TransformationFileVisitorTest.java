@@ -12,12 +12,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TransformationFileVisitorTest {
-    private final static String ROOT_DIR = File.separator + "root" + File.separator;
+    private static final String ROOT_DIR = File.separator + "root" + File.separator;
 
     private ErrorWarningMessageJodi errorWarningMessages;
     private BasicFileAttributes attributes;
@@ -38,7 +42,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -51,7 +56,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -64,7 +70,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -77,7 +84,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -90,7 +98,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -103,7 +112,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -116,8 +126,10 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertFalse(fixture.getPathList().isEmpty());
-            assertEquals(1, fixture.getPathList().size());
+            assertFalse(fixture.getPathList()
+                               .isEmpty());
+            assertEquals(1, fixture.getPathList()
+                                   .size());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -130,7 +142,8 @@ public class TransformationFileVisitorTest {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }
@@ -138,13 +151,13 @@ public class TransformationFileVisitorTest {
 
     @Test
     public void testCollectInPathWithVisitorNameLoadPlan() {
-        Path path = Paths.get(ROOT_DIR + File.separator + "loadPlans" + File.separator +
-                "123_Trans_Something.xml");
+        Path path = Paths.get(ROOT_DIR + File.separator + "loadPlans" + File.separator + "123_Trans_Something.xml");
         try {
             FileVisitResult result = fixture.visitFile(path, attributes);
             assertEquals(FileVisitResult.CONTINUE, result);
             assertNotNull(fixture.getPathList());
-            assertTrue(fixture.getPathList().isEmpty());
+            assertTrue(fixture.getPathList()
+                              .isEmpty());
         } catch (IOException e) {
             fail("Exception was not expected");
         }

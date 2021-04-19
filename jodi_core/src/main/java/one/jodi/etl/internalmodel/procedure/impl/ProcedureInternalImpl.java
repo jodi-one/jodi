@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 
 public class ProcedureInternalImpl extends ProcedureHeaderImpl implements ProcedureInternal, Validate {
 
-    private final static Logger logger = LogManager.getLogger(ProcedureInternalImpl.class);
+    private static final Logger logger = LogManager.getLogger(ProcedureInternalImpl.class);
 
-    private final static String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.getProperty("line.separator");
 
-    private final static String ERROR_MESSAGE_62200 = "Procedure must define at least one task in its definition file %1$s. "
+    private static final String ERROR_MESSAGE_62200 = "Procedure must define at least one task in its definition file %1$s. "
             + "This procedure specification will be ignored.";
 
     private final Optional<String> description;

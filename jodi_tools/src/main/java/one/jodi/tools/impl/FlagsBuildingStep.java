@@ -18,20 +18,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FlagsBuildingStep implements ModelBuildingStep {
-    public final static String INSERT = "INSERT";
-    public final static String UPDATE = "UPDATE";
-    public final static String KEY = "KEY";
-    public final static String MANDATORY = "MANDATORY";
-    public final static String UD1 = "UD1";
-    public final static String UD2 = "UD2";
-    public final static String UD3 = "UD3";
-    public final static String UD4 = "UD4";
-    public final static String UD5 = "UD5";
-    public final static String UD6 = "UD6";
-    public final static String UD7 = "UD7";
-    public final static String UD8 = "UD8";
-    public final static String UD9 = "UD9";
-    public final static String UD10 = "UD10";
+    public static final String INSERT = "INSERT";
+    public static final String UPDATE = "UPDATE";
+    public static final String KEY = "KEY";
+    public static final String MANDATORY = "MANDATORY";
+    public static final String UD1 = "UD1";
+    public static final String UD2 = "UD2";
+    public static final String UD3 = "UD3";
+    public static final String UD4 = "UD4";
+    public static final String UD5 = "UD5";
+    public static final String UD6 = "UD6";
+    public static final String UD7 = "UD7";
+    public static final String UD8 = "UD8";
+    public static final String UD9 = "UD9";
+    public static final String UD10 = "UD10";
 
 
     private final Logger logger = LogManager.getLogger(FlagsBuildingStep.class);

@@ -22,12 +22,12 @@ import java.util.Map.Entry;
  */
 public class TableServiceImpl implements TableService {
 
-    private final static Logger logger = LogManager.getLogger(TableServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(TableServiceImpl.class);
 
-    private final static boolean NO_FLOW_CHECK = false;
-    private final static boolean NO_MANDATORY = false;
-    private final static boolean NO_UPDATE = false;
-    private final static boolean NO_SELECT = false;
+    private static final boolean NO_FLOW_CHECK = false;
+    private static final boolean NO_MANDATORY = false;
+    private static final boolean NO_UPDATE = false;
+    private static final boolean NO_SELECT = false;
 
     private final DatabaseMetadataService databaseMetadataService;
     private final JodiProperties jodiProperties;

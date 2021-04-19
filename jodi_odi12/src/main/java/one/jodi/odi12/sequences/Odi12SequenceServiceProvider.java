@@ -20,10 +20,10 @@ import java.util.Collection;
 
 public class Odi12SequenceServiceProvider implements SequenceServiceProvider {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(Odi12SequenceServiceProvider.class);
 
-    private final static String ERROR_MESSAGE_5000 =
+    private static final String ERROR_MESSAGE_5000 =
             "SequenceImpl type unknown for sequence %s for type; %s.";
 
     private final OdiSequenceAccessStrategy accessStrategy;

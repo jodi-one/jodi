@@ -7,17 +7,17 @@ import java.util.Optional;
 
 public class TreeBuilder<T> {
 
-    private final static String ONE_LIST_REQUIRED =
+    private static final String ONE_LIST_REQUIRED =
             "Null or an empty list are not acceptable inputs for this method.";
 
-    private final static String ONE_ROOT_REQUIRED =
+    private static final String ONE_ROOT_REQUIRED =
             "The first node in each list must be identical because " +
                     "it represents the single root node.";
 
-    private final static String ROOT_NO_NULL_ALLOWED =
+    private static final String ROOT_NO_NULL_ALLOWED =
             "Null is not an accepted root value.";
 
-    private final static String NO_NULL_ALLOWED =
+    private static final String NO_NULL_ALLOWED =
             "Null is not an accepted item value.";
 
     private Optional<TreeNode<T>> matchingChild(final TreeNode<T> parent,

@@ -42,25 +42,25 @@ public class ExecutionLocationContextImpl implements ExecutionLocationContext {
 
     //private final Logger logger = LogManager.getLogger(ExecutionLocationContextImpl.class);
 
-    private final static String ERROR_MESSAGE_03140 =
+    private static final String ERROR_MESSAGE_03140 =
             "Source filter validation failed.  See error report.";
-    private final static String ERROR_MESSAGE_03150 =
+    private static final String ERROR_MESSAGE_03150 =
             "Execution location set to invalid value.  See error report.";
-    private final static String ERROR_MESSAGE_03160 =
+    private static final String ERROR_MESSAGE_03160 =
             "Join execution location errors.  See error report.";
-    private final static String ERROR_MESSAGE_03170 =
+    private static final String ERROR_MESSAGE_03170 =
             "Execution location strategy has set invalid join location.";
-    private final static String ERROR_MESSAGE_03180 =
+    private static final String ERROR_MESSAGE_03180 =
             "The explicitly defined %1$s execution location can only be values SOURCE or WORK.";
-    private final static String ERROR_MESSAGE_03190 =
+    private static final String ERROR_MESSAGE_03190 =
             "The %2$s execution location strategy %1$s must only return values SOURCE or WORK.";
-    private final static String ERROR_MESSAGE_03191 =
+    private static final String ERROR_MESSAGE_03191 =
             "The execution location strategy %1$s returns an unknown value %2$s.";
-    private final static String AUTO_MAP_SQL_PREFIX = "mockAlias.";
+    private static final String AUTO_MAP_SQL_PREFIX = "mockAlias.";
     private static final Pattern CONDITION_TABLENAME_PATTERN =
             Pattern.compile("([a-z]{1}[a-z1-9\\$#_]*)\\.[a-z]{1}[a-z1-9\\$#_]*(\\.[a-z]{1}[a-z1-9\\$#_]*){0,1}",
                     Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private final static Logger logger = LogManager.getLogger(ExecutionLocationContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(ExecutionLocationContextImpl.class);
     /**
      * The custom strategy.
      */

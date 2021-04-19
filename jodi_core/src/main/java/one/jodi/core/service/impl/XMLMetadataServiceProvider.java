@@ -14,8 +14,12 @@ import one.jodi.base.util.CollectXmlObjectsUtil;
 import one.jodi.base.util.CollectXmlObjectsUtilImpl;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.context.packages.PackageCache;
+import one.jodi.core.etlmodel.ExecPackageType;
+import one.jodi.core.etlmodel.ObjectFactory;
 import one.jodi.core.etlmodel.Package;
-import one.jodi.core.etlmodel.*;
+import one.jodi.core.etlmodel.Packages;
+import one.jodi.core.etlmodel.StepType;
+import one.jodi.core.etlmodel.Steps;
 import one.jodi.core.model.Transformation;
 import one.jodi.core.service.MetadataServiceProvider;
 import one.jodi.core.validation.etl.ETLValidator;
@@ -30,8 +34,14 @@ import org.apache.logging.log4j.Logger;
 import javax.xml.bind.JAXBElement;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,13 +50,11 @@ import java.util.stream.Stream;
  */
 public class XMLMetadataServiceProvider implements MetadataServiceProvider {
 
-    private final static Logger logger =
-            LogManager.getLogger(XMLMetadataServiceProvider.class);
-    private final static String ERROR_MESSAGE_00070 =
-            "Ignoring file due to error deriving package sequence: %s, %s";
-    private final static String FILE_EXTENSION = ".xml";
-    private final static String PACKAGE_DEFAULT_NAME = "0";
-    private final static String PACKAGE_JOURNALIZED_NAME = "1";
+    private static final Logger logger = LogManager.getLogger(XMLMetadataServiceProvider.class);
+    private static final String ERROR_MESSAGE_00070 = "Ignoring file due to error deriving package sequence: %s, %s";
+    private static final String FILE_EXTENSION = ".xml";
+    private static final String PACKAGE_DEFAULT_NAME = "0";
+    private static final String PACKAGE_JOURNALIZED_NAME = "1";
     private final String metadataFolder;
     private final TransformationBuilder transformationBuilder;
     private final ETLValidator etlValidator;
@@ -62,11 +70,9 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
     @Inject
     public XMLMetadataServiceProvider(final JodiProperties properties,
                                       final @Nullable @XmlFolderName String metadataFolder,
-                                      final PackageCache packageCache,
-                                      final FileCollector fileCollector,
+                                      final PackageCache packageCache, final FileCollector fileCollector,
                                       final TransformationBuilder transformationBuilder,
-                                      final PackageBuilder packageBuilder,
-                                      final ETLValidator etlValidator,
+                                      final PackageBuilder packageBuilder, final ETLValidator etlValidator,
                                       final ErrorWarningMessageJodi errorWarningMessages,
                                       final @PropertyFileName String propFile) {
         this.metadataFolder = metadataFolder;
@@ -78,32 +84,22 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
         this.etlValidator = etlValidator;
         this.errorWarningMessages = errorWarningMessages;
 
-        this.packageCollectUtil =
-                new CollectXmlObjectsUtilImpl<Packages,
-                        ObjectFactory>(
-                        ObjectFactory.class,
-                        properties.getPackageSchemaLocation(),
-                        errorWarningMessages);
-        this.transCollectUtil =
-                new CollectXmlObjectsUtilImpl<Transformation,
-                        one.jodi.core.model.ObjectFactory>(
-                        one.jodi.core.model.ObjectFactory.class,
-                        properties.getInputSchemaLocation(),
-                        errorWarningMessages);
+        this.packageCollectUtil = new CollectXmlObjectsUtilImpl<>(ObjectFactory.class, properties.getPackageSchemaLocation(),
+                                                                  errorWarningMessages);
+        this.transCollectUtil = new CollectXmlObjectsUtilImpl<>(one.jodi.core.model.ObjectFactory.class, properties.getInputSchemaLocation(),
+                                                                errorWarningMessages);
         this.propFile = Paths.get(propFile);
 
     }
 
     // test purposes only
-    protected void setPackageCollectUtil(
-            final CollectXmlObjectsUtil<Packages> packageCollectUtil) {
+    protected void setPackageCollectUtil(final CollectXmlObjectsUtil<Packages> packageCollectUtil) {
         assert (packageCollectUtil != null);
         this.packageCollectUtil = packageCollectUtil;
     }
 
     // test purposes only
-    protected void setTransformationCollectUtil(
-            final CollectXmlObjectsUtil<Transformation> transCollectUtil) {
+    protected void setTransformationCollectUtil(final CollectXmlObjectsUtil<Transformation> transCollectUtil) {
         assert (transCollectUtil != null);
         this.transCollectUtil = transCollectUtil;
     }
@@ -114,11 +110,9 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
             return lead;
         } catch (NumberFormatException e) {
             // this code should never be executed; otherwise a programming error is detected
-            String msg = errorWarningMessages.formatMessage(70, ERROR_MESSAGE_00070,
-                    this.getClass(),
-                    path, e.getMessage());
-            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(),
-                    msg, MESSAGE_TYPE.WARNINGS);
+            String msg =
+                    errorWarningMessages.formatMessage(70, ERROR_MESSAGE_00070, this.getClass(), path, e.getMessage());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.WARNINGS);
             logger.debug(msg, e);
             return -1;
         }
@@ -126,18 +120,14 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
 
     @Override
     public void provideTransformationMetadata(final TransformationMetadataHandler handler) {
-        final List<Path> paths =
-                this.fileCollector
-                        .collectInPath(Paths.get(this.metadataFolder),
-                                new TransformationFileVisitor(errorWarningMessages))
-                        .stream()
-                        .sorted(new DescSequenceComparator())
-                        .collect(Collectors.toList());
-        Map<Path, Transformation> transformations =
-                this.transCollectUtil.collectObjectsFromFiles(paths);
+        final List<Path> paths = this.fileCollector.collectInPath(Paths.get(this.metadataFolder),
+                                                                  new TransformationFileVisitor(errorWarningMessages))
+                                                   .stream()
+                                                   .sorted(new DescSequenceComparator())
+                                                   .collect(Collectors.toList());
+        Map<Path, Transformation> transformations = this.transCollectUtil.collectObjectsFromFiles(paths);
 
-        ArrayDeque<TransformationInfo> transformationStack =
-                new ArrayDeque<>(paths.size() + 1);
+        ArrayDeque<TransformationInfo> transformationStack = new ArrayDeque<>(paths.size() + 1);
         handler.pre();
         handler.preDESC();
 
@@ -146,16 +136,15 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
             if (packageSequence == -1) {
                 continue;
             }
-            etlValidator.validatePackageSequence(packageSequence, path.toFile().getName());
+            etlValidator.validatePackageSequence(packageSequence, path.toFile()
+                                                                      .getName());
 
             Transformation transformation = transformations.get(path);
             logger.debug("transmuting Transformation from external to internal model");
 
             one.jodi.etl.internalmodel.Transformation internalTransformation =
                     transformationBuilder.transmute(transformation, packageSequence);
-            transformationStack.push(new TransformationInfo(transformation,
-                    internalTransformation,
-                    packageSequence));
+            transformationStack.push(new TransformationInfo(transformation, internalTransformation, packageSequence));
             handler.handleTransformationDESC(internalTransformation);
         }
 
@@ -184,29 +173,30 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
         }
 
         final List<Path> files =
-                this.fileCollector.collectInPath(path, fileName + "-", FILE_EXTENSION,
-                        fileName + FILE_EXTENSION);
+                this.fileCollector.collectInPath(path, fileName + "-", FILE_EXTENSION, fileName + FILE_EXTENSION);
         return packageCollectUtil.collectObjectsFromFiles(files)
-                .entrySet()
-                .stream()
-                .sorted(new DepthFirstComparator<>())
-                .peek(e -> logger.debug(e.getKey().toFile().getAbsolutePath()));
+                                 .entrySet()
+                                 .stream()
+                                 .sorted(new DepthFirstComparator<>())
+                                 .peek(e -> logger.debug(e.getKey()
+                                                          .toFile()
+                                                          .getAbsolutePath()));
     }
 
     private Stream<JAXBElement<? extends StepType>> getStepStream(Steps steps) {
-        return steps == null ? Stream.empty() : steps.getStep().stream();
+        return steps == null ? Stream.empty() : steps.getStep()
+                                                     .stream();
     }
 
-    private Set<String> getExecPackages(final Package pck,
-                                        final Set<String> knownPackageNames) {
+    private Set<String> getExecPackages(final Package pck, final Set<String> knownPackageNames) {
         // determine calls to packages from before, after and failure steps
-        return Stream.concat(Stream.concat(getStepStream(pck.getBefore()),
-                getStepStream(pck.getAfter())),
-                getStepStream(pck.getFailure()))
-                .filter(s -> s.getValue() instanceof ExecPackageType &&
-                        knownPackageNames.contains(s.getValue().getName()))
-                .map(s -> s.getValue().getName())
-                .collect(Collectors.toSet());
+        return Stream.concat(Stream.concat(getStepStream(pck.getBefore()), getStepStream(pck.getAfter())),
+                             getStepStream(pck.getFailure()))
+                     .filter(s -> s.getValue() instanceof ExecPackageType && knownPackageNames.contains(s.getValue()
+                                                                                                         .getName()))
+                     .map(s -> s.getValue()
+                                .getName())
+                     .collect(Collectors.toSet());
     }
 
     private List<Package> orderPackages(final Packages packages) {
@@ -235,11 +225,10 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
         try {
             result = graph.topologicalSort();
         } catch (CycleDetectedException e) {
-            String msg = "Cycle detected that includes packages " +
-                    e.getCycleNodes()
-                            .stream()
-                            .map(n -> ((Package) n.getValue()).getPackageName())
-                            .collect(Collectors.joining(", "));
+            String msg = "Cycle detected that includes packages " + e.getCycleNodes()
+                                                                     .stream()
+                                                                     .map(n -> ((Package) n.getValue()).getPackageName())
+                                                                     .collect(Collectors.joining(", "));
             logger.error(msg, e);
             throw e;
         }
@@ -247,29 +236,26 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
     }
 
     private List<Package> getOrderedPackages(final boolean journalized) {
-        return getPackagesStream(journalized)
-                .map(e -> orderPackages(e.getValue()))
-                .collect(ArrayList::new, List::addAll, List::addAll);
+        return getPackagesStream(journalized).map(e -> orderPackages(e.getValue()))
+                                             .collect(ArrayList::new, List::addAll, List::addAll);
     }
 
     @Override
     public List<ETLPackageHeader> getPackageHeaders(boolean journalized) {
         int creationOrder = 0;
-        List<ETLPackageHeader> headers =
-                getOrderedPackages(journalized)
-                        .stream()
-                        .map(p -> new ETLPackageHeaderImpl(p.getPackageName(),
-                                p.getFolderCode(),
-                                properties.getProjectCode(),
-                                p.getPackageListItem(),
-                                p.getComments()))
-                        .peek(p -> logger.debug(p.getFolderCode() + "/" + p.getPackageName()))
-                        .collect(Collectors.toList());
+        List<ETLPackageHeader> headers = getOrderedPackages(journalized).stream()
+                                                                        .map(p -> new ETLPackageHeaderImpl(
+                                                                                p.getPackageName(), p.getFolderCode(),
+                                                                                properties.getProjectCode(),
+                                                                                p.getPackageListItem(),
+                                                                                p.getComments()))
+                                                                        .peek(p -> logger.debug(
+                                                                                p.getFolderCode() + "/" +
+                                                                                        p.getPackageName()))
+                                                                        .collect(Collectors.toList());
 
         for (ETLPackageHeader header : headers) {
-            packageCache.addPackageAssociation(header.getPackageName(),
-                    header.getPackageListItems(),
-                    creationOrder++);
+            packageCache.addPackageAssociation(header.getPackageName(), header.getPackageListItems(), creationOrder++);
         }
         return Collections.unmodifiableList(headers);
     }
@@ -278,36 +264,29 @@ public class XMLMetadataServiceProvider implements MetadataServiceProvider {
         if (packages == null || packages.getPackage() == null) {
             return Collections.emptyList();
         }
-        return orderPackages(packages)
-                .stream()
-                .map(p -> packageBuilder.transmute(p))
-                .collect(Collectors.toList());
+        return orderPackages(packages).stream()
+                                      .map(p -> packageBuilder.transmute(p))
+                                      .collect(Collectors.toList());
     }
 
     @Override
     public List<ETLPackage> getPackages(final boolean journalized) {
 
-        List<ETLPackage> packages = getPackagesStream(journalized)
-                .map(e -> loadETLPackages(e.getValue()))
-                .collect(ArrayList::new, List::addAll,
-                        List::addAll);
+        List<ETLPackage> packages = getPackagesStream(journalized).map(e -> loadETLPackages(e.getValue()))
+                                                                  .collect(ArrayList::new, List::addAll, List::addAll);
         return Collections.unmodifiableList(packages);
     }
 
     @Override
     public List<one.jodi.etl.internalmodel.Transformation> getInternaTransformations() {
-        final List<Path> paths =
-                this.fileCollector
-                        .collectInPath(Paths.get(this.metadataFolder),
-                                new TransformationFileVisitor(errorWarningMessages))
-                        .stream()
-                        .sorted(new DescSequenceComparator())
-                        .collect(Collectors.toList());
-        Map<Path, Transformation> transformations =
-                this.transCollectUtil.collectObjectsFromFiles(paths);
+        final List<Path> paths = this.fileCollector.collectInPath(Paths.get(this.metadataFolder),
+                                                                  new TransformationFileVisitor(errorWarningMessages))
+                                                   .stream()
+                                                   .sorted(new DescSequenceComparator())
+                                                   .collect(Collectors.toList());
+        Map<Path, Transformation> transformations = this.transCollectUtil.collectObjectsFromFiles(paths);
 
-        List<one.jodi.etl.internalmodel.Transformation> transformationStack =
-                new ArrayList<>();
+        List<one.jodi.etl.internalmodel.Transformation> transformationStack = new ArrayList<>();
 
         for (Path path : paths) {
             Integer packageSequence = getLeadingInteger(path);

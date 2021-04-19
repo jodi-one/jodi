@@ -47,14 +47,15 @@ import java.util.Map;
  */
 public class ModelCodeContextImpl implements ModelCodeContext {
 
-    private final static String ERROR_MESSAGE_03090 = "Model name strategy '%2$s' must return non-empty string. Error occurred while determining model for data store '%1$s'.";
-    private final static String ERROR_MESSAGE_03091 = "Previously thrown ambiguous model exception: %s %s";
-    private final static String ERROR_MESSAGE_03092 = "Ambiguous model exception: %s %s";
+    private static final String ERROR_MESSAGE_03090 =
+            "Model name strategy '%2$s' must return non-empty string. Error occurred while determining model for data store '%1$s'.";
+    private static final String ERROR_MESSAGE_03091 = "Previously thrown ambiguous model exception: %s %s";
+    private static final String ERROR_MESSAGE_03092 = "Ambiguous model exception: %s %s";
 
-    private final static String WARNING_UNDEF = "Default model name strategy '%2$s' was unable to determine a "
-            + "model for data store '%1$s'.";
+    private static final String WARNING_UNDEF =
+            "Default model name strategy '%2$s' was unable to determine a " + "model for data store '%1$s'.";
 
-    private final static Logger logger = LogManager.getLogger(ModelCodeContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(ModelCodeContextImpl.class);
 
     private final JodiProperties wfProperties;
     private final DatabaseMetadataService databaseMetadataService;
@@ -79,13 +80,11 @@ public class ModelCodeContextImpl implements ModelCodeContext {
      * @param errorWarningMessages    - the error warning messages framework
      */
     @Inject
-    public ModelCodeContextImpl(
-            final JodiProperties wfProperties,
-            final DatabaseMetadataService databaseMetadataService,
-            final @DefaultStrategy ModelCodeStrategy defaultStrategy,
-            final ModelCodeStrategy customStrategy,
-            final ETLValidator validator,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    public ModelCodeContextImpl(final JodiProperties wfProperties,
+                                final DatabaseMetadataService databaseMetadataService,
+                                final @DefaultStrategy ModelCodeStrategy defaultStrategy,
+                                final ModelCodeStrategy customStrategy, final ETLValidator validator,
+                                final ErrorWarningMessageJodi errorWarningMessages) {
         this.wfProperties = wfProperties;
         this.databaseMetadataService = databaseMetadataService;
         this.customStrategy = customStrategy;
@@ -110,11 +109,9 @@ public class ModelCodeContextImpl implements ModelCodeContext {
     private String getModelCode(final String explicitModelName, final ModelNameExecutionContext.DataStoreRole role,
                                 final String dataStoreName, final String dataStoreAlias,
                                 final TransformationExtension transformationExtension,
-                                final SourceExtension sourceExtension,
-                                final MappingsExtension mappingsExtension) {
+                                final SourceExtension sourceExtension, final MappingsExtension mappingsExtension) {
 
-        final List<DataStore> foundDataStores = databaseMetadataService
-                .findDataStoreInAllModels(dataStoreName);
+        final List<DataStore> foundDataStores = databaseMetadataService.findDataStoreInAllModels(dataStoreName);
 
         // Construct execution context object based on the collected and
         // passed information
@@ -132,8 +129,7 @@ public class ModelCodeContextImpl implements ModelCodeContext {
 
             @Override
             public boolean isTemporaryTable() {
-                return databaseMetadataService
-                        .isTemporaryTransformation(dataStoreName);
+                return databaseMetadataService.isTemporaryTransformation(dataStoreName);
             }
 
             @Override
@@ -160,8 +156,7 @@ public class ModelCodeContextImpl implements ModelCodeContext {
             public TransformationExtension getTransformationExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<TransformationExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<TransformationExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(transformationExtension);
             }
 
@@ -169,8 +164,7 @@ public class ModelCodeContextImpl implements ModelCodeContext {
             public SourceExtension getSourceExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<SourceExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<SourceExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(sourceExtension);
             }
 
@@ -178,8 +172,7 @@ public class ModelCodeContextImpl implements ModelCodeContext {
             public MappingsExtension getMappingsExtension() {
                 // Implemented defensive cloning to avoid that plug-in code
                 // alters content of extension object
-                ClonerUtil<MappingsExtension> cloner =
-                        new ClonerUtil<>(errorWarningMessages);
+                ClonerUtil<MappingsExtension> cloner = new ClonerUtil<>(errorWarningMessages);
                 return cloner.clone(mappingsExtension);
             }
         };
@@ -193,8 +186,7 @@ public class ModelCodeContextImpl implements ModelCodeContext {
         } catch (AmbiguousModelException aex) {
             modelName = null;
             previouslyThownException = aex;
-            logger.debug(String.format(WARNING_UNDEF, exc.getDataStoreName(),
-                    defaultStrategy.toString()), aex);
+            logger.debug(String.format(WARNING_UNDEF, exc.getDataStoreName(), defaultStrategy.toString()), aex);
         }
 
 
@@ -211,33 +203,27 @@ public class ModelCodeContextImpl implements ModelCodeContext {
                 modelName = customStrategy.getModelCode(modelName, exc);
             } catch (AmbiguousModelException ex) {
                 if ((ex.isDefault()) && (previouslyThownException != null)) {
-                    String msg = errorWarningMessages.formatMessage(3091,
-                            ERROR_MESSAGE_03091, this.getClass(),
-                            previouslyThownException.getMessage(),
-                            previouslyThownException);
-                    errorWarningMessages.addMessage(
-                            errorWarningMessages.assignSequenceNumber(), msg,
-                            MESSAGE_TYPE.ERRORS);
+                    String msg = errorWarningMessages.formatMessage(3091, ERROR_MESSAGE_03091, this.getClass(),
+                                                                    previouslyThownException.getMessage(),
+                                                                    previouslyThownException);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     throw previouslyThownException;
                 } else {
-                    String msg = errorWarningMessages.formatMessage(3092,
-                            ERROR_MESSAGE_03092, this.getClass(), ex.getMessage(), ex);
-                    errorWarningMessages.addMessage(
-                            errorWarningMessages.assignSequenceNumber(), msg,
-                            MESSAGE_TYPE.ERRORS);
+                    String msg = errorWarningMessages.formatMessage(3092, ERROR_MESSAGE_03092, this.getClass(),
+                                                                    ex.getMessage(), ex);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     throw ex;
                 }
             }
 
             if ((modelName == null) || (modelName.equals(""))) {
 
-                String msg = errorWarningMessages.formatMessage(3090,
-                        ERROR_MESSAGE_03090, this.getClass(), exc.getDataStoreName(),
-                        customStrategy.toString());
+                String msg = errorWarningMessages.formatMessage(3090, ERROR_MESSAGE_03090, this.getClass(),
+                                                                exc.getDataStoreName(), customStrategy.toString());
                 logger.error(msg);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 throw new IncorrectCustomStrategyException(msg);
             }
         }
@@ -249,8 +235,11 @@ public class ModelCodeContextImpl implements ModelCodeContext {
     public String getModelCode(Source source) {
         try {
             String explicitModelName = source.getModel() != null ? wfProperties.getProperty(source.getModel()) : null;
-            String model = getModelCode(explicitModelName, ModelNameExecutionContext.DataStoreRole.SOURCE,
-                    source.getName(), source.getAlias(), source.getParent().getParent().getExtension(), source.getExtension(), null);
+            String model =
+                    getModelCode(explicitModelName, ModelNameExecutionContext.DataStoreRole.SOURCE, source.getName(),
+                                 source.getAlias(), source.getParent()
+                                                          .getParent()
+                                                          .getExtension(), source.getExtension(), null);
             ((SourceImpl) source).setModel(model);
             return model;
         } catch (RuntimeException e) {
@@ -267,8 +256,13 @@ public class ModelCodeContextImpl implements ModelCodeContext {
         try {
             String explicitModelName = lookup.getModel() != null ? wfProperties.getProperty(lookup.getModel()) : null;
 
-            String model = getModelCode(explicitModelName, ModelNameExecutionContext.DataStoreRole.LOOKUP, lookup.getLookupDataStore(), lookup.getAlias(),
-                    lookup.getParent().getParent().getParent().getExtension(), lookup.getParent().getExtension(), null);
+            String model = getModelCode(explicitModelName, ModelNameExecutionContext.DataStoreRole.LOOKUP,
+                                        lookup.getLookupDataStore(), lookup.getAlias(), lookup.getParent()
+                                                                                              .getParent()
+                                                                                              .getParent()
+                                                                                              .getExtension(),
+                                        lookup.getParent()
+                                              .getExtension(), null);
             ((LookupImpl) lookup).setModel(model);
             return model;
 
@@ -282,11 +276,13 @@ public class ModelCodeContextImpl implements ModelCodeContext {
     @Override
     public String getModelCode(Mappings mappings) {
         try {
-            String explicitModelName = mappings.getModel() != null ? wfProperties.getProperty(mappings.getModel()) : null;
+            String explicitModelName =
+                    mappings.getModel() != null ? wfProperties.getProperty(mappings.getModel()) : null;
 
             String model = getModelCode(explicitModelName, ModelNameExecutionContext.DataStoreRole.TARGET,
-                    mappings.getTargetDataStore(), mappings.getTargetDataStore(),
-                    mappings.getParent().getExtension(), null, mappings.getExtension());
+                                        mappings.getTargetDataStore(), mappings.getTargetDataStore(),
+                                        mappings.getParent()
+                                                .getExtension(), null, mappings.getExtension());
             ((MappingsImpl) mappings).setModel(model);
             return model;
 
@@ -304,9 +300,8 @@ public class ModelCodeContextImpl implements ModelCodeContext {
 
     @Override
     public String getModelCode(SubQuery subQuery) {
-        String model = getModelCode(null, ModelNameExecutionContext.DataStoreRole.SOURCE,
-                subQuery.getFilterSource(), subQuery.getFilterSource(),
-                null, null, null);
+        String model = getModelCode(null, ModelNameExecutionContext.DataStoreRole.SOURCE, subQuery.getFilterSource(),
+                                    subQuery.getFilterSource(), null, null, null);
         ((SubQueryImpl) subQuery).setFilterSourceModel(model);
         return model;
     }

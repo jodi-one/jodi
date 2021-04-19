@@ -8,11 +8,35 @@ import one.jodi.core.config.JodiConstants;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.context.packages.PackageCache;
 import one.jodi.core.context.packages.TransformationCacheItem;
+import one.jodi.core.etlmodel.ExecCommandType;
+import one.jodi.core.etlmodel.ExecPackageType;
+import one.jodi.core.etlmodel.ExecProcedureType;
+import one.jodi.core.etlmodel.ModelType;
+import one.jodi.core.etlmodel.ModelTypeActionEnum;
 import one.jodi.core.etlmodel.Package;
-import one.jodi.core.etlmodel.*;
+import one.jodi.core.etlmodel.Parameter;
+import one.jodi.core.etlmodel.SetOperatorEnum;
+import one.jodi.core.etlmodel.StepType;
+import one.jodi.core.etlmodel.Steps;
+import one.jodi.core.etlmodel.VariableType;
+import one.jodi.core.etlmodel.VariableTypeCodeEnum;
 import one.jodi.etl.builder.PackageBuilder;
-import one.jodi.etl.internalmodel.*;
-import one.jodi.etl.internalmodel.impl.*;
+import one.jodi.etl.internalmodel.ETLPackage;
+import one.jodi.etl.internalmodel.ETLStep;
+import one.jodi.etl.internalmodel.InterfaceStep;
+import one.jodi.etl.internalmodel.ModelStep;
+import one.jodi.etl.internalmodel.StepParameter;
+import one.jodi.etl.internalmodel.Transformation;
+import one.jodi.etl.internalmodel.VariableStep;
+import one.jodi.etl.internalmodel.impl.CommandStepImpl;
+import one.jodi.etl.internalmodel.impl.ETLPackageImpl;
+import one.jodi.etl.internalmodel.impl.ETLStepImpl;
+import one.jodi.etl.internalmodel.impl.InterfaceStepImpl;
+import one.jodi.etl.internalmodel.impl.ModelStepImpl;
+import one.jodi.etl.internalmodel.impl.PackageStepImpl;
+import one.jodi.etl.internalmodel.impl.ProcedureStepImpl;
+import one.jodi.etl.internalmodel.impl.StepParameterImpl;
+import one.jodi.etl.internalmodel.impl.VariableStepImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,19 +50,18 @@ import java.util.List;
 
 public class PackageBuilderImpl implements PackageBuilder {
 
-    private final static String ERROR_MESSAGE_03351 = "Unrecognized VariableTypeCodeEnum value %s";
-    private final static String ERROR_MESSAGE_03360 = "Unrecognized VariableSetOperatorType value %s";
-    private final static String ERROR_MESSAGE_03370 = "Unrecognized ModelActionType value %s";
+    private static final String ERROR_MESSAGE_03351 = "Unrecognized VariableTypeCodeEnum value %s";
+    private static final String ERROR_MESSAGE_03360 = "Unrecognized VariableSetOperatorType value %s";
+    private static final String ERROR_MESSAGE_03370 = "Unrecognized ModelActionType value %s";
 
-    private final static Logger logger = LogManager.getLogger(PackageBuilderImpl.class);
-    private final static String INTERFACE_STEP_NAME = "Step %d %s";
+    private static final Logger logger = LogManager.getLogger(PackageBuilderImpl.class);
+    private static final String INTERFACE_STEP_NAME = "Step %d %s";
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final JodiProperties properties;
     private final PackageCache packageCache;
 
     @Inject
-    public PackageBuilderImpl(final JodiProperties properties,
-                              final PackageCache packageCache,
+    public PackageBuilderImpl(final JodiProperties properties, final PackageCache packageCache,
                               final ErrorWarningMessageJodi errorWarningMessages) {
         this.properties = properties;
         this.packageCache = packageCache;
@@ -50,8 +73,7 @@ public class PackageBuilderImpl implements PackageBuilder {
         return createETLPackage(pPackage);
     }
 
-    public void addTransformationToPackage(final ETLPackage etlPackage,
-                                           final Transformation transformation) {
+    public void addTransformationToPackage(final ETLPackage etlPackage, final Transformation transformation) {
     }
 
     //TODO - this method needs to be streamlined a bit with regards to hooking ETLSteps up
@@ -59,13 +81,10 @@ public class PackageBuilderImpl implements PackageBuilder {
         ETLStep firstFailureStep = createSteps(pPackage.getFailure(), null, null);
         List<InterfaceStep> interfaceSteps = createInterfaceSteps(pPackage, firstFailureStep);
 
-        ETLStep firstBeforeStep = createSteps(pPackage.getBefore(),
-                firstFailureStep, ((!interfaceSteps.isEmpty()) ? interfaceSteps.get(0) : null));
-        ETLStep firstAfterStep = createSteps(pPackage.getAfter(),
-                firstFailureStep, null);
-        ETLStep finalSuccessStep = findStepByLabel(
-                pPackage.getGotoOnFinalSuccess(), firstBeforeStep,
-                firstAfterStep);
+        ETLStep firstBeforeStep = createSteps(pPackage.getBefore(), firstFailureStep,
+                                              ((!interfaceSteps.isEmpty()) ? interfaceSteps.get(0) : null));
+        ETLStep firstAfterStep = createSteps(pPackage.getAfter(), firstFailureStep, null);
+        ETLStep finalSuccessStep = findStepByLabel(pPackage.getGotoOnFinalSuccess(), firstBeforeStep, firstAfterStep);
 
 
         if (firstBeforeStep != null) {
@@ -79,7 +98,9 @@ public class PackageBuilderImpl implements PackageBuilder {
             ETLStepImpl lastStep = (ETLStepImpl) interfaceSteps.get(interfaceSteps.size() - 1);
             lastStep.setNextStepOnSuccess(firstAfterStep);
         }
-        ETLStep firstStep = (firstBeforeStep != null ? firstBeforeStep : ((interfaceSteps != null && !interfaceSteps.isEmpty()) ? interfaceSteps.get(0) : firstAfterStep));
+        ETLStep firstStep = (firstBeforeStep != null ? firstBeforeStep
+                                                     : ((interfaceSteps != null && !interfaceSteps.isEmpty())
+                                                        ? interfaceSteps.get(0) : firstAfterStep));
 
         StringBuilder description = new StringBuilder();
         if (properties.includeDetails()) {
@@ -101,12 +122,11 @@ public class PackageBuilderImpl implements PackageBuilder {
         }
 
 
-        ETLPackageImpl result = new ETLPackageImpl(pPackage.getPackageName(),
-                pPackage.getFolderCode(), properties.getProjectCode(),
-                firstBeforeStep, firstAfterStep, firstFailureStep,
-                finalSuccessStep, pPackage.getPackageListItem(), pPackage.getExtension(),
-                firstStep, description.toString(),
-                interfaceSteps, pPackage.getComments());
+        ETLPackageImpl result =
+                new ETLPackageImpl(pPackage.getPackageName(), pPackage.getFolderCode(), properties.getProjectCode(),
+                                   firstBeforeStep, firstAfterStep, firstFailureStep, finalSuccessStep,
+                                   pPackage.getPackageListItem(), pPackage.getExtension(), firstStep,
+                                   description.toString(), interfaceSteps, pPackage.getComments());
 
         return result;
     }
@@ -160,31 +180,36 @@ public class PackageBuilderImpl implements PackageBuilder {
 
     private List<InterfaceStep> createInterfaceSteps(final Package pPackage, final ETLStep firstFailureStep) {
         final List<InterfaceStep> interfaceSteps = new ArrayList<>();
-        List<TransformationCacheItem> transformations = packageCache.getTransformationsForPackage(pPackage.getPackageListItem(), pPackage.getFolderCode());
+        List<TransformationCacheItem> transformations =
+                packageCache.getTransformationsForPackage(pPackage.getPackageListItem(), pPackage.getFolderCode());
         if (transformations == null) {
-            logger.warn("No transformations from cache for package: " + pPackage.getPackageName() + " and packageList: " + pPackage.getPackageListItem());
+            logger.warn(
+                    "No transformations from cache for package: " + pPackage.getPackageName() + " and packageList: " +
+                            pPackage.getPackageListItem());
             return interfaceSteps;
         }
         for (TransformationCacheItem transformation : transformations) {
-            createInterfaceStep(transformation.getName(),
-                    firstFailureStep, interfaceSteps,
-                    transformation.getPackageSequence(), transformation.isAsynchronous());
+            createInterfaceStep(transformation.getName(), firstFailureStep, interfaceSteps,
+                                transformation.getPackageSequence(), transformation.isAsynchronous());
         }
         return interfaceSteps;
     }
 
-    private InterfaceStep createInterfaceStep(String transformation,
-                                              ETLStep firstFailureStep, List<InterfaceStep> interfaceSteps,
-                                              int packageSequence, boolean asynchronous) {
-        String stepName = String.format(INTERFACE_STEP_NAME, packageSequence,
-                transformation);
+    private InterfaceStep createInterfaceStep(String transformation, ETLStep firstFailureStep,
+                                              List<InterfaceStep> interfaceSteps, int packageSequence,
+                                              boolean asynchronous) {
+        String stepName = String.format(INTERFACE_STEP_NAME, packageSequence, transformation);
 
 
-        final boolean useScenario = this.properties.getPropertyKeys().contains(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS) ?
-                Boolean.valueOf(this.properties.getProperty(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS)).booleanValue() : false;
+        final boolean useScenario = this.properties.getPropertyKeys()
+                                                   .contains(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS)
+                                    ? Boolean.valueOf(
+                this.properties.getProperty(JodiConstants.USE_SCENARIOS_INSTEAD_OF_MAPPINGS))
+                                             .booleanValue() : false;
 
-        InterfaceStepImpl step = new InterfaceStepImpl(transformation, stepName,
-                null, firstFailureStep, packageSequence, asynchronous, useScenario);
+        InterfaceStepImpl step =
+                new InterfaceStepImpl(transformation, stepName, null, firstFailureStep, packageSequence, asynchronous,
+                                      useScenario);
 
         if (!interfaceSteps.isEmpty()) {
             ETLStepImpl lastStep = (ETLStepImpl) interfaceSteps.get(interfaceSteps.size() - 1);
@@ -196,13 +221,14 @@ public class PackageBuilderImpl implements PackageBuilder {
     }
 
     private ETLStep createProcedureStep(ExecProcedureType step) {
-        ProcedureStepImpl result = new ProcedureStepImpl(step.getName(),
-                step.getLabel());
+        ProcedureStepImpl result = new ProcedureStepImpl(step.getName(), step.getLabel());
 
-        if (step.getParameters() != null
-                && step.getParameters().getParameter() != null
-                && !step.getParameters().getParameter().isEmpty()) {
-            for (Parameter p : step.getParameters().getParameter()) {
+        if (step.getParameters() != null && step.getParameters()
+                                                .getParameter() != null && !step.getParameters()
+                                                                                .getParameter()
+                                                                                .isEmpty()) {
+            for (Parameter p : step.getParameters()
+                                   .getParameter()) {
                 result.addParameter(createStepParameter(p));
             }
         }
@@ -210,18 +236,15 @@ public class PackageBuilderImpl implements PackageBuilder {
     }
 
     private ETLStep createPackageStep(ExecPackageType step) {
-        PackageStepImpl result = new PackageStepImpl(step.getName(),
-                step.getLabel());
-        boolean async = step.isAsynchronous() != null ? step.isAsynchronous()
-                : false;
+        PackageStepImpl result = new PackageStepImpl(step.getName(), step.getLabel());
+        boolean async = step.isAsynchronous() != null ? step.isAsynchronous() : false;
         result.setExecuteAsynchronously(async);
         // TODO: setSourceFolderCode
         return result;
     }
 
     private ETLStep createVariableStep(VariableType step) {
-        VariableStepImpl result = new VariableStepImpl(step.getName(),
-                step.getLabel());
+        VariableStepImpl result = new VariableStepImpl(step.getName(), step.getLabel());
 
         result.setIncrementBy(step.getIncrementBy());
         result.getSetOperator(step.getOperator());
@@ -232,11 +255,11 @@ public class PackageBuilderImpl implements PackageBuilder {
     }
 
     private ETLStep createCommandStep(ExecCommandType step) {
-        CommandStepImpl result = new CommandStepImpl(step.getName(),
-                step.getLabel());
+        CommandStepImpl result = new CommandStepImpl(step.getName(), step.getLabel());
 
         if (step.getParameters() != null) {
-            for (Parameter p : step.getParameters().getParameter()) {
+            for (Parameter p : step.getParameters()
+                                   .getParameter()) {
                 result.addParameter(createStepParameter(p));
             }
         }
@@ -244,8 +267,7 @@ public class PackageBuilderImpl implements PackageBuilder {
     }
 
     private ETLStep createModelStep(ModelType step) {
-        ModelStepImpl result = new ModelStepImpl(step.getName(),
-                step.getLabel());
+        ModelStepImpl result = new ModelStepImpl(step.getName(), step.getLabel());
 
         result.setActionType(map(step.getActionType()));
         result.setCreateSubscribers(step.isCreateSubscribers());
@@ -268,14 +290,12 @@ public class PackageBuilderImpl implements PackageBuilder {
     private ETLStep findStepByLabel(String targetLabel, ETLStep... firstSteps) {
         ETLStep result = null;
 
-        if (StringUtils.hasLength(targetLabel) && firstSteps != null
-                && firstSteps.length > 0) {
+        if (StringUtils.hasLength(targetLabel) && firstSteps != null && firstSteps.length > 0) {
             for (ETLStep current : firstSteps) {
                 do {
                     if (current == null) {
                         break; // SKIP to next item in firstSteps list
-                    } else if (StringUtils.equalsIgnoreCase(targetLabel,
-                            current.getLabel())) {
+                    } else if (StringUtils.equalsIgnoreCase(targetLabel, current.getLabel())) {
                         result = current;
                         break;
                     }
@@ -311,7 +331,8 @@ public class PackageBuilderImpl implements PackageBuilder {
                 default:
                     String msg = errorWarningMessages.formatMessage(3351, ERROR_MESSAGE_03351, this.getClass(), orig);
                     logger.error(msg);
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     throw new IllegalArgumentException(msg);
             }
         }
@@ -332,7 +353,8 @@ public class PackageBuilderImpl implements PackageBuilder {
                 default:
                     String msg = errorWarningMessages.formatMessage(3360, ERROR_MESSAGE_03360, this.getClass(), orig);
                     logger.error(msg);
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     throw new IllegalArgumentException(msg);
             }
         }
@@ -355,7 +377,8 @@ public class PackageBuilderImpl implements PackageBuilder {
                     break;
                 default:
                     String msg = errorWarningMessages.formatMessage(3370, ERROR_MESSAGE_03370, this.getClass(), orig);
-                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+                    errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                    MESSAGE_TYPE.ERRORS);
                     logger.error(msg);
                     throw new IllegalArgumentException(msg);
             }

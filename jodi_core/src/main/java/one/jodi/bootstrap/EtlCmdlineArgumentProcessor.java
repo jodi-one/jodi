@@ -25,8 +25,8 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
     private static final String OPTION_INCLUDE_CONSTRAINTS = "includeConstraints";
     private static final String OPTION_EXPORT_DB_CONSTRAINTS = "exportDBConstraints";
     private static final String OPTION_DEPLOYMENT_ARCHIVE_PWD = "deploymentArchivePassword";
-    private final static ActionType ACTION_DEFAULT_VALUE = ActionType.CREATE_ETLS;
-    private final static String MODULE_CLASS_DEFAULT_VALUE = "one.jodi.odi.factory.OdiModuleProvider";
+    private static final ActionType ACTION_DEFAULT_VALUE = ActionType.CREATE_ETLS;
+    private static final String MODULE_CLASS_DEFAULT_VALUE = "one.jodi.odi.factory.OdiModuleProvider";
 
     private final List<String> moduleProviderClass = new ArrayList<>();
 
@@ -71,13 +71,16 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
     protected Options addOptions(Options existingOptions) {
         existingOptions.addOption("a", OPTION_ACTION, true, "defaults to '" + ACTION_DEFAULT_VALUE.getCode() + "'");
         existingOptions.addOption("p", OPTION_PREFIX, true, "transformation prefix");
-        existingOptions.addOption(OPTION_JOURNALIZED, false, "presence of this option indicates 'journalized=true'. "
-                + "Absence indicates 'journalized=false'");
+        existingOptions.addOption(OPTION_JOURNALIZED, false, "presence of this option indicates 'journalized=true'. " +
+                "Absence indicates 'journalized=false'");
         existingOptions.addOption("f", OPTION_FOLDER, true, "folder name");
-        existingOptions.addOption("dsn", OPTION_DEFAULTSCENARIONAMES, true, "Applicable for loadplan import; while importing use the default names for scenarios.");
+        existingOptions.addOption("dsn", OPTION_DEFAULTSCENARIONAMES, true,
+                                  "Applicable for loadplan import; while importing use the default names for scenarios.");
         existingOptions.addOption("includeVariables", OPTION_INCLUDE_VARIABLES, true, "includeVariables");
-        existingOptions.addOption("includeConstraints", OPTION_INCLUDE_CONSTRAINTS, true, "generate constraints with etls");
-        existingOptions.addOption(OPTION_EXPORT_DB_CONSTRAINTS, OPTION_EXPORT_DB_CONSTRAINTS, true, "export constraints defined in database.");
+        existingOptions.addOption("includeConstraints", OPTION_INCLUDE_CONSTRAINTS, true,
+                                  "generate constraints with etls");
+        existingOptions.addOption(OPTION_EXPORT_DB_CONSTRAINTS, OPTION_EXPORT_DB_CONSTRAINTS, true,
+                                  "export constraints defined in database.");
         existingOptions.addOption("dapwd", OPTION_DEPLOYMENT_ARCHIVE_PWD, true, "password used for deploymentArchive.");
         return existingOptions;
     }
@@ -100,8 +103,7 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
 
         action = cmdLine.getOptionValue(OPTION_ACTION);
         if (action == null) {
-            usage("Please specify an action with the '" + OPTION_ACTION +
-                    "' command line option", opts, 1);
+            usage("Please specify an action with the '" + OPTION_ACTION + "' command line option", opts, 1);
         }
 
         prefix = cmdLine.getOptionValue(OPTION_PREFIX);
@@ -116,25 +118,29 @@ public class EtlCmdlineArgumentProcessor extends BaseCmdlineArgumentProcessor im
             modules = getDefaultModule(args);
         }
         for (String moduleName : modules) {
-            if (!moduleName.trim().isEmpty()) {
+            if (!moduleName.trim()
+                           .isEmpty()) {
                 moduleProviderClass.add(moduleName);
             }
         }
         if (cmdLine.hasOption(OPTION_INCLUDE_VARIABLES)) {
-            includeVariables = cmdLine.getOptionValue(OPTION_INCLUDE_VARIABLES).equalsIgnoreCase("true");
+            includeVariables = cmdLine.getOptionValue(OPTION_INCLUDE_VARIABLES)
+                                      .equalsIgnoreCase("true");
         } else {
             includeVariables = true;
         }
 
-        includingConstraints = !cmdLine.hasOption(OPTION_INCLUDE_CONSTRAINTS)
-                || Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_INCLUDE_CONSTRAINTS));
+        includingConstraints = !cmdLine.hasOption(OPTION_INCLUDE_CONSTRAINTS) ||
+                Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_INCLUDE_CONSTRAINTS));
 
-        exportingDBConstraints = cmdLine.hasOption(OPTION_EXPORT_DB_CONSTRAINTS)
-                && Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_EXPORT_DB_CONSTRAINTS));
+        exportingDBConstraints = cmdLine.hasOption(OPTION_EXPORT_DB_CONSTRAINTS) &&
+                Boolean.parseBoolean(cmdLine.getOptionValue(OPTION_EXPORT_DB_CONSTRAINTS));
 
         String aDefaultScenarioNames = cmdLine.getOptionValue(OPTION_DEFAULTSCENARIONAMES);
         useDefaultScenarionames = aDefaultScenarioNames == null || !aDefaultScenarioNames.equals("false");
-        deploymentArchivePassword = cmdLine.hasOption(OPTION_DEPLOYMENT_ARCHIVE_PWD) ? cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_PWD) : "";
+        deploymentArchivePassword =
+                cmdLine.hasOption(OPTION_DEPLOYMENT_ARCHIVE_PWD) ? cmdLine.getOptionValue(OPTION_DEPLOYMENT_ARCHIVE_PWD)
+                                                                 : "";
     }
 
     @Override

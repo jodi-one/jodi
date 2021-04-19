@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public interface KnowledgeModuleConfiguration {
 
-    public final static KnowledgeModuleConfiguration Null = new KnowledgeModuleConfiguration() {
+    public static final KnowledgeModuleConfiguration Null = new KnowledgeModuleConfiguration() {
         @Override
         public String getName() {
             return null;

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 public class DescSequenceComparatorTest {
 
-    private final static String ROOT_DIR = File.separator + "root" + File.separator;
+    private static final String ROOT_DIR = File.separator + "root" + File.separator;
 
     private DescSequenceComparator fixture;
 

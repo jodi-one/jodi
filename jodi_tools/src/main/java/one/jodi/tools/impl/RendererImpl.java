@@ -26,7 +26,7 @@ import java.io.Writer;
 
 public class RendererImpl implements Renderer {
 
-    private final static String TransformationXSLFile = "/remove_default_values_from_transformation.xsl";
+    private static final String TransformationXSLFile = "/remove_default_values_from_transformation.xsl";
     private final RenderingWriter renderingFileNamer;
     private final TransformationCache transformationCache;
     private final Logger logger = LogManager.getLogger(RendererImpl.class);

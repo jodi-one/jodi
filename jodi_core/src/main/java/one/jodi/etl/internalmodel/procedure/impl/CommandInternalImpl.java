@@ -12,18 +12,18 @@ import java.util.Set;
 
 public class CommandInternalImpl implements CommandInternal, Validate {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(CommandInternalImpl.class);
 
     ;
-    private final static String EOL = System.getProperty("line.separator");
-    private final static String ERROR_MESSAGE_62400 =
+    private static final String EOL = System.getProperty("line.separator");
+    private static final String ERROR_MESSAGE_62400 =
             "A command in procedure definition file %1$s does not define a logical model. " +
                     "This procedure specification will be ignored.";
-    private final static String ERROR_MESSAGE_62410 =
+    private static final String ERROR_MESSAGE_62410 =
             "A command in procedure definition file %1$s defines an unknown logical " +
                     "schema '%2$s'. This procedure specification will be ignored.";
-    private final static String ERROR_MESSAGE_62420 =
+    private static final String ERROR_MESSAGE_62420 =
             "A command in procedure definition file %1$s does not define the required " +
                     "expression. This procedure specification will be ignored.";
     private final TaskInternal parent;

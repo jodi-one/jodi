@@ -13,16 +13,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TreeNode<T> {
-    private final static Logger LOGGER = LogManager.getLogger(TreeNode.class);
+    private static final Logger LOGGER = LogManager.getLogger(TreeNode.class);
 
-    private final static String EXCEPTION_MSG =
-            "Incorrect tree definition. A cycle was detected. ";
+    private static final String EXCEPTION_MSG = "Incorrect tree definition. A cycle was detected. ";
 
     // uses as  a default to get node names in error message
     // by default it is the object name unless the toString method is overwritten
-    private final static Function<Object, String> defaultPrintItemName = Object::toString;
+    private static final Function<Object, String> defaultPrintItemName = Object::toString;
 
-    private final static Predicate<Object> defaultFinalNode = it -> false;
+    private static final Predicate<Object> defaultFinalNode = it -> false;
 
     private final Function<Object, String> printItemName;
     private final T item;
@@ -59,17 +58,15 @@ public class TreeNode<T> {
         child.parent = this;
     }
 
-    private MalformedTreeException createException(final List<T> containsCycle,
-                                                   final T duplicate) {
+    private MalformedTreeException createException(final List<T> containsCycle, final T duplicate) {
 
         int firstPosition = containsCycle.indexOf(duplicate);
         assert (firstPosition >= 0);
-        final List<T> cycle = containsCycle.subList(firstPosition,
-                containsCycle.size());
+        final List<T> cycle = containsCycle.subList(firstPosition, containsCycle.size());
 
         final String path = cycle.stream()
-                .map(this.printItemName)
-                .collect(Collectors.joining(", "));
+                                 .map(this.printItemName)
+                                 .collect(Collectors.joining(", "));
         final String msg = EXCEPTION_MSG + path;
         return new MalformedTreeException(msg, Collections.unmodifiableList(cycle));
     }
@@ -90,9 +87,7 @@ public class TreeNode<T> {
 
     private void exceptionOnCycle(final ArrayList<T> currentPath, final int depth) {
         if (this.marked) {
-            MalformedTreeException e =
-                    createException(currentPath.subList(0, depth),
-                            this.item);
+            MalformedTreeException e = createException(currentPath.subList(0, depth), this.item);
             LOGGER.error(e.getMessage());
             throw e;
         }
@@ -148,8 +143,7 @@ public class TreeNode<T> {
         return Collections.unmodifiableSet(collectUnique(new ArrayList<>(), 0));
     }
 
-    private List<List<T>> traverse(final ArrayList<T> currentPath,
-                                   final int depth,
+    private List<List<T>> traverse(final ArrayList<T> currentPath, final int depth,
                                    final Predicate<Object> lastToInclude) {
         try {
             exceptionOnCycle(currentPath, depth);
@@ -175,15 +169,14 @@ public class TreeNode<T> {
     }
 
     public List<List<T>> getPaths() {
-        return Collections.unmodifiableList(traverse(new ArrayList<>(), 0,
-                defaultFinalNode));
+        return Collections.unmodifiableList(traverse(new ArrayList<>(), 0, defaultFinalNode));
     }
 
     public List<List<T>> getReversePaths() {
         List<List<T>> paths = getPaths();
         return Collections.unmodifiableList(paths.stream()
-                .peek(Collections::reverse)
-                .collect(Collectors.toList()));
+                                                 .peek(Collections::reverse)
+                                                 .collect(Collectors.toList()));
     }
 
     public List<List<T>> getPaths(final T lastToInclude) {

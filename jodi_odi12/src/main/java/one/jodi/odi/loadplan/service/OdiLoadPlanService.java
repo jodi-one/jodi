@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public abstract class OdiLoadPlanService implements LoadPlanService {
 
-    private final static Logger logger = LogManager.getLogger(OdiLoadPlanService.class);
+    private static final Logger logger = LogManager.getLogger(OdiLoadPlanService.class);
     @SuppressWarnings("rawtypes")
     private final OdiLoadPlanAccessStrategy odiLoadPlanAccessStrategy;
     private final JodiProperties jodiProperties;

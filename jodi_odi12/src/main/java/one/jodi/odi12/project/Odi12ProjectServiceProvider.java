@@ -22,7 +22,7 @@ import java.util.Collection;
 public class Odi12ProjectServiceProvider implements ProjectServiceProvider {
 
     private final OdiInstance odiInstance;
-    private final static Logger logger = LogManager.getLogger(Odi12ProjectServiceProvider.class);
+    private static final Logger logger = LogManager.getLogger(Odi12ProjectServiceProvider.class);
 
     @Inject
     public Odi12ProjectServiceProvider(final OdiInstance odiInstance) {

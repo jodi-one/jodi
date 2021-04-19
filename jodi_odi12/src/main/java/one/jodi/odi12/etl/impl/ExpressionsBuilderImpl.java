@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExpressionsBuilderImpl implements ExpressionsBuilder {
-    private final static Logger logger = LogManager.getLogger(ExpressionsBuilderImpl.class);
+    private static final Logger logger = LogManager.getLogger(ExpressionsBuilderImpl.class);
     private final OdiCommon odiCommon;
 
     @Inject
@@ -37,8 +37,7 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
     }
 
     protected ExpressionComponent createExpressionComponent(final MapRootContainer mapping) throws MappingException {
-        return new ExpressionComponent(mapping,
-                ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation());
+        return new ExpressionComponent(mapping, ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation());
     }
 
     /* (non-Javadoc)
@@ -51,7 +50,8 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
             logger.debug("Creating target expressions for mapping " + mapping.getName());
             ExpressionComponent targetExpression = createExpressionComponent(mapping);
             etlOperators.addTargetExpressions(targetExpression);
-            mapping.addComponent(etlOperators.getTargetExpressions().get(0));
+            mapping.addComponent(etlOperators.getTargetExpressions()
+                                             .get(0));
         }
     }
 
@@ -61,50 +61,67 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
      */
     @Override
     public void createExpressionComponent(final MapRootContainer mapping, final Transformation transformation,
-                                          final List<ExpressionComponent> targetExpressions, final boolean useExpressions)
-            throws AdapterException, MappingException {
+                                          final List<ExpressionComponent> targetExpressions,
+                                          final boolean useExpressions) throws AdapterException, MappingException {
         if (transformation.getMappings() == null || !useExpressions) {
             return;
         }
-        for (Targetcolumn targetColumn : transformation.getMappings().getTargetColumns()) {
-            for (int dataSetIndex = 0; dataSetIndex < targetColumn.getMappingExpressions().size(); dataSetIndex++) {
-                String mappingExpression = targetColumn.getMappingExpressions().get(dataSetIndex);
-                OdiModel model = odiCommon.getOdiModel(transformation.getMappings().getModel());
-                OdiDataType odidatatype = model.getLogicalSchema().getTechnology()
-                        .getDataType(targetColumn.getDataType());
+        for (Targetcolumn targetColumn : transformation.getMappings()
+                                                       .getTargetColumns()) {
+            for (int dataSetIndex = 0; dataSetIndex < targetColumn.getMappingExpressions()
+                                                                  .size(); dataSetIndex++) {
+                String mappingExpression = targetColumn.getMappingExpressions()
+                                                       .get(dataSetIndex);
+                OdiModel model = odiCommon.getOdiModel(transformation.getMappings()
+                                                                     .getModel());
+                OdiDataType odidatatype = model.getLogicalSchema()
+                                               .getTechnology()
+                                               .getDataType(targetColumn.getDataType());
                 String name = targetColumn.getName();
                 Integer size = targetColumn.getLength();
                 Integer scale = targetColumn.getScale();
                 String expression = "";
-                if (targetColumn.getMappingExpressions().size() > 1) {
+                if (targetColumn.getMappingExpressions()
+                                .size() > 1) {
                     expression = ComponentPrefixType.SETCOMPONENT.getAbbreviation() + "." + targetColumn.getName();
-                } else if (transformation.getMappings().isAggregateTransformation((dataSetIndex + 1))) {
-                    expression = "D" + (dataSetIndex + 1) + "_" + ComponentPrefixType.AGGREGATE.getAbbreviation() + "." + targetColumn.getName();
+                } else if (transformation.getMappings()
+                                         .isAggregateTransformation((dataSetIndex + 1))) {
+                    expression =
+                            "D" + (dataSetIndex + 1) + "_" + ComponentPrefixType.AGGREGATE.getAbbreviation() + "." +
+                                    targetColumn.getName();
                 } else {
-                    expression = transformation.getDatasets().get(dataSetIndex).translateExpression(mappingExpression);
+                    expression = transformation.getDatasets()
+                                               .get(dataSetIndex)
+                                               .translateExpression(mappingExpression);
                 }
-                if (transformation.getDatasets().size() > 1) {
+                if (transformation.getDatasets()
+                                  .size() > 1) {
                     if (dataSetIndex == 1) {
-                        MapAttribute mapAttribute = targetExpressions.get(0).addExpression(name, expression, odidatatype, size,
-                                scale);
+                        MapAttribute mapAttribute = targetExpressions.get(0)
+                                                                     .addExpression(name, expression, odidatatype, size,
+                                                                                    scale);
                         // set the execution location of the expression to the
                         // same as the targetcol.
                         MapExpression me = mapAttribute.getExpression();
-                        if (targetColumn.getExecutionLocations() != null && targetColumn.getExecutionLocations().size() > 0) {
+                        if (targetColumn.getExecutionLocations() != null && targetColumn.getExecutionLocations()
+                                                                                        .size() > 0) {
                             ExecuteOnLocation execLoc = mapFromExecutionLocationType(
-                                    targetColumn.getExecutionLocations().get(0));
+                                    targetColumn.getExecutionLocations()
+                                                .get(0));
                             me.setExecuteOnHint(execLoc);
                         }
                     }
                 } else {
-                    MapAttribute mapAttribute = targetExpressions.get(0).addExpression(name, expression, odidatatype, size,
-                            scale);
+                    MapAttribute mapAttribute = targetExpressions.get(0)
+                                                                 .addExpression(name, expression, odidatatype, size,
+                                                                                scale);
                     // set the execution location of the expression to the
                     // same as the targetcol.
                     MapExpression me = mapAttribute.getExpression();
-                    if (targetColumn.getExecutionLocations() != null && targetColumn.getExecutionLocations().size() > 0) {
-                        ExecuteOnLocation execLoc = mapFromExecutionLocationType(
-                                targetColumn.getExecutionLocations().get(0));
+                    if (targetColumn.getExecutionLocations() != null && targetColumn.getExecutionLocations()
+                                                                                    .size() > 0) {
+                        ExecuteOnLocation execLoc = mapFromExecutionLocationType(targetColumn.getExecutionLocations()
+                                                                                             .get(0));
                         me.setExecuteOnHint(execLoc);
                     }
                 }
@@ -124,49 +141,64 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
                                  final OdiDataStore targetDataStore) throws AdapterException, MappingException {
         if (!transformation.isTemporary()) {
             assert (targetComponents.get(0) != null);
-            assert (targetComponents.get(0).getPersistentComponent() != null);
+            assert (targetComponents.get(0)
+                                    .getPersistentComponent() != null);
         }
         if (transformation.getMappings() != null) {
-            for (Targetcolumn targetColumn : transformation.getMappings().getTargetColumns()) {
-                for (MapAttribute a : targetComponents.get(0).getAttributes()) {
+            for (Targetcolumn targetColumn : transformation.getMappings()
+                                                           .getTargetColumns()) {
+                for (MapAttribute a : targetComponents.get(0)
+                                                      .getAttributes()) {
                     for (int dataSetIndex = 0; dataSetIndex < targetColumn.getMappingExpressions()
-                            .size(); dataSetIndex++) {
-                        String mappingExpression = targetColumn.getMappingExpressions().get(dataSetIndex);
-                        if (a.getName().equals(targetColumn.getName()) && dataSetIndex == 0) {
+                                                                          .size(); dataSetIndex++) {
+                        String mappingExpression = targetColumn.getMappingExpressions()
+                                                               .get(dataSetIndex);
+                        if (a.getName()
+                             .equals(targetColumn.getName()) && dataSetIndex == 0) {
                             final String expressionText;
-                            if (transformation.getMappings().isDistinct() && !mappingExpression.toLowerCase().contains("nextval")) {
-                                expressionText = ComponentPrefixType.DISTINCT.getAbbreviation() + "."
-                                        + targetColumn.getName();
+                            if (transformation.getMappings()
+                                              .isDistinct() && !mappingExpression.toLowerCase()
+                                                                                 .contains("nextval")) {
+                                expressionText =
+                                        ComponentPrefixType.DISTINCT.getAbbreviation() + "." + targetColumn.getName();
                             } else if (transformation.useExpressions()) {
-                                expressionText = ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation() + "."
-                                        + targetColumn.getName();
-                            } else if (targetColumn.getParent().getParent().getMaxDatasetNumber() > 1) {
-                                expressionText = ComponentPrefixType.SETCOMPONENT.getAbbreviation() + "."
-                                        + targetColumn.getName();
-                            } else if (targetColumn.getParent().isAggregateTransformation(1)) {
-                                expressionText = "D" + (dataSetIndex + 1) + "_" + ComponentPrefixType.AGGREGATE.getAbbreviation() + "."
-                                        + targetColumn.getName();
-                            } else if (mappingExpression.toLowerCase().contains("nextval")) {
+                                expressionText = ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation() + "." +
+                                        targetColumn.getName();
+                            } else if (targetColumn.getParent()
+                                                   .getParent()
+                                                   .getMaxDatasetNumber() > 1) {
+                                expressionText = ComponentPrefixType.SETCOMPONENT.getAbbreviation() + "." +
+                                        targetColumn.getName();
+                            } else if (targetColumn.getParent()
+                                                   .isAggregateTransformation(1)) {
+                                expressionText = "D" + (dataSetIndex + 1) + "_" +
+                                        ComponentPrefixType.AGGREGATE.getAbbreviation() + "." + targetColumn.getName();
+                            } else if (mappingExpression.toLowerCase()
+                                                        .contains("nextval")) {
                                 expressionText = null;
                             } else {
-                                expressionText = transformation.getDatasets().get(dataSetIndex)
-                                        .translateExpression(mappingExpression);
+                                expressionText = transformation.getDatasets()
+                                                               .get(dataSetIndex)
+                                                               .translateExpression(mappingExpression);
                             }
-                            a.setExpressionText(targetComponents.get(0).getConnectorPoints().get(dataSetIndex),
-                                    expressionText);
+                            a.setExpressionText(targetComponents.get(0)
+                                                                .getConnectorPoints()
+                                                                .get(dataSetIndex), expressionText);
                         }
                     }
                 }
                 String[] expressionsArray = getTranslation(targetColumn, transformation);
                 String expression;
-                if (transformation.getMappings().isDistinct()) {
+                if (transformation.getMappings()
+                                  .isDistinct()) {
                     expression = ComponentPrefixType.DISTINCT.getAbbreviation() + "." + targetColumn.getName();
                 } else if (transformation.useExpressions()) {
-                    expression = ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation() + "."
-                            + targetColumn.getName();
+                    expression =
+                            ComponentPrefixType.TARGET_EXPRESSIONS.getAbbreviation() + "." + targetColumn.getName();
                 } else if (transformation.getMaxDatasetNumber() > 1) {
                     expression = ComponentPrefixType.SETCOMPONENT.getAbbreviation() + "." + targetColumn.getName();
-                } else if (transformation.getMappings().isAggregateTransformation(1)) {
+                } else if (transformation.getMappings()
+                                         .isAggregateTransformation(1)) {
                     expression = "D1_" + ComponentPrefixType.AGGREGATE.getAbbreviation() + "." + targetColumn.getName();
                 } else {
                     if (expressionsArray.length > 0) {
@@ -175,14 +207,19 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
                         expression = " null ";
                     }
                 }
-                Optional<String> sequenceMappingExpression = targetColumn.getMappingExpressions().stream().filter(c -> c.toLowerCase().contains("nextval")).findFirst();
+                Optional<String> sequenceMappingExpression = targetColumn.getMappingExpressions()
+                                                                         .stream()
+                                                                         .filter(c -> c.toLowerCase()
+                                                                                       .contains("nextval"))
+                                                                         .findFirst();
                 if (sequenceMappingExpression.isPresent()) {
                     expression = sequenceMappingExpression.get();
                 }
                 logger.debug("Set TargetExpression;" + expression);
-                if (targetComponents.get(0) instanceof DatastoreComponent && !expression.trim().equals("null")) {
+                if (targetComponents.get(0) instanceof DatastoreComponent && !expression.trim()
+                                                                                        .equals("null")) {
                     createTgtExpression(targetComponents.get(0), targetDataStore, targetColumn, transformation,
-                            expression);
+                                        expression);
                 }
             }
         }
@@ -200,12 +237,17 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
      * @return
      */
     private String[] getTranslation(final Targetcolumn targetColumn, final Transformation transformation) {
-        String[] array = new String[targetColumn.getMappingExpressions().size()];
-        targetColumn.getMappingExpressions().toArray(array);
-        String[] translated = new String[targetColumn.getMappingExpressions().size()];
+        String[] array = new String[targetColumn.getMappingExpressions()
+                                                .size()];
+        targetColumn.getMappingExpressions()
+                    .toArray(array);
+        String[] translated = new String[targetColumn.getMappingExpressions()
+                                                     .size()];
         for (int counter = 0; counter < array.length; counter++) {
             String expression = array[counter];
-            translated[counter] = transformation.getDatasets().get(counter).translateExpression(expression);
+            translated[counter] = transformation.getDatasets()
+                                                .get(counter)
+                                                .translateExpression(expression);
         }
         return translated;
     }
@@ -221,10 +263,10 @@ public class ExpressionsBuilderImpl implements ExpressionsBuilder {
      *                                  AdapterException @throws Exception
      */
     private void createTgtExpression(final IMapComponent targetDatastoreComponent2, final OdiDataStore tgtTable,
-                                     final Targetcolumn targetcolumn, final Transformation transformation, final String expression)
-            throws AdapterException, MappingException {
+                                     final Targetcolumn targetcolumn, final Transformation transformation,
+                                     final String expression) throws AdapterException, MappingException {
         DatastoreComponent.findAttributeForColumn(targetDatastoreComponent2, tgtTable.getColumn(targetcolumn.getName()))
-                .setExpressionText(expression);
+                          .setExpressionText(expression);
     }
 
 

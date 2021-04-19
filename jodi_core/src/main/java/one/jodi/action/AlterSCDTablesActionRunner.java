@@ -20,11 +20,11 @@ import java.util.List;
  * that invokes the {@link TableServiceProvider#alterSCDTables()} method.
  */
 public class AlterSCDTablesActionRunner implements ActionRunner {
-    private final static String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
+    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n"
             + "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n"
             + "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n"
             + "or this could be due to an invalid XML file.";
-    private final static String ERROR_MESSAGE_01020 = "The configuration property file is required to run Alter SCD Tables";
+    private static final String ERROR_MESSAGE_01020 = "The configuration property file is required to run Alter SCD Tables";
     private final TableServiceProvider tableService;
     private final TableService tableServiceCore;
     private final ErrorWarningMessageJodi errorWarningMessages;

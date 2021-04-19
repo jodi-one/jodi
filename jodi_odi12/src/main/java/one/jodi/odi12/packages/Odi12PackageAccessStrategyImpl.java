@@ -24,7 +24,7 @@ import static one.jodi.odi12.folder.Odi12FolderHelper.getFolderPath;
 
 public class Odi12PackageAccessStrategyImpl implements
         OdiPackageAccessStrategy<Mapping, StepMapping> {
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(Odi12PackageAccessStrategyImpl.class);
     private final OdiInstance odiInstance;
     private final Odi12FolderServiceProvider folderService;

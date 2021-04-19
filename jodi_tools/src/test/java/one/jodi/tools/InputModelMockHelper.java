@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 public class InputModelMockHelper {
 
-    public final static String TARGET_STORE = "targetdatastore";
+    public static final String TARGET_STORE = "targetdatastore";
 
     public static Dataset createMockDataset(final String alias, final String name, final String model) {
         Dataset mockDS = mock(Dataset.class);

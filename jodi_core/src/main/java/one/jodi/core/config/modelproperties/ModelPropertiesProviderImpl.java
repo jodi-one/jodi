@@ -9,7 +9,13 @@ import one.jodi.core.config.PropertiesParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Parses properties related to model definitions and performs some additional
@@ -24,21 +30,25 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
      */
     private static final String MODEL_TOPIC = "model";
 
-    private final static Logger logger = LogManager.getLogger(ModelPropertiesProviderImpl.class);
+    private static final Logger logger = LogManager.getLogger(ModelPropertiesProviderImpl.class);
 
-    private final static String ERROR_MESSAGE_03030 = "The model properties contain %1$s configuration errors.";
-    private final static String ERROR_MESSAGE_03040 = "Duplicate default flag defined for model code '%1$s'. Only one model may be the default model.";
-    private final static String ERROR_MESSAGE_03050 = "The order number %1$s for model '%2$s' has been previously defined. Order numbers must be unique.";
-    private final static String ERROR_MESSAGE_03060 = "The model code '%1$s' in group '%2$s' has been previously defined. Order numbers must be unique.";
-    private final static String[] PARAMETER_DEFS = new String[]{"code!", "default",
-            "ignoredbyheuristics", "order!", "layer", "prefix[]", "postfix[]", "journalized", "jkmoptions[]", "jkm", "subscribers[]"};
+    private static final String ERROR_MESSAGE_03030 = "The model properties contain %1$s configuration errors.";
+    private static final String ERROR_MESSAGE_03040 =
+            "Duplicate default flag defined for model code '%1$s'. Only one model may be the default model.";
+    private static final String ERROR_MESSAGE_03050 =
+            "The order number %1$s for model '%2$s' has been previously defined. Order numbers must be unique.";
+    private static final String ERROR_MESSAGE_03060 =
+            "The model code '%1$s' in group '%2$s' has been previously defined. Order numbers must be unique.";
+    private static final String[] PARAMETER_DEFS =
+            new String[]{"code!", "default", "ignoredbyheuristics", "order!", "layer", "prefix[]", "postfix[]",
+                         "journalized", "jkmoptions[]", "jkm", "subscribers[]"};
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final JodiProperties jodiProperties;
     private List<ModelProperties> mpList;
-    private PropertiesParser<ModelPropertiesImpl> mpParser;
+    private final PropertiesParser<ModelPropertiesImpl> mpParser;
 
     // contains errors found during initialization
-    private List<String> errorMessages = new ArrayList<>();
+    private final List<String> errorMessages = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     @Inject
@@ -48,14 +58,12 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
         logger.debug("initialize ModelPropertiesProvider ...");
         this.jodiProperties = jodiProperties;
         this.errorWarningMessages = errorWarningMessages;
-        this.mpParser = new PropertiesParser<>(this.jodiProperties,
-                errorWarningMessages);
-        this.mpList = (List<ModelProperties>) (List<?>) mpParser
-                .parseProperties(MODEL_TOPIC, Arrays.asList(PARAMETER_DEFS),
-                        ModelPropertiesImpl.class);
+        this.mpParser = new PropertiesParser<>(this.jodiProperties, errorWarningMessages);
+        this.mpList =
+                (List<ModelProperties>) (List<?>) mpParser.parseProperties(MODEL_TOPIC, Arrays.asList(PARAMETER_DEFS),
+                                                                           ModelPropertiesImpl.class);
         //sort list according to the order member.
-        Comparator<ModelProperties> comp =
-                ModelProperties::compareOrderTo;
+        Comparator<ModelProperties> comp = ModelProperties::compareOrderTo;
         Collections.sort(mpList, comp);
 
         //make list unmodifiable
@@ -74,11 +82,9 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
                 countDefaultFlags++;
             }
             if (countDefaultFlags > 1) {
-                String msg = errorWarningMessages.formatMessage(3040,
-                        ERROR_MESSAGE_03040, this.getClass(), mp.getCode());
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg =
+                        errorWarningMessages.formatMessage(3040, ERROR_MESSAGE_03040, this.getClass(), mp.getCode());
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 errorMessages.add(msg);
                 break;
             }
@@ -87,11 +93,10 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
         int previousOrder = Integer.MIN_VALUE;
         for (ModelProperties mp : mpList) {
             if (mp.getOrder() == previousOrder) {
-                String msg = errorWarningMessages.formatMessage(3050,
-                        ERROR_MESSAGE_03050, this.getClass(), mp.getOrder(), mp.getCode());
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg =
+                        errorWarningMessages.formatMessage(3050, ERROR_MESSAGE_03050, this.getClass(), mp.getOrder(),
+                                                           mp.getCode());
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 errorMessages.add(msg);
                 break;
             }
@@ -101,11 +106,10 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
         Set<String> foundModels = new HashSet<>();
         for (ModelProperties mp : mpList) {
             if (foundModels.contains(mp.getCode())) {
-                String msg = errorWarningMessages.formatMessage(3060,
-                        ERROR_MESSAGE_03060, this.getClass(), mp.getCode(), mp.getLayer());
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                String msg =
+                        errorWarningMessages.formatMessage(3060, ERROR_MESSAGE_03060, this.getClass(), mp.getCode(),
+                                                           mp.getLayer());
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 errorMessages.add(msg);
                 break;
             }
@@ -117,11 +121,9 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
     public List<ModelProperties> getConfiguredModels() {
 
         if (!errorMessages.isEmpty()) {
-            String msg = errorWarningMessages.formatMessage(3030,
-                    ERROR_MESSAGE_03030, this.getClass(), errorMessages.size());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(3030, ERROR_MESSAGE_03030, this.getClass(),
+                                                            errorMessages.size());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new RuntimeException(msg);
         }
 
@@ -135,7 +137,9 @@ public class ModelPropertiesProviderImpl implements ModelPropertiesProvider {
 
         for (ModelProperties mp : getConfiguredModels()) {
             for (String layerName : layers) {
-                if ((mp.getLayer() != null) && (!mp.getLayer().equals("")) && (mp.getLayer().equalsIgnoreCase(layerName))) {
+                if ((mp.getLayer() != null) && (!mp.getLayer()
+                                                   .equals("")) && (mp.getLayer()
+                                                                      .equalsIgnoreCase(layerName))) {
                     modelsInLayer.add(mp);
                     break;
                 }

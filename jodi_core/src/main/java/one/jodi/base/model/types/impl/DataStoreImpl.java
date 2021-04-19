@@ -1,7 +1,14 @@
 package one.jodi.base.model.types.impl;
 
-import one.jodi.base.model.types.*;
+import one.jodi.base.model.types.DataModel;
+import one.jodi.base.model.types.DataStore;
+import one.jodi.base.model.types.DataStoreColumn;
+import one.jodi.base.model.types.DataStoreForeignReference;
+import one.jodi.base.model.types.DataStoreKey;
 import one.jodi.base.model.types.DataStoreKey.KeyType;
+import one.jodi.base.model.types.DataStoreType;
+import one.jodi.base.model.types.LazyCreation;
+import one.jodi.base.model.types.SCDType;
 import one.jodi.base.service.metadata.ColumnMetaData;
 import one.jodi.base.service.metadata.DataStoreDescriptor;
 import one.jodi.base.service.metadata.ForeignReference;
@@ -23,7 +30,7 @@ import java.util.stream.Collectors;
 public class DataStoreImpl implements DataStore, Serializable {
 
     private static final long serialVersionUID = 2517766478207443763L;
-    private final static Logger logger = LogManager.getLogger(DataStoreImpl.class);
+    private static final Logger logger = LogManager.getLogger(DataStoreImpl.class);
     // Attributes that describe the data store / table
     private final String dataStoreName;
     private final boolean temporary;
@@ -49,9 +56,7 @@ public class DataStoreImpl implements DataStore, Serializable {
      *                      naming conventions in the property file
      * @param dataModel     The datamodel of the datastore.
      */
-    public DataStoreImpl(final DataStoreDescriptor desc,
-                         final DataStoreType dataStoreType,
-                         final DataModel dataModel,
+    public DataStoreImpl(final DataStoreDescriptor desc, final DataStoreType dataStoreType, final DataModel dataModel,
                          final LazyCreation creationService) {
         super();
         this.creationService = creationService;
@@ -76,8 +81,7 @@ public class DataStoreImpl implements DataStore, Serializable {
      * @param dataStoreColumns
      * @param dataModel
      */
-    public DataStoreImpl(final String dataStoreName,
-                         final Map<String, DataStoreColumn> dataStoreColumns,
+    public DataStoreImpl(final String dataStoreName, final Map<String, DataStoreColumn> dataStoreColumns,
                          final DataModel dataModel) {
         super();
         assert (dataStoreColumns != null);
@@ -105,8 +109,7 @@ public class DataStoreImpl implements DataStore, Serializable {
      * @param stream uses by Java to serialize this object to a stream
      * @throws java.io.IOException
      */
-    private void writeObject(java.io.ObjectOutputStream stream)
-            throws java.io.IOException {
+    private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
         // The FK references have not been initialized if still null.
         if (foreignReferences == null) {
             // Initialize method by calling the method that constructs the FK
@@ -116,31 +119,25 @@ public class DataStoreImpl implements DataStore, Serializable {
         stream.defaultWriteObject();
     }
 
-    private Map<String, DataStoreColumn> createDataStoreColumnMap(
-            final DataStore parent,
-            final DataStoreDescriptor dataStoreDescriptor) {
-        LinkedHashMap<String, DataStoreColumn> result =
-                new LinkedHashMap<>(dataStoreDescriptor.getColumnMetaData().size());
+    private Map<String, DataStoreColumn> createDataStoreColumnMap(final DataStore parent,
+                                                                  final DataStoreDescriptor dataStoreDescriptor) {
+        LinkedHashMap<String, DataStoreColumn> result = new LinkedHashMap<>(dataStoreDescriptor.getColumnMetaData()
+                                                                                               .size());
         for (ColumnMetaData column : dataStoreDescriptor.getColumnMetaData()) {
             String type = column.getColumnDataType();
             if (type == null) {
-                String model = parent.getDataModel() != null
-                        ? parent.getDataModel().getModelCode()
-                        : "Unknown.";
-                String msg = String.format(
-                        "This column has no datatype attached; '%s' in model '%s'.",
-                        parent.getDataStoreName() + "." + column.getName(), model);
+                String model = parent.getDataModel() != null ? parent.getDataModel()
+                                                                     .getModelCode() : "Unknown.";
+                String msg = String.format("This column has no datatype attached; '%s' in model '%s'.",
+                                           parent.getDataStoreName() + "." + column.getName(), model);
                 logger.warn(msg);
                 continue;
             }
-            result.put(column.getName(), new DataStoreColumnImpl(
-                    parent, column.getName(),
-                    column.getLength(), column.getScale(),
-                    type,
-                    convertToSCDType(column.getColumnSCDType()),
-                    column.hasNotNullConstraint(),
-                    column.getDescription(),
-                    column.getPosition()));
+            result.put(column.getName(),
+                       new DataStoreColumnImpl(parent, column.getName(), column.getLength(), column.getScale(), type,
+                                               convertToSCDType(column.getColumnSCDType()),
+                                               column.hasNotNullConstraint(), column.getDescription(),
+                                               column.getPosition()));
         }
         return result;
     }
@@ -148,15 +145,14 @@ public class DataStoreImpl implements DataStore, Serializable {
     private List<DataStoreKey> createDataStoreKeys(final DataStoreDescriptor desc) {
         // collect Key information
         final List<DataStoreKey> keys = desc.getKeys()
-                .stream()
-                .map(DataStoreKeyImpl::new)
-                .collect(Collectors.toList());
+                                            .stream()
+                                            .map(DataStoreKeyImpl::new)
+                                            .collect(Collectors.toList());
         return Collections.unmodifiableList(keys);
     }
 
-    private List<DataStoreForeignReference> createForeignReferences(
-            final List<ForeignReference> foreignRefs,
-            final DataStore foreignDataStore) {
+    private List<DataStoreForeignReference> createForeignReferences(final List<ForeignReference> foreignRefs,
+                                                                    final DataStore foreignDataStore) {
         return creationService.createForeignReferences(foreignRefs, foreignDataStore);
     }
 
@@ -260,10 +256,14 @@ public class DataStoreImpl implements DataStore, Serializable {
         sb.append(dataModel.getModelCode());
         sb.append(":");
         sb.append(dataStoreName);
-        if (temporary)
+        if (temporary) {
             sb.append(" [temporary] ");
-        if ((dataStoreType != null) && (dataStoreType != DataStoreType.UNKNOWN))
-            sb.append("[type: ").append(dataStoreType).append("]");
+        }
+        if ((dataStoreType != null) && (dataStoreType != DataStoreType.UNKNOWN)) {
+            sb.append("[type: ")
+              .append(dataStoreType)
+              .append("]");
+        }
         sb.append(lineSeperator);
 
         if (getColumns().size() > 0) {

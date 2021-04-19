@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class OdiUpdateAgent {
-    private final static Logger logger = LogManager.getLogger(OdiUpdateAgent.class);
+    private static final Logger logger = LogManager.getLogger(OdiUpdateAgent.class);
 
     public OdiUpdateAgent() {
         super();

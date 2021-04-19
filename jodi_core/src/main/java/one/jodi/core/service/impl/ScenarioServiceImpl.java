@@ -24,10 +24,10 @@ import java.util.List;
  * REPLACE.
  */
 public class ScenarioServiceImpl implements ScenarioService {
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(ScenarioServiceImpl.class);
 
-    private final static String ERROR_MESSAGE_03640 =
+    private static final String ERROR_MESSAGE_03640 =
             "Error while generating all scenarios.";
 
     private final ScenarioServiceProvider scenarioService;

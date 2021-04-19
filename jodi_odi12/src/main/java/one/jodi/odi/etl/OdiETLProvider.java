@@ -5,7 +5,13 @@ import one.jodi.base.annotations.Cached;
 import one.jodi.base.error.ErrorWarningMessageJodi;
 import one.jodi.base.error.ErrorWarningMessageJodi.MESSAGE_TYPE;
 import one.jodi.base.exception.UnRecoverableException;
-import one.jodi.base.service.metadata.*;
+import one.jodi.base.service.metadata.ColumnMetaData;
+import one.jodi.base.service.metadata.DataModelDescriptor;
+import one.jodi.base.service.metadata.DataStoreDescriptor;
+import one.jodi.base.service.metadata.ForeignReference;
+import one.jodi.base.service.metadata.Key;
+import one.jodi.base.service.metadata.SchemaMetaDataProvider;
+import one.jodi.base.service.metadata.SlowlyChangingDataType;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.config.modelproperties.ModelPropertiesProvider;
 import one.jodi.odi.common.FlexfieldUtil;
@@ -14,17 +20,34 @@ import one.jodi.odi.packages.OdiBasePackageServiceProvider;
 import one.jodi.odi.variables.OdiVariableAccessStrategy;
 import oracle.odi.core.OdiInstance;
 import oracle.odi.domain.flexfields.IFlexFieldValue;
-import oracle.odi.domain.model.*;
+import oracle.odi.domain.model.OdiColumn;
+import oracle.odi.domain.model.OdiDataStore;
+import oracle.odi.domain.model.OdiKey;
+import oracle.odi.domain.model.OdiModel;
+import oracle.odi.domain.model.OdiReference;
+import oracle.odi.domain.model.OdiSubModel;
+import oracle.odi.domain.model.ReferenceColumn;
 import oracle.odi.domain.model.finder.IOdiColumnFinder;
 import oracle.odi.domain.model.finder.IOdiDataStoreFinder;
 import oracle.odi.domain.model.finder.IOdiModelFinder;
-import oracle.odi.domain.project.*;
+import oracle.odi.domain.project.OdiCKM;
+import oracle.odi.domain.project.OdiIKM;
+import oracle.odi.domain.project.OdiJKM;
+import oracle.odi.domain.project.OdiKM;
+import oracle.odi.domain.project.OdiLKM;
+import oracle.odi.domain.project.OdiProject;
+import oracle.odi.domain.project.OdiVariable;
 import oracle.odi.domain.project.finder.IOdiCKMFinder;
 import oracle.odi.domain.project.finder.IOdiIKMFinder;
 import oracle.odi.domain.project.finder.IOdiLKMFinder;
 import oracle.odi.domain.project.finder.IOdiVariableFinder;
-import oracle.odi.domain.topology.*;
+import oracle.odi.domain.topology.AbstractOdiDataServer;
 import oracle.odi.domain.topology.AbstractOdiDataServer.IConnectionSettings;
+import oracle.odi.domain.topology.OdiContext;
+import oracle.odi.domain.topology.OdiDataServer;
+import oracle.odi.domain.topology.OdiFlexField;
+import oracle.odi.domain.topology.OdiLogicalSchema;
+import oracle.odi.domain.topology.OdiPhysicalSchema;
 import oracle.odi.domain.topology.finder.IOdiContextFinder;
 import oracle.odi.domain.topology.finder.IOdiFlexFieldFinder;
 import oracle.odi.domain.topology.finder.IOdiLogicalSchemaFinder;
@@ -32,7 +55,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -42,19 +73,15 @@ import java.util.stream.Collectors;
 @Singleton
 public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
-    private final static String ERROR_MESSAGE_03380 =
-            "Cannot find IKM with name: %s, projectCode: %s.";
+    private static final String ERROR_MESSAGE_03380 = "Cannot find IKM with name: %s, projectCode: %s.";
 
-    private final static String ERROR_MESSAGE_03390 =
-            "Cannot find JKM with name: %s, projectCode: %s.";
+    private static final String ERROR_MESSAGE_03390 = "Cannot find JKM with name: %s, projectCode: %s.";
 
-    private final static String ERROR_MESSAGE_03400 =
-            "Cannot find CKM with name: %s, projectCode: %s.";
+    private static final String ERROR_MESSAGE_03400 = "Cannot find CKM with name: %s, projectCode: %s.";
 
-    private final static String ERROR_MESSAGE_03410 =
-            "Cannot find LKM with name: %s, projectCode: %s.";
+    private static final String ERROR_MESSAGE_03410 = "Cannot find LKM with name: %s, projectCode: %s.";
 
-    private final static Logger logger = LogManager.getLogger(OdiETLProvider.class);
+    private static final Logger logger = LogManager.getLogger(OdiETLProvider.class);
 
     private final OdiInstance odiInstance;
     private final FlexfieldUtil<OdiModel> modelFlexFieldUtil;
@@ -63,14 +90,12 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;
 
-    private final Map<String, String> modelsAndSchemas = new HashMap<String, String>();
+    private final Map<String, String> modelsAndSchemas = new HashMap<>();
 
     @Inject
-    protected OdiETLProvider(final OdiInstance odiInstance,
-                             final FlexfieldUtil<OdiModel> modelFlexFieldUtil,
+    protected OdiETLProvider(final OdiInstance odiInstance, final FlexfieldUtil<OdiModel> modelFlexFieldUtil,
                              final FlexfieldUtil<OdiDataStore> dataStoreFlexFieldUtil,
-                             final OdiVariableAccessStrategy odiVariableService,
-                             final JodiProperties properties,
+                             final OdiVariableAccessStrategy odiVariableService, final JodiProperties properties,
                              final ModelPropertiesProvider modelPropProvider,
                              final ErrorWarningMessageJodi errorWarningMessages) {
         this.odiInstance = odiInstance;
@@ -86,12 +111,12 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
     public boolean existsProject(final String projectCode) {
         boolean found = false;
 
-        @SuppressWarnings("unchecked")
-        Collection<OdiProject> c = odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiProject.class)
-                .findAll();
+        @SuppressWarnings("unchecked") Collection<OdiProject> c = odiInstance.getTransactionalEntityManager()
+                                                                             .getFinder(OdiProject.class)
+                                                                             .findAll();
         for (OdiProject candidate : c) {
-            if (candidate.getCode().equals(projectCode)) {
+            if (candidate.getCode()
+                         .equals(projectCode)) {
                 found = true;
                 break;
             }
@@ -99,21 +124,21 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         return found;
     }
 
+    @Override
     @Cached
     public OdiKM<?> findIKMByName(String name, String projectCode) {
-        Collection<? extends OdiKM<?>> ikm =
-                ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiIKM.class))
-                        .findByName(name, projectCode);
+        Collection<? extends OdiKM<?>> ikm = ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
+                                                                         .getFinder(OdiIKM.class)).findByName(name,
+                                                                                                              projectCode);
         if (ikm == null || ikm.isEmpty()) {
             errorWarningMessages.addMessage("Can't find IKM '" + name + "'", MESSAGE_TYPE.ERRORS);
         }
         try {
-            return (ikm == null || ikm.isEmpty() ? null : ikm.iterator().next());
+            return (ikm == null || ikm.isEmpty() ? null : ikm.iterator()
+                                                             .next());
         } catch (NoSuchElementException nsee) {
             String msg =
-                    errorWarningMessages.formatMessage(3380, ERROR_MESSAGE_03380,
-                            this.getClass(), name, projectCode);
+                    errorWarningMessages.formatMessage(3380, ERROR_MESSAGE_03380, this.getClass(), name, projectCode);
             logger.error(msg, nsee);
             throw new UnRecoverableException(msg, nsee);
         }
@@ -121,47 +146,44 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Override
     public OdiKM<?> findIKMByName(String name) {
-        Collection<? extends OdiKM<?>> ikm =
-                ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiIKM.class))
-                        .findGlobalByName(name);
+        Collection<? extends OdiKM<?>> ikm = ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
+                                                                         .getFinder(OdiIKM.class)).findGlobalByName(
+                name);
         if (ikm == null || ikm.isEmpty()) {
             errorWarningMessages.addMessage("Can't find global IKM '" + name + "'", MESSAGE_TYPE.ERRORS);
         }
         try {
-            return (ikm == null || ikm.isEmpty() ? null : ikm.iterator().next());
+            return (ikm == null || ikm.isEmpty() ? null : ikm.iterator()
+                                                             .next());
         } catch (NoSuchElementException nsee) {
-            String msg =
-                    errorWarningMessages.formatMessage(3380, ERROR_MESSAGE_03380,
-                            this.getClass(), name, "global");
+            String msg = errorWarningMessages.formatMessage(3380, ERROR_MESSAGE_03380, this.getClass(), name, "global");
             logger.error(msg, nsee);
             throw new UnRecoverableException(msg, nsee);
         }
     }
 
+    @Override
     @Cached
     public OdiKM<?> findJKMByName(String name, String projectCode) {
-        Collection<? extends OdiKM<?>> jkm =
-                ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiJKM.class))
-                        .findByName(name, projectCode);
+        Collection<? extends OdiKM<?>> jkm = ((IOdiIKMFinder) odiInstance.getTransactionalEntityManager()
+                                                                         .getFinder(OdiJKM.class)).findByName(name,
+                                                                                                              projectCode);
         try {
-            return (jkm == null || jkm.isEmpty() ? null : jkm.iterator().next());
+            return (jkm == null || jkm.isEmpty() ? null : jkm.iterator()
+                                                             .next());
         } catch (NoSuchElementException nsee) {
             String msg =
-                    errorWarningMessages.formatMessage(3390, ERROR_MESSAGE_03390,
-                            this.getClass(), name, projectCode);
+                    errorWarningMessages.formatMessage(3390, ERROR_MESSAGE_03390, this.getClass(), name, projectCode);
             logger.error(msg, nsee);
             throw new UnRecoverableException(msg);
         }
     }
 
+    @Override
     @Cached
     public OdiKM<?> findCKMByName(String name, String projectCode) {
-        Collection<OdiCKM> ckm =
-                ((IOdiCKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiCKM.class))
-                        .findByName(name, projectCode);
+        Collection<OdiCKM> ckm = ((IOdiCKMFinder) odiInstance.getTransactionalEntityManager()
+                                                             .getFinder(OdiCKM.class)).findByName(name, projectCode);
 
         if (ckm == null || ckm.isEmpty()) {
             errorWarningMessages.addMessage("Can't find CKM '" + name + "'", MESSAGE_TYPE.ERRORS);
@@ -169,11 +191,11 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
         OdiCKM ckmChoosen = null;
         try {
-            ckmChoosen = (ckm == null || ckm.isEmpty() ? null : ckm.iterator().next());
+            ckmChoosen = (ckm == null || ckm.isEmpty() ? null : ckm.iterator()
+                                                                   .next());
         } catch (NoSuchElementException nse) {
             String msg =
-                    errorWarningMessages.formatMessage(3400, ERROR_MESSAGE_03400,
-                            this.getClass(), name, projectCode);
+                    errorWarningMessages.formatMessage(3400, ERROR_MESSAGE_03400, this.getClass(), name, projectCode);
             logger.error(msg, nse);
             throw new UnRecoverableException(msg, nse);
         }
@@ -182,10 +204,8 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Override
     public OdiKM<?> findCKMByName(String name) {
-        Collection<OdiCKM> ckm =
-                ((IOdiCKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiCKM.class))
-                        .findGlobalByName(name);
+        Collection<OdiCKM> ckm = ((IOdiCKMFinder) odiInstance.getTransactionalEntityManager()
+                                                             .getFinder(OdiCKM.class)).findGlobalByName(name);
 
         if (ckm == null || ckm.isEmpty()) {
             errorWarningMessages.addMessage("Can't find CKM '" + name + "'", MESSAGE_TYPE.ERRORS);
@@ -193,33 +213,31 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
         OdiCKM ckmChoosen = null;
         try {
-            ckmChoosen = (ckm == null || ckm.isEmpty() ? null : ckm.iterator().next());
+            ckmChoosen = (ckm == null || ckm.isEmpty() ? null : ckm.iterator()
+                                                                   .next());
         } catch (NoSuchElementException nse) {
-            String msg =
-                    errorWarningMessages.formatMessage(3400, ERROR_MESSAGE_03400,
-                            this.getClass(), name, "global");
+            String msg = errorWarningMessages.formatMessage(3400, ERROR_MESSAGE_03400, this.getClass(), name, "global");
             logger.error(msg, nse);
             throw new UnRecoverableException(msg, nse);
         }
         return ckmChoosen;
     }
 
+    @Override
     @Cached
     public OdiKM<?> findLKMByName(String name, String projectCode) {
-        Collection<OdiLKM> lkm =
-                ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLKM.class))
-                        .findByName(name, projectCode);
+        Collection<OdiLKM> lkm = ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
+                                                             .getFinder(OdiLKM.class)).findByName(name, projectCode);
         if (lkm == null || lkm.isEmpty()) {
             errorWarningMessages.addMessage("Can't find LKM '" + name + "'", MESSAGE_TYPE.ERRORS);
         }
         logger.debug("attempting to find LKM by name = " + name);
         try {
-            return (lkm == null || lkm.isEmpty() ? null : lkm.iterator().next());
+            return (lkm == null || lkm.isEmpty() ? null : lkm.iterator()
+                                                             .next());
         } catch (NoSuchElementException nsee) {
             String msg =
-                    errorWarningMessages.formatMessage(3410, ERROR_MESSAGE_03410,
-                            this.getClass(), name, projectCode);
+                    errorWarningMessages.formatMessage(3410, ERROR_MESSAGE_03410, this.getClass(), name, projectCode);
             logger.error(msg, nsee);
             throw new UnRecoverableException(msg, nsee);
         }
@@ -227,45 +245,47 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Override
     public OdiKM<?> findLKMByName(final String name) {
-        Collection<OdiLKM> lkm =
-                ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLKM.class))
-                        .findAllGlobals().stream().filter(n -> n.getName().equalsIgnoreCase(name))
-                        .collect(Collectors.toList());
+        Collection<OdiLKM> lkm = ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
+                                                             .getFinder(OdiLKM.class)).findAllGlobals()
+                                                                                      .stream()
+                                                                                      .filter(n -> n.getName()
+                                                                                                    .equalsIgnoreCase(
+                                                                                                            name))
+                                                                                      .collect(Collectors.toList());
         if (lkm == null || lkm.isEmpty()) {
             if (!name.endsWith(".GLOBAL")) {
-                lkm =
-                        ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
-                                .getFinder(OdiLKM.class))
-                                .findAllGlobals().stream().filter(n -> n.getName().equalsIgnoreCase(name + ".GLOBAL"))
-                                .collect(Collectors.toList());
+                lkm = ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
+                                                  .getFinder(OdiLKM.class)).findAllGlobals()
+                                                                           .stream()
+                                                                           .filter(n -> n.getName()
+                                                                                         .equalsIgnoreCase(
+                                                                                                 name + ".GLOBAL"))
+                                                                           .collect(Collectors.toList());
             }
         }
         if (lkm == null || lkm.isEmpty()) {
-            Collection<OdiLKM> lkmOptions =
-                    ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
-                            .getFinder(OdiLKM.class))
-                            .findAllGlobals();
+            Collection<OdiLKM> lkmOptions = ((IOdiLKMFinder) odiInstance.getTransactionalEntityManager()
+                                                                        .getFinder(OdiLKM.class)).findAllGlobals();
             StringBuilder options = new StringBuilder();
-            lkmOptions.stream().forEach(l -> options.append(l.getName() + ","));
-            errorWarningMessages.addMessage("Can't find LKM '" + name + "' valid options are " + options.toString() + '.', MESSAGE_TYPE.ERRORS);
+            lkmOptions.stream()
+                      .forEach(l -> options.append(l.getName() + ","));
+            errorWarningMessages.addMessage(
+                    "Can't find LKM '" + name + "' valid options are " + options.toString() + '.', MESSAGE_TYPE.ERRORS);
         }
         logger.debug("attempting to find LKM by name = " + name);
         try {
-            return (lkm == null || lkm.isEmpty() ? null : lkm.iterator().next());
+            return (lkm == null || lkm.isEmpty() ? null : lkm.iterator()
+                                                             .next());
         } catch (NoSuchElementException nsee) {
-            String msg =
-                    errorWarningMessages.formatMessage(3410, ERROR_MESSAGE_03410,
-                            this.getClass(), name, "global");
+            String msg = errorWarningMessages.formatMessage(3410, ERROR_MESSAGE_03410, this.getClass(), name, "global");
             logger.error(msg, nsee);
             throw new UnRecoverableException(msg, nsee);
         }
     }
 
     private ColumnMetaData createColumnMetaData(final OdiColumn odiColumn) {
-        IOdiFlexFieldFinder finder =
-                ((IOdiFlexFieldFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiFlexField.class));
+        IOdiFlexFieldFinder finder = ((IOdiFlexFieldFinder) odiInstance.getTransactionalEntityManager()
+                                                                       .getFinder(OdiFlexField.class));
         odiColumn.initFlexFields(finder);
 
         ColumnMetaData result = new ColumnMetaData() {
@@ -274,7 +294,8 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
             public String getColumnDataType() {
                 String dataType = null;
                 if (odiColumn.getDataType() != null) {
-                    dataType = odiColumn.getDataType().getName();
+                    dataType = odiColumn.getDataType()
+                                        .getName();
                 }
                 return dataType;
             }
@@ -282,23 +303,38 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
             @Override
             public SlowlyChangingDataType getColumnSCDType() {
                 if (odiColumn.getScdType() != null) {
-                    if (odiColumn.getScdType().toString().equals("SK"))
+                    if (odiColumn.getScdType()
+                                 .toString()
+                                 .equals("SK")) {
                         return SlowlyChangingDataType.SURROGATE_KEY;
-                    else if (odiColumn.getScdType().toString().equals("NK"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("NK")) {
                         return SlowlyChangingDataType.NATURAL_KEY;
-                    else if (odiColumn.getScdType().toString().equals("OC"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("OC")) {
                         return SlowlyChangingDataType.OVERWRITE_ON_CHANGE;
-                    else if (odiColumn.getScdType().toString().equals("IR"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("IR")) {
                         return SlowlyChangingDataType.ADD_ROW_ON_CHANGE;
-                    else if (odiColumn.getScdType().toString().equals("CR"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("CR")) {
                         return SlowlyChangingDataType.CURRENT_RECORD_FLAG;
-                    else if (odiColumn.getScdType().toString().equals("ST"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("ST")) {
                         return SlowlyChangingDataType.START_TIMESTAMP;
-                    else if (odiColumn.getScdType().toString().equals("ET"))
+                    } else if (odiColumn.getScdType()
+                                        .toString()
+                                        .equals("ET")) {
                         return SlowlyChangingDataType.END_TIMESTAMP;
-                    else
-                        return SlowlyChangingDataType.valueOf(odiColumn
-                                .getScdType().toString());
+                    } else {
+                        return SlowlyChangingDataType.valueOf(odiColumn.getScdType()
+                                                                       .toString());
+                    }
                 }
                 return null;
             }
@@ -344,7 +380,8 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public String getDataStoreName() {
-                return odiColumn.getDataStore().getName();
+                return odiColumn.getDataStore()
+                                .getName();
             }
         };
 
@@ -357,13 +394,12 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
         List<String> projectModels = new ArrayList<>();
 
-        @SuppressWarnings("unchecked")
-        Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiModel.class)
-                .findAll();
+        @SuppressWarnings("unchecked") Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
+                                                                                   .getFinder(OdiModel.class)
+                                                                                   .findAll();
         projectModels.addAll(odiModels.stream()
-                .map(OdiModel::getCode)
-                .collect(Collectors.toList()));
+                                      .map(OdiModel::getCode)
+                                      .collect(Collectors.toList()));
 
         return projectModels;
     }
@@ -417,7 +453,8 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public String getDataStoreName() {
-                return odiKey.getDataStore().getName();
+                return odiKey.getDataStore()
+                             .getName();
             }
 
             @Override
@@ -432,17 +469,18 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         for (final ReferenceColumn refColumn : odiFKRefs.getReferenceColumns()) {
             // we do not return complex reference types for now - only FK
             // relationships
-            if (odiFKRefs.getReferenceType() != OdiReference.ReferenceType
-                    .COMPLEX_REFERENCE) {
+            if (odiFKRefs.getReferenceType() != OdiReference.ReferenceType.COMPLEX_REFERENCE) {
                 refColumns.add(new ForeignReference.RefColumns() {
                     @Override
                     public String getForeignKeyColumnName() {
-                        return refColumn.getForeignKeyColumn().getName();
+                        return refColumn.getForeignKeyColumn()
+                                        .getName();
                     }
 
                     @Override
                     public String getPrimaryKeyColumnName() {
-                        return refColumn.getPrimaryKeyColumn().getName();
+                        return refColumn.getPrimaryKeyColumn()
+                                        .getName();
                     }
                 });
             }
@@ -456,12 +494,15 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public String getPrimaryKeyDataStoreName() {
-                return odiFKRefs.getPrimaryDataStore().getName();
+                return odiFKRefs.getPrimaryDataStore()
+                                .getName();
             }
 
             @Override
             public String getPrimaryKeyDataStoreModelCode() {
-                return odiFKRefs.getPrimaryDataStore().getModel().getCode();
+                return odiFKRefs.getPrimaryDataStore()
+                                .getModel()
+                                .getCode();
             }
 
             @Override
@@ -476,11 +517,9 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         };
     }
 
-    private DataStoreDescriptor createDescriptor(
-            final OdiDataStore dataStore,
-            final OdiModel model,
-            final DataModelDescriptor dataModelDescriptor,
-            final boolean isTemporary) {
+    private DataStoreDescriptor createDescriptor(final OdiDataStore dataStore, final OdiModel model,
+                                                 final DataModelDescriptor dataModelDescriptor,
+                                                 final boolean isTemporary) {
         // collect Column information
         final Collection<ColumnMetaData> columns = new ArrayList<>();
         for (OdiColumn odiColumn : dataStore.getColumns()) {
@@ -515,8 +554,7 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public Map<String, Object> getDataStoreFlexfields() {
-                return Collections.unmodifiableMap(
-                        dataStoreFlexFieldUtil.getFlexFieldValues(dataStore));
+                return Collections.unmodifiableMap(dataStoreFlexFieldUtil.getFlexFieldValues(dataStore));
             }
 
             @Override
@@ -548,14 +586,15 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         return descriptor;
     }
 
+    @Override
     @Cached
     public OdiModel getOdiModel(final String modelCode) {
-        @SuppressWarnings("unchecked")
-        Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiModel.class)
-                .findAll();
+        @SuppressWarnings("unchecked") Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
+                                                                                   .getFinder(OdiModel.class)
+                                                                                   .findAll();
         for (OdiModel model : odiModels) {
-            if (model.getCode().equals(modelCode)) {
+            if (model.getCode()
+                     .equals(modelCode)) {
                 return model;
             }
         }
@@ -574,8 +613,7 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public Map<String, Object> getModelFlexfields() {
-                return Collections.unmodifiableMap(
-                        modelFlexFieldUtil.getFlexFieldValues(model));
+                return Collections.unmodifiableMap(modelFlexFieldUtil.getFlexFieldValues(model));
             }
 
             @Override
@@ -584,11 +622,10 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
                 OdiContext context = getContext(targetContext);
                 String url = "defaultserver";
                 try {
-                    IConnectionSettings connection =
-                            model.getLogicalSchema()
-                                    .getPhysicalSchema(context)
-                                    .getDataServer()
-                                    .getConnectionSettings();
+                    IConnectionSettings connection = model.getLogicalSchema()
+                                                          .getPhysicalSchema(context)
+                                                          .getDataServer()
+                                                          .getConnectionSettings();
                     if (connection instanceof AbstractOdiDataServer.JdbcSettings) {
                         url = ((AbstractOdiDataServer.JdbcSettings) connection).getJdbcUrl();
                         String[] parts = url.split(":");
@@ -619,8 +656,9 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
                     logger.debug(e);
                 } catch (NullPointerException npe) {
                     String msg = "Dataserver name not found for logical schema " +
-                            (ls != null ? ls.getName() + "," : "unknown,") + " set the logical schema for this model, for context "
-                            + (context != null ? context.getName() : " unknown");
+                            (ls != null ? ls.getName() + "," : "unknown,") +
+                            " set the logical schema for this model, for context " +
+                            (context != null ? context.getName() : " unknown");
                     logger.error(msg, npe);
                     throw new NullPointerException(msg);
                 }
@@ -629,18 +667,18 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
             @Override
             public String getDataServerTechnology() {
-                return model.getTechnology().getName();
+                return model.getTechnology()
+                            .getName();
             }
 
             @Override
             public String getSchemaName() {
-                String targetContext = properties
-                        .getProperty(OdiConstants.ODI_CONTEXT);
+                String targetContext = properties.getProperty(OdiConstants.ODI_CONTEXT);
                 OdiContext context = getContext(targetContext);
                 String schemaName = "defaultSchemaName";
                 try {
                     OdiPhysicalSchema pschema = model.getLogicalSchema()
-                            .getPhysicalSchema(context);
+                                                     .getPhysicalSchema(context);
                     // it is the default schema name of the dmt.
                     schemaName = pschema.getSchemaName();
                 } catch (Exception e) {
@@ -663,16 +701,14 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
                 String dbName = "defaultSchemaName";
                 try {
                     IConnectionSettings connection = model.getLogicalSchema()
-                            .getPhysicalSchema(context)
-                            .getDataServer()
-                            .getConnectionSettings();
+                                                          .getPhysicalSchema(context)
+                                                          .getDataServer()
+                                                          .getConnectionSettings();
                     if (connection instanceof AbstractOdiDataServer.JdbcSettings) {
                         dbName = ((AbstractOdiDataServer.JdbcSettings) connection).getJdbcUrl();
                         String[] parts = dbName.split(":");
-                        dbName = parts.length > 4
-                                ? parts[4].substring(parts[4].indexOf("/") + 1,
-                                parts[4].length())
-                                : dbName;
+                        dbName = parts.length > 4 ? parts[4].substring(parts[4].indexOf("/") + 1, parts[4].length())
+                                                  : dbName;
                     }
                 } catch (NoSuchMethodError e) {
                     // method not found exception from odi12c while running from
@@ -690,16 +726,14 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
                 int portInt = 0;
                 try {
                     IConnectionSettings connection = model.getLogicalSchema()
-                            .getPhysicalSchema(context)
-                            .getDataServer()
-                            .getConnectionSettings();
+                                                          .getPhysicalSchema(context)
+                                                          .getDataServer()
+                                                          .getConnectionSettings();
                     if (connection instanceof AbstractOdiDataServer.JdbcSettings) {
                         port = ((AbstractOdiDataServer.JdbcSettings) connection).getJdbcUrl();
                         String[] parts = port.split(":");
                         try {
-                            port = parts.length > 4
-                                    ? parts[4].substring(0, parts[4].indexOf("/"))
-                                    : port;
+                            port = parts.length > 4 ? parts[4].substring(0, parts[4].indexOf("/")) : port;
                             portInt = Integer.parseInt(port);
                         } catch (NumberFormatException nfe) {
                             logger.debug("Port not applicable for this server.");
@@ -721,9 +755,8 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Cached
     private OdiContext getContext(String code) {
-        IOdiContextFinder finder =
-                (IOdiContextFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiContext.class);
+        IOdiContextFinder finder = (IOdiContextFinder) odiInstance.getTransactionalEntityManager()
+                                                                  .getFinder(OdiContext.class);
         OdiContext context = finder.findByCode(code);
         assert (context != null) : "Wrong context provided.";
         return context;
@@ -734,10 +767,9 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
     public List<DataModelDescriptor> getDataModelDescriptors() {
 
         List<DataModelDescriptor> dmdList = new ArrayList<>();
-        @SuppressWarnings("unchecked")
-        Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
-                .getFinder(OdiModel.class)
-                .findAll();
+        @SuppressWarnings("unchecked") Collection<OdiModel> odiModels = odiInstance.getTransactionalEntityManager()
+                                                                                   .getFinder(OdiModel.class)
+                                                                                   .findAll();
         for (OdiModel model : odiModels) {
             dmdList.add(createDataModelDescriptor(model));
         }
@@ -746,8 +778,7 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Cached
     @Override
-    public Map<String, DataStoreDescriptor> getDataStoreDescriptorsInModel(
-            final String modelCode) {
+    public Map<String, DataStoreDescriptor> getDataStoreDescriptorsInModel(final String modelCode) {
 
         // Follows the following strategy:
         // 1) Get all models in repository and find named model
@@ -758,8 +789,7 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         // for OHI to avoid 'old style' datastores created from temporary
         // interfaces
         // here the pattern is repeated 'SXX'.
-        final Pattern tempNameTableMatcher = Pattern.compile(
-                this.properties.getTemporaryInterfacesRegex());
+        final Pattern tempNameTableMatcher = Pattern.compile(this.properties.getTemporaryInterfacesRegex());
 
         OdiModel idModel = getOdiModel(modelCode);
         DataModelDescriptor dmDescr = createDataModelDescriptor(idModel);
@@ -767,18 +797,18 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
         Map<String, DataStoreDescriptor> descriptors = new TreeMap<>();
         if (idModel != null) {
             // Retrieve data store descriptors from the global model
-            for (OdiDataStore dataStore : idModel.getGlobalSubModel().getDataStores()) {
-                if (!tempNameTableMatcher.matcher(dataStore.getName()).find()) {
-                    descriptors.put(dataStore.getName(),
-                            createDescriptor(dataStore, idModel, dmDescr, false));
+            for (OdiDataStore dataStore : idModel.getGlobalSubModel()
+                                                 .getDataStores()) {
+                if (!tempNameTableMatcher.matcher(dataStore.getName())
+                                         .find()) {
+                    descriptors.put(dataStore.getName(), createDescriptor(dataStore, idModel, dmDescr, false));
                 }
             }
 
             // Retrieve data store descriptors from sub-models as well
             for (OdiSubModel subModel : idModel.getSubModels()) {
                 for (OdiDataStore dataStore : subModel.getDataStores()) {
-                    descriptors.put(dataStore.getName(),
-                            createDescriptor(dataStore, idModel, dmDescr, false));
+                    descriptors.put(dataStore.getName(), createDescriptor(dataStore, idModel, dmDescr, false));
                 }
             }
         }
@@ -795,14 +825,11 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
     }
 
     @Override
-    public boolean projectVariableExists(final String projectCode,
-                                         final String variableName) {
-        OdiVariable odiVariable =
-                odiVariableService.findProjectVariable(variableName, projectCode);
+    public boolean projectVariableExists(final String projectCode, final String variableName) {
+        OdiVariable odiVariable = odiVariableService.findProjectVariable(variableName, projectCode);
         if (odiVariable != null && odiVariable.getLogicalSchema() == null) {
-            String msg = errorWarningMessages.formatMessage(80801,
-                    OdiBasePackageServiceProvider.ERROR_MESSAGE_80801,
-                    this.getClass(), variableName);
+            String msg = errorWarningMessages.formatMessage(80801, OdiBasePackageServiceProvider.ERROR_MESSAGE_80801,
+                                                            this.getClass(), variableName);
             throw new RuntimeException(msg);
         }
 
@@ -812,13 +839,12 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
     @Override
     public Map<String, String> translateModelToLogicalSchema() {
         if (modelsAndSchemas.size() == 0) {
-            IOdiModelFinder finder =
-                    (IOdiModelFinder) odiInstance.getTransactionalEntityManager()
-                            .getFinder(OdiModel.class);
-            @SuppressWarnings("unchecked")
-            Collection<OdiModel> models = finder.findAll();
+            IOdiModelFinder finder = (IOdiModelFinder) odiInstance.getTransactionalEntityManager()
+                                                                  .getFinder(OdiModel.class);
+            @SuppressWarnings("unchecked") Collection<OdiModel> models = finder.findAll();
             for (OdiModel m : models) {
-                modelsAndSchemas.put(m.getCode(), m.getLogicalSchema().getName());
+                modelsAndSchemas.put(m.getCode(), m.getLogicalSchema()
+                                                   .getName());
             }
             return modelsAndSchemas;
         } else {
@@ -828,48 +854,45 @@ public class OdiETLProvider implements SchemaMetaDataProvider, OdiCommon {
 
     @Override
     public Set<String> getLogicalSchemaNames() {
-        IOdiLogicalSchemaFinder finder =
-                (IOdiLogicalSchemaFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiLogicalSchema.class);
-        @SuppressWarnings("unchecked")
-        Collection<OdiLogicalSchema> schemas = finder.findAll();
+        IOdiLogicalSchemaFinder finder = (IOdiLogicalSchemaFinder) odiInstance.getTransactionalEntityManager()
+                                                                              .getFinder(OdiLogicalSchema.class);
+        @SuppressWarnings("unchecked") Collection<OdiLogicalSchema> schemas = finder.findAll();
         return schemas.stream()
-                .map(s -> s.getName())
-                .collect(Collectors.toSet());
+                      .map(s -> s.getName())
+                      .collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> getTableNames() {
-        IOdiDataStoreFinder finder =
-                (IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiDataStore.class);
-        @SuppressWarnings("unchecked")
-        Collection<OdiDataStore> schemas = finder.findAll();
+        IOdiDataStoreFinder finder = (IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                      .getFinder(OdiDataStore.class);
+        @SuppressWarnings("unchecked") Collection<OdiDataStore> schemas = finder.findAll();
         return schemas.stream()
-                .map(s -> s.getModel().getLogicalSchema().getName() + "." +
-                        s.getName())
-                .collect(Collectors.toSet());
+                      .map(s -> s.getModel()
+                                 .getLogicalSchema()
+                                 .getName() + "." + s.getName())
+                      .collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> getColumnNames() {
-        IOdiColumnFinder finder =
-                (IOdiColumnFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiColumn.class);
-        @SuppressWarnings("unchecked")
-        Collection<OdiColumn> schemas = finder.findAll();
+        IOdiColumnFinder finder = (IOdiColumnFinder) odiInstance.getTransactionalEntityManager()
+                                                                .getFinder(OdiColumn.class);
+        @SuppressWarnings("unchecked") Collection<OdiColumn> schemas = finder.findAll();
         return schemas.stream()
-                .map(s -> s.getDataStore().getModel().getLogicalSchema().getName() +
-                        "." + s.getDataStore().getName() + "." + s.getName())
-                .collect(Collectors.toSet());
+                      .map(s -> s.getDataStore()
+                                 .getModel()
+                                 .getLogicalSchema()
+                                 .getName() + "." + s.getDataStore()
+                                                     .getName() + "." + s.getName())
+                      .collect(Collectors.toSet());
     }
 
     @Override
     @Cached
     public boolean globalVariableExists(String variableName) {
-        IOdiVariableFinder finder =
-                (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
-                        .getFinder(OdiVariable.class);
+        IOdiVariableFinder finder = (IOdiVariableFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiVariable.class);
         OdiVariable variable = finder.findGlobalByName(variableName);
         return variable != null;
     }

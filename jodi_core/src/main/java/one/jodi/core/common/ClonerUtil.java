@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 public class ClonerUtil<T> {
 
-    private final static String ERROR_MESSAGE_01001 = "Exception during cloning of '%1$s'.";
-    private final static Logger log = LogManager.getLogger(ClonerUtil.class);
+    private static final String ERROR_MESSAGE_01001 = "Exception during cloning of '%1$s'.";
+    private static final Logger log = LogManager.getLogger(ClonerUtil.class);
 
     private final ErrorWarningMessageJodi errorWarningMessages;
 
@@ -26,12 +26,10 @@ public class ClonerUtil<T> {
             try {
                 clone = cloner.deepClone(original);
             } catch (RuntimeException e) {
-                String msg = errorWarningMessages.formatMessage(1001,
-                        ERROR_MESSAGE_01001, this.getClass(), original.toString());
+                String msg = errorWarningMessages.formatMessage(1001, ERROR_MESSAGE_01001, this.getClass(),
+                                                                original.toString());
                 log.error(msg);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 throw new RuntimeException(msg, e);
             }
         }

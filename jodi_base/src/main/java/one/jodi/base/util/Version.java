@@ -25,14 +25,12 @@ public class Version {
     private static final String BUILD_DATE = "build.date";
     private static final String BUILD_TIME = "build.time";
     private static final String BUILD_IS_RELEASE = "build.isRelease";
-    private final static Logger logger = LogManager.getLogger(Version.class);
-    private static final String ERROR_MESSAGE_83000 =
-            "The Version property file has not been found.";
+    private static final Logger logger = LogManager.getLogger(Version.class);
+    private static final String ERROR_MESSAGE_83000 = "The Version property file has not been found.";
     private static final String ERROR_MESSAGE_83010 =
             "Fatal error while attempting to retrieve the Version property file.";
     private static final Properties PROPERTIES = new Properties();
-    private static final ErrorWarningMessageJodi ERROR_WARNING_MESSAGES =
-            ErrorWarningMessageJodiImpl.getInstance();
+    private static final ErrorWarningMessageJodi ERROR_WARNING_MESSAGES = ErrorWarningMessageJodiImpl.getInstance();
 
     /*
      * The init method looks for the version.properties file in the root of the jar.
@@ -51,12 +49,10 @@ public class Version {
                 inputStream = cl.getResourceAsStream(FILE_NAME);
                 PROPERTIES.load(inputStream);
             } catch (Exception e) {
-                String msg = ERROR_WARNING_MESSAGES.formatMessage(83000,
-                        ERROR_MESSAGE_83000, Version.class);
+                String msg = ERROR_WARNING_MESSAGES.formatMessage(83000, ERROR_MESSAGE_83000, Version.class);
                 logger.warn(msg);
-                ERROR_WARNING_MESSAGES.addMessage(
-                        ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                ERROR_WARNING_MESSAGES.addMessage(ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg,
+                                                  MESSAGE_TYPE.ERRORS);
                 throw new IllegalArgumentException(msg, e);
             } finally {
                 if (inputStream != null) {
@@ -68,11 +64,8 @@ public class Version {
                 }
             }
         } else {
-            String msg = ERROR_WARNING_MESSAGES.formatMessage(83010,
-                    ERROR_MESSAGE_83010, Version.class);
-            ERROR_WARNING_MESSAGES.addMessage(
-                    ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = ERROR_WARNING_MESSAGES.formatMessage(83010, ERROR_MESSAGE_83010, Version.class);
+            ERROR_WARNING_MESSAGES.addMessage(ERROR_WARNING_MESSAGES.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             logger.error(msg);
             throw new UnRecoverableException(msg);
         }

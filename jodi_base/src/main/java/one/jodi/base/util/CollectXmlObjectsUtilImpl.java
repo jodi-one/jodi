@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectXmlObjectsUtilImpl<T, O> implements CollectXmlObjectsUtil<T> {
-    private final static Logger LOGGER = LogManager.getLogger(CollectXmlObjectsUtilImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(CollectXmlObjectsUtilImpl.class);
 
-    private final static String ERROR_MESSAGE_81150 =
+    private static final String ERROR_MESSAGE_81150 =
             "Exception while reading definition from file '%1$s': %2$s";
 
     private final XMLParserUtil<T, O> xmlParserUtil;

@@ -17,9 +17,9 @@ import org.apache.logging.log4j.Logger;
  */
 public class ModelValidatorImpl implements ModelValidator {
 
-    private final static String ERROR_MESSAGE_60000 = "No key: %s_U1 exists in datastore %s for model %s.";
+    private static final String ERROR_MESSAGE_60000 = "No key: %s_U1 exists in datastore %s for model %s.";
 
-    private final static Logger logger = LogManager.getLogger(ModelValidatorImpl.class);
+    private static final Logger logger = LogManager.getLogger(ModelValidatorImpl.class);
 
     private final JodiProperties properties;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -30,8 +30,7 @@ public class ModelValidatorImpl implements ModelValidator {
      * @param properties
      */
     @Inject
-    public ModelValidatorImpl(final JodiProperties properties,
-                              final ErrorWarningMessageJodi errorWarningMessages) {
+    public ModelValidatorImpl(final JodiProperties properties, final ErrorWarningMessageJodi errorWarningMessages) {
         this.properties = properties;
         this.errorWarningMessages = errorWarningMessages;
     }
@@ -43,6 +42,7 @@ public class ModelValidatorImpl implements ModelValidator {
      * @param properties
      * @return valid or not
      */
+    @Override
     public boolean doCheck(DataStore dataStore) {
         boolean hasAlternativeKey = false;
         StringBuilder logMessages = new StringBuilder("");
@@ -60,8 +60,8 @@ public class ModelValidatorImpl implements ModelValidator {
 
         //TODO extract U1 and P1 constraint post fix into properties file
         for (DataStoreKey dataStoreKey : dataStore.getDataStoreKeys()) {
-            if (dataStoreKey.getName().equals(dataStore.getDataStoreName()
-                    + "_U1")) {
+            if (dataStoreKey.getName()
+                            .equals(dataStore.getDataStoreName() + "_U1")) {
                 hasAlternativeKey = true;
                 break;
             }
@@ -69,17 +69,18 @@ public class ModelValidatorImpl implements ModelValidator {
 
         boolean hasDataMartPrefix = false;
         for (String dmp : properties.getPropertyList(JodiConstants.DATA_MART_PREFIX)) {
-            if (dataStore.getDataStoreName().startsWith(dmp)) {
+            if (dataStore.getDataStoreName()
+                         .startsWith(dmp)) {
                 hasDataMartPrefix = true;
             }
         }
-        if (!hasAlternativeKey && dataStore.getDataStoreType() != null
-                && dataStore.getDataStoreType()
-                .equals(DataStoreType.FACT) && hasDataMartPrefix) {
-            String message = errorWarningMessages.formatMessage(60000, ERROR_MESSAGE_60000,
-                    this.getClass(),
-                    dataStore.getDataStoreName(), dataStore.getDataStoreName(),
-                    dataStore.getDataModel().getDataBaseServiceName());
+        if (!hasAlternativeKey && dataStore.getDataStoreType() != null && dataStore.getDataStoreType()
+                                                                                   .equals(DataStoreType.FACT) &&
+                hasDataMartPrefix) {
+            String message = errorWarningMessages.formatMessage(60000, ERROR_MESSAGE_60000, this.getClass(),
+                                                                dataStore.getDataStoreName(),
+                                                                dataStore.getDataStoreName(), dataStore.getDataModel()
+                                                                                                       .getDataBaseServiceName());
             errorWarningMessages.addMessage(message, MESSAGE_TYPE.WARNINGS);
         } else {
             logger.debug("[OK]  Tablename: " + dataStore.getDataStoreName());

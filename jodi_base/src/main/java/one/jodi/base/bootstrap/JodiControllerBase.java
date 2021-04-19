@@ -30,17 +30,16 @@ import java.util.Set;
  * from the command line.
  */
 public abstract class JodiControllerBase implements Register {
-    private final static Logger LOGGER = LogManager.getLogger(JodiControllerBase.class);
+    private static final Logger LOGGER = LogManager.getLogger(JodiControllerBase.class);
 
     private static final boolean ENABLE_TEST_BEHAVIOR_DEFAULT = false;
-    private final static String ERROR_MESSAGE_80000 = "Could not initialize, please check jodi.properties, " +
-            "DB connection and Repository. %s";
-    private final static String ERROR_MESSAGE_80010 = "Unable to instantiate ModuleProvider implementation %s";
-    private final static String ERROR_MESSAGE_80020 = "Encoding %s is not supported.";
+    private static final String ERROR_MESSAGE_80000 =
+            "Could not initialize, please check jodi.properties, " + "DB connection and Repository. %s";
+    private static final String ERROR_MESSAGE_80010 = "Unable to instantiate ModuleProvider implementation %s";
+    private static final String ERROR_MESSAGE_80020 = "Encoding %s is not supported.";
     private final boolean enableTestBehavior;
     private Set<Resource> registered = new HashSet<>();
-    private ErrorWarningMessageJodi errorWarningMessages =
-            ErrorWarningMessageJodiImpl.getInstance();
+    private ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
     private String cachedErrorWarningMessages;
 
     /**
@@ -67,8 +66,7 @@ public abstract class JodiControllerBase implements Register {
      * @param controller the super class of the controller
      * @param args       Command line arguments
      */
-    protected static void createAndRun(final JodiControllerBase controller,
-                                       final String[] args) {
+    protected static void createAndRun(final JodiControllerBase controller, final String[] args) {
         int returnCode = controller.run(args);
         System.exit(returnCode);
     }
@@ -113,9 +111,10 @@ public abstract class JodiControllerBase implements Register {
     private Injector init(final List<ModuleProvider> mps, final RunConfig config) {
         Collection<Module> modules = new ArrayList<>();
         for (ModuleProvider mp : mps) {
-            if (mp.getOverrideModules(config) != null
-                    && !mp.getOverrideModules(config).isEmpty()) {
-                modules.add(Modules.override(mp.getModules(config)).with(mp.getOverrideModules(config)));
+            if (mp.getOverrideModules(config) != null && !mp.getOverrideModules(config)
+                                                            .isEmpty()) {
+                modules.add(Modules.override(mp.getModules(config))
+                                   .with(mp.getOverrideModules(config)));
             } else {
                 modules.addAll(mp.getModules(config));
             }
@@ -172,11 +171,9 @@ public abstract class JodiControllerBase implements Register {
             String message = (ex.getMessage() != null) ? ex.getMessage() : "";
             String msg;
             synchronized (this) {
-                msg = errorWarningMessages.formatMessage(80000,
-                        ERROR_MESSAGE_80000, this.getClass(), message);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.WARNINGS);
+                msg = errorWarningMessages.formatMessage(80000, ERROR_MESSAGE_80000, this.getClass(), message);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg,
+                                                MESSAGE_TYPE.WARNINGS);
                 LOGGER.fatal(msg, ex);
             }
             if (enableTestBehavior()) {
@@ -211,7 +208,8 @@ public abstract class JodiControllerBase implements Register {
             // context after operation
             customBinding(injector);
             handler.run(config);
-            exitCode = errorWarningMessages.getErrorMessages().isEmpty() ? 0 : 1;
+            exitCode = errorWarningMessages.getErrorMessages()
+                                           .isEmpty() ? 0 : 1;
         } catch (UnRecoverableException u) {
             if (enableTestBehavior()) {
                 if (config.isDevMode()) {
@@ -233,14 +231,16 @@ public abstract class JodiControllerBase implements Register {
             return 5;
         } finally {
             if (enableTestBehavior() && errorWarningMessages.getErrorMessages()
-                    .size() > 0) {
+                                                            .size() > 0) {
                 errorWarningMessages.setMetaDataDirectory(config.getMetadataDirectory());
-                exceptionMessage = "Number of errors detected :" +
-                        errorWarningMessages.getErrorMessages().size();
-                exceptionMessage += " First error is: " +
-                        errorWarningMessages.getErrorMessages()
-                                .values().iterator()
-                                .next().iterator().next();
+                exceptionMessage = "Number of errors detected :" + errorWarningMessages.getErrorMessages()
+                                                                                       .size();
+                exceptionMessage += " First error is: " + errorWarningMessages.getErrorMessages()
+                                                                              .values()
+                                                                              .iterator()
+                                                                              .next()
+                                                                              .iterator()
+                                                                              .next();
             }
             cleanCacheAndPrintErrors();
         }
@@ -259,9 +259,8 @@ public abstract class JodiControllerBase implements Register {
      * @param config             Application configuration
      * @return An initialized DI Injector instance
      */
-    protected abstract Injector createInjector(
-            final Collection<? extends Module> applicationModules,
-            final boolean isDevMode, final RunConfig config);
+    protected abstract Injector createInjector(final Collection<? extends Module> applicationModules,
+                                               final boolean isDevMode, final RunConfig config);
 
     /**
      * Instantiate the ModuleProvider given the class name
@@ -274,15 +273,13 @@ public abstract class JodiControllerBase implements Register {
         ModuleProvider module;
         try {
             Class<? extends ModuleProvider> moduleClass = (Class<? extends ModuleProvider>) Class.forName(className);
-            module = moduleClass.getDeclaredConstructor().newInstance();
+            module = moduleClass.getDeclaredConstructor()
+                                .newInstance();
         } catch (Exception e) {
             String msg;
             synchronized (this) {
-                msg = errorWarningMessages.formatMessage(80010,
-                        ERROR_MESSAGE_80010, this.getClass(), className);
-                errorWarningMessages.addMessage(
-                        errorWarningMessages.assignSequenceNumber(), msg,
-                        MESSAGE_TYPE.ERRORS);
+                msg = errorWarningMessages.formatMessage(80010, ERROR_MESSAGE_80010, this.getClass(), className);
+                errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
                 LOGGER.fatal(msg, e);
             }
             throw new UnRecoverableException(msg, e);
@@ -314,8 +311,7 @@ public abstract class JodiControllerBase implements Register {
      *                 associated with the desired ActionRunner
      * @return ActionRunner instance associated with the specified action
      */
-    private ActionRunner getActionRunner(final String action,
-                                         final Injector injector) {
+    private ActionRunner getActionRunner(final String action, final Injector injector) {
         Annotation nameAnnotation = new Named() {
             @Override
             public Class<? extends Annotation> annotationType() {
@@ -330,8 +326,7 @@ public abstract class JodiControllerBase implements Register {
 
         ActionRunner runner;
         try {
-            Key<ActionRunner> actionRunner = Key.get(ActionRunner.class,
-                    nameAnnotation);
+            Key<ActionRunner> actionRunner = Key.get(ActionRunner.class, nameAnnotation);
             runner = injector.getInstance(actionRunner);
         } catch (ConfigurationException e) {
             LOGGER.error("No ActionRunner registered for name " + action, e);

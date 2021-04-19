@@ -14,8 +14,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class ModelCodeIDStrategy implements ModelCodeStrategy {
 
-    private final static String ERROR_MESSAGE_03111 = "Unable to determine a model for data store '%1$s'.";
-    private final static Logger logger = LogManager.getLogger(ModelCodeIDStrategy.class);
+    private static final String ERROR_MESSAGE_03111 = "Unable to determine a model for data store '%1$s'.";
+    private static final Logger logger = LogManager.getLogger(ModelCodeIDStrategy.class);
     private final ErrorWarningMessageJodi errorWarningMessages;
 
     @Inject
@@ -28,16 +28,13 @@ public class ModelCodeIDStrategy implements ModelCodeStrategy {
      * passed into this strategy method
      */
     @Override
-    public String getModelCode(final String defaultModelName,
-                               final ModelNameExecutionContext execContext) {
+    public String getModelCode(final String defaultModelName, final ModelNameExecutionContext execContext) {
 
         if (defaultModelName == null) {
-            String msg = errorWarningMessages.formatMessage(3111,
-                    ERROR_MESSAGE_03111, this.getClass(), execContext.getDataStoreName());
+            String msg = errorWarningMessages.formatMessage(3111, ERROR_MESSAGE_03111, this.getClass(),
+                                                            execContext.getDataStoreName());
             logger.error(msg);
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new AmbiguousModelException(msg, true);
         }
 

@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class OdiDatastoreServiceProvider implements DatastoreServiceProvider {
-    private final static Logger logger = LogManager.getLogger(OdiDatastoreServiceProvider.class);
+    private static final Logger logger = LogManager.getLogger(OdiDatastoreServiceProvider.class);
     private final OdiInstance odiInstance;
 
     @Inject

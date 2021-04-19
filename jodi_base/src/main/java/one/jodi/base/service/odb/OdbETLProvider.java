@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class OdbETLProvider implements SchemaMetaDataProvider {
 
-    private final static Logger logger = LogManager.getLogger(OdbETLProvider.class);
+    private static final Logger logger = LogManager.getLogger(OdbETLProvider.class);
     private static final String ERROR_MESSAGE_80820 =
             "Failed to properly close database connection for '%s'. %s";
     private static final String ERROR_MESSAGE_80840 =

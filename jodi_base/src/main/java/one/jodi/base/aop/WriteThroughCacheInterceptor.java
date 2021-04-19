@@ -22,8 +22,7 @@ import java.util.Map;
 @Singleton
 public class WriteThroughCacheInterceptor implements MethodInterceptor, Resource {
 
-    private final static Logger logger =
-            LogManager.getLogger(WriteThroughCacheInterceptor.class);
+    private static final Logger logger = LogManager.getLogger(WriteThroughCacheInterceptor.class);
 
     @Inject
     @Registered
@@ -62,9 +61,9 @@ public class WriteThroughCacheInterceptor implements MethodInterceptor, Resource
 
         Object result;
 
-        String method = invocation.getMethod().toString();
-        assert (!method.contains("void ")) : "Methods with void return type must not be cached : "
-                + method;
+        String method = invocation.getMethod()
+                                  .toString();
+        assert (!method.contains("void ")) : "Methods with void return type must not be cached : " + method;
 
         //creates key using method signature and
         StringBuilder sb = new StringBuilder();
@@ -88,21 +87,25 @@ public class WriteThroughCacheInterceptor implements MethodInterceptor, Resource
         return result;
     }
 
+    @Override
     public void logStatistics() {
-        logger.debug(String.format("Cache Statistics --  inserts : %1$s  hits: %2$s  ratio: %3$.1f",
-                inserts, hits, ((float) hits / inserts)));
+        logger.debug(String.format("Cache Statistics --  inserts : %1$s  hits: %2$s  ratio: %3$.1f", inserts, hits,
+                                   ((float) hits / inserts)));
     }
 
+    @Override
     public void flush() {
         logger.debug(String.format("Flushing Cache %1$s.", this.toString()));
         inserts = 0;
         hits = 0;
     }
 
+    @Override
     public void clear() {
         cache = new HashMap<>();
     }
 
+    @Override
     protected void finalize() throws Throwable {
         logger.debug(String.format("Finalized Cache %1$s.", this));
         super.finalize();

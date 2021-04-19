@@ -17,8 +17,9 @@ import one.jodi.core.service.ScenarioService;
  */
 public class DeleteScenarioActionRunner implements ActionRunner {
 
-    private final static String ERROR_MESSAGE_01057 = "The configuration property file is required to run Scenario delete";
-    private final static String ERROR_MESSAGE_01058 = "The target Scenario is required to run Scenario delete";
+    private static final String ERROR_MESSAGE_01057 =
+            "The configuration property file is required to run Scenario delete";
+    private static final String ERROR_MESSAGE_01058 = "The target Scenario is required to run Scenario delete";
 
     private final ScenarioService scenarioService;
     private final ErrorWarningMessageJodi errorWarningMessages;
@@ -29,9 +30,8 @@ public class DeleteScenarioActionRunner implements ActionRunner {
      * @param scenarioService the scenario service
      */
     @Inject
-    protected DeleteScenarioActionRunner(
-            final ScenarioService scenarioService,
-            final ErrorWarningMessageJodi errorWarningMessages) {
+    protected DeleteScenarioActionRunner(final ScenarioService scenarioService,
+                                         final ErrorWarningMessageJodi errorWarningMessages) {
         this.scenarioService = scenarioService;
         this.errorWarningMessages = errorWarningMessages;
     }
@@ -51,21 +51,15 @@ public class DeleteScenarioActionRunner implements ActionRunner {
     @Override
     public void validateRunConfig(RunConfig config) throws UsageException {
         if (!StringUtils.hasLength(config.getPropertyFile())) {
-            String msg = errorWarningMessages.formatMessage(1057,
-                    ERROR_MESSAGE_01057, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1057, ERROR_MESSAGE_01057, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
 
         final EtlRunConfig etlConfig = (EtlRunConfig) config;
         if (!StringUtils.hasLength(etlConfig.getScenario())) {
-            String msg = errorWarningMessages.formatMessage(1058,
-                    ERROR_MESSAGE_01058, this.getClass());
-            errorWarningMessages.addMessage(
-                    errorWarningMessages.assignSequenceNumber(), msg,
-                    MESSAGE_TYPE.ERRORS);
+            String msg = errorWarningMessages.formatMessage(1058, ERROR_MESSAGE_01058, this.getClass());
+            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
             throw new UsageException(msg);
         }
     }

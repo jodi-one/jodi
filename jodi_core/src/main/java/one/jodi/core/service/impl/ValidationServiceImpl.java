@@ -16,17 +16,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ValidationServiceImpl implements ValidationService {
-    private final static String newLine = System.getProperty("line.separator");
-    private final static String ERROR_MESSAGE_03270 = JodiConstants.VERSION_HEADER;
-    private final static String ERROR_MESSAGE_03310 = JodiConstants.ERROR_FOOTER;
-    private final static Logger logger = LogManager.getLogger(ValidationServiceImpl.class);
+    private static final String newLine = System.getProperty("line.separator");
+    private static final String ERROR_MESSAGE_03270 = JodiConstants.VERSION_HEADER;
+    private static final String ERROR_MESSAGE_03310 = JodiConstants.ERROR_FOOTER;
+    private static final Logger logger = LogManager.getLogger(ValidationServiceImpl.class);
     private final ErrorWarningMessageJodi errorWarningMessages;
     private final EnrichingBuilder enrichingBuilder;
     private final MetadataServiceProvider metadataProvider;
 
     @Inject
     public ValidationServiceImpl(final ErrorWarningMessageJodi errorWarningMessage,
-                                 final EnrichingBuilder enrichingBuilder, final MetadataServiceProvider metadataProvider) {
+                                 final EnrichingBuilder enrichingBuilder,
+                                 final MetadataServiceProvider metadataProvider) {
         this.errorWarningMessages = errorWarningMessage;
         this.enrichingBuilder = enrichingBuilder;
         this.metadataProvider = metadataProvider;
@@ -82,17 +83,20 @@ public class ValidationServiceImpl implements ValidationService {
             }
         });
 
-        if (ErrorReport.getErrorReport().length() > 1) {
+        if (ErrorReport.getErrorReport()
+                       .length() > 1) {
             String msg = errorWarningMessages.formatMessage(3270, ERROR_MESSAGE_03270, this.getClass(),
-                    Version.getProductVersion());
+                                                            Version.getProductVersion());
             errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
 
-            String errorReport = ErrorReport.getErrorReport().toString();
+            String errorReport = ErrorReport.getErrorReport()
+                                            .toString();
             logger.debug("------- ErrorReport:" + newLine + errorReport + newLine + "------- End ErrorReport");
             ErrorReport.reset();
 
-            throw new UnRecoverableException(errorWarningMessages.formatMessage(3310,
-                    ERROR_MESSAGE_03310 + "\n" + errorReport, this.getClass()));
+            throw new UnRecoverableException(
+                    errorWarningMessages.formatMessage(3310, ERROR_MESSAGE_03310 + "\n" + errorReport,
+                                                       this.getClass()));
         }
         ErrorReport.reset();
     }

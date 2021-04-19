@@ -17,12 +17,12 @@ import java.util.List;
 
 public class TransformationFileVisitor extends FileCollectorVisitor {
 
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(TransformationFileVisitor.class);
 
-    private final static String FILE_EXTENSION = ".xml";
+    private static final String FILE_EXTENSION = ".xml";
 
-    private final static String ERROR_MESSAGE_00070 =
+    private static final String ERROR_MESSAGE_00070 =
             "Ignoring file due to error deriving package sequence: %s, %s";
 
     private final List<String> exclusions = Arrays.asList(

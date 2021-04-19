@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DeleteVariableActionRunner implements ActionRunner {
-    private final static Logger logger =
+    private static final Logger logger =
             LogManager.getLogger(DeleteVariableActionRunner.class);
 
     private final VariableService service;
