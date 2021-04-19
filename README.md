@@ -1,14 +1,23 @@
-# jodi.one - Java Oracle Data Integration #1 
+# jodi.one - Java Oracle Data Integration #1
+
 - jodi.one is a privately owned Dutch Based Software Company and not affiliated with Oracle Corporation
 
 ## jodi.one/jodi
-* Provides ETL automation in Oracle Data Integrator  
-* Extensive API to create / generate ODI Objects (Variables, Constraints, Mappings, Packages, Scenarios, Loadplans, Deployment Archives)
-* Provides Pattern based ETL automation  
+
+* Provides ETL automation in Oracle Data Integrator
+* Extensive API to create / generate ODI Objects (Variables, Constraints, Mappings, Packages, Scenarios, Loadplans,
+  Deployment Archives)
+* Provides Pattern based ETL automation
 
 ### CommandLineArguments;
-* see <a href="https://github.com/jodi-one/jodi/blob/master/jodi_base/src/main/java/one/jodi/base/bootstrap/BaseCmdlineArgumentProcessor.java">one.jodi.base.bootstrap.BaseCmdlineArgumentProcessor<a/>
+
+*
+
+see <a href="https://github.com/jodi-one/jodi/blob/master/jodi_base/src/main/java/one/jodi/base/bootstrap/BaseCmdlineArgumentProcessor.java">
+one.jodi.base.bootstrap.BaseCmdlineArgumentProcessor<a/>
+
 * below is an incomplete list, for the complete list see link above.
+
 <table><tr><td>Name</td><td>Description</td><td>Action for JodiController</td></tr>
 <tr><td>OdiController</td><td>General command line wrapper around the jodi controller (see list of
                               command above). The scripts below execute specific actions (e.g. -a action)
@@ -98,14 +107,20 @@
 </table>
 
 ### Actions
-* See <a href="https://github.com/jodi-one/jodi/blob/master/jodi_core/src/main/java/one/jodi/bootstrap/EtlRunConfig.java">one.jodi.bootstrap.ActionType</a>
+
+*
+
+See <a href="https://github.com/jodi-one/jodi/blob/master/jodi_core/src/main/java/one/jodi/bootstrap/EtlRunConfig.java">
+one.jodi.bootstrap.ActionType</a>
 
 <h2>Building a binaries</h2>
 
-* use this link to install ojdbc.jar into maven: https://mkyong.com/maven/how-to-add-oracle-jdbc-driver-in-your-maven-local-repository/
+* use this link to install ojdbc.jar into
+  maven: https://mkyong.com/maven/how-to-add-oracle-jdbc-driver-in-your-maven-local-repository/
 * See commands in createDist.bat
-* You'll need  jodi_core\build\distributions\jodi_core-x.x.x-x-x-x-SNAPSHOT.zip
-* and plugins you'll need for providing custom plugins jodi_plugins\build\distributions\jodi_plugins-x.x.x-x-x-x-SNAPSHOT.zip
+* You'll need jodi_core\build\distributions\jodi_core-x.x.x-x-x-x-SNAPSHOT.zip
+* and plugins you'll need for providing custom plugins
+  jodi_plugins\build\distributions\jodi_plugins-x.x.x-x-x-x-SNAPSHOT.zip
 * When using it in an idea; copy all jars of jodi_core and add the one jar from jodi_plugins to the class path
 * To use as binaries unzip jodi_core and add the jar from jodi_plugins to the lib folder
 * create a configuration file e.g: jodi_qa/src/test/resources/SampleC/conf/SampleC.properties
@@ -113,10 +128,10 @@
 * When using in IDEA call JodiController
 * When using as binary call bin\jodi_core[.bat]
 
-
 <h2>Examples</h2>
 
-There are extensive examples in <a href="https://github.com/jodi-one/jodi/tree/master/jodi_qa/src/test/resources">jodi_qa</a>.
+There are extensive examples in <a href="https://github.com/jodi-one/jodi/tree/master/jodi_qa/src/test/resources">
+jodi_qa</a>.
 
 <h3>In Groovy</h3>
 
@@ -142,3 +157,14 @@ argList.add("jodi_qa/src/test/resources/SampleC/xml")
 controller.run(argList.toArray(new String[0]))
 print controller.getErrorReport()
 </code></pre>
+
+### Development
+
+There is a `.editorconfig` file available with settings for Code styling, most IDE's should pick it up automatically and
+use the settings for the project it is in. Ensure your IDE has support enabled:
+
+#### Intellij
+
+- Go to _File_ -> _Settings_ (or use `ctrl-alt-S`) -> _Plugins_
+- Look up plugin _Editorconfig_ (should be installed by default)
+- Ensure it is installed and enabled
