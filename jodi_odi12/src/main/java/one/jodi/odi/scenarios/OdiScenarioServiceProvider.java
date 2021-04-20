@@ -171,7 +171,6 @@ public class OdiScenarioServiceProvider implements ScenarioServiceProvider {
       }
       processMappingProcedureVariables(transformations);
       System.setOut(original);
-      //moveScenariosToFolders();
    }
 
    @TransactionAttribute(TransactionAttributeType.REQUIRED)

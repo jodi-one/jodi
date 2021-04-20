@@ -415,7 +415,6 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       return dataStoreFinder.findByModel(modelCode);
    }
 
-
    @Test
    public void test015Sequences() {
       LOGGER.info("Create etls started");
