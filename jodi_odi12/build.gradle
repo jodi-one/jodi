@@ -1,115 +1,117 @@
+import org.gradle.internal.jvm.Jvm
+
 //mainClassName = "one.jodi.bootstrap.JodiController"
 
 // Jar task configuration
 jar {
-    manifest {
-        attributes 'Implementation-Title': 'Jodi Odi12', 'Implementation-Version': archiveVersion
-    }
+   manifest {
+      attributes 'Implementation-Title': 'Jodi Odi12', 'Implementation-Version': archiveVersion
+   }
 }
 
 dependencies {
-    // include ODI 12.2 (in compile context for Eclipse or provided for build)
-    compileOnly group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
-    implementation project(':jodi_base')
-    implementation project(':jodi_core')
+   // include ODI 12.2 (in compile context for Eclipse or provided for build)
+   compileOnly group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
+   implementation project(':jodi_base')
+   implementation project(':jodi_core')
 ///    implementation project(':jodi_model')
 //    implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
-    testImplementation "xmlunit:xmlunit:1.6"
-    testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
+   testImplementation "xmlunit:xmlunit:1.6"
+   testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
 //    compile project(':jodi_core')
-    testImplementation project(':jodi_base').sourceSets.test.output
-    testImplementation project(':jodi_core').sourceSets.test.output
-    testImplementation project(':jodi_core')
-    testImplementation project(':jodi_base')
-    testImplementation project(':jodi_model')
-    provided 'org.codehaus.groovy:groovy-all:2.4.14'
+   testImplementation project(':jodi_base').sourceSets.test.output
+   testImplementation project(':jodi_core').sourceSets.test.output
+   testImplementation project(':jodi_core')
+   testImplementation project(':jodi_base')
+   testImplementation project(':jodi_model')
+   provided group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.17'
 }
 
 task sourceSetJavaProperties {
-    doLast {
-        sourceSets {
+   doLast {
+      sourceSets {
 
-            xmlExtensions {
-                println "java.srcDirs = ${java.srcDirs}"
-                println "resources.srcDirs = ${resources.srcDirs}"
-                println "java.files = ${java.files.name}"
-                println "allJava.files = ${allJava.files.name}"
-                println "resources.files = ${resources.files.name}"
-                println "allSource.files = ${allSource.files.name}"
-                println "output.classesDir = ${output.classesDir}"
-                println "output.resourcesDir = ${output.resourcesDir}"
-                println "output.files = ${output.files}"
-                println "compileClasspath = ${compileClasspath}"
-                compileClasspath.each {
-                    println it
-                }
+         xmlExtensions {
+            println "java.srcDirs = ${java.srcDirs}"
+            println "resources.srcDirs = ${resources.srcDirs}"
+            println "java.files = ${java.files.name}"
+            println "allJava.files = ${allJava.files.name}"
+            println "resources.files = ${resources.files.name}"
+            println "allSource.files = ${allSource.files.name}"
+            println "output.classesDir = ${output.classesDir}"
+            println "output.resourcesDir = ${output.resourcesDir}"
+            println "output.files = ${output.files}"
+            println "compileClasspath = ${compileClasspath}"
+            compileClasspath.each {
+               println it
             }
-            java {
-                srcDirs += jaxbGenOutputDir
-            }
-        }
-    }
+         }
+         java {
+            srcDirs += jaxbGenOutputDir
+         }
+      }
+   }
 }
 
 task checkJvm() {
-    def currentJvm = org.gradle.internal.jvm.Jvm.current()
-    println currentJvm
+   def currentJvm = Jvm.current()
+   println currentJvm
 }
 
 def fixWindowsStartScript(writer, lines) {
-    lines.eachWithIndex { line, i ->
-        if (i < 6) {
-            writer.println line
-        } else if (i == 6) {
-            writer.println ''
-            writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
-            writer.println line
-        } else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
-            writer.println line
-            writer.println ''
-            writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
-            writer.println "goto hasodi"
-            writer.println ":noodi"
-            writer.println "echo."
-            writer.println "echo ERROR: $odiLibPathVariable is not set."
-            writer.println "echo."
-            writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
-            writer.println "echo to the location of the jar files in you ODI installation."
-            writer.println "goto fail"
-            writer.println ":hasodi"
-            writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
-            writer.println ''
-            writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
-            writer.println ''
-        } else {
-            writer.println line
-        }
-    }
+   lines.eachWithIndex { line, i ->
+      if (i < 6) {
+         writer.println line
+      } else if (i == 6) {
+         writer.println ''
+         writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
+         writer.println line
+      } else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
+         writer.println line
+         writer.println ''
+         writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
+         writer.println "goto hasodi"
+         writer.println ":noodi"
+         writer.println "echo."
+         writer.println "echo ERROR: $odiLibPathVariable is not set."
+         writer.println "echo."
+         writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
+         writer.println "echo to the location of the jar files in you ODI installation."
+         writer.println "goto fail"
+         writer.println ":hasodi"
+         writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
+         writer.println ''
+         writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
+         writer.println ''
+      } else {
+         writer.println line
+      }
+   }
 }
 
 def fixUnixStartScript(writer, lines) {
-    lines.eachWithIndex { line, i ->
-        if (i < 8) {
-            writer.println line
-        } else if (i == 8) {
-            writer.println ''
-            writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
-            writer.println line
-        } else if (line =~ /^CLASSPATH=\$/) {
-            writer.println line
-            writer.println ''
-            writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
-            writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
-            writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
-            writer.println ''
-            writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
-            writer.println "to the location of the jar files in you ODI installation.\""
-            writer.println "fi"
-            writer.println ''
-            writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml\""
-            writer.println ''
-        } else {
-            writer.println line
-        }
-    }
+   lines.eachWithIndex { line, i ->
+      if (i < 8) {
+         writer.println line
+      } else if (i == 8) {
+         writer.println ''
+         writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
+         writer.println line
+      } else if (line =~ /^CLASSPATH=\$/) {
+         writer.println line
+         writer.println ''
+         writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
+         writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
+         writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
+         writer.println ''
+         writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
+         writer.println "to the location of the jar files in you ODI installation.\""
+         writer.println "fi"
+         writer.println ''
+         writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml\""
+         writer.println ''
+      } else {
+         writer.println line
+      }
+   }
 }
