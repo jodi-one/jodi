@@ -196,6 +196,9 @@ public class ListAppender extends AbstractAppender {
    }
 
    public boolean contains(Level level, String message) {
+      if (events.isEmpty()) {
+         throw new RuntimeException("Listappender contains implies some events, no events recorded.");
+      }
       return events.stream()
                    .filter(logEvent -> level.equals(logEvent.getLevel()))
                    .anyMatch(logEvent -> logEvent.getMessage()
@@ -204,6 +207,9 @@ public class ListAppender extends AbstractAppender {
    }
 
    public boolean contains(Level level, boolean specific) {
+      if (events.isEmpty()) {
+         throw new RuntimeException("Listappender contains implies some events, no events recorded.");
+      }
       if (specific) {
          return events.stream()
                       .anyMatch(logEvent -> level.equals(logEvent.getLevel()));
