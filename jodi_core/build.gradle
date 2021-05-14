@@ -14,16 +14,16 @@ buildscript {
    repositories {
       jcenter()
       mavenCentral()
-      maven {
-         url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
-      }
+//      maven {
+//         url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
+//      }
       maven {
          url "https://plugins.gradle.org/m2/"
       }
    }
 
    dependencies {
-      classpath 'org.gradle.jacobo.plugins:gradle-jaxb-plugin:1.3.4'
+      classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
       // plugins used by JAXB xjc to generate extensions to the model classes
       classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
       classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
@@ -126,8 +126,8 @@ dependencies {
    implementation 'javax.xml.bind:jaxb-api:2.3.1'
    implementation 'javax.xml.bind:jaxb-api:2.3.1'
    implementation 'javax.validation:validation-api:1.0.0.GA'
-   compileOnly group: "com.oracle.database.jdbc", name: "ojdbc8", version: oracleJdbcVersion
-   compileOnly group: "com.oracle.database.jdbc", name: 'ucp', version: oracleJdbcVersion
+   //  compileOnly group: "com.oracle.database.jdbc", name: "ojdbc8", version: oracleJdbcVersion
+   //  compileOnly group: "com.oracle.database.jdbc", name: 'ucp', version: oracleJdbcVersion
    implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
    implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
 
@@ -142,8 +142,6 @@ dependencies {
       exclude module: 'commons-beanutils'
    }
    // implementation project(':jodi_base')
-
-   compileOnly fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
 
    testImplementation "org.hamcrest:hamcrest-all:1.3"
    testImplementation group: "junit", name: "junit", version: "4.13.2"

@@ -322,15 +322,15 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                                                                                                             getController());
    }
 
-   private void removeAppender(ListAppender listAppender) {
-      Logger rootLogger = (Logger) LogManager.getRootLogger();
+   private void removeAppender(final ListAppender listAppender) {
+      final Logger rootLogger = (Logger) LogManager.getRootLogger();
       rootLogger.removeAppender(listAppender);
    }
 
    private ListAppender getListAppender() {
-      ListAppender listAppender = new ListAppender(this.getClass()
-                                                       .getName());
-      Logger rootLogger = (Logger) LogManager.getRootLogger();
+      final ListAppender listAppender = new ListAppender(this.getClass()
+                                                             .getName());
+      final Logger rootLogger = (Logger) LogManager.getRootLogger();
       rootLogger.addAppender(listAppender);
       rootLogger.setLevel(org.apache.logging.log4j.Level.INFO);
       return listAppender;
@@ -361,12 +361,12 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       super.test010Install();
       //
       // Remove the CDC descriptor on the datastores.
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> cdcDataStores = finder.findByModel("ORACLE_CHINOOK");
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> cdcDataStores = finder.findByModel("ORACLE_CHINOOK");
       int i = 0;
-      for (OdiDataStore cdcDataStore : cdcDataStores) {
+      for (final OdiDataStore cdcDataStore : cdcDataStores) {
          i = i + 10;
          cdcDataStore.setCdcDescriptor(new OdiDataStore.CdcDescriptor(false, i));
          odiInstance.getTransactionalEntityManager()
@@ -383,22 +383,22 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    public void test011Install() {
       //
       // Remove the CDC descriptor on the datastores.
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
-      ITransactionManager tm = odiInstance.getTransactionManager();
-      ITransactionStatus txnStatus = tm.getTransaction(txnDef);
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
+      final ITransactionStatus txnStatus = tm.getTransaction(txnDef);
       // Set the JKMOptions to their default value
-      IOdiModelFinder finder1 = ((IOdiModelFinder) odiInstance.getTransactionalEntityManager()
-                                                              .getFinder(OdiModel.class));
-      @SuppressWarnings("unchecked") Collection<OdiModel> models = finder1.findAll();
-      for (OdiModel cdcModel : models) {
+      final IOdiModelFinder finder1 = ((IOdiModelFinder) odiInstance.getTransactionalEntityManager()
+                                                                    .getFinder(OdiModel.class));
+      @SuppressWarnings("unchecked") final Collection<OdiModel> models = finder1.findAll();
+      for (final OdiModel cdcModel : models) {
          if (cdcModel.getName()
                      .equalsIgnoreCase("ORACLE_CHINOOK")) {
             if (cdcModel.getJKMOptions() != null) {
                for (int i = 0; i < cdcModel.getJKMOptions()
                                            .size(); i++) {
-                  IOptionValue jkmpoption = cdcModel.getJKMOptions()
-                                                    .get(i);
+                  final IOptionValue jkmpoption = cdcModel.getJKMOptions()
+                                                          .get(i);
                   //noinspection deprecation
                   LOGGER.info(jkmpoption.getName() + ":" + jkmpoption.getValue());
                   jkmpoption.setValue(jkmpoption.getDefaultOptionValue());
@@ -410,8 +410,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    private Collection<OdiDataStore> findOdiDataStores(final String modelCode, final OdiInstance odiInstance) {
-      IOdiDataStoreFinder dataStoreFinder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                              .getFinder(OdiDataStore.class));
+      final IOdiDataStoreFinder dataStoreFinder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                                    .getFinder(OdiDataStore.class));
       return dataStoreFinder.findByModel(modelCode);
    }
 
@@ -429,7 +429,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test020Generation() {
       LOGGER.info("Cleanup packages if necessary");
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dap", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml");
 
       if (listAppender.contains(Level.ERROR, false)) {
@@ -444,8 +444,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          Assert.fail("Sample threw errors.");
       }
 
-      for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
-                                                                  "InitialORACLE_DWH_CON_CHINOOK")) {
+      for (final T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
+                                                                        "InitialORACLE_DWH_CON_CHINOOK")) {
          if (!this.odiAccessStrategy.areAllSourcesNotJournalised(interf)) {
             throw new RuntimeException(String.format(
                     "A Sourcedatastore is journalized in interface '%s' it should not be, since the -journalized flag was not used in generation with odiversion '%s'.",
@@ -457,7 +457,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       try {
          mapping = this.odiAccessStrategy.findMappingsByName("Init W_ALBUM_D", "InitialORACLE_DWH_DMT",
                                                              getRegressionConfiguration().getProjectCode());
-      } catch (Exception e) {
+      } catch (final Exception e) {
          LOGGER.error(e);
          throw new RuntimeException(e);
       }
@@ -465,24 +465,26 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          throw new RuntimeException();
       }
       if (!new OdiVersion().isVersion11()) {
-         String text = "begin" + System.getProperty("line.separator") + "null;" + System.getProperty("line.separator") +
-                 "end;";
-         String locationCode = "ORACLE_DWH_DMT";
-         String technologyCode = "ORACLE";
-         String generatedText = this.odiAccessStrategy.getBeginOrEndMappingText(mapping, "BEGIN");
-         String generatedLocationCode = this.odiAccessStrategy.getBeginOrEndMappingLocationCode(mapping, "BEGIN");
-         String generatedTechnologyCode = this.odiAccessStrategy.getBeginOrEndMappingTechnologyCode(mapping, "BEGIN");
-         Mapping W_ALBUM_D = ((Mapping) mapping);
+         final String text =
+                 "begin" + System.getProperty("line.separator") + "null;" + System.getProperty("line.separator") +
+                         "end;";
+         final String locationCode = "ORACLE_DWH_DMT";
+         final String technologyCode = "ORACLE";
+         final String generatedText = this.odiAccessStrategy.getBeginOrEndMappingText(mapping, "BEGIN");
+         final String generatedLocationCode = this.odiAccessStrategy.getBeginOrEndMappingLocationCode(mapping, "BEGIN");
+         final String generatedTechnologyCode =
+                 this.odiAccessStrategy.getBeginOrEndMappingTechnologyCode(mapping, "BEGIN");
+         final Mapping W_ALBUM_D = ((Mapping) mapping);
          boolean found = false;
          try {
-            List<MapExpression> mapExpresions = W_ALBUM_D.getTargets()
-                                                         .get(0)
-                                                         .getAllExpressions();
-            for (MapExpression me : mapExpresions) {
-               MapExpression e = me.getExpressionMap()
-                                   .values()
-                                   .iterator()
-                                   .next();
+            final List<MapExpression> mapExpresions = W_ALBUM_D.getTargets()
+                                                               .get(0)
+                                                               .getAllExpressions();
+            for (final MapExpression me : mapExpresions) {
+               final MapExpression e = me.getExpressionMap()
+                                         .values()
+                                         .iterator()
+                                         .next();
                System.out.println(e.getQualifiedName() + ":" + e.getText());
                if (e.getText()
                     .equalsIgnoreCase("trunc(sysdate)")) {
@@ -493,7 +495,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                   found = true;
                }
             }
-         } catch (Exception e) {
+         } catch (final Exception e) {
             throw new RuntimeException(e);
          }
          // automapping works if it is picked up from properties
@@ -515,20 +517,22 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       try {
          mapping = this.odiAccessStrategy.findMappingsByName("Init W_INVOICELINE_F",
                                                              getRegressionConfiguration().getProjectCode());
-      } catch (Exception e) {
+      } catch (final Exception e) {
          throw new RuntimeException(e);
       }
       if (mapping == null) {
          throw new RuntimeException();
       }
       if (!new OdiVersion().isVersion11()) {
-         String text = "begin" + System.getProperty("line.separator") + "null;" + System.getProperty("line.separator") +
-                 "end;";
-         String locationCode = "ORACLE_DWH_DMT";
-         String technologyCode = "ORACLE";
-         String generatedText = this.odiAccessStrategy.getBeginOrEndMappingText(mapping, "END");
-         String generatedLocationCode = this.odiAccessStrategy.getBeginOrEndMappingLocationCode(mapping, "END");
-         String generatedTechnologyCode = this.odiAccessStrategy.getBeginOrEndMappingTechnologyCode(mapping, "END");
+         final String text =
+                 "begin" + System.getProperty("line.separator") + "null;" + System.getProperty("line.separator") +
+                         "end;";
+         final String locationCode = "ORACLE_DWH_DMT";
+         final String technologyCode = "ORACLE";
+         final String generatedText = this.odiAccessStrategy.getBeginOrEndMappingText(mapping, "END");
+         final String generatedLocationCode = this.odiAccessStrategy.getBeginOrEndMappingLocationCode(mapping, "END");
+         final String generatedTechnologyCode =
+                 this.odiAccessStrategy.getBeginOrEndMappingTechnologyCode(mapping, "END");
          if (!generatedText.replaceAll("\\s+", "")
                            .equals(text.replaceAll("\\s+", ""))) {
             throw new RuntimeException("Begin mapping command text set wrong to '" + generatedText + "'.");
@@ -549,15 +553,15 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test025Generation() {
       LOGGER.info("Create etls started");
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("etls", DEFAULT_PROPERTIES_PATH, "-p", "Real Time ", "-m", TEST_BASE_DIRECTORY + "/xml",
                     "-journalized");
       if (listAppender.contains(Level.ERROR, false)) {
          Assert.fail("Sample threw errors.");
       }
 
-      for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
-                                                                  "RealTimeORACLE_DWH_CON_CHINOOK")) {
+      for (final T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
+                                                                        "RealTimeORACLE_DWH_CON_CHINOOK")) {
          if (interf.getName()
                    .toLowerCase()
                    .contains("invoiceline")) {
@@ -590,19 +594,19 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          reader = new FileReader(DEFAULT_PROPERTIES_PATH);
          properties = new Properties();
          properties.load(reader);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          e.printStackTrace();
          throw new RuntimeException("Cannot check if this test runs in update mode.");
       } finally {
          if (reader != null) {
             try {
                reader.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                e.printStackTrace();
             }
          }
       }
-      String update = properties.getProperty("jodi.update");
+      final String update = properties.getProperty("jodi.update");
       if (!update.equals("true")) {
          throw new RuntimeException(
                  "this test is meant to run in update mode please update properties to jodi.update = true.");
@@ -614,12 +618,12 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     */
    @Test
    public void test040setCDCDescritpors() {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> cdcDataStores = finder.findByModel("ORACLE_CHINOOK");
-      for (OdiDataStore cdcDataStore : cdcDataStores) {
-         CdcDescriptor descriptor = cdcDataStore.getCdcDescriptor();
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> cdcDataStores = finder.findByModel("ORACLE_CHINOOK");
+      for (final OdiDataStore cdcDataStore : cdcDataStores) {
+         final CdcDescriptor descriptor = cdcDataStore.getCdcDescriptor();
          if (!descriptor.isCdcEnabled()) {
             throw new RuntimeException(String.format("Datastore '%1$s' is not CDC enabled.", cdcDataStore.getName()));
          }
@@ -632,12 +636,12 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @SuppressWarnings("deprecation")
    @Test
    public void test050setJKMOptions() {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiModelFinder finder = ((IOdiModelFinder) odiInstance.getTransactionalEntityManager()
-                                                             .getFinder(OdiModel.class));
-      OdiModel cdcModel = finder.findByCode("ORACLE_CHINOOK");
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiModelFinder finder = ((IOdiModelFinder) odiInstance.getTransactionalEntityManager()
+                                                                   .getFinder(OdiModel.class));
+      final OdiModel cdcModel = finder.findByCode("ORACLE_CHINOOK");
       if (cdcModel != null && cdcModel.getJKMOptions() != null) {
-         for (IOptionValue jkmpoption : cdcModel.getJKMOptions()) {
+         for (final IOptionValue jkmpoption : cdcModel.getJKMOptions()) {
             if (jkmpoption.getName()
                           .equals("COMPATIBLE") && !jkmpoption.getValue()
                                                               .equals("12")) {
@@ -657,8 +661,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
     */
    @Test
    public void test060ing() {
-      for (T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
-                                                                  "RealTimeORACLE_DWH_CON_CHINOOK")) {
+      for (final T interf : this.odiAccessStrategy.findMappingsByFolder(getRegressionConfiguration().getProjectCode(),
+                                                                        "RealTimeORACLE_DWH_CON_CHINOOK")) {
          if (interf.getName()
                    .toLowerCase()
                    .contains("invoiceline")) {
@@ -698,7 +702,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test070CreatePackages() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("cp", DEFAULT_PROPERTIES_PATH, "-p", "Real Time ", "-m", TEST_BASE_DIRECTORY + "/xml",
                     "-journalized");
       if (listAppender.contains(Level.ERROR, false)) {
@@ -709,7 +713,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test080DeletePackages() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dp", DEFAULT_PROPERTIES_PATH, "-p", "Real Time ", "-pkg", "INITIALDWH_STI", "-m",
                     TEST_BASE_DIRECTORY + "/xml", "-f", "InitialORACLE_DWH_STI");
 
@@ -721,7 +725,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test085DeleteAllPackages() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dap", DEFAULT_PROPERTIES_PATH, "-p", "Real Time ", "-m", TEST_BASE_DIRECTORY + "/xml");
 
       if (listAppender.contains(Level.ERROR, false)) {
@@ -734,7 +738,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test090CreateTransformations() {
       LOGGER.info("Delete All Packages started");
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dap", DEFAULT_PROPERTIES_PATH, "-p", "Real Time ", "-m", TEST_BASE_DIRECTORY + "/xml",
                     "-journalized");
       LOGGER.info("Truncate and reccreate Transformations started");
@@ -749,7 +753,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test090DeleteTransformations() {
       LOGGER.info("Delete Transfromations started");
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dt", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml/400_DWH_STI");
       if (listAppender.contains(Level.ERROR, false)) {
          Assert.fail("Sample threw errors.");
@@ -759,7 +763,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test110DeleteScenario() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("ds", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml", "-scenario",
                     "INITIALDWH_CON");
       if (listAppender.contains(Level.ERROR, false)) {
@@ -769,11 +773,11 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    private void cleanModel() {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
-      for (OdiDataStore ds : dataStores) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
+      for (final OdiDataStore ds : dataStores) {
          ds.setOlapType(null);
-         for (OdiColumn column : ds.getColumns()) {
+         for (final OdiColumn column : ds.getColumns()) {
             column.setScdType(null);
             column.setMandatory(false);
             column.setFlowCheckEnabled(false);
@@ -789,9 +793,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                  .commit(getWorkOdiInstance().getTransactionStatus());
    }
 
-   private void validateColumnSettings(OdiDataStore ds) {
-      for (OdiColumn column : ds.getColumns()) {
-         String msg = "incorrect in column " + column.getName();
+   private void validateColumnSettings(final OdiDataStore ds) {
+      for (final OdiColumn column : ds.getColumns()) {
+         final String msg = "incorrect in column " + column.getName();
          assertFalse(msg, column.isMandatory());
          assertFalse(msg, column.isFlowCheckEnabled());
          assertTrue(msg, column.isDataServiceAllowInsert());
@@ -801,9 +805,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       }
    }
 
-   private void validateColumnSettingsAlterTable(OdiDataStore ds, boolean isSCD) {
-      for (OdiColumn column : ds.getColumns()) {
-         String msg = "incorrect in column " + column.getName();
+   private void validateColumnSettingsAlterTable(final OdiDataStore ds, final boolean isSCD) {
+      for (final OdiColumn column : ds.getColumns()) {
+         final String msg = "incorrect in column " + column.getName();
          assertFalse(msg, column.isMandatory());
          assertFalse(msg, column.isFlowCheckEnabled());
          assertTrue(msg, column.isDataServiceAllowInsert());
@@ -826,16 +830,16 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    private void validateDataMartForSCD() {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
-      for (OdiDataStore ds : dataStores) {
-         String name = ds.getName()
-                         .toUpperCase();
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
+      for (final OdiDataStore ds : dataStores) {
+         final String name = ds.getName()
+                               .toUpperCase();
          if (name.equals("W_EMPLOYEE_D") || name.equals("W_CUSTOMER_D")) {
             // Check Slowly Changing Dimensions
             assertEquals(OlapType.SLOWLY_CHANGING_DIMENSION, ds.getOlapType());
-            for (OdiColumn column : ds.getColumns()) {
-               String msg = "incorrect in column " + column.getName();
+            for (final OdiColumn column : ds.getColumns()) {
+               final String msg = "incorrect in column " + column.getName();
                assertFalse(column.isMandatory());
                assertFalse(column.isFlowCheckEnabled());
                assertTrue(column.isDataServiceAllowInsert());
@@ -896,11 +900,11 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    private void validateDataMartForAlterTable() {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
-      for (OdiDataStore ds : dataStores) {
-         String name = ds.getName()
-                         .toUpperCase();
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final Collection<OdiDataStore> dataStores = findOdiDataStores("ORACLE_DWH_DMT", odiInstance);
+      for (final OdiDataStore ds : dataStores) {
+         final String name = ds.getName()
+                               .toUpperCase();
          if (name.equals("W_INVOICELINE_F")) {
             assertEquals(OlapType.FACT_TABLE, ds.getOlapType());
             validateColumnSettingsAlterTable(ds, false);
@@ -908,8 +912,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
             // Check Slowly Changing Dimensions
             assertEquals(OlapType.SLOWLY_CHANGING_DIMENSION, ds.getOlapType());
             validateColumnSettingsAlterTable(ds, true);
-            for (OdiColumn column : ds.getColumns()) {
-               String msg = "incorrect in column " + column.getName();
+            for (final OdiColumn column : ds.getColumns()) {
+               final String msg = "incorrect in column " + column.getName();
                assertNull(msg, column.getScdType());
             }
          } else if (name.endsWith("_D")) {
@@ -924,7 +928,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test120AlterSCDTables() {
       cleanModel();
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       LOGGER.info("Create etls started");
       runController("atbs", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
       if (listAppender.contains(Level.ERROR, false)) {
@@ -940,7 +944,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    public void test121AlterSCDTables_NullOdiKeyColumn() {
 
       OdiColumn c1 = null, c2 = null, c3 = null, c4 = null, c5 = null;
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       try {
          c1 = removeOdiKeyColumn("W_ALBUM_D", "ALBM_CODE");
          c2 = removeOdiKeyColumn("W_CUSTOMER_D", "CUST_CODE");
@@ -948,7 +952,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          c4 = removeOdiKeyColumn("W_INVOICELINE_F", "INVL_LINE_CODE");
          c5 = removeOdiKeyColumn("W_TRACK_D", "TRCK_CODE");
          runController("atbs", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          LOGGER.info(e.getMessage());
 
       } finally {
@@ -964,16 +968,16 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       }
    }
 
-   private void returnOdiKeyColumn(String dataStore, OdiColumn column) {
+   private void returnOdiKeyColumn(final String dataStore, final OdiColumn column) {
       assert (column != null);
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      @SuppressWarnings("unchecked") Collection<OdiDataStore> dataStores = finder.findAll();
-      for (OdiDataStore ds : dataStores) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      @SuppressWarnings("unchecked") final Collection<OdiDataStore> dataStores = finder.findAll();
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase(dataStore)) {
-            for (OdiKey key : ds.getKeys()) {
+            for (final OdiKey key : ds.getKeys()) {
                key.addColumn(column);
                LOGGER.info(column + " added back to " + ds.getName());
             }
@@ -983,24 +987,24 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                  .commit(getWorkOdiInstance().getTransactionStatus());
    }
 
-   private OdiColumn removeOdiKeyColumn(String dataStore, String column) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+   private OdiColumn removeOdiKeyColumn(final String dataStore, final String column) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
       new DefaultTransactionDefinition();
       odiInstance.getTransactionManager();
 
       OdiColumn removedOdiColumn = null;
 
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      @SuppressWarnings("unchecked") Collection<OdiDataStore> dataStores = finder.findAll();
-      for (OdiDataStore ds : dataStores) {
-         OdiColumn t;
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      @SuppressWarnings("unchecked") final Collection<OdiDataStore> dataStores = finder.findAll();
+      for (final OdiDataStore ds : dataStores) {
+         final OdiColumn t;
          if (ds.getName()
                .equalsIgnoreCase(dataStore)) {
             t = ds.getColumn(column);
             LOGGER.info("t: " + t);
-            for (OdiKey key : ds.getKeys()) {
-               for (OdiColumn o : key.getColumns()) {
+            for (final OdiKey key : ds.getKeys()) {
+               for (final OdiColumn o : key.getColumns()) {
                   LOGGER.info("column: " + column);
                   LOGGER.info("o: " + o.getName());
                   if (o.getName()
@@ -1021,7 +1025,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test130AlterTables() {
       cleanModel();
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("atb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
       if (listAppender.contains(Level.ERROR, false)) {
          Assert.fail("Sample threw errors.");
@@ -1033,13 +1037,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    @Ignore
    public void test131AlterTables_ColumnNotUpdated() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       try {
          forcedChange("W_CUSTOMER_D");
          forcedChange("W_EMPLOYEE_D");
 
          runController("atb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          LOGGER.info(e.getMessage());
       } finally {
          reverseChange("W_CUSTOMER_D");
@@ -1052,18 +1056,18 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    @SuppressWarnings({"unchecked"})
-   private void forcedChange(String dataStoreName) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      ITransactionManager tm = odiInstance.getTransactionManager();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> dataStores = finder.findAll();
-      for (OdiDataStore ds : dataStores) {
+   private void forcedChange(final String dataStoreName) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> dataStores = finder.findAll();
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase(dataStoreName)) {
-            OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
+            final OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
             LOGGER.info(t);
-            for (OdiKey key : ds.getKeys()) {
+            for (final OdiKey key : ds.getKeys()) {
                if (key.getColumns()
                       .contains(t)) {
                   key.removeColumn(t);
@@ -1077,17 +1081,17 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       tm.commit(getWorkOdiInstance().getTransactionStatus());
    }
 
-   private void reverseChange(String dataStoreName) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      ITransactionManager tm = odiInstance.getTransactionManager();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      @SuppressWarnings("unchecked") Collection<OdiDataStore> dataStores = finder.findAll();
-      for (OdiDataStore ds : dataStores) {
+   private void reverseChange(final String dataStoreName) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      @SuppressWarnings("unchecked") final Collection<OdiDataStore> dataStores = finder.findAll();
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase(dataStoreName)) {
-            OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
-            for (OdiKey key : ds.getKeys()) {
+            final OdiColumn t = ds.getColumn("EFFECTIVE_DATE");
+            for (final OdiKey key : ds.getKeys()) {
                key.addColumn(t);
                odiInstance.getTransactionalEntityManager()
                           .merge(ds);
@@ -1100,7 +1104,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test140CheckTables() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("cktb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
       if (listAppender.contains(Level.ERROR, false)) {
          Assert.fail("Sample threw errors.");
@@ -1110,7 +1114,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test141CheckTables_70000() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       try {
          forcingFailuresForCheckTables("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D",
                                        "oracle.odi.domain.model.OdiColumn INVL_CUST_WID");
@@ -1124,7 +1128,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                                        "oracle.odi.domain.model.OdiColumn INVL_SUPPORTREP_WID");
 
          runController("cktb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          LOGGER.info(e.getMessage());
       } finally {
          reverseForcedChangesForCheckTables("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D",
@@ -1146,7 +1150,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test142CheckTables_70001() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       try {
          changeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D");
          changeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_ALBUM_D");
@@ -1155,7 +1159,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          changeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_REPRESENTATIVE_D");
 
          runController("cktb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          LOGGER.info(e.getMessage());
       } finally {
          reverseChangeReferenceType("oracle.odi.domain.model.OdiReference W_INVOICELINE_F_W_CUSTOMER_D");
@@ -1171,22 +1175,22 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    @SuppressWarnings("unchecked")
-   private void reverseChangeReferenceType(String testOdiReference) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      ITransactionManager tm = odiInstance.getTransactionManager();
-      ITransactionStatus trans = tm.getTransaction(new DefaultTransactionDefinition());
-      IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> dataStores = finder.findAll();
+   private void reverseChangeReferenceType(final String testOdiReference) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
+      final ITransactionStatus trans = tm.getTransaction(new DefaultTransactionDefinition());
+      final IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> dataStores = finder.findAll();
       OdiDataStore temp = null;
-      for (OdiDataStore ds : dataStores) {
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase("W_INVOICELINE_F")) {
             temp = ds;
          }
       }
-      Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
-      for (OdiReference odiReference : odiReferences) {
+      final Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
+      for (final OdiReference odiReference : odiReferences) {
          if (StringUtils.equalsIgnoreCase(testOdiReference, // +"_U1",
                                           odiReference.toString())) {
             odiReference.setReferenceType(ReferenceType.DB_REFERENCE);
@@ -1198,27 +1202,27 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    @SuppressWarnings("unchecked")
-   private void changeReferenceType(String testOdiReference) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      ITransactionManager tm = odiInstance.getTransactionManager();
+   private void changeReferenceType(final String testOdiReference) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
       tm.getTransaction(new DefaultTransactionDefinition());
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
-                                                                     .getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> dataStores = finder.findAll();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
+                                                                           .getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> dataStores = finder.findAll();
       OdiDataStore temp = null;
-      for (OdiDataStore ds : dataStores) {
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase("W_INVOICELINE_F")) {
             temp = ds;
          }
       }
-      Collection<OdiReference> odiReferences = odiInstance.getTransactionalEntityManager()
-                                                          .findAll(OdiReference.class);
-      for (OdiReference odiReference : odiReferences) {
+      final Collection<OdiReference> odiReferences = odiInstance.getTransactionalEntityManager()
+                                                                .findAll(OdiReference.class);
+      for (final OdiReference odiReference : odiReferences) {
          if (StringUtils.equalsIgnoreCase(testOdiReference, // +"_U1",
                                           odiReference.toString())) {
-            String tempValue = odiReference.getReferenceType()
-                                           .toString();
+            final String tempValue = odiReference.getReferenceType()
+                                                 .toString();
             odiReference.setReferenceType(ReferenceType.ODI_REFERENCE);
             LOGGER.info("ReferenceType changed from " + tempValue + " to " + odiReference.getReferenceType());
          }
@@ -1229,26 +1233,26 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    @SuppressWarnings("unchecked")
-   private void reverseForcedChangesForCheckTables(String testOdiReference, String testOdiColumn) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> dataStores = finder.findAll();
+   private void reverseForcedChangesForCheckTables(final String testOdiReference, final String testOdiColumn) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> dataStores = finder.findAll();
       OdiDataStore temp = null;
-      for (OdiDataStore ds : dataStores) {
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase("W_INVOICELINE_F")) {
             temp = ds;
          }
       }
-      Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
-      for (OdiReference odiReference : odiReferences) {
+      final Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
+      for (final OdiReference odiReference : odiReferences) {
          if (StringUtils.equalsIgnoreCase(testOdiReference, odiReference.toString())) {
-            for (OdiKey odiKey : odiReference.getForeignDataStore()
-                                             .getKeys()) {
+            for (final OdiKey odiKey : odiReference.getForeignDataStore()
+                                                   .getKeys()) {
                if (odiKey.getKeyType()
                          .equals(OdiKey.KeyType.ALTERNATE_KEY)) {
-                  for (OdiColumn indexColun : odiKey.getColumns()) {
+                  for (final OdiColumn indexColun : odiKey.getColumns()) {
                      if (StringUtils.equalsIgnoreCase(indexColun.getName(), testOdiColumn.split(" ")[1])) {
                         odiKey.setKeyType(KeyType.INDEX);
                      }
@@ -1261,28 +1265,28 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    }
 
    @SuppressWarnings("unchecked")
-   private void forcingFailuresForCheckTables(String testOdiReference, String testOdiColumn) {
-      OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
-      IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
-      ITransactionManager tm = odiInstance.getTransactionManager();
+   private void forcingFailuresForCheckTables(final String testOdiReference, final String testOdiColumn) {
+      final OdiInstance odiInstance = getWorkOdiInstance().getOdiInstance();
+      final IOdiEntityManager tem = odiInstance.getTransactionalEntityManager();
+      final ITransactionManager tm = odiInstance.getTransactionManager();
       tm.getTransaction(new DefaultTransactionDefinition());
-      IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
-      Collection<OdiDataStore> dataStores = finder.findAll();
+      final IOdiDataStoreFinder finder = ((IOdiDataStoreFinder) tem.getFinder(OdiDataStore.class));
+      final Collection<OdiDataStore> dataStores = finder.findAll();
       OdiDataStore temp = null;
-      for (OdiDataStore ds : dataStores) {
+      for (final OdiDataStore ds : dataStores) {
          if (ds.getName()
                .equalsIgnoreCase("W_INVOICELINE_F")) {
             temp = ds;
          }
       }
-      Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
-      for (OdiReference odiReference : odiReferences) {
+      final Collection<OdiReference> odiReferences = tem.findAll(OdiReference.class);
+      for (final OdiReference odiReference : odiReferences) {
          if (StringUtils.equalsIgnoreCase(testOdiReference, odiReference.toString())) {
-            for (OdiKey odiKey : odiReference.getForeignDataStore()
-                                             .getKeys()) {
+            for (final OdiKey odiKey : odiReference.getForeignDataStore()
+                                                   .getKeys()) {
                if (odiKey.getKeyType()
                          .equals(OdiKey.KeyType.INDEX)) {
-                  for (OdiColumn indexColun : odiKey.getColumns()) {
+                  for (final OdiColumn indexColun : odiKey.getColumns()) {
                      if (StringUtils.equalsIgnoreCase(indexColun.getName(), testOdiColumn.split(" ")[1])) {
                         odiKey.setKeyType(KeyType.ALTERNATE_KEY);
                      }
@@ -1298,7 +1302,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    // off by 10
    @Test
    public void test150ExtractTables() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("etb", DEFAULT_PROPERTIES_PATH, "-ps", "10", "-m", TEST_BASE_DIRECTORY + "/jodi_dist", "-srcmdl",
                     "ORACLE_CHINOOK");
       if (listAppender.contains(Level.ERROR, false)) {
@@ -1310,7 +1314,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    @Test
    public void test160DeleteReferences() {
       LOGGER.info("Create etls started");
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dr", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-model", "ORACLE_CHINOOK", "-m",
                     TEST_BASE_DIRECTORY + "/xml", "-journalized");
       if (listAppender.contains(Level.ERROR, false)) {
@@ -1321,7 +1325,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    @Test
    public void test170DeleteAllPackages() {
-      ListAppender listAppender = getListAppender();
+      final ListAppender listAppender = getListAppender();
       runController("dap", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml");
       if (listAppender.contains(Level.ERROR, false)) {
          Assert.fail("Sample threw errors.");
@@ -1336,7 +1340,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    public void test180PropertyFileFound() {
       try {
          runController("etls", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail("Sample threw unexpected exception.");
       }
    }
@@ -1350,9 +1354,9 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          runController("etls", TEST_BASE_DIRECTORY + "/conf/Sample.propertiesNotFound", "-p", "Init ", "-m",
                        TEST_BASE_DIRECTORY + "/xml");
          Assert.fail("Sample did not throw exception on missing properties file.");
-      } catch (UnRecoverableException ea) {
+      } catch (final UnRecoverableException ea) {
          // expected that exception is thrown
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail("Sample throw unexception exception.");
       }
    }
@@ -1367,28 +1371,28 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
    public void test200AlterTables() {
       try {
          runController("atb", DEFAULT_PROPERTIES_PATH, "-m", TEST_BASE_DIRECTORY + "/xml");
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail("Sample threw unexpected exception.");
       }
-      IOdiDataStoreFinder finder = (IOdiDataStoreFinder) getWorkOdiInstance().getOdiInstance()
-                                                                             .getTransactionalEntityManager()
-                                                                             .getFinder(OdiDataStore.class);
+      final IOdiDataStoreFinder finder = (IOdiDataStoreFinder) getWorkOdiInstance().getOdiInstance()
+                                                                                   .getTransactionalEntityManager()
+                                                                                   .getFinder(OdiDataStore.class);
       // OdiDataStore album = finder.findByName("W_ALBUM_D",
       // "ORACLE_DWH_DMT");
       // if(!album.getDataStoreType().equals(DataStoreType.DIMENSION)){
       // throw new RuntimeException("Datatype of datastore album should be
       // dimesion.");
       // }
-      OdiDataStore customer = finder.findByName("W_CUSTOMER_D", "ORACLE_DWH_DMT");
-      if (!customer.getOlapType()
-                   .name()
-                   .equals(DataStoreType.SLOWLY_CHANGING_DIMENSION.name())) {
+      final OdiDataStore customer = finder.findByName("W_CUSTOMER_D", "ORACLE_DWH_DMT");
+      if (customer.getOlapType() == null || !customer.getOlapType()
+                                                     .name()
+                                                     .equals(DataStoreType.SLOWLY_CHANGING_DIMENSION.name())) {
          throw new RuntimeException(
                  "Datatype of customer should be " + DataStoreType.SLOWLY_CHANGING_DIMENSION.name() + " and is: " +
-                         customer.getOlapType()
-                                 .name());
+                         (customer.getOlapType() != null ? customer.getOlapType()
+                                                                   .name() : " null "));
       }
-      OdiDataStore employee = finder.findByName("W_EMPLOYEE_D", "ORACLE_DWH_DMT");
+      final OdiDataStore employee = finder.findByName("W_EMPLOYEE_D", "ORACLE_DWH_DMT");
       if (!employee.getOlapType()
                    .name()
                    .equals(DataStoreType.SLOWLY_CHANGING_DIMENSION.name())) {
@@ -1413,13 +1417,14 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       if (!new OdiVersion().isVersion11()) {
          LOGGER.info("testing;");
          // import loadplans
-         File generatedFile = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/ETL.xml");
+         final File generatedFile = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/ETL.xml");
          if (generatedFile.exists()) {
             if (!generatedFile.delete()) {
                throw new RuntimeException("can't delete file.");
             }
          }
-         File generatedFileTestsForNullpointers = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/CREATED_TEST_ETL.xml");
+         final File generatedFileTestsForNullpointers =
+                 new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/CREATED_TEST_ETL.xml");
          if (generatedFileTestsForNullpointers.exists()) {
             if (!generatedFileTestsForNullpointers.delete()) {
                throw new RuntimeException("can't delete file.");
@@ -1429,25 +1434,25 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          if (!generatedFile.exists()) {
             throw new RuntimeException("Loadplan import did not import loadplan into xml file.");
          }
-         File orignal = new File("src/test/resources/CREATED_TEST_ETL.xml");
-         File testNullPointer = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/CREATED_TEST_ETL.xml");
+         final File orignal = new File("src/test/resources/CREATED_TEST_ETL.xml");
+         final File testNullPointer = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans/CREATED_TEST_ETL.xml");
          Files.copy(Paths.get(orignal.getAbsolutePath()), Paths.get(testNullPointer.getAbsolutePath()),
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-         JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
-         Unmarshaller u = jc.createUnmarshaller();
-         Loadplan loadplan = (Loadplan) u.unmarshal(generatedFile);
+         final JAXBContext jc = JAXBContext.newInstance(ObjectFactory.class);
+         final Unmarshaller u = jc.createUnmarshaller();
+         final Loadplan loadplan = (Loadplan) u.unmarshal(generatedFile);
          LOGGER.info("Successfully unmarshalled from file loadplan : " + loadplan.getName());
 //
-         Scanner generatedScanner = new Scanner(generatedFile);
-         StringBuilder generatedContent = new StringBuilder();
+         final Scanner generatedScanner = new Scanner(generatedFile);
+         final StringBuilder generatedContent = new StringBuilder();
          while (generatedScanner.hasNext()) {
             generatedContent.append(generatedScanner.next());
          }
          generatedScanner.close();
 //
-         File controlFile = new File(TEST_BASE_DIRECTORY + "/controlETL.xml");
-         Scanner controlScanner = new Scanner(controlFile);
-         StringBuilder controlContent = new StringBuilder();
+         final File controlFile = new File(TEST_BASE_DIRECTORY + "/controlETL.xml");
+         final Scanner controlScanner = new Scanner(controlFile);
+         final StringBuilder controlContent = new StringBuilder();
          while (controlScanner.hasNext()) {
             controlContent.append(controlScanner.next());
          }
@@ -1463,13 +1468,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       // print
       runController("lpp", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml");
       // build loadplans
-      File previousCreation = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans", "CREATED_FROM_FILE.xml");
+      final File previousCreation = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans", "CREATED_FROM_FILE.xml");
       if (previousCreation.exists() && !previousCreation.delete()) {
          LOGGER.error("Couldn't deleted CREATED_FROM_FILE");
       }
-      File file = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans", "ETL.xml");
+      final File file = new File(TEST_BASE_DIRECTORY + "/xml/loadPlans", "ETL.xml");
       StringBuilder content = new StringBuilder();
-      Scanner scanner = new Scanner(file);
+      final Scanner scanner = new Scanner(file);
       scanner.useDelimiter("\n");
       while (scanner.hasNext()) {
          content.append(scanner.next())
@@ -1480,7 +1485,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                                          .replace("ETL", "CREATED_FROM_FILE"));
       write(file, content.toString());
       runController("lp", DEFAULT_PROPERTIES_PATH, "-p", "Init ", "-m", TEST_BASE_DIRECTORY + "/xml");
-      OdiLoadPlan odiLoadplan = odiLoadPlanAccessStrategy.findLoadPlanByName("CREATED_FROM_FILE");
+      final OdiLoadPlan odiLoadplan = odiLoadPlanAccessStrategy.findLoadPlanByName("CREATED_FROM_FILE");
       odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplan, "/Start/DROP_TEMP_INTERFACE_DATASTORES");
       odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplan,
                                                             "/Start/Case Variable: SAMPLEC.LOAD_UP_TO_DATE/Value Is Null/TEST_MKDIR");
@@ -1491,7 +1496,7 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplan, "/Start/INITIALDWH_DMT_FACT");
 
       if (!new OdiVersion().isVersion11()) {
-         OdiLoadPlan odiLoadplanMininmal = odiLoadPlanAccessStrategy.findLoadPlanByName("CREATED_TEST_FILE");
+         final OdiLoadPlan odiLoadplanMininmal = odiLoadPlanAccessStrategy.findLoadPlanByName("CREATED_TEST_FILE");
          odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplanMininmal,
                                                                "/14) Serial/15) DROP_TEMP_INTERFACE_DATASTORES");
          odiLoadPlanAccessStrategy.verifyOdiLoadPlanPathExists(odiLoadplanMininmal,
@@ -1537,13 +1542,13 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
    //@After
    public void deleteCreatedLoadPlans() {
-      ITransactionManager tm = getWorkOdiInstance().getOdiInstance()
-                                                   .getTransactionManager();
-      IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) getWorkOdiInstance().getOdiInstance()
-                                                                                   .getTransactionalEntityManager()
-                                                                                   .getFinder(OdiLoadPlan.class);
+      final ITransactionManager tm = getWorkOdiInstance().getOdiInstance()
+                                                         .getTransactionManager();
+      final IOdiLoadPlanFinder loadPlanFinder = (IOdiLoadPlanFinder) getWorkOdiInstance().getOdiInstance()
+                                                                                         .getTransactionalEntityManager()
+                                                                                         .getFinder(OdiLoadPlan.class);
       //noinspection unchecked
-      for (OdiLoadPlan loadPlan : (Collection<OdiLoadPlan>) loadPlanFinder.findAll()) {
+      for (final OdiLoadPlan loadPlan : (Collection<OdiLoadPlan>) loadPlanFinder.findAll()) {
          if (loadPlan.getName()
                      .toLowerCase()
                      .startsWith("created")) {
@@ -1587,38 +1592,38 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
          reader = new FileReader(DEFAULT_PROPERTIES_PATH);
          properties = new Properties();
          properties.load(reader);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          e.printStackTrace();
          throw new RuntimeException("Cannot check if this test runs in update mode.");
       } finally {
          if (reader != null) {
             try {
                reader.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                e.printStackTrace();
             }
          }
       }
-      OdiConnection odiConnection = OdiConnectionFactory.getOdiConnection(properties.getProperty("odi.master.repo.url"),
-                                                                          properties.getProperty(
-                                                                                  "odi.master.repo.username"),
-                                                                          new PasswordConfigImpl().getOdiMasterRepoPassword(),
-                                                                          properties.getProperty("odi.login.username"),
-                                                                          new PasswordConfigImpl().getOdiUserPassword(),
-                                                                          properties.getProperty("odi.repo.db.driver"),
-                                                                          properties.getProperty("odi.work.repo"));
+      final OdiConnection odiConnection =
+              OdiConnectionFactory.getOdiConnection(properties.getProperty("odi.master.repo.url"),
+                                                    properties.getProperty("odi.master.repo.username"),
+                                                    new PasswordConfigImpl().getOdiMasterRepoPassword(),
+                                                    properties.getProperty("odi.login.username"),
+                                                    new PasswordConfigImpl().getOdiUserPassword(),
+                                                    properties.getProperty("odi.repo.db.driver"),
+                                                    properties.getProperty("odi.work.repo"));
 
-      IOdiUserProcedureFinder finder = (IOdiUserProcedureFinder) odiConnection.getOdiInstance()
-                                                                              .getFinder(OdiUserProcedure.class);
-      Collection<OdiUserProcedure> testProcs = finder.findByName("Test Proc");
+      final IOdiUserProcedureFinder finder = (IOdiUserProcedureFinder) odiConnection.getOdiInstance()
+                                                                                    .getFinder(OdiUserProcedure.class);
+      final Collection<OdiUserProcedure> testProcs = finder.findByName("Test Proc");
       if (testProcs.size() != 1) {
          throw new RuntimeException("Couldn't find 1 instanc of procedure Test Proc");
       }
-      OdiUserProcedure testProc = testProcs.iterator()
-                                           .next();
-      OdiProcedureLineCmd targetCommand = testProc.getLines()
-                                                  .get(0)
-                                                  .getOnTargetCommand();
+      final OdiUserProcedure testProc = testProcs.iterator()
+                                                 .next();
+      final OdiProcedureLineCmd targetCommand = testProc.getLines()
+                                                        .get(0)
+                                                        .getOnTargetCommand();
       if (!targetCommand.getExecutionContext()
                         .getCode()
                         .equals("GLOBAL")) {
@@ -1641,32 +1646,32 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
                         .equalsIgnoreCase("ORACLE")) {
          throw new RuntimeException("Wrong technology set");
       }
-      List<ProcedureOption> options = testProc.getOptions();
+      final List<ProcedureOption> options = testProc.getOptions();
       if (options.size() != 4) {
          throw new RuntimeException("There should be 4 options set.");
       }
-      Optional<ProcedureOption> testBoolean = options.stream()
-                                                     .filter(o -> o.getName()
-                                                                   .equalsIgnoreCase("TestBoolean"))
-                                                     .findFirst();
+      final Optional<ProcedureOption> testBoolean = options.stream()
+                                                           .filter(o -> o.getName()
+                                                                         .equalsIgnoreCase("TestBoolean"))
+                                                           .findFirst();
       testOption(testBoolean, OptionType.CHECKBOX, true, "1=1", "A Description for boolean.",
                  "A help message for boolean.");
-      Optional<ProcedureOption> TestText = options.stream()
-                                                  .filter(o -> o.getName()
-                                                                .equalsIgnoreCase("TestText"))
-                                                  .findFirst();
+      final Optional<ProcedureOption> TestText = options.stream()
+                                                        .filter(o -> o.getName()
+                                                                      .equalsIgnoreCase("TestText"))
+                                                        .findFirst();
       testOption(TestText, OptionType.LONG_TEXT, "testString", "1=1", "A Description for text.",
                  "A help message for text.");
-      Optional<ProcedureOption> TestValue = options.stream()
-                                                   .filter(o -> o.getName()
-                                                                 .equalsIgnoreCase("TestValue"))
-                                                   .findFirst();
+      final Optional<ProcedureOption> TestValue = options.stream()
+                                                         .filter(o -> o.getName()
+                                                                       .equalsIgnoreCase("TestValue"))
+                                                         .findFirst();
       testOption(TestValue, OptionType.CHOICE, "testValue", "1=1", "A Description for value.",
                  "A help message for value.");
-      Optional<ProcedureOption> TestChoice = options.stream()
-                                                    .filter(o -> o.getName()
-                                                                  .equalsIgnoreCase("TestChoice"))
-                                                    .findFirst();
+      final Optional<ProcedureOption> TestChoice = options.stream()
+                                                          .filter(o -> o.getName()
+                                                                        .equalsIgnoreCase("TestChoice"))
+                                                          .findFirst();
       testOption(TestChoice, OptionType.CHOICE, "testChoice", "1=1", "A Description for choice.",
                  "A help message for choice.");
    }
@@ -1678,8 +1683,8 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
 
 
    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-   private void testOption(Optional<ProcedureOption> option, OptionType type, Object defaultValue, String condition,
-                           String description, String help) {
+   private void testOption(final Optional<ProcedureOption> option, final OptionType type, final Object defaultValue,
+                           final String condition, final String description, final String help) {
       if (!option.isPresent()) {
          throw new RuntimeException("There should be an option set.");
       }
@@ -1718,27 +1723,27 @@ public class Sample<T extends IOdiEntity, U extends IRepositoryEntity, V extends
       }
    }
 
-   private void write(File file, String input) {
+   private void write(final File file, final String input) {
       FileOutputStream fos = null;
       Writer out = null;
       try {
          fos = new FileOutputStream(file.getAbsolutePath());
          out = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
          out.write(input);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          e.printStackTrace();
       } finally {
          try {
             if (out != null) {
                out.close();
             }
-         } catch (IOException e) {
+         } catch (final IOException e) {
             e.printStackTrace();
          }
          if (fos != null) {
             try {
                fos.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                e.printStackTrace();
             }
          }

@@ -2,12 +2,14 @@ package one.jodi.base.config;
 
 public interface PasswordConfig {
 
-    String getOdiMasterRepoPassword();
+   String getOdiMasterRepoPassword();
 
-    String getOdiUserPassword();
+   String getOdiUserPassword();
 
-    String getOracleTestDBPassword();
+   String getOracleTestDBPassword();
 
-    String getDeploymentArchivePassword();
+   String getDeploymentArchivePassword();
+
+   String getAdminDBPassword();
 
 }

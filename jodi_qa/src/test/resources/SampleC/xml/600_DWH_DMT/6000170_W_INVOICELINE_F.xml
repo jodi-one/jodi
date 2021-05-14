@@ -2,239 +2,233 @@
 <Transformation
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../../../../../../../jodi_core/src/main/resources/jodi-model.v1.1.xsd">
-    <Comments>
-        This is an example of Partition Exchange Loading.
+   <Comments>
+      This is an example of Partition Exchange Loading.
 
-        The used KM is IKM Oracle Partition Exchange Load (CTAS Partition Option) referenced by km.ikm_p,
-        this km is used in favor of IKM Oracle Partition Exchange Load (CTAS Table Partition),
-        since with the latter km it is required to change the partition name in ODI every time.
+      The used KM is IKM Oracle Partition Exchange Load (CTAS Partition Option) referenced by km.ikm_p,
+      this km is used in favor of IKM Oracle Partition Exchange Load (CTAS Table Partition),
+      since with the latter km it is required to change the partition name in ODI every time.
 
-        The km uses a CTAS, Create Table As Select, which requires casting of the target columns.
-        Please note for timestamps it is best to use direct mapping from source to target instead of casting.
-        This select maybe used to find differences between partition exchange table and partitioned table.
+      The km uses a CTAS, Create Table As Select, which requires casting of the target columns.
+      Please note for timestamps it is best to use direct mapping from source to target instead of casting.
+      This select maybe used to find differences between partition exchange table and partitioned table.
 
-        select a.column_id "COLUMN_ID", a.table_name "TABLE_NAME",
-        a.column_name, a.data_type, a.data_length
-        from all_tab_columns a, all_tab_columns b
-        where a.column_id (+) = b.column_id
-        and (a.data_type != b.data_type
-        or a.data_length != b.data_length)
-        and a.table_name = upper('W_INVOICELINE_F')
-        and b.table_name = upper('I$_W_INVOICELINE_F_P2009')
-        union
-        select b.column_id "COLUMN_ID", b.table_name "TABLE_NAME",
-        b.column_name, b.data_type, b.data_length
-        from all_tab_columns a, all_tab_columns b
-        where b.column_id (+) = a.column_id
-        and (a.data_type != b.data_type
-        or a.data_length != b.data_length)
-        and a.table_name = upper('W_INVOICELINE_F')
-        and b.table_name = upper('I$_W_INVOICELINE_F_P2009')
-        order by table_name, column_id;
+      select a.column_id "COLUMN_ID", a.table_name "TABLE_NAME",
+      a.column_name, a.data_type, a.data_length
+      from all_tab_columns a, all_tab_columns b
+      where a.column_id (+) = b.column_id
+      and (a.data_type != b.data_type
+      or a.data_length != b.data_length)
+      and a.table_name = upper('W_INVOICELINE_F')
+      and b.table_name = upper('I$_W_INVOICELINE_F_P2009')
+      union
+      select b.column_id "COLUMN_ID", b.table_name "TABLE_NAME",
+      b.column_name, b.data_type, b.data_length
+      from all_tab_columns a, all_tab_columns b
+      where b.column_id (+) = a.column_id
+      and (a.data_type != b.data_type
+      or a.data_length != b.data_length)
+      and a.table_name = upper('W_INVOICELINE_F')
+      and b.table_name = upper('I$_W_INVOICELINE_F_P2009')
+      order by table_name, column_id;
 
-        The IKmOption PARTITION_NAME refers to an ODI variable containing the partition name.
-        The IKmOption CREATE_PK_ON_PARTITION_TABLE is required since it also creates unique index,
-        which is required because pel table and table need to be unique.
-        At present it is not yet possible to recreate bitmap and unique indexes.
-        The IKmOption FOREIGN_KEYS_STRATEGY disables FKs.
-        The IKmOption PARTITION_EXCHANGE_OPTIONS can be used to implement other pel options.
-        The CKmOption FLOW_CONTROL needs to be set to true to be able to specify CREATE_PK_ON_PARTITION_TABLE.
+      The IKmOption PARTITION_NAME refers to an ODI variable containing the partition name.
+      The IKmOption CREATE_PK_ON_PARTITION_TABLE is required since it also creates unique index,
+      which is required because pel table and table need to be unique.
+      At present it is not yet possible to recreate bitmap and unique indexes.
+      The IKmOption FOREIGN_KEYS_STRATEGY disables FKs.
+      The IKmOption PARTITION_EXCHANGE_OPTIONS can be used to implement other pel options.
+      The CKmOption FLOW_CONTROL needs to be set to true to be able to specify CREATE_PK_ON_PARTITION_TABLE.
 
-        Please also not the redundant space in the IKM name; which needs to be removed.
+      Please also not the redundant space in the IKM name; which needs to be removed.
 
-        When loading multiple partitions a loop must be created in which the #VAR_PARTITION_NAME odi variable,
-        needs to be refreshed.
-        Priviliges needed:
-        grant execute on dbms_stats to dwh_con_chinook;
-        grant lock any table to dwh_con_chinook;
-        grant alter any table to dwh_con_chinook;
-        grant create any table to dwh_con_chinook;
-        grant drop any table to dwh_con_chinook;
-        grant select any table to dwh_con_chinook;
-        grant create any index to dwh_con_chinook;
-        grant ANALYZE ANY DICTIONARY to dwh_con_chinook;
-        grant ANALYZE ANY to dwh_con_chinook;
+      When loading multiple partitions a loop must be created in which the #VAR_PARTITION_NAME odi variable,
+      needs to be refreshed.
+      Priviliges needed:
+      grant execute on dbms_stats to dwh_con_chinook;
+      grant lock any table to dwh_con_chinook;
+      grant alter any table to dwh_con_chinook;
+      grant create any table to dwh_con_chinook;
+      grant drop any table to dwh_con_chinook;
+      grant select any table to dwh_con_chinook;
+      grant create any index to dwh_con_chinook;
+      grant ANALYZE ANY DICTIONARY to dwh_con_chinook;
+      grant ANALYZE ANY to dwh_con_chinook;
 
-        If one ever needs to truncate the table:
-        truncate table dwh_dmt.w_invoiceline_f;
-        one needs to collect table stats after, IT IS REQUIRED!
-        EXEC DBMS_STATS.GATHER_TABLE_STATS ('DWH_DMT', 'W_INVOICELINE_F');
+      If one ever needs to truncate the table:
+      truncate table dwh_dmt.w_invoiceline_f;
+      one needs to collect table stats after, IT IS REQUIRED!
+      EXEC DBMS_STATS.GATHER_TABLE_STATS ('DWH_DMT', 'W_INVOICELINE_F');
 
-        Variable Code:
-        SELECT NVL(c.partition_name,'P9999')
-        FROM dual d
-        left JOIN
-        (SELECT partition_name
-        FROM
-        ( SELECT DISTINCT 'P'
-        ||INVL_INVE_DATE_CODE partition_name
-        FROM dwh_sto.s_invoiceline_o
-        MINUS
-        SELECT partition_name
-        FROM all_tab_partitions
-        WHERE table_name = 'W_INVOICELINE_F'
-        AND num_rows != 0
-        )
-        ORDER BY partition_name
-        ) c on ( 1=1 and rownum =1 )
-    </Comments>
-    <PackageList>PACKAGE_FACT</PackageList>
-    <Datasets>
-        <Dataset>
-            <Source>
-                <Name>S_INVOICELINE_O</Name>
-                <Filter><![CDATA[ S_INVOICELINE_O.PARTITION_NAME = '#SAMPLEC.VAR_PARTITION_NAME' ]]></Filter>
-                <Lookups>
-                    <Lookup>
-                        <LookupDataStore>W_CUSTOMER_D</LookupDataStore>
-                        <Join>W_CUSTOMER_D.CUST_CODE = S_INVOICELINE_O.INVL_CUST_CODE AND W_CUSTOMER_D.CURRENT_FLG = 1
-                        </Join>
-                    </Lookup>
-                    <Lookup>
-                        <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
-                        <Alias>SUPPORTREP</Alias>
-                        <Join>SUPPORTREP.EMPL_CODE = S_INVOICELINE_O.INVL_SUPPORTREP_CODE AND SUPPORTREP.CURRENT_FLG =
-                            1
-                        </Join>
-                    </Lookup>
-                    <Lookup>
-                        <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
-                        <Alias>SUPERVISOR</Alias>
-                        <Join>SUPERVISOR.EMPL_CODE = S_INVOICELINE_O.INVL_SUPERVISOR_CODE AND SUPERVISOR.CURRENT_FLG =
-                            1
-                        </Join>
-                    </Lookup>
-                    <Lookup>
-                        <LookupDataStore>W_ALBUM_D</LookupDataStore>
-                        <Alias>ALBUM</Alias>
-                        <Join>ALBUM.ALBM_CODE = S_INVOICELINE_O.INVL_ALBM_CODE</Join>
-                    </Lookup>
-                    <Lookup>
-                        <LookupDataStore>W_TRACK_D</LookupDataStore>
-                        <Alias>TRACK</Alias>
-                        <Join>TRACK.TRCK_CODE = S_INVOICELINE_O.INVL_TRCK_CODE</Join>
-                    </Lookup>
-                </Lookups>
-            </Source>
-        </Dataset>
-    </Datasets>
-    <Mappings>
-        <TargetDataStore>W_INVOICELINE_F</TargetDataStore>
-        <TargetColumn>
-            <Name>ROW_WID</Name>
-            <MappingExpressions>
-                <Expression>:GLOBAL.W_INVOICELINE_F_SEQ_NEXTVAL</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_LINE_CODE</Name>
-            <MappingExpressions>
-                <Expression>S_INVOICELINE_O.INVL_LINE_CODE</Expression>
-            </MappingExpressions>
-            <Mandatory>true</Mandatory>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_CODE</Name>
-            <MappingExpressions>
-                <Expression>S_INVOICELINE_O.INVL_CODE</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_TRCK_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL(TRACK.ROW_WID,-2)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_UNITPRICE</Name>
-            <MappingExpressions>
-                <Expression>NVL( S_INVOICELINE_O.INVL_UNITPRICE,0)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_QUANTITY</Name>
-            <MappingExpressions>
-                <Expression>NVL(S_INVOICELINE_O.INVL_QUANTITY,0)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_AMOUNT</Name>
-            <MappingExpressions>
-                <Expression>NVL(S_INVOICELINE_O.INVL_AMOUNT,0)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>W_INSERT_DT</Name>
-            <MappingExpressions>
-                <Expression>S_INVOICELINE_O.S_INSERT_DT_O</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_CUST_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL( W_CUSTOMER_D.ROW_WID, -2)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_INVE_DATE_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL(S_INVOICELINE_O.INVL_INVE_DATE_CODE,19000101)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_ALBM_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL(ALBUM.ROW_WID,-2)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_SUPPORTREP_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL(SUPPORTREP.ROW_WID,-2)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_SUPERVISOR_WID</Name>
-            <MappingExpressions>
-                <Expression>NVL(SUPERVISOR.ROW_WID,-2)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_CUST_FIRST_PURCHASE</Name>
-            <MappingExpressions>
-                <Expression>S_INVOICELINE_O.INVL_CUST_FIRST_PURCHASE</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_CUST_INVE_AMOUNT_YEAR</Name>
-            <MappingExpressions>
-                <Expression>NVL( S_INVOICELINE_O.INVL_CUST_INVE_AMOUNT_YEAR,0)</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <TargetColumn>
-            <Name>INVL_CUST_BGHT_ALBUMS_ART_IND</Name>
-            <MappingExpressions>
-                <Expression>S_INVOICELINE_O.INVL_CUST_BGHT_ALBUMS_ART_IND</Expression>
-            </MappingExpressions>
-        </TargetColumn>
-        <Ckm>
-            <Code>km.ckm_default</Code>
-            <!--
-            <KmOptions>
-                <KmOption>
-                    <Name>FLOW_CONTROL</Name>
-                    <Value>true</Value>
-                </KmOption>
-            </KmOptions>
-            -->
-        </Ckm>
-    </Mappings>
-    <EndCommand>
-        <Text>begin
+      Variable Code:
+      SELECT NVL(c.partition_name,'P9999')
+      FROM dual d
+      left JOIN
+      (SELECT partition_name
+      FROM
+      ( SELECT DISTINCT 'P'
+      ||INVL_INVE_DATE_CODE partition_name
+      FROM dwh_sto.s_invoiceline_o
+      MINUS
+      SELECT partition_name
+      FROM all_tab_partitions
+      WHERE table_name = 'W_INVOICELINE_F'
+      AND num_rows != 0
+      )
+      ORDER BY partition_name
+      ) c on ( 1=1 and rownum =1 )
+   </Comments>
+   <PackageList>PACKAGE_FACT</PackageList>
+   <Datasets>
+      <Dataset>
+         <Source>
+            <Name>S_INVOICELINE_O</Name>
+            <Filter><![CDATA[ S_INVOICELINE_O.PARTITION_NAME = '#SAMPLEC.VAR_PARTITION_NAME' ]]></Filter>
+            <Lookups>
+               <Lookup>
+                  <LookupDataStore>W_CUSTOMER_D</LookupDataStore>
+                  <Join>W_CUSTOMER_D.CUST_CODE = S_INVOICELINE_O.INVL_CUST_CODE AND W_CUSTOMER_D.CURRENT_FLG = 1
+                  </Join>
+               </Lookup>
+               <Lookup>
+                  <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
+                  <Alias>SUPPORTREP</Alias>
+                  <Join>SUPPORTREP.EMPL_CODE = S_INVOICELINE_O.INVL_SUPPORTREP_CODE AND SUPPORTREP.CURRENT_FLG =
+                        1
+                  </Join>
+               </Lookup>
+               <Lookup>
+                  <LookupDataStore>W_EMPLOYEE_D</LookupDataStore>
+                  <Alias>SUPERVISOR</Alias>
+                  <Join>SUPERVISOR.EMPL_CODE = S_INVOICELINE_O.INVL_SUPERVISOR_CODE AND SUPERVISOR.CURRENT_FLG =
+                        1
+                  </Join>
+               </Lookup>
+               <Lookup>
+                  <LookupDataStore>W_ALBUM_D</LookupDataStore>
+                  <Alias>ALBUM</Alias>
+                  <Join>ALBUM.ALBM_CODE = S_INVOICELINE_O.INVL_ALBM_CODE</Join>
+               </Lookup>
+               <Lookup>
+                  <LookupDataStore>W_TRACK_D</LookupDataStore>
+                  <Alias>TRACK</Alias>
+                  <Join>TRACK.TRCK_CODE = S_INVOICELINE_O.INVL_TRCK_CODE</Join>
+               </Lookup>
+            </Lookups>
+         </Source>
+      </Dataset>
+   </Datasets>
+   <Mappings>
+      <TargetDataStore>W_INVOICELINE_F</TargetDataStore>
+      <TargetColumn>
+         <Name>ROW_WID</Name>
+         <MappingExpressions>
+            <Expression>:GLOBAL.W_INVOICELINE_F_SEQ_NEXTVAL</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_LINE_CODE</Name>
+         <MappingExpressions>
+            <Expression>S_INVOICELINE_O.INVL_LINE_CODE</Expression>
+         </MappingExpressions>
+         <Mandatory>true</Mandatory>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_CODE</Name>
+         <MappingExpressions>
+            <Expression>S_INVOICELINE_O.INVL_CODE</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_TRCK_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL(TRACK.ROW_WID,-2)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_UNITPRICE</Name>
+         <MappingExpressions>
+            <Expression>NVL( S_INVOICELINE_O.INVL_UNITPRICE,0)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_QUANTITY</Name>
+         <MappingExpressions>
+            <Expression>NVL(S_INVOICELINE_O.INVL_QUANTITY,0)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_AMOUNT</Name>
+         <MappingExpressions>
+            <Expression>NVL(S_INVOICELINE_O.INVL_AMOUNT,0)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_CUST_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL( W_CUSTOMER_D.ROW_WID, -2)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_INVE_DATE_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL(S_INVOICELINE_O.INVL_INVE_DATE_CODE,19000101)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_ALBM_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL(ALBUM.ROW_WID,-2)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_SUPPORTREP_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL(SUPPORTREP.ROW_WID,-2)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_SUPERVISOR_WID</Name>
+         <MappingExpressions>
+            <Expression>NVL(SUPERVISOR.ROW_WID,-2)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_CUST_FIRST_PURCHASE</Name>
+         <MappingExpressions>
+            <Expression>S_INVOICELINE_O.INVL_CUST_FIRST_PURCHASE</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_CUST_INVE_AMOUNT_YEAR</Name>
+         <MappingExpressions>
+            <Expression>NVL( S_INVOICELINE_O.INVL_CUST_INVE_AMOUNT_YEAR,0)</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <TargetColumn>
+         <Name>INVL_CUST_BGHT_ALBUMS_ART_IND</Name>
+         <MappingExpressions>
+            <Expression>S_INVOICELINE_O.INVL_CUST_BGHT_ALBUMS_ART_IND</Expression>
+         </MappingExpressions>
+      </TargetColumn>
+      <Ckm>
+         <Code>km.ckm_default</Code>
+         <!--
+         <KmOptions>
+             <KmOption>
+                 <Name>FLOW_CONTROL</Name>
+                 <Value>true</Value>
+             </KmOption>
+         </KmOptions>
+         -->
+      </Ckm>
+   </Mappings>
+   <EndCommand>
+      <Text>begin
             null;
             end;
-        </Text>
-        <Technology>ORACLE</Technology>
-        <Location>model.star.code</Location>
-    </EndCommand>
+      </Text>
+      <Technology>ORACLE</Technology>
+      <Location>model.star.code</Location>
+   </EndCommand>
 </Transformation>
