@@ -573,13 +573,13 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
    }
 
    private void deletePackageAndScenario(final String config, final String scenarioName, final String folderName) {
-//      deleteScenario(config, scenarioName.toUpperCase());
-//      deletePackage(config, scenarioName.toUpperCase(), folderName);
-//
-//      // comment next line if you want to debug,
-//      // but don't forget to uncomment it again,
-//      // or tests will fail.
-//      deleteTransformations(config, scenarioName);
+      deleteScenario(config, scenarioName.toUpperCase());
+      deletePackage(config, scenarioName.toUpperCase(), folderName);
+
+      // comment next line if you want to debug,
+      // but don't forget to uncomment it again,
+      // or tests will fail.
+      deleteTransformations(config, scenarioName);
    }
 
    private void deletePackage(final String config, final String scenarioName, final String folderName) {
