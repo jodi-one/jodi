@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FunctionalTest" type="JUnit" factoryName="JUnit">
+    <module name="jodi.jodi_qa.test" />
+    <option name="PACKAGE_NAME" value="one.jodi.qa.test" />
+    <option name="MAIN_CLASS_NAME" value="one.jodi.qa.test.FunctionalTest" />
+    <option name="METHOD_NAME" value="test11003Set_2D_Default_Union_All_Success" />
+    <option name="TEST_OBJECT" value="class" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

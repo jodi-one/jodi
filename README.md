@@ -104,15 +104,43 @@ On Linux and OS X:
 
 `git config --global core.autocrlf input`
 
-Src: https://docs.github.com/en/github/getting-started-with-github/configuring-git-to-handle-line-endings
+More info: https://docs.github.com/en/github/getting-started-with-github/configuring-git-to-handle-line-endings
 
 #### Code style
 
 There is an `.editorconfig` file available with settings for code styling, most IDE's should pick it up automatically
-and use the settings for the project it is in. Ensure your IDE has support enabled:
+and use the settings for the project it is in.
+
+More info: https://editorconfig.org/
+
+Ensure your IDE has support enabled:
 
 ###### Intellij
 
 - Go to _File_ -> _Settings_ (or use `ctrl-alt-S`) -> _Plugins_
 - Look up plugin _EditorConfig_ (should be installed by default)
 - Ensure it is installed and enabled
+
+#### Save Actions
+
+It can be helpful to use the *Save Actions* plugin, which allows certain actions to be done whenever a (java) file is
+saved.
+
+In Intellij, install the plugin *Save Actions*. After that, a new option has appeared in the Settings menu (_File_ ->
+_Settings_ or `ctrl-alt-S`). Enable the following options there:
+
+* General
+   * Activate save actions on save
+   * Activate save actions on shortcut (`ctrl-shift-S`)
+* Formatting Actions
+   * Optimize imports
+   * Reformat file
+* Java Inspection and Quick Fix
+   * Add final modifier to field
+   * Add missing @Override annotations
+   * Add blocks to if/while/for statements
+   * Add a serialVersionUID field for Serializable classes
+   * Remove explicit generic type for diamond
+   * Remove unnecessary semicolon
+
+More info: https://plugins.jetbrains.com/plugin/7642-save-actions

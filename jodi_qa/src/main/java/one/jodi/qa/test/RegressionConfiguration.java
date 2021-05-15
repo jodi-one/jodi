@@ -4,46 +4,47 @@ import org.apache.commons.configuration2.Configuration;
 
 public interface RegressionConfiguration {
 
-    String getSysdbaUser();
+   String getSysdbaUser();
 
-    String getSysdbaPassword();
+   String getSysdbaPassword();
 
-    String getJdbcUrlMasterRepository();
+   String getJdbcUrlMasterRepository();
 
-    String getMasterRepositoryJdbcUser();
+   String getMasterRepositoryJdbcUser();
 
-    String getMasterRepositoryJdbcPassword();
+   String getMasterRepositoryJdbcPassword();
 
-    String getWorkRepositoryJdbcPassword();
+   String getWorkRepositoryJdbcPassword();
 
-    String getOdiSupervisorUser();
+   String getOdiSupervisorUser();
 
-    String getOdiSupervisorPassword();
+   String getOdiSupervisorPassword();
 
-    String getMasterRepositoryJdbcUrl();
+   String getMasterRepositoryJdbcUrl();
 
-    String getMasterRepositoryJdbcDriver();
+   String getMasterRepositoryJdbcDriver();
 
-    String getWorkRepositoryJdbcUrl();
+   String getWorkRepositoryJdbcUrl();
 
-    String getWorkRepositoryJdbcDriver();
+   String getWorkRepositoryJdbcDriver();
 
-    int getWorkRepositoryId();
+   int getWorkRepositoryId();
 
-    String getMasterRepositoryTechnology();
+   String getMasterRepositoryTechnology();
 
-    Configuration getConfig();
+   Configuration getConfig();
 
-    String getOdiContext();
+   String getOdiContext();
 
-    String getOdiWorkRepositoryName();
+   String getOdiWorkRepositoryName();
 
-    boolean isInstall();
+   boolean isInstall();
 
-    String getSmartExport();
+   String getSmartExport();
 
-    String getWorkRepositoryJdbcUsername();
+   String getWorkRepositoryJdbcUsername();
 
-    String getProjectCode();
+   String getProjectCode();
 
+   String getOracleTestDBPassword();
 }

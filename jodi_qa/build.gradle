@@ -1,131 +1,131 @@
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
+   repositories {
+      jcenter()
+      mavenCentral()
+//      maven {
+//         url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
+//      }
+      maven {
+         url "https://plugins.gradle.org/m2/"
+      }
+   }
 }
 
 plugins {
-    id 'groovy'
+   id 'groovy'
 }
 
 repositories {
-    mavenCentral()
-    jcenter()
+   mavenCentral()
+   jcenter()
 }
 
 test {
-    systemProperty 'ODI_REPO_PWD', System.getProperty("ODI_REPO_PWD")
-    systemProperty 'ODI_USER_PWD', System.getProperty("ODI_USER_PWD")
-    systemProperty 'ORCL_SYS_USER_PWD', System.getProperty("ORCL_SYS_USER_PWD")
-    systemProperty 'ODI_DAPWD', System.getProperty("ODI_DAPWD")
-    systemProperty 'OCI_CHINOOK_PWD', System.getProperty("OCI_CHINOOK_PWD")
-    systemProperty 'OCI_JODI_PWD', System.getProperty("OCI_JODI_PWD")
+   systemProperty 'ODI_REPO_PWD', System.getProperty("ODI_REPO_PWD")
+   systemProperty 'ODI_USER_PWD', System.getProperty("ODI_USER_PWD")
+   systemProperty 'ORCL_SYS_USER_PWD', System.getProperty("ORCL_SYS_USER_PWD")
+   systemProperty 'ODI_DAPWD', System.getProperty("ODI_DAPWD")
+   systemProperty 'OCI_CHINOOK_PWD', System.getProperty("OCI_CHINOOK_PWD")
+   systemProperty 'OCI_JODI_PWD', System.getProperty("OCI_JODI_PWD")
 
-    systemProperty 'LB_URL', System.getProperty("LB_URL")
-    systemProperty 'LB_URL_DIFF', System.getProperty("LB_URL_DIFF")
-    systemProperty 'LB_CLOUD_CONFIG', System.getProperty("LB_CLOUD_CONFIG")
-    systemProperty 'LB_DB_PWD', System.getProperty("LB_DB_PWD")
+   systemProperty 'LB_URL', System.getProperty("LB_URL")
+   systemProperty 'LB_URL_DIFF', System.getProperty("LB_URL_DIFF")
+   systemProperty 'LB_CLOUD_CONFIG', System.getProperty("LB_CLOUD_CONFIG")
+   systemProperty 'LB_DB_PWD', System.getProperty("LB_DB_PWD")
 
-    // memory settings moved to ../gradle.properties
-    maxHeapSize = "2048m"
-    // each test is run by parallel agent; rational is that we have large 
-    // test cases that require a long execution time with lot's of I/O
-    forkEvery = 1
+   // memory settings moved to ../gradle.properties
+   maxHeapSize = "2048m"
+   // each test is run by parallel agent; rational is that we have large
+   // test cases that require a long execution time with lot's of I/O
+   forkEvery = 1
 }
 
 jar {
-    manifest {
-        attributes 'Implementation-Title': 'Jodi QA', 'Implementation-Version': archiveVersion
-    }
-    include("$buildDir/reports/**")
+   manifest {
+      attributes 'Implementation-Title': 'Jodi QA', 'Implementation-Version': archiveVersion
+   }
+   include("$buildDir/reports/**")
 }
 
 sourceSets {
-    test {
-        compileClasspath += files(new File('../jodi_odi12/src/test/java/'))
-        runtimeClasspath += files(new File('../jodi_odi12/src/test/java/'))
-    }
+   test {
+      compileClasspath += files(new File('../jodi_odi12/src/test/java/'))
+      runtimeClasspath += files(new File('../jodi_odi12/src/test/java/'))
+   }
 }
 
 dependencies {
-    // include ODI 12.2 (in implementation context for Eclipse or provided for build)
-    implementation project(':jodi_base')
-    implementation project(':jodi_core')
-    implementation project(':jodi_odi12')
-    implementation project(':jodi_plugins')
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
+   // include ODI 12.2 (in implementation context for Eclipse or provided for build)
+   implementation project(':jodi_base')
+   implementation project(':jodi_core')
+   implementation project(':jodi_odi12')
+   implementation project(':jodi_plugins')
+   implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
 //    implementation fileTree(dir: 'lib', include: '*/**.jar')
-    implementation 'org.codehaus.groovy:groovy-all:2.5.7'
-    // implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
-    implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    implementation 'org.dbunit:dbunit:2.5.1'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
+   implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.6'
+   // implementation project(path: ':jodi_core', configuration: 'xmlExtensions')
+   implementation 'javax.xml.bind:jaxb-api:2.3.0'
+   implementation 'org.dbunit:dbunit:2.5.1'
+   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
 
-    // ojdbc10
-    implementation fileTree(include: ['*.jar'], dir: 'lib')
+   // ojdbc10
+   implementation fileTree(include: ['*.jar'], dir: 'lib')
 
-    // for test
-    // compile project(path: ':jodi_core', configuration: 'xmlExtensions')
-    testImplementation group: 'org.dbunit', name: 'dbunit', version: '2.5.1'
-    testImplementation "xmlunit:xmlunit:1.6"
-    testImplementation project(':jodi_base')
+   // for test
+   // compile project(path: ':jodi_core', configuration: 'xmlExtensions')
+   testImplementation group: 'org.dbunit', name: 'dbunit', version: '2.5.1'
+   testImplementation "xmlunit:xmlunit:1.6"
+   testImplementation project(':jodi_base')
 }
 
 task lbGenschema(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase gen schema"
-    // genschema -context LEGACY -debug > genschema_log_LEGACY.txt
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'genschema', '-context', 'legacy', '-debug'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase gen schema"
+   // genschema -context LEGACY -debug > genschema_log_LEGACY.txt
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'genschema', '-context', 'legacy', '-debug'
 }
 
 task lbValidate(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase validate"
-    // validate -changelog controller.xml > validation_log.tx
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'validate', '-changelog', 'controller.xml'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase validate"
+   // validate -changelog controller.xml > validation_log.tx
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'validate', '-changelog', 'controller.xml'
 }
 
 task lbChangelogsync(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase changelogsync"
-    // changelogsync -changelog controller.xml > legacy_changelogsync.log
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'changelogsync', '-changelog', 'controller.xml'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase changelogsync"
+   // changelogsync -changelog controller.xml > legacy_changelogsync.log
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'changelogsync', '-changelog', 'controller.xml'
 }
 
 task lbUpdatesql(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase updatesql"
-    // updatesql -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'updatesql', '-changelog', 'controller.xml', '-context', 'legacy', '-noreport'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase updatesql"
+   // updatesql -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'updatesql', '-changelog', 'controller.xml', '-context', 'legacy', '-noreport'
 }
 
 task lbUpdate(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase updatesql"
-    // update -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update', '-changelog', 'controller.xml'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase updatesql"
+   // update -changelog controller.xml -context LEGACY -noreport > LEGACY.sql
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'update', '-changelog', 'controller.xml'
 }
 
 task lbDiff(type: Exec) {
-    dependsOn build
-    group = "Execution"
-    description = "liquibase diff between dev and alpha6"
-    //  diff -url x -user INF -password  -noreport
-    // while connected to urlDev  //  diff -url $urlPrd -user $schema -password system.getProperties('x')  -noreport
-    // connected to beta6a with diff on prd over time
-    commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'diff', '-url', 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp', '-password', (System.getProperty("OCI_JODI_PWD") != null ? System.getProperty("OCI_JODI_PWD") : ""), '-noreport'
+   dependsOn build
+   group = "Execution"
+   description = "liquibase diff between dev and alpha6"
+   //  diff -url x -user INF -password  -noreport
+   // while connected to urlDev  //  diff -url $urlPrd -user $schema -password system.getProperties('x')  -noreport
+   // connected to beta6a with diff on prd over time
+   commandLine "java", "-DLB_DB_PWD=\"" + System.getProperty("OCI_JODI_PWD", "") + "\"", "-DLB_URL=\"JODI2010270733_high\"", "-DLB_CLOUDCONFIG=\"/opt/git/opc/src/main/resources/wallet_jodi/Wallet_JODI2010270733.zip\"", "-ea", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "LiquibaseRunner", 'diff', '-url', 'DB202007280549_high?TNS_ADMIN=/opt/git/opc/src/main/resources/wallet_atp', '-password', (System.getProperty("OCI_JODI_PWD") != null ? System.getProperty("OCI_JODI_PWD") : ""), '-noreport'
 }
 
 // not needed and remains empty

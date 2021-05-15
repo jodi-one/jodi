@@ -196,33 +196,28 @@ public class ListAppender extends AbstractAppender {
    }
 
    public boolean contains(Level level, String message) {
-      if (events.size() == 0) {
+      if (events.isEmpty()) {
          throw new RuntimeException("Listappender contains implies some events, no events recorded.");
       }
-      for (LogEvent logEvent : events) {
-         if (level.equals(logEvent.getLevel()) && logEvent.getMessage()
-                                                          .getFormattedMessage()
-                                                          .contains(message)) {
-            return true;
-         }
-      }
-      return false;
+      return events.stream()
+                   .filter(logEvent -> level.equals(logEvent.getLevel()))
+                   .anyMatch(logEvent -> logEvent.getMessage()
+                                                 .getFormattedMessage()
+                                                 .contains(message));
    }
 
    public boolean contains(Level level, boolean specific) {
-      if (events.size() == 0) {
+      if (events.isEmpty()) {
          throw new RuntimeException("Listappender contains implies some events, no events recorded.");
       }
-      for (LogEvent logEvent : events) {
-         if (specific && level.equals(logEvent.getLevel())) {
-            return true;
-         } else if (!specific && logEvent.getLevel()
-                                         .isMoreSpecificThan(level)) {
-            return true;
-         }
+      if (specific) {
+         return events.stream()
+                      .anyMatch(logEvent -> level.equals(logEvent.getLevel()));
+      } else {
+         return events.stream()
+                      .anyMatch(logEvent -> logEvent.getLevel()
+                                                    .isMoreSpecificThan(level));
       }
-      return false;
-
    }
 
    public static class Builder implements org.apache.logging.log4j.core.util.Builder<ListAppender> {

@@ -1,3 +1,6 @@
+import static java.lang.Boolean.parseBoolean
+import static java.lang.Integer.parseInt
+
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'groovy'
@@ -8,26 +11,26 @@ apply plugin: 'com.github.jacobono.jaxb'
 ext.jaxbGenOutputDir = 'gen-src/main/java'
 
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
+   repositories {
+      jcenter()
+      mavenCentral()
+//      maven {
+//         url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
+//      }
+      maven {
+         url "https://plugins.gradle.org/m2/"
+      }
+   }
 
-    dependencies {
-        classpath 'org.gradle.jacobo.plugins:gradle-jaxb-plugin:1.3.4'
-        // plugins used by JAXB xjc to generate extensions to the model classes
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
-        classpath 'com.massfords:jaxb-visitor:1.13'
-        classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
-    }
+   dependencies {
+      classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
+      // plugins used by JAXB xjc to generate extensions to the model classes
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
+      classpath 'com.massfords:jaxb-visitor:1.13'
+      classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
+   }
 }
 
 ext.customDir = 'src/custom/java'
@@ -38,78 +41,75 @@ ext.jaxbLpGenOutputDir = 'gen-src-lp/main/java'
 
 // Jar task configuration
 jar {
-    manifest {
-        attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': archiveVersion
-    }
+   manifest {
+      attributes 'Implementation-Title': 'Jodi Core', 'Implementation-Version': archiveVersion
+   }
 }
 
 configurations {
-    xmlExtensions
+   xmlExtensions
 }
 
 
 repositories {
-    mavenLocal() // for OJDBC
-    mavenCentral()
-    jcenter()
+   mavenLocal() // for OJDBC
+   mavenCentral()
+   jcenter()
 }
 
 ext {
-    versionProperties = file("../jodi_base/src/main/resources/version.properties")
-    dayFormat = 'MM/dd/yyy'
-    timeFormat = 'H:mm:ss z'
-    odiLibPathVariable = 'ODI_LIB_PATH'
+   versionProperties = file("../jodi_base/src/main/resources/version.properties")
+   dayFormat = 'MM/dd/yyy'
+   timeFormat = 'H:mm:ss z'
+   odiLibPathVariable = 'ODI_LIB_PATH'
 }
 
 class VersionInfo {
-    Integer major
-    Integer minor
-    Integer patch
-    Integer patch2
-    Integer patch3
-    String buildDay
-    String buildTime
-    Integer buildNumber
-    Boolean isRelease
+   Integer major
+   Integer minor
+   Integer patch
+   Integer patch2
+   Integer patch3
+   String buildDay
+   String buildTime
+   Integer buildNumber
+   Boolean isRelease
 
-    VersionInfo(Integer major, Integer minor, Integer patch, Integer patch2, Integer patch3, Integer buildNumber, String buildDay, String buildTime, Boolean isRelease) {
-        this.major = major
-        this.minor = minor
-        this.patch = patch
-        this.patch2 = patch2
-        this.patch3 = patch3
-        this.buildNumber = buildNumber
-        this.isRelease = isRelease
-        this.buildDay = buildDay
-        this.buildTime = buildTime
-    }
+   VersionInfo(Integer major, Integer minor, Integer patch, Integer patch2, Integer patch3, Integer buildNumber, String buildDay, String buildTime, Boolean isRelease) {
+      this.major = major
+      this.minor = minor
+      this.patch = patch
+      this.patch2 = patch2
+      this.patch3 = patch3
+      this.buildNumber = buildNumber
+      this.isRelease = isRelease
+      this.buildDay = buildDay
+      this.buildTime = buildTime
+   }
 
-    String toString() {
-        "$major.$minor.$patch-$patch2-$patch3-$buildNumber${isRelease ? '' : '-SNAPSHOT'}"
-    }
+   String toString() {
+      "$major.$minor.$patch-$patch2-$patch3-$buildNumber${isRelease ? '' : '-SNAPSHOT'}"
+   }
 }
 
-VersionInfo readVersionInfo(propertiesFile) {
-    //println 'Using ' + propertiesFile
-    if (!propertiesFile.exists()) {
-        throw new GradleException("Version information properties file does not exist: $versionProperties.canonicalPath")
-    }
+static VersionInfo readVersionInfo(propertiesFile) {
+   //println 'Using ' + propertiesFile
+   if (!propertiesFile.exists()) {
+      throw new GradleException("Version information properties file does not exist: ${propertiesFile}")
+   }
 
-    Properties props = new Properties()
+   Properties props = new Properties()
 
-    propertiesFile.withInputStream { it ->
-        props.load(it)
-    }
-
-    new VersionInfo(props.'product.version.major'.toInteger(),
-            props.'product.version.minor'.toInteger(),
-            props.'product.version.patch'.toInteger(),
-            props.'product.version.patch2'.toInteger(),
-            props.'product.version.patch3'.toInteger(),
-            props.'build.number'.toInteger(),
-            props.'build.date',
-            props.'build.time',
-            props.'build.isRelease'.toBoolean())
+   propertiesFile.withInputStream { it -> props.load(it) }
+   new VersionInfo(parseInt(props.getProperty('product.version.major')),
+           parseInt(props.getProperty('product.version.minor')),
+           parseInt(props.getProperty('product.version.patch')),
+           parseInt(props.getProperty('product.version.patch2')),
+           parseInt(props.getProperty('product.version.patch3')),
+           parseInt(props.getProperty('build.number')),
+           props.getProperty('build.date'),
+           props.getProperty('build.time'),
+           parseBoolean(props.getProperty('build.isRelease')))
 }
 
 // Load version info during configuration phase
@@ -119,40 +119,39 @@ group = "one.jodi"
 // common libraries that should exist in each projects independently
 dependencies {
 
-    implementation group: group, name: 'jodi_odi', version: defaultOdiVersion
-    implementation project(':jodi_base')
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'com.sun.activation:javax.activation:1.2.0'
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'javax.validation:validation-api:1.0.0.GA'
-    compileOnly group: "com.oracle.database.jdbc", name: "ojdbc8", version: "19.3.0.0"
-    implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
+   implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
+   implementation project(':jodi_base')
+   implementation 'javax.xml.bind:jaxb-api:2.3.1'
+   implementation 'com.sun.activation:javax.activation:1.2.0'
+   implementation 'javax.xml.bind:jaxb-api:2.3.1'
+   implementation 'javax.xml.bind:jaxb-api:2.3.1'
+   implementation 'javax.validation:validation-api:1.0.0.GA'
+   //  compileOnly group: "com.oracle.database.jdbc", name: "ojdbc8", version: oracleJdbcVersion
+   //  compileOnly group: "com.oracle.database.jdbc", name: 'ucp', version: oracleJdbcVersion
+   implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
+   implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
 
-    implementation("com.google.inject:guice:4.1.0") {
-        exclude module: 'com.google.guava'
-    }
-    implementation 'commons-cli:commons-cli:1.4'
+   implementation("com.google.inject:guice:4.1.0") {
+      exclude module: 'com.google.guava'
+   }
+   implementation 'commons-cli:commons-cli:1.4'
 
-    implementation("org.apache.commons:commons-configuration2:2.1.1") {
-        // remove default libraries and replace with more recent versions
-        exclude module: 'commons-logging'
-        exclude module: 'commons-beanutils'
-    }
-    // implementation project(':jodi_base')
+   implementation("org.apache.commons:commons-configuration2:2.1.1") {
+      // remove default libraries and replace with more recent versions
+      exclude module: 'commons-logging'
+      exclude module: 'commons-beanutils'
+   }
+   // implementation project(':jodi_base')
 
-    compileOnly fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
-
-    testImplementation "org.hamcrest:hamcrest-all:1.3"
-    testImplementation "junit:junit:4.12"
-    testImplementation "org.mockito:mockito-all:1.10.19"
+   testImplementation "org.hamcrest:hamcrest-all:1.3"
+   testImplementation group: "junit", name: "junit", version: "4.13.2"
+   testImplementation "org.mockito:mockito-all:1.10.19"
 
 
 }
 
 applicationDistribution.from(configurations['xmlExtensions'].artifacts.files) {
-    into "lib"
+   into "lib"
 }
 
 // ensure that we build jodi_odi12 jar *before* the jodi_core distZip task
@@ -160,176 +159,174 @@ applicationDistribution.from(configurations['xmlExtensions'].artifacts.files) {
 //distZip.dependsOn(":jodi_odi12:jar", ":jodi_plugins:jar")
 
 applicationDistribution.into('lib') {
-    // regular expression avoids including the *-test-* jar
-    exclude '*-test-*'
-    from file('../jodi_odi12/build/libs')
-    fileMode 0755
+   // regular expression avoids including the *-test-* jar
+   exclude '*-test-*'
+   from file('../jodi_odi12/build/libs')
+   fileMode 0755
 }
 
 // copy content from customized projects
 applicationDistribution.into('customizations/') {
-    include '*.jar'
-    from file('../jodi_plugins/build/libs')
-    fileMode 0755
+   include '*.jar'
+   from file('../jodi_plugins/build/libs')
+   fileMode 0755
 }
 
 applicationDistribution.into('customizations/xsd') {
-    include '*.xsd'
-    from file('../jodi_plugins/src/main/resources/generic')
-    fileMode 0755
+   include '*.xsd'
+   from file('../jodi_plugins/src/main/resources/generic')
+   fileMode 0755
 }
 
 // causing build to fail disable for now
-// applicationDistribution.from(javadoc) { 
+// applicationDistribution.from(javadoc) {
 //	    into "docs/javadoc" }
 
 
 sourceSets {
 
-    xmlExtensions {
-        java {
-            srcDirs = [jaxbExtGenOutputDir]
-        }
-    }
-    main {
-        java {
-            srcDirs += 'src/main/java'
-            srcDirs += jaxbGenOutputDir
-            srcDirs += customDir
-            srcDirs += 'gen-src-ext/main/java'
-        }
-        resources {
-            srcDirs += '../shared/resources'
-        }
-        compileClasspath += files(xmlExtensions.output.classesDirs)
-    }
+   xmlExtensions {
+      java {
+         srcDirs = [jaxbExtGenOutputDir]
+      }
+   }
+   main {
+      java {
+         srcDirs += 'src/main/java'
+         srcDirs += jaxbGenOutputDir
+         srcDirs += customDir
+         srcDirs += 'gen-src-ext/main/java'
+      }
+      resources {
+         srcDirs += '../shared/resources'
+      }
+      compileClasspath += files(xmlExtensions.output.classesDirs)
+   }
 
-    test {
-        compileClasspath += files(xmlExtensions.output.classesDirs)
-        runtimeClasspath += files(xmlExtensions.output.classesDirs)
-    }
+   test {
+      compileClasspath += files(xmlExtensions.output.classesDirs)
+      runtimeClasspath += files(xmlExtensions.output.classesDirs)
+   }
 }
 
 processResources {
-    from(jaxbGenOutputDir) { include '**/jaxb.properties' }
+   from(jaxbGenOutputDir) { include '**/jaxb.properties' }
 }
 
 task extensionsJar(type: Jar, dependsOn: compileXmlExtensionsJava) {
-    archiveBaseName.set('jodi_core_extensions')
-    from sourceSets.xmlExtensions.output.classesDirs
+   archiveBaseName.set('jodi_core_extensions')
+   from sourceSets.xmlExtensions.output.classesDirs
 }
 
 artifacts {
-    xmlExtensions extensionsJar
+   xmlExtensions extensionsJar
 }
 
 javadoc {
-    classpath += files(sourceSets.xmlExtensions.output.classesDirs)
+   classpath += files(sourceSets.xmlExtensions.output.classesDirs)
 }
 
 task jaxb_task(dependsOn: 'jaxb_ext') {
-    // output directory
-    inputs.dir 'src/main/resources'
-    outputs.dir jaxbGenOutputDir
-    ext.jaxbTargetDir = file(jaxbGenOutputDir)
-    ext.packageRoot = 'one.jodi.core'
-    // perform actions
-    doLast {
-        ext.jaxbTargetDir.mkdirs()
-        ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
-                classpath: buildscript.configurations.classpath.asPath + ';'
-                        + configurations.jaxb.asPath)
+   // output directory
+   inputs.dir 'src/main/resources'
+   outputs.dir jaxbGenOutputDir
+   ext.jaxbTargetDir = file(jaxbGenOutputDir)
+   ext.packageRoot = 'one.jodi.core'
+   // perform actions
+   doLast {
+      ext.jaxbTargetDir.mkdirs()
+      ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
+              classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
 
-        //
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.model',
-                schema: 'src/main/resources/jodi-model.v1.1.xsd') {
-            binding(dir: 'src/main/resources/', includes: 'jodi-model.v1.1.xjb jodi-extensions.v1.0.episode')
-            arg(value: '-Xinject-code')
-            arg(value: '-Xdefault-value')
-        }
+      //
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.model',
+              schema: 'src/main/resources/jodi-model.v1.1.xsd') {
+         binding(dir: 'src/main/resources/', includes: 'jodi-model.v1.1.xjb jodi-extensions.v1.0.episode')
+         arg(value: '-Xinject-code')
+         arg(value: '-Xdefault-value')
+      }
 
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.etlmodel',
-                schema: 'src/main/resources/jodi-packages.v1.1.xsd') {
-            binding(dir: 'src/main/resources/', includes: 'jodi-packages.v1.1.xjb jodi-packages-extensions.v1.1.episode')
-            arg(value: '-Xdefault-value')
-        }
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.etlmodel',
+              schema: 'src/main/resources/jodi-packages.v1.1.xsd') {
+         binding(dir: 'src/main/resources/', includes: 'jodi-packages.v1.1.xjb jodi-packages-extensions.v1.1.episode')
+         arg(value: '-Xdefault-value')
+      }
 
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.lpmodel',
-                schema: 'src/main/resources/jodi-loadplan.v1.0.xsd')
-                {
-                    binding(dir: 'src/main/resources/', includes: 'jodi-loadplan.v1.0.xjb')
-                    arg(value: '-Xinject-code')
-                    arg(value: '-Xdefault-value')
-                }
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.lpmodel',
+              schema: 'src/main/resources/jodi-loadplan.v1.0.xsd')
+              {
+                 binding(dir: 'src/main/resources/', includes: 'jodi-loadplan.v1.0.xjb')
+                 arg(value: '-Xinject-code')
+                 arg(value: '-Xdefault-value')
+              }
 
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.procedure',
-                schema: 'src/main/resources/jodi-procedure.v1.0.xsd') {
-            binding(dir: 'src/main/resources/', includes: 'jodi-procedure.v1.0.xjb')
-        }
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.procedure',
+              schema: 'src/main/resources/jodi-procedure.v1.0.xsd') {
+         binding(dir: 'src/main/resources/', includes: 'jodi-procedure.v1.0.xjb')
+      }
 
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.variables',
-                schema: 'src/main/resources/jodi-variables.v1.0.xsd')
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.variables',
+              schema: 'src/main/resources/jodi-variables.v1.0.xsd')
 
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.sequences',
-                schema: 'src/main/resources/jodi-sequences.v1.0.xsd')
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: ext.jaxbTargetDir,
-                package: ext.packageRoot + '.constraints',
-                schema: 'src/main/resources/jodi-constraints.v1.0.xsd')
-    }
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.sequences',
+              schema: 'src/main/resources/jodi-sequences.v1.0.xsd')
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: ext.jaxbTargetDir,
+              package: ext.packageRoot + '.constraints',
+              schema: 'src/main/resources/jodi-constraints.v1.0.xsd')
+   }
 }
 
 task jaxb_ext() {
-    inputs.dir 'src/main/resources'
-    outputs.dir jaxbExtGenOutputDir
+   inputs.dir 'src/main/resources'
+   outputs.dir jaxbExtGenOutputDir
 //
-    doLast {
-        file(jaxbExtGenOutputDir).mkdirs()
-        ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
-                classpath: buildscript.configurations.classpath.asPath + ';'
-                        + configurations.jaxb.asPath)
+   doLast {
+      file(jaxbExtGenOutputDir).mkdirs()
+      ant.taskdef(name: 'xjc', classname: 'org.jvnet.jaxb2_commons.xjc.XJC2Task',
+              classpath: buildscript.configurations.classpath.asPath + ';' + configurations.jaxb.asPath)
 
-        //
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: "${jaxbExtGenOutputDir}",
-                package: 'one.jodi.model.extensions',
-                schema: 'src/main/resources/jodi-extensions.v1.0.xsd')
-        //
-        ant.xjc(
-                removeOldOutput: true,
-                extension: true,
-                destdir: "${jaxbExtGenOutputDir}",
-                package: 'one.jodi.etlmodel.extensions',
-                schema: 'src/main/resources/jodi-packages-extensions.v1.1.xsd')
-    }
+      //
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: "${jaxbExtGenOutputDir}",
+              package: 'one.jodi.model.extensions',
+              schema: 'src/main/resources/jodi-extensions.v1.0.xsd')
+      //
+      ant.xjc(
+              removeOldOutput: true,
+              extension: true,
+              destdir: "${jaxbExtGenOutputDir}",
+              package: 'one.jodi.etlmodel.extensions',
+              schema: 'src/main/resources/jodi-packages-extensions.v1.1.xsd')
+   }
 }
 
 compileXmlExtensionsJava.dependsOn jaxb_ext
@@ -341,115 +338,115 @@ assemble.dependsOn extensionsJar
 
 dependencies {
 
-    implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
-    implementation 'javax.activation:activation:1.1.1'
-    implementation project(':jodi_base')
-    testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
-    testImplementation project(':jodi_base').sourceSets.test.output
-    // include ODI 12.2 (in implementation context for Eclipse or provided for build)
+   implementation 'javax.xml.bind:jaxb-api:2.3.0'
+   implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'
+   implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
+   implementation 'javax.activation:activation:1.1.1'
+   implementation project(':jodi_base')
+   testImplementation project(path: ':jodi_base', configuration: 'testArtifacts')
+   testImplementation project(':jodi_base').sourceSets.test.output
+   // include ODI 12.2 (in implementation context for Eclipse or provided for build)
 //	implementation project(':jodi_model')
 
-    testImplementation 'org.apache.commons:commons-csv:1.4'
+   testImplementation 'org.apache.commons:commons-csv:1.4'
 
-    //JAXB xjc plugin
-    jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
+   //JAXB xjc plugin
+   jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
 
-    implementation("org.apache.commons:commons-configuration2:2.1") {
-        // remove default libraries and replace with more recent versions
-        exclude module: 'commons-logging'
-        exclude module: 'commons-beanutils'
-    }
+   implementation("org.apache.commons:commons-configuration2:2.1") {
+      // remove default libraries and replace with more recent versions
+      exclude module: 'commons-logging'
+      exclude module: 'commons-beanutils'
+   }
 
-    // use latest version of commons libs for commons-configuration;
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+   // use latest version of commons libs for commons-configuration;
+   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+   implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 
-    // cloning with upgraded dependent library
-    implementation("uk.com.robust-it:cloning:1.9.2") {
-        exclude module: 'Objenesis'
-    }
-    implementation("org.objenesis:objenesis:2.4")
+   // cloning with upgraded dependent library
+   implementation("uk.com.robust-it:cloning:1.9.2") {
+      exclude module: 'Objenesis'
+   }
+   implementation("org.objenesis:objenesis:2.4")
 }
 
 task sourceSetJavaProperties {
-    doLast {
-        sourceSets {
-            xmlExtensions {
-                println "java.srcDirs = ${java.srcDirs}"
-                println "resources.srcDirs = ${resources.srcDirs}"
-                println "java.files = ${java.files.name}"
-                println "allJava.files = ${allJava.files.name}"
-                println "resources.files = ${resources.files.name}"
-                println "allSource.files = ${allSource.files.name}"
-                println "output.classesDirs = ${output.classesDirs}"
-                println "output.resourcesDir = ${output.resourcesDir}"
-                println "output.files = ${output.files}"
-                println "compileClasspath = ${compileClasspath}"
-                compileClasspath.each {
-                    println it
-                }
+   doLast {
+      sourceSets {
+         xmlExtensions {
+            println "java.srcDirs = ${java.srcDirs}"
+            println "resources.srcDirs = ${resources.srcDirs}"
+            println "java.files = ${java.files.name}"
+            println "allJava.files = ${allJava.files.name}"
+            println "resources.files = ${resources.files.name}"
+            println "allSource.files = ${allSource.files.name}"
+            println "output.classesDirs = ${output.classesDirs}"
+            println "output.resourcesDir = ${output.resourcesDir}"
+            println "output.files = ${output.files}"
+            println "compileClasspath = ${compileClasspath}"
+            compileClasspath.each {
+               println it
             }
-        }
-    }
+         }
+      }
+   }
 }
 
 
 def fixWindowsStartScript(writer, lines) {
-    lines.eachWithIndex { line, i ->
-        if (i < 6) {
-            writer.println line
-        } else if (i == 6) {
-            writer.println ''
-            writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
-            writer.println line
-        } else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
-            writer.println line
-            writer.println ''
-            writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
-            writer.println "goto hasodi"
-            writer.println ":noodi"
-            writer.println "echo."
-            writer.println "echo ERROR: $odiLibPathVariable is not set."
-            writer.println "echo."
-            writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
-            writer.println "echo to the location of the jar files in you ODI installation."
-            writer.println "goto fail"
-            writer.println ":hasodi"
-            writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
-            writer.println ''
-            writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
-            writer.println ''
-        } else {
-            writer.println line
-        }
-    }
+   lines.eachWithIndex { line, i ->
+      if (i < 6) {
+         writer.println line
+      } else if (i == 6) {
+         writer.println ''
+         writer.println "set $odiLibPathVariable=%$odiLibPathVariable%"
+         writer.println line
+      } else if (line =~ /^set CLASSPATH=%APP_HOME%/) {
+         writer.println line
+         writer.println ''
+         writer.println "if \"%$odiLibPathVariable%\" == \"\" goto noodi"
+         writer.println "goto hasodi"
+         writer.println ":noodi"
+         writer.println "echo."
+         writer.println "echo ERROR: $odiLibPathVariable is not set."
+         writer.println "echo."
+         writer.println "echo Please set the $odiLibPathVariable variable, in your environment or in the start script,"
+         writer.println "echo to the location of the jar files in you ODI installation."
+         writer.println "goto fail"
+         writer.println ":hasodi"
+         writer.println "set CLASSPATH=%$odiLibPathVariable%\\*;%CLASSPATH%;%APP_HOME%\\lib\\*"
+         writer.println ''
+         writer.println "set DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml\""
+         writer.println ''
+      } else {
+         writer.println line
+      }
+   }
 }
 
 def fixUnixStartScript(writer, lines) {
-    lines.eachWithIndex { line, i ->
-        if (i < 8) {
-            writer.println line
-        } else if (i == 8) {
-            writer.println ''
-            writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
-            writer.println line
-        } else if (line =~ /^CLASSPATH=\$/) {
-            writer.println line
-            writer.println ''
-            writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
-            writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
-            writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
-            writer.println ''
-            writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
-            writer.println "to the location of the jar files in you ODI installation.\""
-            writer.println "fi"
-            writer.println ''
-            writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml\""
-            writer.println ''
-        } else {
-            writer.println line
-        }
-    }
+   lines.eachWithIndex { line, i ->
+      if (i < 8) {
+         writer.println line
+      } else if (i == 8) {
+         writer.println ''
+         writer.println "$odiLibPathVariable=\$$odiLibPathVariable"
+         writer.println line
+      } else if (line =~ /^CLASSPATH=\$/) {
+         writer.println line
+         writer.println ''
+         writer.println "CLASSPATH=\$$odiLibPathVariable/:\$CLASSPATH:\$APP_HOME/lib/*"
+         writer.println 'if [ \"x$ODI_LIB_PATH\" = \"x\" ] ; then'
+         writer.println "	die \"ERROR: ODI_LIB_PATH is not set."
+         writer.println ''
+         writer.println "Please set the ODI_LIB_PATH variable, in your environment or in the start script,"
+         writer.println "to the location of the jar files in you ODI installation.\""
+         writer.println "fi"
+         writer.println ''
+         writer.println "DEFAULT_JVM_OPTS=\"-Dlog4j.configurationFile=\${0%/*}/../conf/log4j2.xml\""
+         writer.println ''
+      } else {
+         writer.println line
+      }
+   }
 }

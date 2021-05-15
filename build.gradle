@@ -1,403 +1,407 @@
+import static java.lang.Boolean.parseBoolean
+import static java.lang.Integer.parseInt
+
 allprojects {
-    apply plugin: 'java'
-    apply plugin: 'java-library'
-    apply plugin: 'groovy'
-    apply plugin: 'application'
-    apply plugin: "com.github.spotbugs"
-    apply plugin: 'com.github.jacobono.jaxb'
-    ext.jaxbGenOutputDir = 'gen-src/main/java'
+   apply plugin: 'java'
+   apply plugin: 'java-library'
+   apply plugin: 'groovy'
+   apply plugin: 'application'
+   apply plugin: "com.github.spotbugs"
+   apply plugin: 'com.github.jacobono.jaxb'
+   ext.jaxbGenOutputDir = 'gen-src/main/java'
 
-    // The following configuration defines a test library artifact that typically
-    // is used to refer to helper classes in another project.
-    // A test artifact can be referenced as follows:
-    // testCompile project(path: ":project_name", configuration: 'testArtifacts')
+   // The following configuration defines a test library artifact that typically
+   // is used to refer to helper classes in another project.
+   // A test artifact can be referenced as follows:
+   // testCompile project(path: ":project_name", configuration: 'testArtifacts')
 
-    configurations {
-        testArtifacts
-        // provided implies that the project artifacts are added to the
-        // compileClasspath for main and test and the runtimeClasspath for test
-        provided
-    }
-    // this makes the wrapper work on windows,
-    // before it was somehow overwritten on the second "gradle build"
-    //task wrapper(type: Wrapper) {
-    //    gradleVersion = gradleVersionLocal
-    //}
+   configurations {
+      testArtifacts
+      // provided implies that the project artifacts are added to the
+      // compileClasspath for main and test and the runtimeClasspath for test
+      provided
+   }
+   // this makes the wrapper work on windows,
+   // before it was somehow overwritten on the second "gradle build"
+   //task wrapper(type: Wrapper) {
+   //    gradleVersion = gradleVersionLocal
+   //}
 
-    task testJar(type: Jar) {
-        archiveBaseName.set("${project.name}-test")
-        from sourceSets.test.output
-    }
+   task testJar(type: Jar) {
+      archiveBaseName.set("${project.name}-test")
+      from sourceSets.test.output
+   }
 
-    artifacts {
-        testArtifacts testJar
-    }
+   artifacts {
+      testArtifacts testJar
+   }
 
-    sourceSets {
-        main {
-            // comment this line if importing for intellij}
-            // Adds provided libraries into the compile path. This prevents
-            // that provided libraries are included into the delivery zip file
-            compileClasspath += configurations.provided
-        }
-        test {
-            compileClasspath += configurations.provided
-            runtimeClasspath += configurations.provided
-        }
-    }
+   sourceSets {
+      main {
+         // comment this line if importing for intellij}
+         // Adds provided libraries into the compile path. This prevents
+         // that provided libraries are included into the delivery zip file
+         compileClasspath += configurations.provided
+      }
+      test {
+         compileClasspath += configurations.provided
+         runtimeClasspath += configurations.provided
+      }
+   }
 
-    jar {
-        exclude("licenses/**")
-    }
+   jar {
+      exclude("licenses/**")
+   }
 
-    ext {
-        versionProperties = file("${rootProject.projectDir.canonicalPath}/jodi_base/src/main/resources/version.properties")
-        dayFormat = 'MM/dd/yyy'
-        timeFormat = 'H:mm:ss z'
-        odiLibPathVariable = 'ODI_LIB_PATH'
-    }
+   ext {
+      versionProperties = file("${rootProject.projectDir.canonicalPath}/jodi_base/src/main/resources/version.properties")
+      dayFormat = 'MM/dd/yyy'
+      timeFormat = 'H:mm:ss z'
+      odiLibPathVariable = 'ODI_LIB_PATH'
+   }
 
 //	pmd.ignoreFailures = true
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = sourceCompatibility
+   sourceCompatibility = JavaVersion.VERSION_1_8
+   targetCompatibility = sourceCompatibility
 
-    compileJava.options.encoding = 'UTF-8'
-    compileTestJava.options.encoding = "UTF-8"
+   compileJava.options.encoding = 'UTF-8'
+   compileTestJava.options.encoding = "UTF-8"
 
-    repositories {
-        mavenLocal() // for OJDBC
-        mavenCentral()
-        jcenter()
-    }
+   repositories {
+      mavenLocal() // for jodi_odi
+      mavenCentral()
+      jcenter()
+   }
 
-    // Load version info during configuration phase
-    version = readVersionInfo(versionProperties)
-    group = "one.jodi"
+   // Load version info during configuration phase
+   version = readVersionInfo(versionProperties)
+   group = "one.jodi"
 
 
-    // common libraries that should exist in each projects independently
-    dependencies {
+   // common libraries that should exist in each projects independently
+   dependencies {
 
-        implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
-        implementation 'javax.xml.bind:jaxb-api:2.3.1'
-        implementation 'com.sun.activation:javax.activation:1.2.0'
-        implementation 'javax.validation:validation-api:1.0.0.GA'
-        provided group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: '19.3.0.0'
+      implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
+      implementation 'javax.xml.bind:jaxb-api:2.3.1'
+      implementation 'com.sun.activation:javax.activation:1.2.0'
+      implementation 'javax.validation:validation-api:1.0.0.GA'
+//      provided group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: oracleJdbcVersion
+//      provided group: 'com.oracle.database.jdbc', name: 'ucp', version: oracleJdbcVersion
+      implementation files('lib/*.jar')
+      implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
+      implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
 
-        implementation 'org.apache.logging.log4j:log4j-api:2.9.1'
-        implementation 'org.apache.logging.log4j:log4j-core:2.9.1'
+      implementation group: 'bsf', name: 'bsf', version: '2.4.0'
 
-        implementation group: 'bsf', name: 'bsf', version: '2.4.0'
+      implementation("com.google.inject:guice:4.1.0") {
+         exclude module: 'com.google.guava'
+      }
+      implementation 'com.google.guava:guava:21.0'
+      implementation 'com.google.guava:failureaccess:1.0.1'
+      implementation 'commons-cli:commons-cli:1.4'
 
-        implementation("com.google.inject:guice:4.1.0") {
-            exclude module: 'com.google.guava'
-        }
-        implementation 'commons-cli:commons-cli:1.4'
+      implementation("org.apache.commons:commons-configuration2:2.1.1") {
+         // remove default libraries and replace with more recent versions
+         exclude module: 'commons-logging'
+         exclude module: 'commons-beanutils'
+      }
 
-        implementation("org.apache.commons:commons-configuration2:2.1.1") {
-            // remove default libraries and replace with more recent versions
-            exclude module: 'commons-logging'
-            exclude module: 'commons-beanutils'
-        }
+      provided fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
 
-        provided fileTree(dir: '/opt/git/jodi_odi/build/libs', include: '*.jar')
+      testImplementation "org.hamcrest:hamcrest-all:1.3"
+      testImplementation group: "junit", name: "junit", version: "4.13.2"
+      testImplementation "org.mockito:mockito-all:1.10.19"
 
-        testImplementation "org.hamcrest:hamcrest-all:1.3"
-        testImplementation "junit:junit:4.12"
-        testImplementation "org.mockito:mockito-all:1.10.19"
+   }
 
-    }
+   buildscript {
+      repositories {
+         mavenCentral()
+         jcenter()
+      }
+   }
 
-    buildscript {
-        repositories {
-            mavenCentral()
-            jcenter()
-        }
-    }
+   task forceTest() {
+      dependsOn cleanTest, test
+   }
 
-    task forceTest() {
-        dependsOn cleanTest, test
-    }
+   // --- end of shared test library definition
 
-    // --- end of shared test library definition
+   task printVersion(group: 'versioning', description: 'Prints versioning info as persisted in the version.properties file') {
+      doLast {
+         println "Major Version: $version.major"
+         println "Minor Version: $version.minor"
+         println "Patch Version: $version.patch"
+         println "Build Number: $version.buildNumber"
+         println "Build Day: $version.buildDay"
+         println "Build Time: $version.buildTime"
+      }
+   }
 
-    task printVersion(group: 'versioning', description: 'Prints versioning info as persisted in the version.properties file') {
-        doLast {
-            println "Major Version: $version.major"
-            println "Minor Version: $version.minor"
-            println "Patch Version: $version.patch"
-            println "Build Number: $version.buildNumber"
-            println "Build Day: $version.buildDay"
-            println "Build Time: $version.buildTime"
-        }
-    }
+   task incrementMajorVersion(group: 'versioning', description: 'Increments the product.version.major number stored in the version.properties file') {
+      doLast {
+         ant.propertyfile(file: versionProperties) {
+            entry(key: 'product.version.major', type: 'int', operation: '+', value: 1)
+         }
+      }
+   }
 
-    task incrementMajorVersion(group: 'versioning', description: 'Increments the product.version.major number stored in the version.properties file') {
-        doLast {
-            ant.propertyfile(file: versionProperties) {
-                entry(key: 'product.version.major', type: 'int', operation: '+', value: 1)
-            }
-        }
-    }
+   task incrementMinorVersion(group: 'versioning', description: 'Increments the product.version.minor number stored in the version.properties file') {
+      doLast {
+         ant.propertyfile(file: versionProperties) {
+            entry(key: 'product.version.minor', type: 'int', operation: '+', value: 1)
+         }
+      }
+   }
 
-    task incrementMinorVersion(group: 'versioning', description: 'Increments the product.version.minor number stored in the version.properties file') {
-        doLast {
-            ant.propertyfile(file: versionProperties) {
-                entry(key: 'product.version.minor', type: 'int', operation: '+', value: 1)
-            }
-        }
-    }
+   task incrementPatchVersion(group: 'versioning', description: 'Increments the product.version.patch number stored in the version.properties file') {
+      doLast {
+         ant.propertyfile(file: versionProperties) {
+            entry(key: 'product.version.patch', type: 'int', operation: '+', value: 1)
+         }
+      }
+   }
 
-    task incrementPatchVersion(group: 'versioning', description: 'Increments the product.version.patch number stored in the version.properties file') {
-        doLast {
-            ant.propertyfile(file: versionProperties) {
-                entry(key: 'product.version.patch', type: 'int', operation: '+', value: 1)
-            }
-        }
-    }
+   task incrementBuildNumber(group: 'versioning', description: 'Increments the build.number number stored in the version.properties file') {
+      doLast {
+         ant.propertyfile(file: versionProperties) {
+            entry(key: 'build.number', type: 'int', operation: '+', value: 1)
+         }
+      }
+   }
 
-    task incrementBuildNumber(group: 'versioning', description: 'Increments the build.number number stored in the version.properties file') {
-        doLast {
-            ant.propertyfile(file: versionProperties) {
-                entry(key: 'build.number', type: 'int', operation: '+', value: 1)
-            }
-        }
-    }
+   task release(group: 'versioning',
+           description: 'A marker task that triggers updating of the build.isRelease property in the version.properties file to true',
+           dependsOn: 'distZip') {
+   }
 
-    task release(group: 'versioning',
-            description: 'A marker task that triggers updating of the build.isRelease property in the version.properties file to true',
-            dependsOn: 'distZip') {
-    }
+   javadoc {
+      source = sourceSets.main.allJava
+      //classpath = configurations.compile
+      classpath = project.sourceSets.main.compileClasspath
+   }
 
-    javadoc {
-        source = sourceSets.main.allJava
-        //classpath = configurations.compile
-        classpath = project.sourceSets.main.compileClasspath
-    }
-
-    // this is added for gradle
-    // see; https://github.com/spring-projects/spring-boot/issues/2679
-    mainClassName = "one.jodi.bootstrap.JodiController"
+   // this is added for gradle
+   // see; https://github.com/spring-projects/spring-boot/issues/2679
+   mainClassName = "one.jodi.bootstrap.JodiController"
 
 }
 
 subprojects {
-    apply plugin: 'application'
+   apply plugin: 'application'
 
-    //include all licenses of base project
-    applicationDistribution.from('../jodi_base/src/main/resources/licenses/runtime') {
-        into "licences"
-        include "**"
-    }
+   //include all licenses of base project
+   applicationDistribution.from('../jodi_base/src/main/resources/licenses/runtime') {
+      into "licences"
+      include "**"
+   }
 
-    //include all licenses of sub-project
-    applicationDistribution.from('src/main/resources/licenses/runtime') {
-        into "licences"
-        include "**"
-    }
+   //include all licenses of sub-project
+   applicationDistribution.from('src/main/resources/licenses/runtime') {
+      into "licences"
+      include "**"
+   }
 
-    applicationDistribution.from('src/main/dist') { into "/" }
-    applicationDistribution.from('src/main/resources') {
-        into "conf"
-        include "*.properties"
-        include "*.xml"
-        include "*.xsd"
-    }
-    applicationDistribution.from('src/bin') {
-        into "bin"
-        include "*.sh"
-        include "*.bat"
-    }
+   applicationDistribution.from('src/main/dist') { into "/" }
+   applicationDistribution.from('src/main/resources') {
+      into "conf"
+      include "*.properties"
+      include "*.xml"
+      include "*.xsd"
+   }
+   applicationDistribution.from('src/bin') {
+      into "bin"
+      include "*.sh"
+      include "*.bat"
+   }
 
-    applicationDistribution.from('src/main/resources') {
-        into "xslt"
-        include "*.xsl"
-        include "legacy_models/**"
-    }
+   applicationDistribution.from('src/main/resources') {
+      into "xslt"
+      include "*.xsl"
+      include "legacy_models/**"
+   }
 
-    startScripts {
-        defaultJvmOpts = ["-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml"]
-        classpath = files(jar.archivePath)
-        doLast {
-            def eolSave = System.properties['line.separator']
-            System.properties['line.separator'] = '\r\n'
-            def lines = windowsScript.readLines()
-            windowsScript.withPrintWriter { writer ->
-                fixWindowsStartScript(writer, lines)
-            }
-            System.properties['line.separator'] = '\n'
-            lines = unixScript.readLines()
-            unixScript.withPrintWriter { writer ->
-                fixUnixStartScript(writer, lines)
-            }
+   startScripts {
+      defaultJvmOpts = ["-Dlog4j.configurationFile=%~dp0/../conf/log4j2.xml"]
+      classpath = files(jar.archiveFile)
+      doLast {
+         def eolSave = System.properties['line.separator']
+         System.properties['line.separator'] = '\r\n'
+         def lines = windowsScript.readLines()
+         windowsScript.withPrintWriter { writer ->
+            fixWindowsStartScript(writer, lines)
+         }
+         System.properties['line.separator'] = '\n'
+         lines = unixScript.readLines()
+         unixScript.withPrintWriter { writer ->
+            fixUnixStartScript(writer, lines)
+         }
 
-            System.properties['line.separator'] = eolSave
-        }
-    }
+         System.properties['line.separator'] = eolSave
+      }
+   }
 
-    buildscript {
-        repositories {
-            jcenter()
-            mavenCentral()
-            maven {
-                url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
-            }
-        }
+   buildscript {
+      repositories {
+         jcenter()
+         mavenCentral()
+//         maven {
+//            url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
+//         }
+      }
 
-        dependencies {
-            classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
-            classpath 'org.gradle.jacobo.plugins:gradle-jaxb-plugin:1.3.4'
-            // plugins used by JAXB xjc to generate extensions to the model classes
-            classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
-            classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
-            classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
-            classpath 'com.massfords:jaxb-visitor:1.13'
-        }
-    }
+      dependencies {
+         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+         classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
+         // plugins used by JAXB xjc to generate extensions to the model classes
+         classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
+         classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
+         classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
+         classpath 'com.massfords:jaxb-visitor:1.13'
+      }
+   }
 
-    test {
-        exclude 'org/jodi/**/TestAll.class'
+   test {
+      exclude 'org/jodi/**/TestAll.class'
 
-        // assume virtual CPUs that cannot be used 100%
-        maxParallelForks = 1
-        // assume that tests are mostly unit tests
-        forkEvery = 1
-    }
+      // assume virtual CPUs that cannot be used 100%
+      maxParallelForks = 1
+      // assume that tests are mostly unit tests
+      forkEvery = 1
+   }
 
-    spotbugs {
-        ignoreFailures.set(false)
-        excludeFilter.set(file('findbugs_exclusions.xml'))
-    }
+   spotbugs {
+      ignoreFailures.set(false)
+      excludeFilter.set(file('findbugs_exclusions.xml'))
+   }
 
-    spotbugsMain {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
-    }
+   spotbugsMain {
+      reports {
+         xml.enabled = false
+         html.enabled = true
+      }
+   }
 
 }
 
 // explicitly increase build number
 // the doLast is needed to avoid running task each time the gradle script is run
 task increaseBuildNumber() {
-    doLast {
-        updateTransientVersionProperties()
-        println "increased build number ..."
-    }
+   doLast {
+      updateTransientVersionProperties()
+      println "increased build number ..."
+   }
 }
 
-VersionInfo readVersionInfo(propertiesFile) {
-    //println 'Using ' + propertiesFile
-    if (!propertiesFile.exists()) {
-        throw new GradleException("Version information properties file does not exist: $versionProperties.canonicalPath")
-    }
+static VersionInfo readVersionInfo(propertiesFile) {
+   //println 'Using ' + propertiesFile
+   if (!propertiesFile.exists()) {
+      throw new GradleException("Version information properties file does not exist: ${propertiesFile}")
+   }
 
-    Properties props = new Properties()
+   Properties props = new Properties()
 
-    propertiesFile.withInputStream { it ->
-        props.load(it)
-    }
+   propertiesFile.withInputStream { it -> props.load(it) }
 
-    new VersionInfo(props.'product.version.major'.toInteger(),
-            props.'product.version.minor'.toInteger(),
-            props.'product.version.patch'.toInteger(),
-            props.'product.version.patch2'.toInteger(),
-            props.'product.version.patch3'.toInteger(),
-            props.'build.number'.toInteger(),
-            props.'build.date',
-            props.'build.time',
-            props.'build.isRelease'.toBoolean())
+   new VersionInfo(parseInt(props.getProperty('product.version.major')),
+           parseInt(props.getProperty('product.version.minor')),
+           parseInt(props.getProperty('product.version.patch')),
+           parseInt(props.getProperty('product.version.patch2')),
+           parseInt(props.getProperty('product.version.patch3')),
+           parseInt(props.getProperty('build.number')),
+           props.getProperty('build.date'),
+           props.getProperty('build.time'),
+           parseBoolean(props.getProperty('build.isRelease')))
 }
 
 void updateTransientVersionProperties() {
-    Date d = new Date()
-    ant.propertyfile(file: versionProperties) {
-        entry(key: 'build.date', type: 'date', operation: '=', value: d, pattern: dayFormat)
-    }
-    ant.propertyfile(file: versionProperties) {
-        entry(key: 'build.time', type: 'date', operation: '=', value: d, pattern: timeFormat)
-    }
-    version.buildNumber++
-    ant.propertyfile(file: versionProperties) {
-        entry(key: 'build.number', type: 'int', operation: '=', value: version.buildNumber)
-    }
+   Date d = new Date()
+   ant.propertyfile(file: versionProperties) {
+      entry(key: 'build.date', type: 'date', operation: '=', value: d, pattern: dayFormat)
+   }
+   ant.propertyfile(file: versionProperties) {
+      entry(key: 'build.time', type: 'date', operation: '=', value: d, pattern: timeFormat)
+   }
+   version.buildNumber++
+   ant.propertyfile(file: versionProperties) {
+      entry(key: 'build.number', type: 'int', operation: '=', value: version.buildNumber)
+   }
 
-    ant.propertyfile(file: versionProperties) {
-        entry(key: 'product.version', type: 'string', operation: '=', value: version)
-    }
+   ant.propertyfile(file: versionProperties) {
+      entry(key: 'product.version', type: 'string', operation: '=', value: version)
+   }
 }
 
 void updateBuildRelease(Boolean value) {
-    ant.propertyfile(file: versionProperties) {
-        entry(key: 'build.isRelease', operation: '=', value: value)
-    }
+   ant.propertyfile(file: versionProperties) {
+      entry(key: 'build.isRelease', operation: '=', value: value)
+   }
 }
 
 class VersionInfo {
-    Integer major
-    Integer minor
-    Integer patch
-    Integer patch2
-    Integer patch3
-    String buildDay
-    String buildTime
-    Integer buildNumber
-    Boolean isRelease
+   Integer major
+   Integer minor
+   Integer patch
+   Integer patch2
+   Integer patch3
+   String buildDay
+   String buildTime
+   Integer buildNumber
+   Boolean isRelease
 
-    VersionInfo(Integer major, Integer minor, Integer patch, Integer patch2, Integer patch3, Integer buildNumber, String buildDay, String buildTime, Boolean isRelease) {
-        this.major = major
-        this.minor = minor
-        this.patch = patch
-        this.patch2 = patch2
-        this.patch3 = patch3
-        this.buildNumber = buildNumber
-        this.isRelease = isRelease
-        this.buildDay = buildDay
-        this.buildTime = buildTime
-    }
+   VersionInfo(Integer major, Integer minor, Integer patch, Integer patch2, Integer patch3, Integer buildNumber, String buildDay, String buildTime, Boolean isRelease) {
+      this.major = major
+      this.minor = minor
+      this.patch = patch
+      this.patch2 = patch2
+      this.patch3 = patch3
+      this.buildNumber = buildNumber
+      this.isRelease = isRelease
+      this.buildDay = buildDay
+      this.buildTime = buildTime
+   }
 
-    String toString() {
-        "$major.$minor.$patch-$patch2-$patch3-$buildNumber${isRelease ? '' : '-SNAPSHOT'}"
-    }
+   String toString() {
+      "$major.$minor.$patch-$patch2-$patch3-$buildNumber${isRelease ? '' : '-SNAPSHOT'}"
+   }
 }
 
 gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
-    if (graph.hasTask(":jodi_core:release")) {
-        if (!version.isRelease) {
-            version.isRelease = false
-            updateBuildRelease(false)
-        }
-    } else {
-        if (version.isRelease) {
-            version.isRelease = true
-            updateBuildRelease(true)
-        }
-    }
+   if (graph.hasTask(":jodi_core:release")) {
+      if (!version.isRelease) {
+         version.isRelease = false
+         updateBuildRelease(false)
+      }
+   } else {
+      if (version.isRelease) {
+         version.isRelease = true
+         updateBuildRelease(true)
+      }
+   }
 
 }
 
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
+   repositories {
+      jcenter()
+      mavenCentral()
+//      maven {
+//         url 'https://dl.bintray.com/content/djmijares/gradle-plugins'
+//      }
+      maven {
+         url "https://plugins.gradle.org/m2/"
+      }
+   }
 
-    dependencies {
-        classpath 'org.gradle.jacobo.plugins:gradle-jaxb-plugin:1.3.4'
-        // plugins used by JAXB xjc to generate extensions to the model classes
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
-        classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
-        classpath 'com.massfords:jaxb-visitor:1.13'
-        classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
-    }
+   dependencies {
+      classpath 'com.github.jacobono:gradle-jaxb-plugin:1.3.6'
+      // plugins used by JAXB xjc to generate extensions to the model classes
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-ant:0.6.4'
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.6.4'
+      classpath 'org.jvnet.jaxb2_commons:jaxb2-default-value:1.1'
+      classpath 'com.massfords:jaxb-visitor:1.13'
+      classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
+   }
 }
 
 
