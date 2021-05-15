@@ -73,13 +73,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -135,7 +132,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
    private final String refUserJDBC;
    private final String refUserJDBCDriver;
    //
-   private final String tempDir;
+   private String tempDir = "/tmp";
 
    private final ErrorWarningMessageJodi errorWarningMessages = ErrorWarningMessageJodiImpl.getInstance();
    private final OdiTransformationAccessStrategy<T, U, V, W, X, Y, Z> odiAccessStrategy;
@@ -307,7 +304,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
          }
       };
 
-      if (OsHelper.isMac()) {
+      if (OsHelper.isMac() || OsHelper.isUnix()) {
          tempDir = "/tmp";
       } else {
          tempDir = System.getProperty("java.io.tmpdir");
@@ -356,6 +353,8 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
 
    @SuppressWarnings("ResultOfMethodCallIgnored")
    private void copyFile(final File source, final File dest) {
+      executeCommand("cp ./src/test/resources/FunctionalTest/countrylist.csv /tmp");
+/*
       String hostname = "";
       try {
          hostname = InetAddress.getLocalHost()
@@ -375,6 +374,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
             executeCommand("cp ./src/test/resources/FunctionalTest/countrylist.csv /tmp");
          }
       } else {
+         System.out.println("didn't use cp.");
          if (dest.exists()) {
             dest.delete();
          }
@@ -397,6 +397,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
             }
          } catch (final IOException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
          } finally {
             if (in != null) {
                try {
@@ -423,10 +424,11 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
       }
       if ((System.getProperty("user.name") != null) || hostname.endsWith("linux") // OBI image
       ) {
-         LOGGER.info("file copied with scp");
+         LOGGER.info("file copied with cp");
       } else {
          assert (dest.exists()) : "Copy failed from : " + source.getAbsolutePath() + " to: " + dest.getAbsolutePath();
       }
+      */
    }
 
    private void generationInterfaceAssertFailure(final String properties) {
@@ -1020,7 +1022,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
     * @category success
     */
    @Test
-   @Ignore
    public void test11014Source_2S_SubSelectIntf_Warning() {
       generationInterfaceAssert(Level.WARN, testName, "This test did not report warning.");
    }
@@ -2245,7 +2246,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
 
 
    @Test
-   @Ignore("TODO enable this test by copying file to linux")
    public void test16085IKM_SQL_TO_FILE_APPEND_1S() throws Exception {
       updateFileDataServer();
       generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
@@ -2299,7 +2299,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
    }
 
    @Test
-   @Ignore("TODO enable this test by copying file to linux")
    public void test16086IKM_SQL_TO_FILE_APPEND_2S() throws Exception {
       updateFileDataServer();
       generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
@@ -2352,7 +2351,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
    }
 
    @Test
-   @Ignore("TODO enable this test by copying file to linux")
    public void test16087IKM_SQL_TO_FILE_APPEND_2S_Explicit() throws Exception {
       updateFileDataServer();
       generationInterfaceAssert(Level.WARN, testName, "this test did not report an error",
@@ -2389,7 +2387,6 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
     * @category throws Exception
     */
    @Test
-   @Ignore
    public void test16085IKM_AUTOCOMPLEX_TOPOLOGY() {
       generationInterfaceAssert(Level.WARN, testName, "This test threw an exception which it should not.",
                                 TEST_PROPERTIES_BASE_DIRECTORY + "/16087_FunctionalTest.properties");
@@ -2537,8 +2534,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
     */
    @SuppressWarnings("ResultOfMethodCallIgnored")
    @Test
-   //@Ignore // for local test only
-   @Ignore("TODO fix copying to linux")
+   @Ignore
    public void test16160LKM_1S_AutoComplexTopology_Success() throws Exception {
       final File tempFile = new File(tempDir, "countrylist.csv");
       try {
@@ -3345,7 +3341,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
                                                          .size());
       assertEquals(41, this.odi12ConstraintsAccessStrategy.findAllKeys()
                                                           .size());
-      assertEquals(0, this.odi12ConstraintsAccessStrategy.findAllReferences()
+      assertEquals(5, this.odi12ConstraintsAccessStrategy.findAllReferences()
                                                          .size());
    }
 
