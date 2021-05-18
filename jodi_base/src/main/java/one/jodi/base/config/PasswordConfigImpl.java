@@ -14,7 +14,7 @@ public class PasswordConfigImpl implements PasswordConfig {
 
    @Override
    public String getOracleTestDBPassword() {
-      return System.getProperty("ORCL_SYS_USER_PWD");
+      return System.getProperty("OCI_PWD");
    }
 
    @Override
@@ -24,6 +24,6 @@ public class PasswordConfigImpl implements PasswordConfig {
 
    @Override
    public String getAdminDBPassword() {
-      return System.getProperty("ORCL_SYS_USER_PWD");
+      return System.getProperty("OCI_ADMIN_PWD");
    }
 }
