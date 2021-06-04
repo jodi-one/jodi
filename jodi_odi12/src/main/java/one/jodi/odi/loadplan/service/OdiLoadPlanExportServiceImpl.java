@@ -387,11 +387,6 @@ public abstract class OdiLoadPlanExportServiceImpl<B extends IOdiEntity, T> impl
             assert (aOdiScenario != null) : "Scenario with name :" +
                     ((OdiLoadPlanStepRunScenario) step).getScenarioTag()
                                                        .getName() + " doesn't exist.";
-            if (aOdiScenario == null) {
-               throw new RuntimeException("Scenario with name :" + ((OdiLoadPlanStepRunScenario) step).getScenarioTag()
-                                                                                                      .getName() +
-                                                  " doesn't exist.");
-            }
             if (aOdiScenario.getSourceComponentClass() == null) {
                throw new RuntimeException("Scenario with name :" + ((OdiLoadPlanStepRunScenario) step).getScenarioTag()
                                                                                                       .getName() +
