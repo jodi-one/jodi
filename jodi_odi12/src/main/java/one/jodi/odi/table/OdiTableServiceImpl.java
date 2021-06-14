@@ -108,8 +108,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                         .isEmpty()) : "Model error";
             matchingColumn = findColumn(matchingOdiDataStore, cdb);
             logger.info("Column Default Behavior " + cdb.getColumnName() + " type " + cdb.getScdType() +
-                                " staticcheckenabled " + cdb.isStaticCheckEnabled() + " odicol " +
-                                matchingColumn.getName());
+                                " staticcheckenabled " + cdb.isStaticCheckEnabled());
             if (matchingColumn == null) {
                final String message = errorWarningMessages.formatMessage(1210, ERROR_MESSAGE_01210, this.getClass(),
                                                                          cdb.getColumnName(), matchingOdiDataStore);
