@@ -10,20 +10,18 @@ import java.util.List;
  */
 public interface TableService {
 
-    /**
-     * Compilation of a list of tables to be changed in the etl layer based upon
-     * the table flags set.
-     *
-     * @param dataStore
-     */
-    List<TableDefaultBehaviors> assembleDefaultBehaviors();
+   /**
+    * Compilation of a list of tables to be changed in the etl layer based upon
+    * the table flags set.
+    */
+   List<TableDefaultBehaviors> assembleDefaultBehaviors();
 
-    /**
-     * Used to gather dataStores.
-     *
-     * @return List of datastores
-     */
-    List<DataStore> getDataStores();
+   /**
+    * Used to gather dataStores.
+    *
+    * @return List of datastores
+    */
+   List<DataStore> getDataStores();
 
 }
 

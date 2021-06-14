@@ -12,8 +12,11 @@ import one.jodi.base.util.StringUtils;
 import one.jodi.core.service.TableService;
 import one.jodi.etl.service.table.TableDefaultBehaviors;
 import one.jodi.etl.service.table.TableServiceProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -21,53 +24,60 @@ import java.util.List;
  * TableServiceProvider#alterTables()} method.
  */
 public class AlterTablesActionRunner implements ActionRunner {
-    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n" +
-            "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n" +
-            "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n" +
-            "or this could be due to an invalid XML file.";
-    private static final String ERROR_MESSAGE_01030 = "The configuration property file is required to run Alter Tables";
-    private final TableServiceProvider tableService;
-    private final TableService tableServiceCore;
-    private final ErrorWarningMessageJodi errorWarningMessages;
+   private static final Logger logger = LogManager.getLogger(AlterTablesActionRunner.class);
+
+   private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n" +
+           "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n" +
+           "e.g. check that the MODEL_CODE in ODI corresponds to the responding jodi.properties model.code,\n" +
+           "or this could be due to an invalid XML file.";
+   private static final String ERROR_MESSAGE_01030 = "The configuration property file is required to run Alter Tables";
+   private final TableServiceProvider tableService;
+   private final TableService tableServiceCore;
+   private final ErrorWarningMessageJodi errorWarningMessages;
 
 
-    /**
-     * Creates a new AlterTablesActionRunner instance.
-     *
-     * @param tableService the table service
-     */
-    @Inject
-    protected AlterTablesActionRunner(final TableServiceProvider tableService, final TableService tableServiceCore,
-                                      final ErrorWarningMessageJodi errorWarningMessages) {
-        this.tableService = tableService;
-        this.tableServiceCore = tableServiceCore;
-        this.errorWarningMessages = errorWarningMessages;
-    }
+   /**
+    * Creates a new AlterTablesActionRunner instance.
+    *
+    * @param tableService the table service
+    */
+   @Inject
+   protected AlterTablesActionRunner(final TableServiceProvider tableService, final TableService tableServiceCore,
+                                     final ErrorWarningMessageJodi errorWarningMessages) {
+      this.tableService = tableService;
+      this.tableServiceCore = tableServiceCore;
+      this.errorWarningMessages = errorWarningMessages;
+   }
 
-    /**
-     * @see one.jodi.bootstrap.RunConfig$ActionRunner#run(RunConfig)
-     */
-    @Override
-    public void run(final RunConfig config) {
-        try {
-            List<TableDefaultBehaviors> tableDefaults = tableServiceCore.assembleDefaultBehaviors();
-            tableService.alterTables(tableDefaults);
-        } catch (Exception ex) {
-            throw new UnRecoverableException(
-                    errorWarningMessages.formatMessage(1010, ERROR_MESSAGE_01010, this.getClass()), ex);
-        }
-    }
+   /**
+    * @see one.jodi.bootstrap.RunConfig$ActionRunner#run(RunConfig)
+    */
+   @Override
+   public void run(final RunConfig config) {
+      try {
+         final List<TableDefaultBehaviors> tableDefaults = tableServiceCore.assembleDefaultBehaviors();
+         logger.info("Alter tables started");
+         final List<TableDefaultBehaviors> tableDefaultBehaviorsList = tableDefaults.stream()
+                                                                                    .filter(t -> !t.getOlapType()
+                                                                                             .equals(TableDefaultBehaviors.OlapType.SLOWLY_CHANGING_DIMENSION))
+                                                                                    .collect(Collectors.toList());
+         tableService.alterTables(tableDefaultBehaviorsList);
+      } catch (final Exception ex) {
+         throw new UnRecoverableException(
+                 errorWarningMessages.formatMessage(1010, ERROR_MESSAGE_01010, this.getClass()), ex);
+      }
+   }
 
-    /* (non-Javadoc)
-     * @see one.jodi.bootstrap.RunConfig.ActionRunner#validateRunConfig(one.jodi.bootstrap.RunConfig)
-     */
-    @Override
-    public void validateRunConfig(RunConfig config) throws UsageException {
-        if (!StringUtils.hasLength(config.getPropertyFile())) {
-            String msg = errorWarningMessages.formatMessage(1030, ERROR_MESSAGE_01030, this.getClass());
-            errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
-            throw new UsageException(msg);
-        }
-    }
+   /* (non-Javadoc)
+    * @see one.jodi.bootstrap.RunConfig.ActionRunner#validateRunConfig(one.jodi.bootstrap.RunConfig)
+    */
+   @Override
+   public void validateRunConfig(final RunConfig config) throws UsageException {
+      if (!StringUtils.hasLength(config.getPropertyFile())) {
+         final String msg = errorWarningMessages.formatMessage(1030, ERROR_MESSAGE_01030, this.getClass());
+         errorWarningMessages.addMessage(errorWarningMessages.assignSequenceNumber(), msg, MESSAGE_TYPE.ERRORS);
+         throw new UsageException(msg);
+      }
+   }
 
 }
