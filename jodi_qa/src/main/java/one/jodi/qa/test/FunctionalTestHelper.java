@@ -40,8 +40,6 @@ import oracle.odi.domain.topology.OdiContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -77,14 +75,7 @@ public class FunctionalTestHelper {
 
    public static String getDefaultAgent(final Path properties) {
       LOGGER.info(properties);
-      String hostName;
-      try {
-         hostName = Files.lines(properties)
-                         .anyMatch(l -> l.contains("jodi:1521")) ? "jodi" : "localhost";
-      } catch (final IOException e) {
-         hostName = "localhost";
-      }
-      return "http://" + hostName + ":20910/oraclediagent";
+      return "http://oracle-odi-inst-3b1e:20910/oraclediagent";
    }
 
    public static String getOdiPass() {
@@ -157,8 +148,8 @@ public class FunctionalTestHelper {
       return odiConstraintAccessStrategy;
    }
 
-   public static OdiLoadPlanAccessStrategy<OdiLoadPlan, Mapping> getOdiLoadPlanAccessStrategy(final EtlRunConfig runConfig,
-                                                                                              final JodiController controller) {
+   public static OdiLoadPlanAccessStrategy<OdiLoadPlan, Mapping> getOdiLoadPlanAccessStrategy(
+           final EtlRunConfig runConfig, final JodiController controller) {
       if (odiLoadPlanAccessStrategy == null) {
          final Injector injector =
                  Guice.createInjector(new Odi12Module(), new OdiModule(runConfig), new CoreETLModule(runConfig),
@@ -224,9 +215,11 @@ public class FunctionalTestHelper {
                      }
                   }
                }
-               final String message = "Map '" + m.getName() + "' tc '" + a.getName() + "' insert '" + a.isInsertIndicator() +
-                       "' update '" + a.isUpdateIndicator() + "' active '" + a.isActive() + "' check not null '" +
-                       a.isCheckNotNullIndicator() + "' key '" + isUpdateKey + "' exec '" + a.getExecuteOnHint() + "'.";
+               final String message =
+                       "Map '" + m.getName() + "' tc '" + a.getName() + "' insert '" + a.isInsertIndicator() +
+                               "' update '" + a.isUpdateIndicator() + "' active '" + a.isActive() +
+                               "' check not null '" + a.isCheckNotNullIndicator() + "' key '" + isUpdateKey +
+                               "' exec '" + a.getExecuteOnHint() + "'.";
                messages.add(message);
             }
          }
