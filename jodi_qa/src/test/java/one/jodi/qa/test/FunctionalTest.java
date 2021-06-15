@@ -3319,7 +3319,7 @@ public class FunctionalTest<T extends IOdiEntity, U extends IRepositoryEntity, V
 
       assertEquals(10, this.odi12ConstraintsAccessStrategy.findAllConditions()
                                                           .size());
-      assertEquals(48, this.odi12ConstraintsAccessStrategy.findAllKeys()
+      assertEquals(50, this.odi12ConstraintsAccessStrategy.findAllKeys()
                                                           .size());
       assertEquals(18, this.odi12ConstraintsAccessStrategy.findAllReferences()
                                                           .size());
