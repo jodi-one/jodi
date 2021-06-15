@@ -27,6 +27,8 @@ test {
    systemProperty 'ODI_DAPWD', System.getProperty("ODI_DAPWD")
    systemProperty 'OCI_CHINOOK_PWD', System.getProperty("OCI_CHINOOK_PWD")
    systemProperty 'OCI_JODI_PWD', System.getProperty("OCI_JODI_PWD")
+   systemProperty 'OCI_ADMIN_PWD', System.getProperty("OCI_ADMIN_PWD")
+   systemProperty 'OCI_PWD', System.getProperty("OCI_PWD")
 
    systemProperty 'LB_URL', System.getProperty("LB_URL")
    systemProperty 'LB_URL_DIFF', System.getProperty("LB_URL_DIFF")

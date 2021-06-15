@@ -21,12 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-/**
- *
- */
 public class TableServiceImpl implements TableService {
 
-   private static final Logger logger = LogManager.getLogger(TableServiceImpl.class);
+   private static final Logger LOG = LogManager.getLogger(TableServiceImpl.class);
 
    private static final boolean NO_FLOW_CHECK = false;
    private static final boolean NO_MANDATORY = false;
@@ -37,7 +34,6 @@ public class TableServiceImpl implements TableService {
    private final JodiProperties jodiProperties;
    private final ModelValidator modelValidator;
 
-   //
    @Inject
    public TableServiceImpl(final DatabaseMetadataService databaseMetadataService, final JodiProperties jodiProperties,
                            final ModelValidator modelValidator) {
@@ -48,10 +44,6 @@ public class TableServiceImpl implements TableService {
 
    /**
     * Create a table with default behaviors.
-    *
-    * @param dataStore
-    * @param columns
-    * @return
     */
    private TableDefaultBehaviors createNewTableDefaultBehaviors(final DataStore dataStore,
                                                                 final List<ColumnDefaultBehaviors> columns) {
@@ -106,16 +98,6 @@ public class TableServiceImpl implements TableService {
 
    /**
     * Create the column default behaviors.
-    *
-    * @param setColumnName
-    * @param setSCDType
-    * @param setFlowCheckEnabled
-    * @param setMandatory
-    * @param setStaticCheckEnabled
-    * @param setDataServiceAllowUpdate
-    * @param setDataServiceAllowSelect
-    * @param setInDatabase
-    * @return
     */
    private ColumnDefaultBehaviors createNewColumnFlags(final String setColumnName, final SCDType setSCDType,
                                                        final boolean setFlowCheckEnabled, final boolean setMandatory,
@@ -163,11 +145,7 @@ public class TableServiceImpl implements TableService {
 
          @Override
          public boolean isInDatabase() {
-            boolean value = false;
-            if (setInDatabase) {
-               value = true;
-            }
-            return value;
+            return setInDatabase;
          }
       };
    }
@@ -202,39 +180,39 @@ public class TableServiceImpl implements TableService {
 
          modelCode = dataStore.getDataModel()
                               .getModelCode();
-         logger.debug(dataStore.getDataStoreName());
+         LOG.debug(dataStore.getDataStoreName());
 
          if (hasDataMartPrefix(dataStore) && dataStore.getDataStoreType() == DataStoreType.FACT &&
                  //dataStore.getDataStoreName().endsWith(
                  //			  jodiProperties.getProperty(JodiConstants.FACT_SUFFIX)) &&
                  !databaseMetadataService.isSourceModel(modelCode)) {
             tablesToChange.add(assembleTableDefaultBehaviors(dataStore));
-            logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
-                                      assembleTableDefaultBehaviors(dataStore).getOlapType()));
+            LOG.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
+                                   assembleTableDefaultBehaviors(dataStore).getOlapType()));
          } else if (dataStore.getDataStoreType() == DataStoreType.SLOWLY_CHANGING_DIMENSION ||
                  isDetectedAsScd(dataStore)) {
             if (modelValidator.doCheck(dataStore)) {
                // only check for U1 for SCD2 for performance
-               logger.info("-----------------------------");
-               logger.info("There are two checks:");
-               logger.info("Check for Alternate key W_<TABLE_NAME>_D_U1");
-               logger.info("Check for columns with " + jodiProperties.getRowidColumnName() + " postfix");
-               logger.info("Check for DATE columns with precision 7");
+               LOG.info("-----------------------------");
+               LOG.info("There are two checks:");
+               LOG.info("Check for Alternate key W_<TABLE_NAME>_D_U1");
+               LOG.info("Check for columns with " + jodiProperties.getRowidColumnName() + " postfix");
+               LOG.info("Check for DATE columns with precision 7");
                tablesToChange.add(assembleSCDTableDefaultBehaviors(dataStore));
-               logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
-                                         assembleTableDefaultBehaviors(dataStore).getOlapType()));
+               LOG.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
+                                      assembleTableDefaultBehaviors(dataStore).getOlapType()));
             } else {
-               logger.info(String.format(
+               LOG.info(String.format(
                        "Table %s detected as OLAP type %s but no Alternate key with name <TABLE_NAME>_U1 found.",
                        dataStore.getDataStoreName(), assembleTableDefaultBehaviors(dataStore).getOlapType()));
             }
          } else if (dataStore.getDataStoreType() == DataStoreType.DIMENSION) {
             tablesToChange.add(assembleTableDefaultBehaviors(dataStore));
-            logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
-                                      assembleTableDefaultBehaviors(dataStore).getOlapType()));
+            LOG.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
+                                   assembleTableDefaultBehaviors(dataStore).getOlapType()));
          }
       }
-      logger.info("-----------------------------");
+      LOG.info("-----------------------------");
       return tablesToChange;
    }
 
@@ -247,7 +225,6 @@ public class TableServiceImpl implements TableService {
 
       for (final Entry<String, DataStoreColumn> entity : dataStore.getColumns()
                                                                   .entrySet()) {
-         final ColumnDefaultBehaviors behavior;
          final String columnName = entity.getKey();
          assert (columnName != null) : "incorrect model";
          if (columnName.equalsIgnoreCase(jodiProperties.getProperty(JodiConstants.EFFECTIVE_DATE))) {
@@ -267,9 +244,6 @@ public class TableServiceImpl implements TableService {
 
    /**
     * Assemble all the table default behaviors for a given datastore.
-    *
-    * @param dataStore
-    * @return
     */
    private TableDefaultBehaviors assembleTableDefaultBehaviors(final DataStore dataStore) {
       final List<ColumnDefaultBehaviors> columnsToAlter = new ArrayList<>();
@@ -314,9 +288,6 @@ public class TableServiceImpl implements TableService {
 
    /**
     * Assemble all the SCD table default behaviors for a given datastore.
-    *
-    * @param dataStore
-    * @return
     */
    private TableDefaultBehaviors assembleSCDTableDefaultBehaviors(final DataStore dataStore) {
       final List<ColumnDefaultBehaviors> columnsToAlter = new ArrayList<>();

@@ -81,7 +81,7 @@ allprojects {
    // common libraries that should exist in each projects independently
    dependencies {
 
-      implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
+      provided group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
       implementation 'javax.xml.bind:jaxb-api:2.3.1'
       implementation 'com.sun.activation:javax.activation:1.2.0'
       implementation 'javax.validation:validation-api:1.0.0.GA'

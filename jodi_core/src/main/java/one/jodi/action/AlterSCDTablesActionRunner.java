@@ -18,12 +18,12 @@ import java.util.List;
 
 
 /**
- * An {@link one.jodi.bootstrap.RunConfig$ActionRunner} implementation
- * that invokes the {@link TableServiceProvider#alterSCDTables()} method.
+ * An {@link one.jodi.base.bootstrap.ActionRunner} implementation that invokes the {@link
+ * TableServiceProvider#alterSCDTables(List)} method.
  */
 public class AlterSCDTablesActionRunner implements ActionRunner {
 
-   private static final Logger logger = LogManager.getLogger(AlterSCDTablesActionRunner.class);
+   private static final Logger LOG = LogManager.getLogger(AlterSCDTablesActionRunner.class);
 
    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n" +
            "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n" +
@@ -37,8 +37,6 @@ public class AlterSCDTablesActionRunner implements ActionRunner {
 
    /**
     * Creates a new DeleteTransformationsActionRunner instance.
-    *
-    * @param tableService
     */
    @Inject
    protected AlterSCDTablesActionRunner(final TableServiceProvider tableService, final TableService tableServiceCore,
@@ -49,13 +47,13 @@ public class AlterSCDTablesActionRunner implements ActionRunner {
    }
 
    /**
-    * @see one.jodi.bootstrap.RunConfig$ActionRunner#run(RunConfig)
+    * @see one.jodi.base.bootstrap.ActionRunner#run(RunConfig)
     */
    @Override
    public void run(final RunConfig config) {
       try {
          final List<TableDefaultBehaviors> tableDefaults = tableServiceCore.assembleDefaultBehaviors();
-         logger.info("Alter SCD tables.");
+         LOG.info("Alter SCD tables.");
          tableService.alterSCDTables(tableDefaults);
       } catch (final Exception ex) {
          throw new UnRecoverableException(
@@ -63,12 +61,8 @@ public class AlterSCDTablesActionRunner implements ActionRunner {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see
-    * one.jodi.bootstrap.RunConfig.ActionRunner#validateRunConfig(oracle
-    * .gbu.jodi.bootstrap.RunConfig)
+   /**
+    * @see one.jodi.base.bootstrap.ActionRunner#validateRunConfig(RunConfig)
     */
    @Override
    public void validateRunConfig(final RunConfig config) throws UsageException {

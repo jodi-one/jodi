@@ -40,18 +40,21 @@ import java.util.Map.Entry;
 
 public class OdiTableServiceImpl implements TableServiceProvider {
 
-   private static final Logger logger = LogManager.getLogger(OdiTableServiceImpl.class);
+   private static final Logger LOG = LogManager.getLogger(OdiTableServiceImpl.class);
+
    private static final String ERROR_MESSAGE_01210 =
-           "Matching column '%s' has been identified but not found in " + "datastore '%s'.";
+           "Matching column '%s' has been identified but not found in datastore '%s'.";
    private static final String ERROR_MESSAGE_01220 =
-           "ERROR: deleting Key: %s try deleting any packages that include " + "this interface. %s.";
+           "ERROR: deleting Key: %s try deleting any packages that include this interface. %s.";
    private static final String ERROR_MESSAGE_01230 =
-           "Cannot find JKM with name '%1$s' in project '%2$s', is it " + "imported?";
+           "Cannot find JKM with name '%1$s' in project '%2$s', is it imported?";
    private static final String ERROR_MESSAGE_06000 = "OdiReference has no index for column: %s.%s";
    //private static final String ERROR_MESSAGE_06001 = "OdiReference %s of table %s is not defined in database.";
-   private static final String ERROR_MESSAGE_06002 = "OdiReference %s of table %s doens't have primary datastore.";
+   private static final String ERROR_MESSAGE_06002 = "OdiReference %s of table %s doesn't have primary datastore.";
+
    protected final OdiInstance odiInstance;
    protected final SchemaMetaDataProvider odiUtils;
+
    private final JodiProperties properties;
    private final ModelPropertiesProvider modelPropProvider;
    private final ErrorWarningMessageJodi errorWarningMessages;
@@ -81,7 +84,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       @SuppressWarnings("unchecked") final Collection<OdiDataStore> odiDetailDatastore =
               odiInstance.getTransactionalEntityManager()
                          .findAll(OdiDataStore.class);
-      logger.info("alterTables started");
+      LOG.info("alterTables started");
       for (final TableDefaultBehaviors tdb : tablesToChange) {
 
          final OdiDataStore matchingOdiDataStore = getMatchingDataStore(tdb, odiDetailDatastore);
@@ -90,25 +93,24 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          assert (matchingOdiDataStore.getName() != null);
          if (tdb.getDefaultAlias()
                 .equals(tdb.getTableName())) {
-            logger.info("changed default alias for datastore " + matchingOdiDataStore.getName() + ".");
+            LOG.info("changed default alias for datastore " + matchingOdiDataStore.getName() + ".");
             matchingOdiDataStore.setDefaultAlias(matchingOdiDataStore.getName());
          }
          for (final OdiKey odiKey : matchingOdiDataStore.getKeys()) {
-            alterKeyDefinedInDatabase(odiKey, matchingOdiDataStore, tdb);
+            alterKeyDefinedInDatabase(odiKey, tdb);
          }
          if (tdb.getOlapType() != null) {
-            logger.info(String.format("Set OLAP type to  %s for %s.", convertToOdiCoding(tdb.getOlapType()),
-                                      matchingOdiDataStore.getName()));
+            LOG.info(String.format("Set OLAP type to  %s for %s.", convertToOdiCoding(tdb.getOlapType()),
+                                   matchingOdiDataStore.getName()));
             matchingOdiDataStore.setOlapType(convertToOdiCoding(tdb.getOlapType()));
          }
 
-         OdiColumn matchingColumn = null;
          for (final ColumnDefaultBehaviors cdb : tdb.getColumnDefaultBehaviors()) {
             assert (!cdb.getColumnName()
                         .isEmpty()) : "Model error";
-            matchingColumn = findColumn(matchingOdiDataStore, cdb);
-            logger.info("Column Default Behavior " + cdb.getColumnName() + " type " + cdb.getScdType() +
-                                " staticcheckenabled " + cdb.isStaticCheckEnabled());
+            OdiColumn matchingColumn = findColumn(matchingOdiDataStore, cdb);
+            LOG.info("Column Default Behavior " + cdb.getColumnName() + " type " + cdb.getScdType() +
+                             " staticcheckenabled " + cdb.isStaticCheckEnabled());
             if (matchingColumn == null) {
                final String message = errorWarningMessages.formatMessage(1210, ERROR_MESSAGE_01210, this.getClass(),
                                                                          cdb.getColumnName(), matchingOdiDataStore);
@@ -132,9 +134,9 @@ public class OdiTableServiceImpl implements TableServiceProvider {
             final Collection<OdiReference> odiReferences =
                     findReferenceByPrimaryDataStoreId(matchingOdiDataStore.getDataStoreId());
 
-            logger.info("odiReferences: " + odiReferences.size());
+            LOG.info("odiReferences: " + odiReferences.size());
             for (final OdiReference odiReference : odiReferences) {
-               alterReferenceInConnector(matchingOdiDataStore, odiReference);
+               alterReferenceInConnector(odiReference);
             }
          }
          odiInstance.getTransactionalEntityManager()
@@ -154,12 +156,11 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       return value;
    }
 
-   private void alterKeyDefinedInDatabase(final OdiKey odiKey, final OdiDataStore matchingOdiDataStore,
-                                          final TableDefaultBehaviors tdb) {
+   private void alterKeyDefinedInDatabase(final OdiKey odiKey, final TableDefaultBehaviors tdb) {
 
       for (final ColumnDefaultBehaviors cdb : tdb.getColumnDefaultBehaviors()) {
          if (!cdb.isInDatabase()) {
-            logger.info("ColumnName: " + cdb.getColumnName() + " is not defined in the database altering it.");
+            LOG.info("ColumnName: " + cdb.getColumnName() + " is not defined in the database altering it.");
          }
          odiKey.setInDatabase(true);
       }
@@ -174,27 +175,10 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                                                            .equals(odiDataStore.getModel()
                                                                                .getCode())) {
             matchingOdiDataStore = odiDataStore;
-            logger.info("Get matching dataStore, matchingOdiDataStore: " + matchingOdiDataStore);
+            LOG.info("Get matching dataStore, matchingOdiDataStore: " + matchingOdiDataStore);
          }
       }
       return matchingOdiDataStore;
-   }
-
-   /**
-    * @param odiDataStore
-    * @param columnName
-    * @return
-    */
-   private OdiColumn getMatchingOdiColumn(final OdiDataStore odiDataStore, final String columnName) {
-      OdiColumn matchingColumn = null;
-      for (final OdiColumn odiColumn : odiDataStore.getColumns()) {
-         if (odiColumn.getName()
-                      .equals(columnName)) {
-            matchingColumn = odiColumn;
-            logger.info("Get matching column, matchingColumn: " + matchingColumn);
-         }
-      }
-      return matchingColumn;
    }
 
    @Override
@@ -203,7 +187,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       final IOdiDataStoreFinder finder = (IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
                                                                           .getFinder(OdiDataStore.class);
       final OdiDataStore odiDataStore = finder.findByName(dataStoreName, dataModelCode);
-      logger.info(String.format("Setting CDC descriptor to true for datastore '%1$s'.", dataStoreName));
+      LOG.info(String.format("Setting CDC descriptor to true for datastore '%1$s'.", dataStoreName));
       odiDataStore.setCdcDescriptor(new OdiDataStore.CdcDescriptor(true, order));
       odiInstance.getTransactionalEntityManager()
                  .merge(odiDataStore);
@@ -216,7 +200,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                                                                           .getFinder(OdiDataStore.class);
       @SuppressWarnings("unchecked") final Collection<OdiDataStore> odiDataStores = finder.findAll();
       for (final OdiDataStore dataStore : odiDataStores) {
-         logger.info(String.format("Setting CDC descriptor to false for datastore '%1$s'.", dataStore.getName()));
+         LOG.info(String.format("Setting CDC descriptor to false for datastore '%1$s'.", dataStore.getName()));
          dataStore.setCdcDescriptor(new OdiDataStore.CdcDescriptor(false, 0));
          odiInstance.getTransactionalEntityManager()
                     .merge(dataStore);
@@ -230,7 +214,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       final IOdiDataStoreFinder finder = (IOdiDataStoreFinder) odiInstance.getTransactionalEntityManager()
                                                                           .getFinder(OdiDataStore.class);
       final OdiDataStore odiDataStore = finder.findByName(dataStoreName, dataModelCode);
-      logger.info(String.format("Setting subscriber to for datastore '%1$s'.", dataStoreName));
+      LOG.info(String.format("Setting subscriber to for datastore '%1$s'.", dataStoreName));
       odiInstance.getTransactionalEntityManager()
                  .merge(odiDataStore);
    }
@@ -249,12 +233,12 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                   odiModel.getJKMOptions()
                           .get(jkmCounter)
                           .setValue(Boolean.parseBoolean(entryOption.getValue() + ""));
-                  logger.info("JKMOption:" + entryOption.getKey() + " set to value:" + entryOption.getValue());
+                  LOG.info("JKMOption:" + entryOption.getKey() + " set to value:" + entryOption.getValue());
                } else {
                   odiModel.getJKMOptions()
                           .get(jkmCounter)
                           .setValue(entryOption.getValue() + "");
-                  logger.info("JKMOption:" + entryOption.getKey() + " set to value:" + entryOption.getValue());
+                  LOG.info("JKMOption:" + entryOption.getKey() + " set to value:" + entryOption.getValue());
                }
             }
          }
@@ -269,12 +253,10 @@ public class OdiTableServiceImpl implements TableServiceProvider {
     * Foreign Keys, currently the PK are preserved, mainly as a extra check for
     * consistency, since then an unique index is also created.
     *
-    * @param odiDatastore
-    * @param odiReference
+    * @param odiReference {@link OdiReference}
     */
-
-   private void alterReferenceInConnector(final OdiDataStore odiDatastore, final OdiReference odiReference) {
-      logger.info("Removing Foreign Key: " + odiReference.getName());
+   private void alterReferenceInConnector(final OdiReference odiReference) {
+      LOG.info("Removing Foreign Key: " + odiReference.getName());
       odiInstance.getTransactionalEntityManager()
                  .remove(odiReference);
    }
@@ -319,6 +301,7 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                      for (final OdiColumn indexColumn : odiKey.getColumns()) {
                         if (indexColumn.equals(odiRefColumn)) {
                            found = true;
+                           break;
                         }
                      }
                   }
@@ -364,9 +347,9 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       final OdiDataStore odiDataStore = datastores.get(key);
       assert (odiDataStore != null) : "Datastore must exist per previous analysis";
 
-      logger.info("SCD2 Dimension Datastore: " + tdb.getTableName());
+      LOG.info("SCD2 Dimension Datastore: " + tdb.getTableName());
       odiDataStore.setOlapType(OdiDataStore.OlapType.SLOWLY_CHANGING_DIMENSION);
-      logger.info("Now OlapType:" + odiDataStore.getOlapType());
+      LOG.info("Now OlapType:" + odiDataStore.getOlapType());
 
       for (final ColumnDefaultBehaviors c : tdb.getColumnDefaultBehaviors()) {
          final OdiColumn odiColumn = findColumn(odiDataStore, c);
@@ -377,8 +360,8 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          odiColumn.setMandatory(c.isMandatory());
          odiColumn.setStaticCheckEnabled(c.isStaticCheckEnabled());
 
-         logger.info(odiDataStore.getName() + ":" + odiColumn.getName() + ":" + odiDataStore.getOlapType() + ":" +
-                             odiColumn.getScdType());
+         LOG.info(odiDataStore.getName() + ":" + odiColumn.getName() + ":" + odiDataStore.getOlapType() + ":" +
+                          odiColumn.getScdType());
       }
       odiInstance.getTransactionalEntityManager()
                  .merge(odiDataStore);
@@ -406,21 +389,21 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          datastores.put(ods.getModel()
                            .getCode() + "." + ods.getName(), ods);
       }
-      logger.info("Start setting Slowly Changing Dimension on tables.");
+      LOG.info("Start setting Slowly Changing Dimension on tables.");
       tablesToChange.stream()
-                    .peek(tdb -> logger.info(
+                    .peek(tdb -> LOG.info(
                             String.format("Table %s has OLAP type %s ", tdb.getTableName(), tdb.getOlapType())))
                     .filter(tdb -> tdb.getOlapType() == TableDefaultBehaviors.OlapType.SLOWLY_CHANGING_DIMENSION)
-                    .peek(tdb -> logger.info("Setting Slowly Changing Dimension for table " + tdb.getTableName()))
+                    .peek(tdb -> LOG.info("Setting Slowly Changing Dimension for table " + tdb.getTableName()))
                     .forEach(tdb -> setSCDType2Behavior(tdb, datastores));
-      logger.info("End setting Slowly Changing Dimension on tables.");
+      LOG.info("End setting Slowly Changing Dimension on tables.");
    }
 
    /**
     * Given a SCDType value in string format return the matching etl layer
     * type.
     *
-    * @param scdType
+    * @param scdType a string
     * @return ScdType as enum
     */
    private ScdType getScdTypeValue(final String scdType) {
@@ -461,15 +444,16 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          final String message = errorWarningMessages.formatMessage(1220, ERROR_MESSAGE_01220, this.getClass(), odiModel,
                                                                    re.getMessage());
          errorWarningMessages.addMessage(message, MESSAGE_TYPE.ERRORS);
-         logger.error(message, re);
+         LOG.error(message, re);
          throw new RuntimeException(message, re);
       }
    }
 
    private void deleteReferenceByModel(final String name) {
       @SuppressWarnings("unchecked") final Collection<OdiReference> odireferences =
-              ((IOdiReferenceFinder) odiInstance.getTransactionalEntityManager()
-                                                .getFinder(OdiReference.class)).findAll();
+              odiInstance.getTransactionalEntityManager()
+                         .getFinder(OdiReference.class)
+                         .findAll();
 
       if (!odireferences.isEmpty()) {
          for (final OdiReference odireference : odireferences) {
@@ -484,16 +468,15 @@ public class OdiTableServiceImpl implements TableServiceProvider {
                             .getModel()
                             .getCode()
                             .equals(name)) {
-               logger.info("Model: " + name + ":reference:" + odireference.getForeignDataStore()
-                                                                          .getModel()
-                                                                          .getCode());
+               LOG.info("Model: " + name + ":reference:" + odireference.getForeignDataStore()
+                                                                       .getModel()
+                                                                       .getCode());
                odiInstance.getTransactionalEntityManager()
                           .remove(odireference);
 
-               logger.info(
-                       "Removed reference: " + odireference.getName() + " from model: " + name + " from datastore:" +
-                               odireference.getForeignDataStore()
-                                           .getName());
+               LOG.info("Removed reference: " + odireference.getName() + " from model: " + name + " from datastore:" +
+                                odireference.getForeignDataStore()
+                                            .getName());
 
             }
          }
@@ -517,8 +500,8 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          for (final OdiKey key : ds.getKeys()) {
             if (key != null && key.getKeyType() != null && key.getKeyType()
                                                               .equals(oracle.odi.domain.model.OdiKey.KeyType.INDEX)) {
-               logger.info("Index: " + key.getName() + " :reference:" + ds.getModel()
-                                                                          .getCode() + "." + ds.getName());
+               LOG.info("Index: " + key.getName() + " :reference:" + ds.getModel()
+                                                                       .getCode() + "." + ds.getName());
                odiInstance.getTransactionalEntityManager()
                           .remove(key);
             }
@@ -546,8 +529,8 @@ public class OdiTableServiceImpl implements TableServiceProvider {
       odiModel.setJKM(odiJKM);
       odiInstance.getTransactionalEntityManager()
                  .persist(odiModel);
-      logger.info(String.format("JKM '%1$s' set for model '%2$s' in project '%3$s'.", odiJKM.getName(), modelCode,
-                                properties.getProjectCode()));
+      LOG.info(String.format("JKM '%1$s' set for model '%2$s' in project '%3$s'.", odiJKM.getName(), modelCode,
+                             properties.getProjectCode()));
    }
 
    @Override
@@ -561,8 +544,8 @@ public class OdiTableServiceImpl implements TableServiceProvider {
          odiModel.setJKM(null);
          odiInstance.getTransactionalEntityManager()
                     .persist(odiModel);
-         logger.info(String.format("Resetting JKMs  for model '%1$s' in project '%2$s'.", modelp.getCode(),
-                                   properties.getProjectCode()));
+         LOG.info(String.format("Resetting JKMs  for model '%1$s' in project '%2$s'.", modelp.getCode(),
+                                properties.getProjectCode()));
 
       }
    }
