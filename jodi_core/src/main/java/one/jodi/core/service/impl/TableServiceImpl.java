@@ -6,7 +6,6 @@ import one.jodi.base.model.types.DataStoreColumn;
 import one.jodi.base.model.types.DataStoreKey;
 import one.jodi.base.model.types.DataStoreType;
 import one.jodi.base.model.types.SCDType;
-import one.jodi.base.util.StringUtils;
 import one.jodi.core.config.JodiConstants;
 import one.jodi.core.config.JodiProperties;
 import one.jodi.core.metadata.DatabaseMetadataService;
@@ -77,15 +76,19 @@ public class TableServiceImpl implements TableService {
          @Override
          public OlapType getOlapType() {
             OlapType value = null;
-            if (StringUtils.equalsIgnoreCase(dataStore.getDataStoreType()
-                                                      .toString(), DataStoreType.FACT.toString())) {
+            if (isDetectedAsScd(dataStore)) {
+               value = OlapType.SLOWLY_CHANGING_DIMENSION;
+            } else if (dataStore.getDataStoreType()
+                                .toString()
+                                .equalsIgnoreCase(DataStoreType.FACT.toString())) {
                value = OlapType.FACT;
-            } else if (StringUtils.equalsIgnoreCase(dataStore.getDataStoreType()
-                                                             .toString(), DataStoreType.DIMENSION.toString())) {
+            } else if (dataStore.getDataStoreType()
+                                .toString()
+                                .equalsIgnoreCase(DataStoreType.DIMENSION.toString())) {
                value = OlapType.DIMENSION;
-            } else if (StringUtils.equalsIgnoreCase(dataStore.getDataStoreType()
-                                                             .toString(),
-                                                    DataStoreType.SLOWLY_CHANGING_DIMENSION.toString())) {
+            } else if (dataStore.getDataStoreType()
+                                .toString()
+                                .equalsIgnoreCase(DataStoreType.SLOWLY_CHANGING_DIMENSION.toString())) {
                value = OlapType.SLOWLY_CHANGING_DIMENSION;
             }
             return value;
@@ -213,21 +216,21 @@ public class TableServiceImpl implements TableService {
                                       assembleTableDefaultBehaviors(dataStore).getOlapType()));
          } else if (dataStore.getDataStoreType() == DataStoreType.SLOWLY_CHANGING_DIMENSION ||
                  isDetectedAsScd(dataStore)) {
-            if (modelValidator.doCheck(dataStore)) {
-               // only check for U1 for SCD2 for performance
-               logger.info("-----------------------------");
-               logger.info("There are two checks:");
-               logger.info("Check for Alternate key W_<TABLE_NAME>_D_U1");
-               logger.info("Check for columns with " + jodiProperties.getRowidColumnName() + " postfix");
-               logger.info("Check for DATE columns with precision 7");
-               tablesToChange.add(assembleSCDTableDefaultBehaviors(dataStore));
-               logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
-                                         assembleTableDefaultBehaviors(dataStore).getOlapType()));
-            } else {
-               logger.info(String.format(
-                       "Table %s detected as OLAP type %s but no Alternate key with name <TABLE_NAME>_U1 found.",
-                       dataStore.getDataStoreName(), assembleTableDefaultBehaviors(dataStore).getOlapType()));
-            }
+            // if (modelValidator.doCheck(dataStore)) {
+            // only check for U1 for SCD2 for performance
+            logger.info("-----------------------------");
+            logger.info("There are two checks:");
+            logger.info("Check for Alternate key W_<TABLE_NAME>_D_U1");
+            logger.info("Check for columns with " + jodiProperties.getRowidColumnName() + " postfix");
+            logger.info("Check for DATE columns with precision 7");
+            tablesToChange.add(assembleSCDTableDefaultBehaviors(dataStore));
+            logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
+                                      assembleTableDefaultBehaviors(dataStore).getOlapType()));
+//            } else {
+//               logger.info(String.format(
+//                       "Table %s detected as OLAP type %s but no Alternate key with name <TABLE_NAME>_U1 found.",
+//                       dataStore.getDataStoreName(), assembleTableDefaultBehaviors(dataStore).getOlapType()));
+//            }
          } else if (dataStore.getDataStoreType() == DataStoreType.DIMENSION) {
             tablesToChange.add(assembleTableDefaultBehaviors(dataStore));
             logger.info(String.format("Table %s detected as OLAP type %s", dataStore.getDataStoreName(),
@@ -238,7 +241,7 @@ public class TableServiceImpl implements TableService {
       return tablesToChange;
    }
 
-   private boolean isDetectedAsScd(final DataStore dataStore) {
+   public boolean isDetectedAsScd(final DataStore dataStore) {
       boolean hasEFFECTIVE_DATE = false;
       boolean hasEXPIRATION_DATE = false;
       boolean hasCURRENT_RECORD_FLAG = false;
@@ -252,16 +255,24 @@ public class TableServiceImpl implements TableService {
          assert (columnName != null) : "incorrect model";
          if (columnName.equalsIgnoreCase(jodiProperties.getProperty(JodiConstants.EFFECTIVE_DATE))) {
             hasEFFECTIVE_DATE = true;
+            logger.info(" dataStore: " + dataStore.getDataStoreName() + "hasEFFECTIVE_DATE " + hasEFFECTIVE_DATE);
          } else if (columnName.equalsIgnoreCase(jodiProperties.getProperty(JodiConstants.EXPIRATION_DATE))) {
             hasEXPIRATION_DATE = true;
+            logger.info(" dataStore: " + dataStore.getDataStoreName() + "hasEXPIRATION_DATE " + hasEXPIRATION_DATE);
          } else if (columnName.equalsIgnoreCase(jodiProperties.getProperty(JodiConstants.CURRENT_FLG))) {
             hasCURRENT_RECORD_FLAG = true;
+            logger.info(
+                    " dataStore: " + dataStore.getDataStoreName() + "hasCURRENT_RECORD_FLAG " + hasCURRENT_RECORD_FLAG);
          } else if (columnName.equalsIgnoreCase(jodiProperties.getRowidColumnName())) {
             hasROW_WID = true;
+            logger.info(" dataStore: " + dataStore.getDataStoreName() + "hasROW_WID " + hasROW_WID);
          } else if (keyColumns.contains(columnName)) {
             keyColumns.add(entity.getKey());
          }
       }
+      logger.info(" isDetectedAsScd: " + dataStore.getDataStoreName() + " " +
+                          (hasEFFECTIVE_DATE && hasEXPIRATION_DATE && hasCURRENT_RECORD_FLAG && hasROW_WID &&
+                                  keyColumns.size() > 1));
       return hasEFFECTIVE_DATE && hasEXPIRATION_DATE && hasCURRENT_RECORD_FLAG && hasROW_WID && keyColumns.size() > 1;
    }
 
