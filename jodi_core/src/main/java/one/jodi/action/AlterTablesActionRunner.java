@@ -20,11 +20,10 @@ import java.util.stream.Collectors;
 
 
 /**
- * An {@link ActionRunner} implementation that invokes the {@link
- * TableServiceProvider#alterTables()} method.
+ * An {@link ActionRunner} implementation that invokes the {@link TableServiceProvider#alterTables(List)} method.
  */
 public class AlterTablesActionRunner implements ActionRunner {
-   private static final Logger logger = LogManager.getLogger(AlterTablesActionRunner.class);
+   private static final Logger LOG = LogManager.getLogger(AlterTablesActionRunner.class);
 
    private static final String ERROR_MESSAGE_01010 = "Could not delete interfaces,\n" +
            "This could be due to incorrect jodi.properties where the jodi.properties are not in line with ODI,\n" +
@@ -50,16 +49,16 @@ public class AlterTablesActionRunner implements ActionRunner {
    }
 
    /**
-    * @see one.jodi.bootstrap.RunConfig$ActionRunner#run(RunConfig)
+    * @see one.jodi.base.bootstrap.ActionRunner#run(RunConfig)
     */
    @Override
    public void run(final RunConfig config) {
       try {
          final List<TableDefaultBehaviors> tableDefaults = tableServiceCore.assembleDefaultBehaviors();
-         logger.info("Alter tables started");
+         LOG.info("Alter tables started");
          final List<TableDefaultBehaviors> tableDefaultBehaviorsList = tableDefaults.stream()
                                                                                     .filter(t -> !t.getOlapType()
-                                                                                             .equals(TableDefaultBehaviors.OlapType.SLOWLY_CHANGING_DIMENSION))
+                                                                                                   .equals(TableDefaultBehaviors.OlapType.SLOWLY_CHANGING_DIMENSION))
                                                                                     .collect(Collectors.toList());
          tableService.alterTables(tableDefaultBehaviorsList);
       } catch (final Exception ex) {
@@ -68,8 +67,8 @@ public class AlterTablesActionRunner implements ActionRunner {
       }
    }
 
-   /* (non-Javadoc)
-    * @see one.jodi.bootstrap.RunConfig.ActionRunner#validateRunConfig(one.jodi.bootstrap.RunConfig)
+   /**
+    * @see one.jodi.base.bootstrap.ActionRunner#validateRunConfig(RunConfig)
     */
    @Override
    public void validateRunConfig(final RunConfig config) throws UsageException {
