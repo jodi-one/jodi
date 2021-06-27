@@ -119,7 +119,7 @@ group = "one.jodi"
 // common libraries that should exist in each projects independently
 dependencies {
 
-   implementation group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
+   provided group: 'one.jodi', name: 'jodi_odi', version: defaultOdiVersion
    implementation project(':jodi_base')
    implementation 'javax.xml.bind:jaxb-api:2.3.1'
    implementation 'com.sun.activation:javax.activation:1.2.0'
